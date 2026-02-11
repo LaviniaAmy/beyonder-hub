@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "@/components/Layout";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import ExploreServices from "./pages/ExploreServices";
 import ProviderDirectory from "./pages/ProviderDirectory";
@@ -37,12 +38,12 @@ const App = () => (
             <Route path="/providers" element={<ProviderDirectory />} />
             <Route path="/provider/:id" element={<ProviderPage />} />
             <Route path="/enquiry/:id" element={<EnquiryPage />} />
-            <Route path="/dashboard" element={<ParentDashboard />} />
-            <Route path="/provider-dashboard" element={<ProviderDashboard />} />
+            <Route path="/dashboard" element={<ProtectedRoute allowedRoles={["parent"]}><ParentDashboard /></ProtectedRoute>} />
+            <Route path="/provider-dashboard" element={<ProtectedRoute allowedRoles={["provider"]}><ProviderDashboard /></ProtectedRoute>} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/for-providers" element={<ForProviders />} />
-            <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]}><AdminPanel /></ProtectedRoute>} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/help" element={<HelpCentre />} />
             <Route path="/guides" element={<GuidesPage />} />
