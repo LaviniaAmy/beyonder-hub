@@ -1,13 +1,17 @@
 import { Link } from "react-router-dom";
 import { Heart, Users, ShoppingBag, GraduationCap, HandHeart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { categories } from "@/data/mockData";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { categories, regions } from "@/data/mockData";
+import { useState } from "react";
 
 const iconMap: Record<string, React.ElementType> = {
   Heart, Users, ShoppingBag, GraduationCap, HandHeart,
 };
 
 const ExploreServices = () => {
+  const [region, setRegion] = useState("all");
+
   return (
     <div className="py-12">
       <div className="container">
@@ -16,11 +20,27 @@ const ExploreServices = () => {
           <p className="text-muted-foreground">Choose a category to find the right support for your family.</p>
         </div>
 
+        {/* Region Dropdown */}
+        <div className="mx-auto mb-8 max-w-xs">
+          <Select value={region} onValueChange={setRegion}>
+            <SelectTrigger className="w-full text-base">
+              <SelectValue placeholder="Select your region" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-50">
+              <SelectItem value="all">All Regions</SelectItem>
+              {regions.map((r) => (
+                <SelectItem key={r} value={r}>{r}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="mx-auto grid max-w-3xl gap-4 sm:grid-cols-2">
           {categories.map((cat) => {
             const Icon = iconMap[cat.icon] || Heart;
+            const regionParam = region !== "all" ? `&region=${encodeURIComponent(region)}` : "";
             return (
-              <Link key={cat.id} to={`/providers?category=${cat.id}`}>
+              <Link key={cat.id} to={`/providers?category=${cat.id}${regionParam}`}>
                 <Card className="h-full transition-all hover:shadow-md hover:border-primary/30">
                   <CardContent className="flex items-start gap-4 p-6">
                     <div className="rounded-lg bg-primary/10 p-3">

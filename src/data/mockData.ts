@@ -1,3 +1,19 @@
+export const regions = [
+  "South East England",
+  "South West England",
+  "North East England",
+  "North West England",
+  "East Midlands",
+  "West Midlands",
+  "London",
+  "Wales",
+  "Scotland",
+  "Northern Ireland",
+  "Online Only",
+] as const;
+
+export type Region = (typeof regions)[number];
+
 export interface Provider {
   id: string;
   name: string;
@@ -6,6 +22,7 @@ export interface Provider {
   description: string;
   shortDescription: string;
   location: string;
+  region: Region | null; // null = product sellers (no region restriction)
   coverageArea: string;
   needsSupported: string[];
   ageRange: string;
@@ -67,6 +84,7 @@ export const providers: Provider[] = [
     description: "We provide specialist speech and language therapy for children with a range of communication needs. Our team of experienced therapists work with families to develop individualised programmes that support children's development in a warm, welcoming environment.",
     shortDescription: "Specialist speech therapy for children with communication needs",
     location: "Bristol, BS1",
+    region: "South West England",
     coverageArea: "Bristol & South Gloucestershire",
     needsSupported: ["Autism", "Speech Delay", "ADHD", "Down Syndrome"],
     ageRange: "2-16 years",
@@ -86,6 +104,7 @@ export const providers: Provider[] = [
     description: "Splash offers fully inclusive swimming sessions for children and young people with additional needs. Our instructors are trained in SEND awareness and adapt sessions to suit each individual.",
     shortDescription: "Inclusive swimming sessions adapted for SEND children",
     location: "Bath, BA1",
+    region: "South West England",
     coverageArea: "Bath & North East Somerset",
     needsSupported: ["Autism", "Physical Disability", "Sensory Processing", "Learning Disability"],
     ageRange: "4-18 years",
@@ -109,6 +128,7 @@ export const providers: Provider[] = [
     description: "We curate and sell specialist sensory products, fidget tools, and adaptive equipment for children with sensory processing needs, autism, and ADHD.",
     shortDescription: "Specialist sensory products and adaptive equipment",
     location: "Online",
+    region: null,
     coverageArea: "UK-wide delivery",
     needsSupported: ["Sensory Processing", "Autism", "ADHD"],
     ageRange: "All ages",
@@ -132,6 +152,7 @@ export const providers: Provider[] = [
     description: "Specialist tutoring for children with dyslexia, dyscalculia, and other specific learning differences. We use evidence-based approaches tailored to each child's unique learning style.",
     shortDescription: "Specialist tutoring for children with learning differences",
     location: "Cardiff, CF10",
+    region: "Wales",
     coverageArea: "Cardiff & Vale of Glamorgan",
     needsSupported: ["Dyslexia", "Dyscalculia", "ADHD", "Autism"],
     ageRange: "5-16 years",
@@ -151,6 +172,7 @@ export const providers: Provider[] = [
     description: "A local charity providing emotional support, advice, and community events for families of children with special educational needs and disabilities.",
     shortDescription: "Community support and advice for SEND families",
     location: "Manchester, M1",
+    region: "North West England",
     coverageArea: "Greater Manchester",
     needsSupported: ["All SEND needs"],
     ageRange: "0-25 years",
@@ -169,6 +191,7 @@ export const providers: Provider[] = [
     description: "Expert occupational therapy helping children develop fine motor skills, sensory regulation, and daily living skills. We work closely with schools and families.",
     shortDescription: "Expert OT for motor skills and sensory regulation",
     location: "London, SE1",
+    region: "London",
     coverageArea: "South East London",
     needsSupported: ["Autism", "Dyspraxia", "Sensory Processing", "ADHD"],
     ageRange: "3-18 years",
@@ -179,6 +202,46 @@ export const providers: Provider[] = [
     reviewCount: 12,
     contactMethod: "Email or phone",
     credentials: ["HCPC Registered", "RCOT Member", "Sensory Integration Certified"],
+  },
+  {
+    id: "7",
+    name: "Northern Stars Music Therapy",
+    type: "therapist",
+    typeBadge: "Music Therapist",
+    description: "Music therapy sessions designed to support emotional regulation, communication, and social interaction for children and young people with SEND.",
+    shortDescription: "Music therapy for emotional and social development",
+    location: "Newcastle, NE1",
+    region: "North East England",
+    coverageArea: "Tyne & Wear",
+    needsSupported: ["Autism", "Anxiety", "ADHD", "Learning Disability"],
+    ageRange: "3-18 years",
+    deliveryFormat: "in-person",
+    verified: true,
+    foundingProvider: false,
+    rating: 4.7,
+    reviewCount: 9,
+    contactMethod: "Email",
+    credentials: ["HCPC Registered", "BAMT Member"],
+  },
+  {
+    id: "8",
+    name: "Online SEND Counselling",
+    type: "therapist",
+    typeBadge: "Counsellor",
+    description: "Accessible online counselling for parents and young people navigating SEND challenges. Available UK-wide via video call.",
+    shortDescription: "UK-wide online counselling for SEND families",
+    location: "Online",
+    region: "Online Only",
+    coverageArea: "UK-wide",
+    needsSupported: ["Anxiety", "Depression", "Autism", "ADHD"],
+    ageRange: "10+ years",
+    deliveryFormat: "online",
+    verified: true,
+    foundingProvider: false,
+    rating: 4.6,
+    reviewCount: 22,
+    contactMethod: "Online booking",
+    credentials: ["BACP Registered"],
   },
 ];
 

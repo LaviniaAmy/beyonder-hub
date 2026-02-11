@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const benefits = [
   "Reach families actively searching for SEND services",
@@ -9,11 +8,6 @@ const benefits = [
   "Manage all enquiries in a simple dashboard",
   "Increase visibility with category listings",
   "Join a growing, supportive community",
-];
-
-const tiers = [
-  { name: "Free Listing", price: "Free", features: ["Basic profile listing", "Receive enquiries", "Category placement"] },
-  { name: "Premium", price: "£19.95/mo", features: ["Everything in Free", "Priority placement", "Detailed analytics", "Verified badge", "Photo gallery"] },
 ];
 
 const ForProviders = () => (
@@ -34,29 +28,8 @@ const ForProviders = () => (
             <li key={b} className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-primary shrink-0" /><span>{b}</span></li>
           ))}
         </ul>
-      </div>
-    </section>
-
-    <section className="border-t bg-muted py-12">
-      <div className="container">
-        <h2 className="mb-8 text-2xl font-bold text-center">Choose Your Plan</h2>
-        <div className="mx-auto grid max-w-2xl gap-6 sm:grid-cols-2">
-          {tiers.map((t) => (
-            <Card key={t.name} className={t.name === "Premium" ? "border-primary border-2" : ""}>
-              <CardHeader>
-                <CardTitle>{t.name}</CardTitle>
-                <p className="text-2xl font-bold text-primary">{t.price}</p>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {t.features.map((f) => <li key={f} className="flex items-center gap-2 text-sm"><CheckCircle className="h-4 w-4 text-primary" />{f}</li>)}
-                </ul>
-                <Button className="mt-4 w-full" variant={t.name === "Premium" ? "default" : "outline"} asChild>
-                  <Link to="/signup">{t.name === "Premium" ? "Get Started" : "Sign Up Free"}</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="mt-8 text-center">
+          <Button size="lg" asChild><Link to="/signup">Get Started — It's Free</Link></Button>
         </div>
       </div>
     </section>

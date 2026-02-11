@@ -1,11 +1,12 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, Heart, BookOpen, Briefcase, Stethoscope, Users, Newspaper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 const featureCards = [
-  { icon: Heart, title: "Find Local Support", description: "Discover trusted therapists, activities, and services near you — all vetted by the SEND community.", link: "/explore" },
+  { icon: Heart, title: "Find Local Support", description: "Discover trusted therapists, activities, and services near you — all vetted by the SEND community.", link: "/providers?view=local" },
   { icon: BookOpen, title: "Guides & Understanding", description: "Clear, jargon-free guides to help you navigate assessments, EHCPs, and everyday challenges.", link: "/guides" },
   { icon: Briefcase, title: "Work With Beyonder", description: "Are you a provider? Join our growing community and connect with families who need your services.", link: "/for-providers" },
 ];
@@ -17,6 +18,16 @@ const categoryLinks = [
 ];
 
 const Index = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/providers?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
     <div>
       {/* Hero */}
@@ -32,16 +43,18 @@ const Index = () => {
           </p>
 
           {/* Search */}
-          <div className="mx-auto flex max-w-lg gap-2">
+          <form onSubmit={handleSearch} className="mx-auto flex max-w-lg gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="What are you looking for today?"
                 className="bg-background pl-10 text-foreground"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button>Search</Button>
-          </div>
+            <Button type="submit">Search</Button>
+          </form>
 
           {/* CTAs */}
           <div className="mt-8 flex flex-wrap justify-center gap-4">

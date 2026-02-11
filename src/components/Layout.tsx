@@ -7,8 +7,8 @@ import { useAuth } from "@/context/AuthContext";
 const navLinks = [
   { label: "Home", to: "/" },
   { label: "About Us", to: "/about" },
-  { label: "Explore Services", to: "/explore" },
-  { label: "Providers", to: "/providers" },
+  { label: "Get Connected", to: "/community" },
+  { label: "For Providers", to: "/for-providers" },
 ];
 
 const Layout = ({ children }: { children: React.ReactNode }) => {

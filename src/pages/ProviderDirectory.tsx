@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { MapPin, Star, Bookmark } from "lucide-react";
+import { MapPin, Star, Bookmark, Heart, Users, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { categories, providers } from "@/data/mockData";
+import { categories, providers, regions } from "@/data/mockData";
 
 const deliveryOptions = [
   { value: "all", label: "All Delivery Types" },
@@ -14,49 +15,161 @@ const deliveryOptions = [
   { value: "hybrid", label: "Hybrid" },
 ];
 
+const localCategoryCards = [
+  { icon: Heart, label: "Therapists & Specialists", category: "therapists" },
+  { icon: Users, label: "Activities & Clubs", category: "activities" },
+  { icon: Layers, label: "All Services In Your Area", category: "all" },
+];
+
 const ProviderDirectory = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCategory = searchParams.get("category") || "all";
+  const searchQuery = searchParams.get("search") || "";
+  const regionParam = searchParams.get("region") || "all";
+  const isLocalView = searchParams.get("view") === "local";
+
   const [delivery, setDelivery] = useState("all");
   const [visibleCount, setVisibleCount] = useState(6);
+  const [localSearch, setLocalSearch] = useState(searchQuery);
+
+  const updateParams = (updates: Record<string, string | null>) => {
+    const newParams = new URLSearchParams(searchParams);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === "all" || value === "") {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, value);
+      }
+    });
+    setSearchParams(newParams);
+    setVisibleCount(6);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateParams({ search: localSearch || null });
+  };
 
   const filtered = useMemo(() => {
     let result = providers;
+
+    // Region filtering
+    if (regionParam !== "all") {
+      result = result.filter((p) => {
+        // Product sellers are not region-restricted
+        if (p.type === "product") return true;
+        // Online-only providers show nationally
+        if (p.region === "Online Only") return true;
+        // Hybrid providers show in their region AND when Online Only is selected
+        if (p.deliveryFormat === "hybrid") {
+          return p.region === regionParam || regionParam === "Online Only";
+        }
+        // In-person providers only in their region
+        return p.region === regionParam;
+      });
+    }
+
+    // Category filtering
     if (activeCategory !== "all") {
       const cat = categories.find((c) => c.id === activeCategory);
       if (cat) result = result.filter((p) => p.type === cat.providerType);
     }
+
+    // Delivery filtering
     if (delivery !== "all") result = result.filter((p) => p.deliveryFormat === delivery);
+
+    // Search filtering
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q) ||
+          p.shortDescription.toLowerCase().includes(q) ||
+          p.typeBadge.toLowerCase().includes(q) ||
+          p.needsSupported.some((n) => n.toLowerCase().includes(q))
+      );
+    }
+
     return result;
-  }, [activeCategory, delivery]);
+  }, [activeCategory, delivery, searchQuery, regionParam]);
 
   const visible = filtered.slice(0, visibleCount);
 
   return (
     <div className="py-8">
       <div className="container">
-        <h1 className="mb-6 text-3xl font-bold">Provider Directory</h1>
+        <h1 className="mb-6 text-3xl font-bold">
+          {isLocalView ? "Find Local Support" : "Provider Directory"}
+        </h1>
+
+        {/* Region Dropdown */}
+        <div className="mb-6">
+          <Select value={regionParam} onValueChange={(v) => updateParams({ region: v === "all" ? null : v })}>
+            <SelectTrigger className="w-full max-w-xs text-base">
+              <SelectValue placeholder="Select your region" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-50">
+              <SelectItem value="all">All Regions</SelectItem>
+              {regions.map((r) => (
+                <SelectItem key={r} value={r}>{r}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Local View Category Cards */}
+        {isLocalView && (
+          <div className="mb-8 grid gap-3 sm:grid-cols-3">
+            {localCategoryCards.map((card) => (
+              <button
+                key={card.category}
+                onClick={() => updateParams({ category: card.category === "all" ? null : card.category, view: null })}
+                className={`flex items-center gap-3 rounded-lg border p-4 text-left transition-all hover:shadow-md hover:border-primary/30 ${
+                  activeCategory === card.category ? "border-primary bg-primary/5" : ""
+                }`}
+              >
+                <div className="rounded-lg bg-primary/10 p-2">
+                  <card.icon className="h-5 w-5 text-primary" />
+                </div>
+                <span className="font-medium">{card.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Search bar */}
+        <form onSubmit={handleSearchSubmit} className="mb-6 flex gap-2 max-w-lg">
+          <Input
+            placeholder="Search providers..."
+            value={localSearch}
+            onChange={(e) => setLocalSearch(e.target.value)}
+          />
+          <Button type="submit">Search</Button>
+        </form>
 
         {/* Category Tabs */}
-        <div className="mb-6 flex flex-wrap gap-2">
-          <Button
-            variant={activeCategory === "all" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setSearchParams({})}
-          >
-            All
-          </Button>
-          {categories.map((cat) => (
+        {!isLocalView && (
+          <div className="mb-6 flex flex-wrap gap-2">
             <Button
-              key={cat.id}
-              variant={activeCategory === cat.id ? "default" : "outline"}
+              variant={activeCategory === "all" ? "default" : "outline"}
               size="sm"
-              onClick={() => setSearchParams({ category: cat.id })}
+              onClick={() => updateParams({ category: null })}
             >
-              {cat.name}
+              All
             </Button>
-          ))}
-        </div>
+            {categories.map((cat) => (
+              <Button
+                key={cat.id}
+                variant={activeCategory === cat.id ? "default" : "outline"}
+                size="sm"
+                onClick={() => updateParams({ category: cat.id })}
+              >
+                {cat.name}
+              </Button>
+            ))}
+          </div>
+        )}
 
         {/* Filters */}
         <div className="mb-6 flex flex-wrap gap-3">
@@ -64,7 +177,7 @@ const ProviderDirectory = () => {
             <SelectTrigger className="w-48">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-background z-50">
               {deliveryOptions.map((o) => (
                 <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
               ))}
@@ -73,12 +186,24 @@ const ProviderDirectory = () => {
         </div>
 
         {/* Active filters */}
-        {(activeCategory !== "all" || delivery !== "all") && (
+        {(activeCategory !== "all" || delivery !== "all" || searchQuery || regionParam !== "all") && (
           <div className="mb-4 flex flex-wrap gap-2">
+            {regionParam !== "all" && (
+              <Badge variant="secondary" className="gap-1">
+                {regionParam}
+                <button onClick={() => updateParams({ region: null })} className="ml-1 hover:text-destructive">×</button>
+              </Badge>
+            )}
             {activeCategory !== "all" && (
               <Badge variant="secondary" className="gap-1">
                 {categories.find((c) => c.id === activeCategory)?.name}
-                <button onClick={() => setSearchParams({})} className="ml-1 hover:text-destructive">×</button>
+                <button onClick={() => updateParams({ category: null })} className="ml-1 hover:text-destructive">×</button>
+              </Badge>
+            )}
+            {searchQuery && (
+              <Badge variant="secondary" className="gap-1">
+                "{searchQuery}"
+                <button onClick={() => { setLocalSearch(""); updateParams({ search: null }); }} className="ml-1 hover:text-destructive">×</button>
               </Badge>
             )}
             {delivery !== "all" && (
@@ -94,7 +219,7 @@ const ProviderDirectory = () => {
         {visible.length === 0 ? (
           <div className="py-16 text-center">
             <p className="text-lg text-muted-foreground">No providers found matching your filters.</p>
-            <Button variant="link" onClick={() => { setSearchParams({}); setDelivery("all"); }}>
+            <Button variant="link" onClick={() => { setSearchParams({}); setDelivery("all"); setLocalSearch(""); }}>
               Clear all filters
             </Button>
           </div>
