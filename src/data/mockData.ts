@@ -1,3 +1,5 @@
+import type { CategoryType, PlanType, PlanStatus } from "@/lib/featureGating";
+
 export const regions = [
   "South East England",
   "South West England",
@@ -13,8 +15,6 @@ export const regions = [
 ] as const;
 
 export type Region = (typeof regions)[number];
-
-import type { CategoryType, PlanType, PlanStatus } from "@/lib/featureGating";
 
 export interface Provider {
   id: string;
