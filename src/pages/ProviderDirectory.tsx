@@ -53,42 +53,55 @@ const ProviderDirectory = () => {
   const filtered = useMemo(() => {
     let result = providers;
 
-    // Region filtering
+    // 1) Region filtering
     if (regionParam !== "all") {
       result = result.filter((p) => {
         // Product sellers are not region-restricted
         if (p.type === "product") return true;
         // Online-only providers show nationally
-        if (p.region === "Online Only") return true;
-        // Hybrid providers show in their region AND when Online Only is selected
+        if (p.region === "Online Only" || p.deliveryFormat === "online") return true;
+        // Hybrid providers show in their region
         if (p.deliveryFormat === "hybrid") {
-          return p.region === regionParam || regionParam === "Online Only";
+          return p.region === regionParam;
         }
         // In-person providers only in their region
         return p.region === regionParam;
       });
     }
 
-    // Category filtering
+    // 2) Delivery type filtering
+    if (delivery !== "all") {
+      result = result.filter((p) => {
+        if (delivery === "online") return p.deliveryFormat === "online" || p.deliveryFormat === "hybrid";
+        if (delivery === "in-person") return p.deliveryFormat === "in-person" || p.deliveryFormat === "hybrid";
+        if (delivery === "hybrid") return p.deliveryFormat === "hybrid";
+        return true;
+      });
+    }
+
+    // 3) Category filtering
     if (activeCategory !== "all") {
       const cat = categories.find((c) => c.id === activeCategory);
       if (cat) result = result.filter((p) => p.type === cat.providerType);
     }
 
-    // Delivery filtering
-    if (delivery !== "all") result = result.filter((p) => p.deliveryFormat === delivery);
-
-    // Search filtering
+    // 4) Search filtering — partial, case-insensitive, across multiple fields + tags
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q) ||
-          p.shortDescription.toLowerCase().includes(q) ||
-          p.typeBadge.toLowerCase().includes(q) ||
-          p.needsSupported.some((n) => n.toLowerCase().includes(q))
-      );
+      const categoryLabel = categories.find((c) => c.id === activeCategory)?.name?.toLowerCase() || "";
+      result = result.filter((p) => {
+        const catName = categories.find((c) => c.providerType === p.type)?.name?.toLowerCase() || "";
+        const searchable = [
+          p.name,
+          p.description,
+          p.shortDescription,
+          p.typeBadge,
+          catName,
+          ...p.needsSupported,
+          ...p.searchTags,
+        ].map((s) => s.toLowerCase());
+        return searchable.some((s) => s.includes(q));
+      });
     }
 
     return result;
