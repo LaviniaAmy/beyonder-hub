@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { providers } from "@/data/mockData";
+import type { CategoryType } from "@/lib/featureGating";
 
 export type UserRole = "parent" | "provider" | "admin";
 
@@ -7,6 +9,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  provider_id?: string;
 }
 
 interface AuthContextType {
@@ -19,6 +22,29 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const STORAGE_KEY = "beyonder_user";
+
+/** Deterministic test-email → provider mapping for pilot testing */
+const TEST_PROVIDER_EMAILS: Record<string, CategoryType> = {
+  "therapist@beyonder.test": "therapist",
+  "club@beyonder.test": "club",
+  "education@beyonder.test": "education",
+  "charity@beyonder.test": "charity",
+  "product@beyonder.test": "product",
+};
+
+function resolveProviderId(email: string): string | undefined {
+  const lower = email.toLowerCase();
+  const categoryTarget = TEST_PROVIDER_EMAILS[lower];
+  if (categoryTarget) {
+    const match = providers.find((p) => p.category_type === categoryTarget);
+    return match?.id;
+  }
+  // Default provider login (legacy): pick first provider
+  if (lower.includes("provider")) {
+    return providers[0]?.id;
+  }
+  return undefined;
+}
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -33,11 +59,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = (email: string, _password: string, role: UserRole) => {
+    const providerId = role === "provider" ? resolveProviderId(email) : undefined;
     const newUser: User = {
       id: crypto.randomUUID(),
       name: email.split("@")[0],
       email,
       role,
+      provider_id: providerId,
     };
     setUser(newUser);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
