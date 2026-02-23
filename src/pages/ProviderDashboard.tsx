@@ -1,24 +1,20 @@
-import { useState } from "react";
 import { CheckCircle, Lock, Clock, Users, FileText, Image, Star, ShoppingBag, Link as LinkIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { enquiries, mockProvider, providers } from "@/data/mockData";
+import { enquiries, providers } from "@/data/mockData";
 import { hasFeature, categorySections } from "@/lib/featureGating";
 import { getModuleProfile, providerTestimonials } from "@/data/providerModules";
 import type { TherapistProfile, ClubProfile, EducationProfile, ProductProfile } from "@/data/providerModules";
-
-const tiers = [
-  { name: "Free Listing", price: "Free", features: ["Basic profile listing", "Receive enquiries", "Category placement"], current: true },
-  { name: "Premium", price: "£19.95/mo", features: ["Everything in Free", "Priority placement", "Detailed analytics", "Verified badge", "Photo gallery"], current: false },
-];
+import { useAuth } from "@/context/AuthContext";
 
 const ProviderDashboard = () => {
-  const providerEnquiries = enquiries.filter((e) => e.providerId === mockProvider.id);
-  const profile = providers.find((p) => p.id === mockProvider.id);
-  const [selectedPlan, setSelectedPlan] = useState("Free Listing");
+  const { user } = useAuth();
+  const providerId = user?.provider_id ?? providers[0]?.id;
+  const providerEnquiries = enquiries.filter((e) => e.providerId === providerId);
+  const profile = providers.find((p) => p.id === providerId);
 
   if (!profile) return <div className="container py-20 text-center"><h1 className="text-2xl font-bold">Provider not found</h1></div>;
 
@@ -86,36 +82,16 @@ const ProviderDashboard = () => {
           );
         })}
 
-        {/* Upgrade Plan */}
+        {/* Plan Info (pilot) */}
         <Card>
-          <CardHeader><CardTitle>Upgrade Plan</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Your Plan</CardTitle></CardHeader>
           <CardContent>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {tiers.map((t) => (
-                <div
-                  key={t.name}
-                  className={`rounded-lg border p-5 ${t.name === "Premium" ? "border-primary border-2" : ""} ${selectedPlan === t.name ? "bg-primary/5" : ""}`}
-                >
-                  <div className="mb-3 flex items-center justify-between">
-                    <h3 className="font-semibold">{t.name}</h3>
-                    {t.current && <Badge variant="secondary">Current</Badge>}
-                  </div>
-                  <p className="mb-4 text-2xl font-bold text-primary">{t.price}</p>
-                  <ul className="mb-4 space-y-2">
-                    {t.features.map((f) => (
-                      <li key={f} className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-primary shrink-0" />{f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button className="w-full" variant={t.current ? "outline" : "default"} disabled={t.current} onClick={() => setSelectedPlan(t.name)}>
-                    {t.current ? "Current Plan" : "Upgrade"}
-                  </Button>
-                </div>
-              ))}
+            <div className="flex items-center gap-3">
+              <Badge>{profile.plan_type.charAt(0).toUpperCase() + profile.plan_type.slice(1)} Plan</Badge>
+              <Badge variant="secondary">{profile.plan_status.charAt(0).toUpperCase() + profile.plan_status.slice(1)}</Badge>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground text-center">
-              Payment integration coming soon. Plan selection is for preview only.
+            <p className="mt-3 text-sm text-muted-foreground">
+              You're on the {profile.plan_type} plan. All features are enabled during the pilot period.
             </p>
           </CardContent>
         </Card>

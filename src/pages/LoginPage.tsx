@@ -50,6 +50,21 @@ const LoginPage = () => {
               Don't have an account? <Link to="/signup" className="text-primary hover:underline">Sign up</Link>
             </p>
           </form>
+          <div className="mt-4 border-t pt-4">
+            <p className="text-xs text-muted-foreground mb-2">Pilot test logins (any password):</p>
+            <div className="flex flex-wrap gap-1">
+              {["therapist", "club", "education", "charity", "product"].map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  className="rounded bg-muted px-2 py-1 text-xs hover:bg-muted/80"
+                  onClick={() => { setEmail(`${cat}@beyonder.test`); }}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

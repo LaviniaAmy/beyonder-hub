@@ -55,7 +55,9 @@ const AdminPanel = () => {
                         <p className="text-sm text-muted-foreground">{p.typeBadge} · {p.location}</p>
                       </div>
                       <div className="flex gap-2">
-                        {p.foundingProvider && <Badge>Founding</Badge>}
+                        <Badge variant="secondary">{p.category_type}</Badge>
+                        <Badge variant="outline">{p.plan_type.charAt(0).toUpperCase() + p.plan_type.slice(1)}</Badge>
+                        <Badge className="bg-green-100 text-green-800">{p.plan_status}</Badge>
                         <Button size="sm" variant="outline">Request Changes</Button>
                         <Button size="sm" variant="destructive">Suspend</Button>
                       </div>
