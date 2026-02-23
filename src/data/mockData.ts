@@ -22,7 +22,7 @@ export interface Provider {
   description: string;
   shortDescription: string;
   location: string;
-  region: Region | null; // null = product sellers (no region restriction)
+  region: Region | null;
   coverageArea: string;
   needsSupported: string[];
   ageRange: string;
@@ -32,6 +32,7 @@ export interface Provider {
   rating: number;
   reviewCount: number;
   contactMethod: string;
+  searchTags: string[];
   credentials?: string[];
   timetable?: { day: string; time: string; activity: string }[];
   products?: { name: string; price: string; image: string }[];
@@ -94,6 +95,7 @@ export const providers: Provider[] = [
     rating: 4.8,
     reviewCount: 24,
     contactMethod: "Email or phone",
+    searchTags: ["therapist", "therapy", "speech", "language", "communication", "salt", "hybrid", "bristol"],
     credentials: ["HCPC Registered", "RCSLT Member", "DBS Enhanced"],
   },
   {
@@ -114,6 +116,7 @@ export const providers: Provider[] = [
     rating: 4.6,
     reviewCount: 18,
     contactMethod: "Online booking",
+    searchTags: ["swimming", "swim", "club", "clubs", "activity", "activities", "sessions", "inclusive", "sport", "water"],
     timetable: [
       { day: "Monday", time: "16:00-17:00", activity: "Beginners (ages 4-8)" },
       { day: "Wednesday", time: "16:00-17:00", activity: "Intermediate (ages 8-14)" },
@@ -138,6 +141,7 @@ export const providers: Provider[] = [
     rating: 4.4,
     reviewCount: 32,
     contactMethod: "Website contact form",
+    searchTags: ["products", "equipment", "sensory", "fidget", "aids", "resources", "shop", "adaptive", "tools"],
     products: [
       { name: "Weighted Lap Pad", price: "£24.99", image: "/placeholder.svg" },
       { name: "Chewable Necklace Set", price: "£12.99", image: "/placeholder.svg" },
@@ -162,6 +166,7 @@ export const providers: Provider[] = [
     rating: 4.9,
     reviewCount: 15,
     contactMethod: "Email",
+    searchTags: ["tutor", "tutoring", "education", "learning", "dyslexia", "dyscalculia", "school", "homework", "reading"],
     educationDetails: "All tutors hold QTS or equivalent and have specialist SEND training. We offer 1:1 and small group sessions.",
   },
   {
@@ -182,6 +187,7 @@ export const providers: Provider[] = [
     rating: 4.7,
     reviewCount: 41,
     contactMethod: "Phone helpline",
+    searchTags: ["charity", "support", "community", "advice", "families", "events", "helpline", "send"],
   },
   {
     id: "6",
@@ -201,6 +207,7 @@ export const providers: Provider[] = [
     rating: 4.5,
     reviewCount: 12,
     contactMethod: "Email or phone",
+    searchTags: ["therapist", "therapy", "ot", "occupational", "motor", "sensory", "regulation", "dyspraxia"],
     credentials: ["HCPC Registered", "RCOT Member", "Sensory Integration Certified"],
   },
   {
@@ -221,6 +228,7 @@ export const providers: Provider[] = [
     rating: 4.7,
     reviewCount: 9,
     contactMethod: "Email",
+    searchTags: ["therapist", "therapy", "music", "emotional", "regulation", "social", "creative"],
     credentials: ["HCPC Registered", "BAMT Member"],
   },
   {
@@ -241,7 +249,33 @@ export const providers: Provider[] = [
     rating: 4.6,
     reviewCount: 22,
     contactMethod: "Online booking",
+    searchTags: ["counsellor", "counselling", "therapy", "therapist", "online", "mental health", "anxiety", "depression"],
     credentials: ["BACP Registered"],
+  },
+  {
+    id: "9",
+    name: "Sunshine SEND Club",
+    type: "activity",
+    typeBadge: "Inclusive Activity",
+    description: "Sunshine SEND Club runs weekly after-school and weekend clubs for children with additional needs. Activities include arts & crafts, drama, cooking, and outdoor play in a safe, inclusive environment.",
+    shortDescription: "Weekly inclusive clubs with arts, drama, cooking & outdoor play",
+    location: "London, E3",
+    region: "London",
+    coverageArea: "East London",
+    needsSupported: ["Autism", "ADHD", "Learning Disability", "Down Syndrome", "Sensory Processing"],
+    ageRange: "4-14 years",
+    deliveryFormat: "in-person",
+    verified: true,
+    foundingProvider: false,
+    rating: 4.8,
+    reviewCount: 27,
+    contactMethod: "Email or phone",
+    searchTags: ["club", "clubs", "activity", "activities", "sessions", "classes", "after school", "inclusive", "kids", "arts", "crafts", "drama", "cooking", "outdoor", "play", "weekend"],
+    timetable: [
+      { day: "Tuesday", time: "15:30-17:30", activity: "After-school club (ages 4-8)" },
+      { day: "Thursday", time: "15:30-17:30", activity: "After-school club (ages 8-14)" },
+      { day: "Saturday", time: "10:00-12:00", activity: "Weekend club (all ages)" },
+    ],
   },
 ];
 
