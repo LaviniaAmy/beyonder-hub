@@ -12,11 +12,21 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const CATEGORY_TEST_EMAILS = [
+    "therapist@beyonder.test",
+    "club@beyonder.test",
+    "education@beyonder.test",
+    "charity@beyonder.test",
+    "product@beyonder.test",
+  ];
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const lower = email.toLowerCase();
+
     let role: UserRole = "parent";
-    if (email.toLowerCase().includes("admin")) role = "admin";
-    else if (email.toLowerCase().includes("provider")) role = "provider";
+    if (lower.includes("admin")) role = "admin";
+    else if (lower.includes("provider") || CATEGORY_TEST_EMAILS.includes(lower)) role = "provider";
 
     login(email, password, role);
 
