@@ -6,7 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { providers, reviews } from "@/data/mockData";
+import type { PlanType, PlanStatus, CategoryType } from "@/lib/featureGating";
 
 const mockParents = [
   { id: "p1", name: "Jane Smith", email: "jane@example.com", status: "active" },
@@ -21,6 +23,10 @@ const defaultStrings: Record<string, string> = {
   confirmationMessage: "Your message has been sent. They'll get back to you soon.",
 };
 
+const planTypes: PlanType[] = ["founder", "free", "professional", "growth", "featured"];
+const planStatuses: PlanStatus[] = ["active", "trial", "expired"];
+const categoryTypes: CategoryType[] = ["therapist", "club", "education", "charity", "product"];
+
 const AdminPanel = () => {
   const [strings, setStrings] = useState(defaultStrings);
 
@@ -33,6 +39,7 @@ const AdminPanel = () => {
             <TabsTrigger value="providers">Providers</TabsTrigger>
             <TabsTrigger value="parents">Parents</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
+            <TabsTrigger value="plans">Plans & Categories</TabsTrigger>
             <TabsTrigger value="content">Content Strings</TabsTrigger>
           </TabsList>
 
@@ -93,6 +100,61 @@ const AdminPanel = () => {
                         <p className="text-sm text-muted-foreground line-clamp-1">{r.text}</p>
                       </div>
                       <Button size="sm" variant="destructive">Remove</Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Plans & Categories Tab */}
+          <TabsContent value="plans" className="mt-6">
+            <Card>
+              <CardHeader><CardTitle>Provider Plans & Categories</CardTitle></CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {providers.map((p) => (
+                    <div key={p.id} className="rounded-lg border p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">{p.name}</p>
+                          <p className="text-sm text-muted-foreground">{p.typeBadge}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Badge variant="secondary">{p.category_type}</Badge>
+                          <Badge variant="outline">{p.plan_type}</Badge>
+                          <Badge className="bg-green-100 text-green-800">{p.plan_status}</Badge>
+                        </div>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-3">
+                        <div>
+                          <Label className="text-xs">Category Type</Label>
+                          <Select defaultValue={p.category_type}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              {categoryTypes.map((ct) => <SelectItem key={ct} value={ct}>{ct}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs">Plan Type</Label>
+                          <Select defaultValue={p.plan_type}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              {planTypes.map((pt) => <SelectItem key={pt} value={pt}>{pt}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs">Plan Status</Label>
+                          <Select defaultValue={p.plan_status}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              {planStatuses.map((ps) => <SelectItem key={ps} value={ps}>{ps}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
