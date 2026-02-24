@@ -26,7 +26,11 @@ const ProviderPage = () => {
         <div className="container">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <Badge variant="secondary" className="mb-2">{provider.typeBadge}</Badge>
+              <div className="mb-2 flex flex-wrap gap-2">
+                <Badge variant="secondary">{provider.typeBadge}</Badge>
+                <Badge variant="outline" className="capitalize">{provider.plan_type}</Badge>
+                <Badge variant="outline" className="capitalize">{provider.plan_status}</Badge>
+              </div>
               <h1 className="text-3xl font-bold">{provider.name}</h1>
               <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{provider.location}</span>
