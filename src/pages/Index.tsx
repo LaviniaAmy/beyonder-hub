@@ -1,20 +1,50 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Heart, BookOpen, Briefcase, Stethoscope, Users, Newspaper } from "lucide-react";
+import { Search, MapPin, BookOpen, Briefcase, Heart, Star, Bell, Stethoscope, Users, Newspaper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import HeroBackground from "@/components/HeroBackground";
 
-const featureCards = [
-  { icon: Heart, title: "Find Local Support", description: "Discover trusted therapists, activities, and services near you — all vetted by the SEND community.", link: "/providers?view=local" },
-  { icon: BookOpen, title: "Guides & Understanding", description: "Clear, jargon-free guides to help you navigate assessments, EHCPs, and everyday challenges.", link: "/guides" },
-  { icon: Briefcase, title: "Work With Beyonder", description: "Are you a provider? Join our growing community and connect with families who need your services.", link: "/for-providers" },
+const featureCallouts = [
+  {
+    icon: MapPin,
+    title: "Find Local Support",
+    subtitle: "Services, professionals, and organisations near you",
+    link: "/providers?view=local",
+  },
+  {
+    icon: BookOpen,
+    title: "Guides & Understanding",
+    subtitle: "Clear explanations, tools, and lived experience",
+    link: "/guides",
+  },
+  {
+    icon: Briefcase,
+    title: "Work With Beyonder",
+    subtitle: "For professionals, organisations & service providers",
+    link: "/for-providers",
+  },
 ];
 
-const categoryLinks = [
-  { icon: Stethoscope, label: "Therapists & Specialists", to: "/providers?category=therapists" },
-  { icon: Users, label: "Inclusive Clubs & Activities", to: "/providers?category=activities" },
-  { icon: Newspaper, label: "Latest SEND News", to: "/news" },
+const categoryCards = [
+  {
+    icon: Heart,
+    title: "Therapists & specialists",
+    to: "/providers?category=therapists",
+    color: "from-[hsl(220,50%,22%)] to-[hsl(220,45%,28%)]",
+  },
+  {
+    icon: Star,
+    title: "Inclusive clubs & activities",
+    to: "/providers?category=activities",
+    color: "from-[hsl(174,45%,35%)] to-[hsl(174,40%,42%)]",
+  },
+  {
+    icon: Bell,
+    title: "SEND news & updates",
+    to: "/news",
+    color: "from-[hsl(170,30%,30%)] to-[hsl(174,35%,38%)]",
+  },
 ];
 
 const Index = () => {
@@ -30,76 +60,122 @@ const Index = () => {
 
   return (
     <div>
-      {/* Hero — navy gradient */}
-      <section className="bg-navy-gradient py-24 text-accent-foreground">
-        <div className="container text-center animate-fade-in">
-          <h1 className="mb-5 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Supporting SEND families,{" "}
-            <span className="text-teal-400">together</span>
+      {/* Hero Section — Full viewport scenic illustration */}
+      <section className="relative min-h-[92vh] flex flex-col items-center justify-center overflow-hidden">
+        <HeroBackground />
+
+        {/* Hero content — staggered fade-in */}
+        <div className="relative z-10 flex flex-col items-center text-center px-4 w-full max-w-3xl mx-auto">
+          {/* Logo / Brand */}
+          <h1
+            className="hero-load-1 text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-2"
+            style={{ color: "hsl(40, 30%, 98%)" }}
+          >
+            Bey
+            <span className="text-primary">●</span>
+            nder
           </h1>
-          <p className="mx-auto mb-10 max-w-2xl text-lg text-accent-foreground/75 leading-relaxed">
-            Find trusted services, connect with your community, and access the
-            support your family deserves.
+          <p
+            className="hero-load-2 text-lg sm:text-xl font-light tracking-wide mb-12"
+            style={{ color: "hsl(40, 30%, 92%)" }}
+          >
+            SEND community Hub
           </p>
 
-          {/* Search */}
-          <form onSubmit={handleSearch} className="mx-auto flex max-w-lg gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
+          {/* Search Bar */}
+          <form
+            onSubmit={handleSearch}
+            className="hero-load-3 w-full max-w-xl mb-8"
+          >
+            <div className="relative group">
+              <input
+                type="text"
                 placeholder="What are you looking for today?"
-                className="bg-background pl-10 text-foreground border-0 shadow-card h-12"
+                className="w-full h-14 rounded-full bg-white/95 backdrop-blur-sm pl-6 pr-16 text-foreground text-base shadow-lg
+                  focus:outline-none focus:ring-2 focus:ring-primary/50
+                  transition-all duration-200
+                  group-hover:shadow-xl group-hover:-translate-y-0.5
+                  hero-search-bar"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-primary flex items-center justify-center
+                  hover:bg-primary/90 transition-colors duration-150"
+                aria-label="Search"
+              >
+                <Search className="h-5 w-5 text-primary-foreground" />
+              </button>
             </div>
-            <Button type="submit" className="bg-teal-500 hover:bg-teal-400 h-12 px-6">Search</Button>
           </form>
 
-          {/* CTAs */}
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="bg-teal-500 hover:bg-teal-400 shadow-lg" asChild>
-              <Link to="/explore">Explore Services</Link>
+          {/* Pill Buttons */}
+          <div className="hero-load-4 flex flex-wrap justify-center gap-4 mb-16">
+            <Button
+              size="lg"
+              className="rounded-full h-13 px-8 text-base font-medium bg-primary hover:bg-primary/90 shadow-lg
+                transition-all duration-200 hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] active:duration-100"
+              asChild
+            >
+              <Link to="/explore">Explore Services &gt;</Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-accent-foreground/20 text-accent-foreground hover:bg-navy-700" asChild>
-              <Link to="/community">Community Groups</Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="rounded-full h-13 px-8 text-base font-medium
+                border-white/30 text-white bg-white/10 backdrop-blur-sm
+                hover:bg-white/20 hover:border-white/40 shadow-lg
+                transition-all duration-200 hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] active:duration-100"
+              asChild
+            >
+              <Link to="/community">Community Groups &gt;</Link>
             </Button>
           </div>
-        </div>
-      </section>
 
-      {/* Feature Cards — elevated on warm-white */}
-      <section className="py-20">
-        <div className="container">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featureCards.map((card) => (
-              <Link key={card.title} to={card.link}>
-                <Card className="h-full shadow-card card-hover-lift border-0">
-                  <CardContent className="flex flex-col items-start gap-4 p-8">
-                    <div className="rounded-xl bg-teal-500/10 p-3">
-                      <card.icon className="h-6 w-6 text-teal-500" />
-                    </div>
-                    <h3 className="text-lg font-semibold">{card.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{card.description}</p>
-                  </CardContent>
-                </Card>
+          {/* Feature Callouts */}
+          <div className="hero-load-5 grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-3xl">
+            {featureCallouts.map((item) => (
+              <Link
+                key={item.title}
+                to={item.link}
+                className="group flex flex-col items-center text-center transition-transform duration-200 hover:-translate-y-1"
+              >
+                <div className="mb-3 rounded-2xl bg-white/10 backdrop-blur-sm p-4 transition-all duration-200 group-hover:bg-white/15 group-hover:shadow-lg">
+                  <item.icon className="h-8 w-8" style={{ color: "hsl(28, 85%, 65%)" }} />
+                </div>
+                <h3 className="text-base font-semibold mb-1" style={{ color: "hsl(40, 30%, 98%)" }}>
+                  {item.title}
+                </h3>
+                <p className="text-sm" style={{ color: "hsl(40, 30%, 85%)" }}>
+                  {item.subtitle}
+                </p>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Category Quick Links — navy section */}
-      <section className="bg-navy-gradient py-16">
-        <div className="container">
-          <h2 className="mb-8 text-center text-2xl font-semibold text-accent-foreground">Quick Links</h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            {categoryLinks.map((cat) => (
-              <Link key={cat.label} to={cat.to}>
-                <Button variant="outline" className="gap-2 border-navy-600 text-accent-foreground/80 hover:bg-navy-700 hover:text-teal-400 transition-colors duration-150">
-                  <cat.icon className="h-4 w-4" />
-                  {cat.label}
-                </Button>
+      {/* Category Cards Section — slightly overlapping hero bottom */}
+      <section className="relative z-10 -mt-8 pb-20">
+        <div className="container max-w-5xl">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {categoryCards.map((card) => (
+              <Link key={card.title} to={card.to}>
+                <Card
+                  className={`bg-gradient-to-br ${card.color} border-0 shadow-lg
+                    transition-all duration-200 hover:-translate-y-2 hover:shadow-2xl
+                    active:scale-[0.98] active:duration-100 overflow-hidden`}
+                >
+                  <CardContent className="flex items-center gap-5 p-6">
+                    <div className="rounded-xl bg-white/10 p-3 flex-shrink-0">
+                      <card.icon className="h-8 w-8" style={{ color: "hsl(28, 85%, 65%)" }} />
+                    </div>
+                    <h3 className="text-lg font-bold leading-tight" style={{ color: "hsl(40, 30%, 98%)" }}>
+                      {card.title}
+                    </h3>
+                  </CardContent>
+                </Card>
               </Link>
             ))}
           </div>
