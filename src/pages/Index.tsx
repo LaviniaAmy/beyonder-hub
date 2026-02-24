@@ -30,14 +30,14 @@ const Index = () => {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="bg-accent py-20 text-accent-foreground">
-        <div className="container text-center">
-          <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl">
+      {/* Hero — navy gradient */}
+      <section className="bg-navy-gradient py-24 text-accent-foreground">
+        <div className="container text-center animate-fade-in">
+          <h1 className="mb-5 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
             Supporting SEND families,{" "}
-            <span className="text-primary">together</span>
+            <span className="text-teal-400">together</span>
           </h1>
-          <p className="mx-auto mb-8 max-w-2xl text-lg opacity-80">
+          <p className="mx-auto mb-10 max-w-2xl text-lg text-accent-foreground/75 leading-relaxed">
             Find trusted services, connect with your community, and access the
             support your family deserves.
           </p>
@@ -48,39 +48,39 @@ const Index = () => {
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="What are you looking for today?"
-                className="bg-background pl-10 text-foreground"
+                className="bg-background pl-10 text-foreground border-0 shadow-card h-12"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button type="submit">Search</Button>
+            <Button type="submit" className="bg-teal-500 hover:bg-teal-400 h-12 px-6">Search</Button>
           </form>
 
           {/* CTAs */}
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Button size="lg" asChild>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <Button size="lg" className="bg-teal-500 hover:bg-teal-400 shadow-lg" asChild>
               <Link to="/explore">Explore Services</Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" asChild>
+            <Button size="lg" variant="outline" className="border-accent-foreground/20 text-accent-foreground hover:bg-navy-700" asChild>
               <Link to="/community">Community Groups</Link>
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Feature Cards */}
-      <section className="py-16">
+      {/* Feature Cards — elevated on warm-white */}
+      <section className="py-20">
         <div className="container">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {featureCards.map((card) => (
               <Link key={card.title} to={card.link}>
-                <Card className="h-full transition-shadow hover:shadow-md">
-                  <CardContent className="flex flex-col items-start gap-3 p-6">
-                    <div className="rounded-lg bg-primary/10 p-2">
-                      <card.icon className="h-6 w-6 text-primary" />
+                <Card className="h-full shadow-card card-hover-lift border-0">
+                  <CardContent className="flex flex-col items-start gap-4 p-8">
+                    <div className="rounded-xl bg-teal-500/10 p-3">
+                      <card.icon className="h-6 w-6 text-teal-500" />
                     </div>
                     <h3 className="text-lg font-semibold">{card.title}</h3>
-                    <p className="text-sm text-muted-foreground">{card.description}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{card.description}</p>
                   </CardContent>
                 </Card>
               </Link>
@@ -89,14 +89,14 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Category Quick Links */}
-      <section className="border-t bg-muted py-12">
+      {/* Category Quick Links — navy section */}
+      <section className="bg-navy-gradient py-16">
         <div className="container">
-          <h2 className="mb-6 text-center text-2xl font-semibold">Quick Links</h2>
+          <h2 className="mb-8 text-center text-2xl font-semibold text-accent-foreground">Quick Links</h2>
           <div className="flex flex-wrap justify-center gap-4">
             {categoryLinks.map((cat) => (
               <Link key={cat.label} to={cat.to}>
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="gap-2 border-navy-600 text-accent-foreground/80 hover:bg-navy-700 hover:text-teal-400 transition-colors duration-150">
                   <cat.icon className="h-4 w-4" />
                   {cat.label}
                 </Button>

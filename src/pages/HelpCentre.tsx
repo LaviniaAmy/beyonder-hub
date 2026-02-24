@@ -9,18 +9,20 @@ const faqs = [
 ];
 
 const HelpCentre = () => (
-  <div className="py-12">
-    <div className="container max-w-2xl">
-      <h1 className="mb-6 text-3xl font-bold">Help Centre</h1>
-      <p className="mb-8 text-muted-foreground">Find answers to the most common questions about Beyonder.</p>
-      <Accordion type="single" collapsible>
-        {faqs.map((faq, i) => (
-          <AccordionItem key={i} value={`faq-${i}`}>
-            <AccordionTrigger>{faq.q}</AccordionTrigger>
-            <AccordionContent>{faq.a}</AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+  <div className="bg-navy-gradient min-h-screen py-16">
+    <div className="container max-w-2xl animate-fade-in">
+      <h1 className="mb-4 text-3xl font-bold text-accent-foreground">Help Centre</h1>
+      <p className="mb-10 text-accent-foreground/70 leading-relaxed">Find answers to the most common questions about Beyonder.</p>
+      <div className="rounded-xl bg-card p-6 shadow-card">
+        <Accordion type="single" collapsible>
+          {faqs.map((faq, i) => (
+            <AccordionItem key={i} value={`faq-${i}`}>
+              <AccordionTrigger className="text-left font-medium hover:text-teal-500 transition-colors duration-150">{faq.q}</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground leading-relaxed">{faq.a}</AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
     </div>
   </div>
 );

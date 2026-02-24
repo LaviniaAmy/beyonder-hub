@@ -23,10 +23,10 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center py-12">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle>Join Beyonder</CardTitle>
+    <div className="bg-navy-gradient flex min-h-[80vh] items-center justify-center py-16">
+      <Card className="w-full max-w-md border-0 shadow-card animate-fade-in">
+        <CardHeader className="text-center pb-2">
+          <CardTitle className="text-2xl">Join Beyonder</CardTitle>
           <CardDescription>Create your account to get started</CardDescription>
         </CardHeader>
         <CardContent>
@@ -40,13 +40,13 @@ const SignupPage = () => {
                 <div><Label>Full Name</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" required /></div>
                 <div><Label>Email</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required /></div>
                 <div><Label>Password</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></div>
-                <Button type="submit" className="w-full">Create Account</Button>
+                <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-400">Create Account</Button>
               </form>
             </TabsContent>
             <TabsContent value="provider">
               <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-                <div className="rounded-lg bg-primary/10 p-4 text-sm">
-                  <p className="font-semibold text-primary">Why Join Beyonder?</p>
+                <div className="rounded-xl bg-teal-500/10 p-4 text-sm">
+                  <p className="font-semibold text-teal-500">Why Join Beyonder?</p>
                   <ul className="mt-2 space-y-1 text-muted-foreground">
                     <li>• Reach families actively looking for SEND services</li>
                     <li>• Build trust with verified reviews</li>
@@ -56,12 +56,12 @@ const SignupPage = () => {
                 <div><Label>Organisation Name</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your organisation" required /></div>
                 <div><Label>Email</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required /></div>
                 <div><Label>Password</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></div>
-                <Button type="submit" className="w-full">Create Provider Account</Button>
+                <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-400">Create Provider Account</Button>
               </form>
             </TabsContent>
           </Tabs>
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            Already have an account? <Link to="/login" className="text-primary hover:underline">Log in</Link>
+            Already have an account? <Link to="/login" className="text-teal-500 hover:underline">Log in</Link>
           </p>
         </CardContent>
       </Card>

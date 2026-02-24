@@ -20,27 +20,27 @@ const ParentDashboard = () => {
   };
 
   return (
-    <div className="py-8">
-      <div className="container max-w-3xl">
+    <div className="bg-navy-gradient min-h-screen py-10">
+      <div className="container max-w-3xl animate-fade-in">
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Your Dashboard</h1>
-          <Badge variant={mockParent.subscriptionTier === "free" ? "secondary" : "default"}>
+          <h1 className="text-3xl font-bold text-accent-foreground">Your Dashboard</h1>
+          <Badge className={mockParent.subscriptionTier === "free" ? "bg-navy-600 text-accent-foreground border-0" : "bg-teal-500/20 text-teal-400 border-0"}>
             {mockParent.subscriptionTier === "free" ? "Free Tier" : "Subscribed"}
           </Badge>
         </div>
 
-        <Card className="mb-8">
+        <Card className="mb-8 border-0 shadow-card">
           <CardHeader><CardTitle>Your Enquiries</CardTitle></CardHeader>
           <CardContent>
             {parentEnquiries.length === 0 ? (
               <div className="py-8 text-center">
                 <p className="mb-4 text-muted-foreground">You haven't sent any enquiries yet.</p>
-                <Button asChild><Link to="/explore">Explore Services</Link></Button>
+                <Button className="bg-teal-500 hover:bg-teal-400" asChild><Link to="/explore">Explore Services</Link></Button>
               </div>
             ) : (
               <div className="space-y-3">
                 {parentEnquiries.map((e) => (
-                  <div key={e.id} className="flex items-center justify-between rounded-lg border p-4">
+                  <div key={e.id} className="flex items-center justify-between rounded-xl border border-border/60 p-4">
                     <div>
                       <p className="font-medium">{e.providerName}</p>
                       <p className="text-sm text-muted-foreground">{e.date}</p>
@@ -58,11 +58,11 @@ const ParentDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-0 shadow-card">
           <CardHeader><CardTitle>Profile Settings</CardTitle></CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <p><strong>Name:</strong> {mockParent.name}</p>
-            <p><strong>Email:</strong> {mockParent.email}</p>
+            <p><strong className="text-foreground">Name:</strong> <span className="text-muted-foreground">{mockParent.name}</span></p>
+            <p><strong className="text-foreground">Email:</strong> <span className="text-muted-foreground">{mockParent.email}</span></p>
           </CardContent>
         </Card>
       </div>
@@ -77,22 +77,22 @@ const ParentDashboard = () => {
             To read responses from providers, choose a plan that works for you. No pressure — pick what suits your family.
           </p>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Card className="border-2 cursor-pointer hover:border-primary">
+            <Card className="border-2 border-border/60 cursor-pointer card-hover-lift hover:ring-2 hover:ring-teal-500">
               <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold text-primary">£4.95</p>
+                <p className="text-2xl font-bold text-teal-500">£4.95</p>
                 <p className="text-sm text-muted-foreground">One-off unlock</p>
                 <p className="mt-2 text-xs text-muted-foreground">Read replies from one provider</p>
               </CardContent>
             </Card>
-            <Card className="border-2 cursor-pointer hover:border-primary">
+            <Card className="border-2 border-border/60 cursor-pointer card-hover-lift hover:ring-2 hover:ring-teal-500">
               <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold text-primary">£9.95<span className="text-sm font-normal">/month</span></p>
+                <p className="text-2xl font-bold text-teal-500">£9.95<span className="text-sm font-normal">/month</span></p>
                 <p className="text-sm text-muted-foreground">Unlimited access</p>
                 <p className="mt-2 text-xs text-muted-foreground">Read all provider replies</p>
               </CardContent>
             </Card>
           </div>
-          <Button className="mt-4 w-full" onClick={() => setUpgradeOpen(false)}>Continue to Checkout</Button>
+          <Button className="mt-4 w-full bg-teal-500 hover:bg-teal-400" onClick={() => setUpgradeOpen(false)}>Continue to Checkout</Button>
         </DialogContent>
       </Dialog>
     </div>

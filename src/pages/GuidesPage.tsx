@@ -8,16 +8,16 @@ const guides = [
 ];
 
 const GuidesPage = () => (
-  <div className="py-12">
-    <div className="container max-w-2xl">
-      <h1 className="mb-6 text-3xl font-bold">Guides & Understanding</h1>
-      <p className="mb-8 text-muted-foreground">Clear, jargon-free guides to help you navigate the SEND landscape.</p>
+  <div className="bg-navy-gradient min-h-screen py-16">
+    <div className="container max-w-2xl animate-fade-in">
+      <h1 className="mb-4 text-3xl font-bold text-accent-foreground">Guides & Understanding</h1>
+      <p className="mb-10 text-accent-foreground/70 leading-relaxed">Clear, jargon-free guides to help you navigate the SEND landscape.</p>
       <div className="space-y-4">
         {guides.map((g) => (
-          <Card key={g.title} className="cursor-pointer hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
+          <Card key={g.title} className="cursor-pointer border-0 shadow-card card-hover-lift">
+            <CardContent className="p-7">
               <h3 className="font-semibold">{g.title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{g.summary}</p>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{g.summary}</p>
             </CardContent>
           </Card>
         ))}

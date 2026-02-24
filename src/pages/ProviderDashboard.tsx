@@ -23,32 +23,32 @@ const ProviderDashboard = () => {
   const testimonials = providerTestimonials.filter((t) => t.provider_id === profile.id);
 
   const isFeatureEnabled = (featureKey?: string) => {
-    if (!featureKey) return true; // No gating = always visible
+    if (!featureKey) return true;
     return hasFeature(profile, featureKey as any);
   };
 
   return (
-    <div className="py-8">
-      <div className="container max-w-3xl">
-        <h1 className="mb-2 text-3xl font-bold">Provider Dashboard</h1>
+    <div className="bg-navy-gradient min-h-screen py-10">
+      <div className="container max-w-3xl animate-fade-in">
+        <h1 className="mb-3 text-3xl font-bold text-accent-foreground">Provider Dashboard</h1>
         <div className="mb-8 flex items-center gap-2">
-          <Badge variant="secondary">{profile.category_type}</Badge>
-          <Badge variant="outline">{profile.plan_type} plan</Badge>
-          <Badge className="bg-green-100 text-green-800">{profile.plan_status}</Badge>
+          <Badge className="bg-navy-600 text-accent-foreground border-0">{profile.category_type}</Badge>
+          <Badge className="bg-teal-500/20 text-teal-400 border-0">{profile.plan_type} plan</Badge>
+          <Badge className="bg-emerald-500/15 text-emerald-400 border-0">{profile.plan_status}</Badge>
         </div>
 
         {/* Your Profile */}
-        <Card className="mb-6">
+        <Card className="mb-6 border-0 shadow-card">
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle>Your Profile</CardTitle>
             <Button size="sm" variant="outline">Edit Profile</Button>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <p><strong>Name:</strong> {profile.name}</p>
-            <p><strong>Type:</strong> {profile.typeBadge}</p>
-            <p><strong>Category:</strong> {profile.category_type}</p>
-            <p><strong>Location:</strong> {profile.location}</p>
-            <p><strong>Delivery:</strong> {profile.deliveryFormat}</p>
+            <p><strong className="text-foreground">Name:</strong> <span className="text-muted-foreground">{profile.name}</span></p>
+            <p><strong className="text-foreground">Type:</strong> <span className="text-muted-foreground">{profile.typeBadge}</span></p>
+            <p><strong className="text-foreground">Category:</strong> <span className="text-muted-foreground">{profile.category_type}</span></p>
+            <p><strong className="text-foreground">Location:</strong> <span className="text-muted-foreground">{profile.location}</span></p>
+            <p><strong className="text-foreground">Delivery:</strong> <span className="text-muted-foreground">{profile.deliveryFormat}</span></p>
           </CardContent>
         </Card>
 
@@ -56,7 +56,7 @@ const ProviderDashboard = () => {
         {sections.map((section) => {
           const enabled = isFeatureEnabled(section.featureKey);
           return (
-            <Card key={section.key} className={`mb-6 ${!enabled ? "opacity-60" : ""}`}>
+            <Card key={section.key} className={`mb-6 border-0 shadow-card ${!enabled ? "opacity-60" : ""}`}>
               <CardHeader className="flex-row items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   {getSectionIcon(section.key)}
@@ -83,14 +83,14 @@ const ProviderDashboard = () => {
         })}
 
         {/* Plan Info (pilot) */}
-        <Card>
+        <Card className="border-0 shadow-card">
           <CardHeader><CardTitle>Your Plan</CardTitle></CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
-              <Badge>{profile.plan_type.charAt(0).toUpperCase() + profile.plan_type.slice(1)} Plan</Badge>
-              <Badge variant="secondary">{profile.plan_status.charAt(0).toUpperCase() + profile.plan_status.slice(1)}</Badge>
+              <Badge className="bg-teal-500/20 text-teal-400 border-0">{profile.plan_type.charAt(0).toUpperCase() + profile.plan_type.slice(1)} Plan</Badge>
+              <Badge className="bg-emerald-500/15 text-emerald-400 border-0">{profile.plan_status.charAt(0).toUpperCase() + profile.plan_status.slice(1)}</Badge>
             </div>
-            <p className="mt-3 text-sm text-muted-foreground">
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
               You're on the {profile.plan_type} plan. All features are enabled during the pilot period.
             </p>
           </CardContent>
@@ -102,16 +102,16 @@ const ProviderDashboard = () => {
 
 function getSectionIcon(key: string) {
   const icons: Record<string, React.ReactNode> = {
-    availability: <Clock className="h-4 w-4" />,
-    enquiries: <Users className="h-4 w-4" />,
-    certifications: <FileText className="h-4 w-4" />,
-    testimonials: <Star className="h-4 w-4" />,
-    timetable: <Clock className="h-4 w-4" />,
-    gallery: <Image className="h-4 w-4" />,
-    case_studies: <FileText className="h-4 w-4" />,
-    spotlight: <Star className="h-4 w-4" />,
-    store_link: <LinkIcon className="h-4 w-4" />,
-    products: <ShoppingBag className="h-4 w-4" />,
+    availability: <Clock className="h-4 w-4 text-teal-500" />,
+    enquiries: <Users className="h-4 w-4 text-teal-500" />,
+    certifications: <FileText className="h-4 w-4 text-teal-500" />,
+    testimonials: <Star className="h-4 w-4 text-orange-400" />,
+    timetable: <Clock className="h-4 w-4 text-teal-500" />,
+    gallery: <Image className="h-4 w-4 text-teal-500" />,
+    case_studies: <FileText className="h-4 w-4 text-teal-500" />,
+    spotlight: <Star className="h-4 w-4 text-orange-400" />,
+    store_link: <LinkIcon className="h-4 w-4 text-teal-500" />,
+    products: <ShoppingBag className="h-4 w-4 text-teal-500" />,
   };
   return icons[key] ?? null;
 }
@@ -145,7 +145,7 @@ function renderSectionContent(
       ) : (
         <div className="space-y-3">
           {enquiries.map((e) => (
-            <div key={e.id} className="flex items-center justify-between rounded-lg border p-4">
+            <div key={e.id} className="flex items-center justify-between rounded-xl border border-border/60 p-4">
               <div>
                 <p className="font-medium">{e.parentName}</p>
                 <p className="text-sm text-muted-foreground line-clamp-1">{e.message}</p>
@@ -164,7 +164,7 @@ function renderSectionContent(
         <div className="space-y-2">
           {(therapist?.certifications ?? []).map((c) => (
             <div key={c} className="flex items-center gap-2 text-sm">
-              <CheckCircle className="h-4 w-4 text-primary" />{c}
+              <CheckCircle className="h-4 w-4 text-teal-500" />{c}
             </div>
           ))}
           <Button size="sm" variant="outline" className="mt-2">Upload Certification</Button>
@@ -177,13 +177,13 @@ function renderSectionContent(
       ) : (
         <div className="space-y-3">
           {testimonials.map((t) => (
-            <div key={t.id} className="rounded-lg border p-3">
+            <div key={t.id} className="rounded-xl border border-border/60 p-4">
               <div className="flex items-center gap-2">
-                {t.rating && <span className="text-sm font-medium">{t.rating}★</span>}
+                {t.rating && <span className="text-sm font-medium text-orange-400">{t.rating}★</span>}
                 {t.parent_name && <span className="text-sm text-muted-foreground">{t.parent_name}</span>}
                 <Badge variant="secondary" className="ml-auto text-xs">{t.status}</Badge>
               </div>
-              <p className="mt-1 text-sm">{t.text}</p>
+              <p className="mt-1 text-sm leading-relaxed">{t.text}</p>
             </div>
           ))}
         </div>
@@ -195,7 +195,7 @@ function renderSectionContent(
         <div className="space-y-2">
           {(club?.timetable_json ?? []).map((t, i) => (
             <div key={i} className="flex items-center gap-3 text-sm">
-              <Clock className="h-4 w-4 text-primary" />
+              <Clock className="h-4 w-4 text-teal-500" />
               <span className="font-medium w-24">{t.day}</span>
               <span className="text-muted-foreground">{t.time}</span>
               <span>{t.activity}</span>
@@ -218,7 +218,7 @@ function renderSectionContent(
       return (
         <div className="space-y-2">
           {(edu?.case_studies ?? []).map((cs, i) => (
-            <p key={i} className="text-sm border-l-2 border-primary pl-3">{cs}</p>
+            <p key={i} className="text-sm border-l-2 border-teal-500 pl-3">{cs}</p>
           ))}
           <Button size="sm" variant="outline" className="mt-2">Add Case Study</Button>
         </div>
@@ -231,7 +231,7 @@ function renderSectionContent(
       const prod = moduleProfile as ProductProfile | null;
       return (
         <div className="space-y-2">
-          <p className="text-sm"><strong>Store URL:</strong> {prod?.store_link ?? "Not set"}</p>
+          <p className="text-sm"><strong className="text-foreground">Store URL:</strong> <span className="text-muted-foreground">{prod?.store_link ?? "Not set"}</span></p>
           <Button size="sm" variant="outline">Edit Store Link</Button>
         </div>
       );
@@ -241,9 +241,9 @@ function renderSectionContent(
       return (
         <div className="space-y-2">
           {(prodProfile?.featured_products ?? []).map((p) => (
-            <div key={p.name} className="flex items-center justify-between rounded-lg border p-3 text-sm">
+            <div key={p.name} className="flex items-center justify-between rounded-xl border border-border/60 p-4 text-sm">
               <span>{p.name}</span>
-              <span className="font-semibold text-primary">{p.price}</span>
+              <span className="font-semibold text-teal-500">{p.price}</span>
             </div>
           ))}
           <Button size="sm" variant="outline" className="mt-2">Manage Products</Button>
