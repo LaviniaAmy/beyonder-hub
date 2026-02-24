@@ -12,24 +12,27 @@ const benefits = [
 
 const ForProviders = () => (
   <div>
-    <section className="bg-accent py-16 text-accent-foreground">
-      <div className="container text-center">
-        <h1 className="mb-4 text-4xl font-bold">Grow Your Reach with Beyonder</h1>
-        <p className="mx-auto max-w-2xl text-lg opacity-80">Join the platform trusted by SEND families to find the right support. List your services and connect with families who need you.</p>
-        <Button size="lg" className="mt-6" asChild><Link to="/signup">Sign Up as a Provider</Link></Button>
+    <section className="bg-navy-gradient py-24">
+      <div className="container text-center animate-fade-in">
+        <h1 className="mb-5 text-4xl font-bold text-accent-foreground">Grow Your Reach with Beyonder</h1>
+        <p className="mx-auto max-w-2xl text-lg text-accent-foreground/75 leading-relaxed">Join the platform trusted by SEND families to find the right support. List your services and connect with families who need you.</p>
+        <Button size="lg" className="mt-8 bg-teal-500 hover:bg-teal-400 shadow-lg" asChild><Link to="/signup">Sign Up as a Provider</Link></Button>
       </div>
     </section>
 
-    <section className="py-12">
+    <section className="py-16">
       <div className="container max-w-2xl">
-        <h2 className="mb-6 text-2xl font-bold text-center">Why Providers Choose Beyonder</h2>
-        <ul className="space-y-3">
+        <h2 className="mb-8 text-2xl font-semibold text-center">Why Providers Choose Beyonder</h2>
+        <ul className="space-y-4">
           {benefits.map((b) => (
-            <li key={b} className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-primary shrink-0" /><span>{b}</span></li>
+            <li key={b} className="flex items-center gap-3 text-foreground/90">
+              <CheckCircle className="h-5 w-5 text-teal-500 shrink-0" />
+              <span className="leading-relaxed">{b}</span>
+            </li>
           ))}
         </ul>
-        <div className="mt-8 text-center">
-          <Button size="lg" asChild><Link to="/signup">Get Started — It's Free</Link></Button>
+        <div className="mt-10 text-center">
+          <Button size="lg" className="bg-teal-500 hover:bg-teal-400 shadow-lg" asChild><Link to="/signup">Get Started — It's Free</Link></Button>
         </div>
       </div>
     </section>

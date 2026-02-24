@@ -1,89 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Beyonder Design System — Navy-dominant, warm, empowering
+   All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 210 50% 10%;
+    /* Navy Scale */
+    --navy-900: 220 60% 12%;
+    --navy-800: 220 55% 16%;
+    --navy-700: 220 50% 22%;
+    --navy-600: 220 45% 28%;
+    --navy-500: 220 40% 36%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 210 50% 10%;
+    /* Teal (Action Energy) */
+    --teal-500: 174 62% 40%;
+    --teal-400: 174 58% 48%;
+    --teal-300: 174 50% 58%;
+
+    /* Warm Orange (Human Warmth — micro accents only) */
+    --orange-400: 28 90% 58%;
+    --orange-300: 28 85% 65%;
+    --orange-200: 28 80% 75%;
+
+    /* Neutrals */
+    --warm-white: 40 30% 98%;
+    --warm-grey: 30 10% 94%;
+    --warm-border: 30 12% 88%;
+
+    /* Semantic Tokens */
+    --background: 40 30% 98%;
+    --foreground: 220 55% 16%;
+
+    --card: 40 25% 99%;
+    --card-foreground: 220 55% 16%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 50% 10%;
+    --popover-foreground: 220 55% 16%;
 
     --primary: 174 62% 40%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 210 50% 10%;
+    --secondary: 220 30% 94%;
+    --secondary-foreground: 220 55% 16%;
 
-    --muted: 210 30% 95%;
-    --muted-foreground: 210 15% 45%;
+    --muted: 220 20% 94%;
+    --muted-foreground: 220 15% 45%;
 
-    --accent: 220 60% 20%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 220 60% 12%;
+    --accent-foreground: 40 30% 98%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 25% 88%;
-    --input: 210 25% 88%;
+    --border: 30 12% 88%;
+    --input: 30 12% 88%;
     --ring: 174 62% 40%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 210 15% 26%;
+    --sidebar-background: 220 55% 16%;
+    --sidebar-foreground: 40 30% 98%;
     --sidebar-primary: 174 62% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 30% 95%;
-    --sidebar-accent-foreground: 210 50% 10%;
-    --sidebar-border: 210 25% 88%;
+    --sidebar-accent: 220 50% 22%;
+    --sidebar-accent-foreground: 40 30% 98%;
+    --sidebar-border: 220 45% 28%;
     --sidebar-ring: 174 62% 40%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 220 60% 8%;
+    --foreground: 40 30% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 55% 12%;
+    --card-foreground: 40 30% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 55% 12%;
+    --popover-foreground: 40 30% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 174 58% 48%;
+    --primary-foreground: 220 60% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 40% 18%;
+    --secondary-foreground: 40 30% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 220 35% 18%;
+    --muted-foreground: 220 15% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 220 40% 18%;
+    --accent-foreground: 40 30% 95%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 40 30% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --border: 220 35% 20%;
+    --input: 220 35% 20%;
+    --ring: 174 58% 48%;
+
+    --sidebar-background: 220 60% 6%;
+    --sidebar-foreground: 40 30% 95%;
+    --sidebar-primary: 174 58% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 220 40% 14%;
+    --sidebar-accent-foreground: 40 30% 95%;
+    --sidebar-border: 220 35% 16%;
+    --sidebar-ring: 174 58% 48%;
   }
 }
 
@@ -92,7 +118,76 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    line-height: 1.6;
+  }
+
+  h1 {
+    @apply tracking-tight font-bold;
+    line-height: 1.15;
+  }
+
+  h2 {
+    @apply tracking-tight font-semibold;
+    line-height: 1.25;
+  }
+
+  h3 {
+    @apply font-medium;
+    line-height: 1.35;
+  }
+}
+
+/* Utility classes for navy backgrounds */
+@layer utilities {
+  .bg-navy-gradient {
+    background: linear-gradient(
+      180deg,
+      hsl(220 60% 12%) 0%,
+      hsl(220 55% 16%) 50%,
+      hsl(220 50% 22%) 100%
+    );
+  }
+
+  .bg-navy-900 {
+    background-color: hsl(220 60% 12%);
+  }
+
+  .bg-navy-800 {
+    background-color: hsl(220 55% 16%);
+  }
+
+  .bg-navy-700 {
+    background-color: hsl(220 50% 22%);
+  }
+
+  .text-warm-white {
+    color: hsl(40 30% 98%);
+  }
+
+  .bg-teal-glow {
+    background-color: hsl(174 62% 40%);
+  }
+
+  .shadow-card {
+    box-shadow: 0 1px 3px 0 hsl(220 20% 50% / 0.06), 0 4px 12px 0 hsl(220 20% 50% / 0.04);
+  }
+
+  .shadow-card-hover {
+    box-shadow: 0 4px 16px 0 hsl(220 20% 50% / 0.1), 0 8px 24px 0 hsl(220 20% 50% / 0.06);
+  }
+
+  .card-hover-lift {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .card-hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 16px 0 hsl(220 20% 50% / 0.1), 0 8px 24px 0 hsl(220 20% 50% / 0.06);
   }
 }

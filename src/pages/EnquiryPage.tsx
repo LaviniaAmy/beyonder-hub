@@ -17,29 +17,33 @@ const EnquiryPage = () => {
 
   if (!provider) {
     return (
-      <div className="container py-20 text-center">
-        <h1 className="text-2xl font-bold">Provider not found</h1>
-        <Button asChild className="mt-4"><Link to="/providers">Back to Directory</Link></Button>
+      <div className="bg-navy-gradient min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-accent-foreground">Provider not found</h1>
+          <Button asChild className="mt-4 bg-teal-500 hover:bg-teal-400"><Link to="/providers">Back to Directory</Link></Button>
+        </div>
       </div>
     );
   }
 
   if (submitted) {
     return (
-      <div className="container py-20 text-center">
-        <CheckCircle className="mx-auto mb-4 h-16 w-16 text-primary" />
-        <h1 className="mb-2 text-2xl font-bold">Enquiry Sent!</h1>
-        <p className="mb-6 text-muted-foreground">Your message has been sent to {provider.name}. They'll get back to you soon.</p>
-        <Button asChild><Link to="/dashboard">Go to Dashboard</Link></Button>
+      <div className="bg-navy-gradient min-h-screen flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <CheckCircle className="mx-auto mb-4 h-16 w-16 text-teal-500" />
+          <h1 className="mb-2 text-2xl font-bold text-accent-foreground">Enquiry Sent!</h1>
+          <p className="mb-6 text-accent-foreground/70 leading-relaxed">Your message has been sent to {provider.name}. They'll get back to you soon.</p>
+          <Button className="bg-teal-500 hover:bg-teal-400" asChild><Link to="/dashboard">Go to Dashboard</Link></Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="py-12">
-      <div className="container max-w-lg">
-        <h1 className="mb-6 text-2xl font-bold">Send Enquiry</h1>
-        <Card>
+    <div className="bg-navy-gradient min-h-screen py-16">
+      <div className="container max-w-lg animate-fade-in">
+        <h1 className="mb-6 text-2xl font-bold text-accent-foreground">Send Enquiry</h1>
+        <Card className="border-0 shadow-card">
           <CardHeader>
             <CardTitle className="text-lg">{provider.name}</CardTitle>
             <p className="text-sm text-muted-foreground">{provider.deliveryFormat} · {provider.ageRange}</p>
@@ -53,7 +57,7 @@ const EnquiryPage = () => {
               <Label htmlFor="message">Your Message</Label>
               <Textarea id="message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Tell them about your child's needs and what you're looking for..." rows={5} />
             </div>
-            <Button className="w-full" onClick={() => setSubmitted(true)} disabled={!message.trim()}>
+            <Button className="w-full bg-teal-500 hover:bg-teal-400" onClick={() => setSubmitted(true)} disabled={!message.trim()}>
               Send Enquiry
             </Button>
           </CardContent>

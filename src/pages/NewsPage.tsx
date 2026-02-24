@@ -7,16 +7,16 @@ const articles = [
 ];
 
 const NewsPage = () => (
-  <div className="py-12">
-    <div className="container max-w-2xl">
-      <h1 className="mb-6 text-3xl font-bold">News & Updates</h1>
-      <div className="space-y-4">
+  <div className="bg-navy-gradient min-h-screen py-16">
+    <div className="container max-w-2xl animate-fade-in">
+      <h1 className="mb-4 text-3xl font-bold text-accent-foreground">News & Updates</h1>
+      <div className="space-y-4 mt-8">
         {articles.map((a) => (
-          <Card key={a.title} className="cursor-pointer hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
+          <Card key={a.title} className="cursor-pointer border-0 shadow-card card-hover-lift">
+            <CardContent className="p-7">
               <p className="text-xs text-muted-foreground">{a.date}</p>
               <h3 className="mt-1 font-semibold">{a.title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{a.summary}</p>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{a.summary}</p>
             </CardContent>
           </Card>
         ))}

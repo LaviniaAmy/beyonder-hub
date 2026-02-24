@@ -39,10 +39,10 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center py-12">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <CardTitle>Welcome Back</CardTitle>
+    <div className="bg-navy-gradient flex min-h-[80vh] items-center justify-center py-16">
+      <Card className="w-full max-w-sm border-0 shadow-card animate-fade-in">
+        <CardHeader className="text-center pb-2">
+          <CardTitle className="text-2xl">Welcome Back</CardTitle>
           <CardDescription>Log in to your Beyonder account</CardDescription>
         </CardHeader>
         <CardContent>
@@ -55,9 +55,9 @@ const LoginPage = () => {
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
-            <Button type="submit" className="w-full">Log In</Button>
+            <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-400">Log In</Button>
             <p className="text-center text-sm text-muted-foreground">
-              Don't have an account? <Link to="/signup" className="text-primary hover:underline">Sign up</Link>
+              Don't have an account? <Link to="/signup" className="text-teal-500 hover:underline">Sign up</Link>
             </p>
           </form>
           <div className="mt-4 border-t pt-4">
@@ -67,7 +67,7 @@ const LoginPage = () => {
                 <button
                   key={cat}
                   type="button"
-                  className="rounded bg-muted px-2 py-1 text-xs hover:bg-muted/80"
+                  className="rounded-md bg-muted px-2 py-1 text-xs hover:bg-teal-500/10 hover:text-teal-500 transition-colors duration-150"
                   onClick={() => { setEmail(`${cat}@beyonder.test`); }}
                 >
                   {cat}

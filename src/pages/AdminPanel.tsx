@@ -31,33 +31,33 @@ const AdminPanel = () => {
   const [strings, setStrings] = useState(defaultStrings);
 
   return (
-    <div className="py-8">
-      <div className="container">
-        <h1 className="mb-6 text-3xl font-bold">Admin Panel</h1>
+    <div className="bg-navy-gradient min-h-screen py-10">
+      <div className="container animate-fade-in">
+        <h1 className="mb-6 text-3xl font-bold text-accent-foreground">Admin Panel</h1>
         <Tabs defaultValue="providers">
-          <TabsList>
-            <TabsTrigger value="providers">Providers</TabsTrigger>
-            <TabsTrigger value="parents">Parents</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews</TabsTrigger>
-            <TabsTrigger value="plans">Plans & Categories</TabsTrigger>
-            <TabsTrigger value="content">Content Strings</TabsTrigger>
+          <TabsList className="bg-navy-700 border-0">
+            <TabsTrigger value="providers" className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground">Providers</TabsTrigger>
+            <TabsTrigger value="parents" className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground">Parents</TabsTrigger>
+            <TabsTrigger value="reviews" className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground">Reviews</TabsTrigger>
+            <TabsTrigger value="plans" className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground">Plans & Categories</TabsTrigger>
+            <TabsTrigger value="content" className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground">Content Strings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="providers" className="mt-6">
-            <Card>
+            <Card className="border-0 shadow-card">
               <CardHeader><CardTitle>Provider Moderation</CardTitle></CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {providers.map((p) => (
-                    <div key={p.id} className="flex items-center justify-between rounded-lg border p-3">
+                    <div key={p.id} className="flex items-center justify-between rounded-xl border border-border/60 p-4">
                       <div>
                         <p className="font-medium">{p.name}</p>
                         <p className="text-sm text-muted-foreground">{p.typeBadge} · {p.location}</p>
                       </div>
-                      <div className="flex gap-2">
-                        <Badge variant="secondary">{p.category_type}</Badge>
-                        <Badge variant="outline">{p.plan_type.charAt(0).toUpperCase() + p.plan_type.slice(1)}</Badge>
-                        <Badge className="bg-green-100 text-green-800">{p.plan_status}</Badge>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge className="bg-navy-600 text-accent-foreground border-0 text-xs">{p.category_type}</Badge>
+                        <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">{p.plan_type.charAt(0).toUpperCase() + p.plan_type.slice(1)}</Badge>
+                        <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">{p.plan_status}</Badge>
                         <Button size="sm" variant="outline">Request Changes</Button>
                         <Button size="sm" variant="destructive">Suspend</Button>
                       </div>
@@ -69,18 +69,18 @@ const AdminPanel = () => {
           </TabsContent>
 
           <TabsContent value="parents" className="mt-6">
-            <Card>
+            <Card className="border-0 shadow-card">
               <CardHeader><CardTitle>Parent Moderation</CardTitle></CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {mockParents.map((p) => (
-                    <div key={p.id} className="flex items-center justify-between rounded-lg border p-3">
+                    <div key={p.id} className="flex items-center justify-between rounded-xl border border-border/60 p-4">
                       <div>
                         <p className="font-medium">{p.name}</p>
                         <p className="text-sm text-muted-foreground">{p.email}</p>
                       </div>
                       <div className="flex gap-2">
-                        <Badge variant="secondary">{p.status}</Badge>
+                        <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">{p.status}</Badge>
                         <Button size="sm" variant="destructive">Suspend</Button>
                       </div>
                     </div>
@@ -91,14 +91,14 @@ const AdminPanel = () => {
           </TabsContent>
 
           <TabsContent value="reviews" className="mt-6">
-            <Card>
+            <Card className="border-0 shadow-card">
               <CardHeader><CardTitle>Review Moderation</CardTitle></CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {reviews.map((r) => (
-                    <div key={r.id} className="flex items-center justify-between rounded-lg border p-3">
+                    <div key={r.id} className="flex items-center justify-between rounded-xl border border-border/60 p-4">
                       <div>
-                        <p className="font-medium">{r.authorName} — {r.rating}★</p>
+                        <p className="font-medium">{r.authorName} — <span className="text-orange-400">{r.rating}★</span></p>
                         <p className="text-sm text-muted-foreground line-clamp-1">{r.text}</p>
                       </div>
                       <Button size="sm" variant="destructive">Remove</Button>
@@ -109,23 +109,22 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
-          {/* Plans & Categories Tab */}
           <TabsContent value="plans" className="mt-6">
-            <Card>
+            <Card className="border-0 shadow-card">
               <CardHeader><CardTitle>Provider Plans & Categories</CardTitle></CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {providers.map((p) => (
-                    <div key={p.id} className="rounded-lg border p-4 space-y-3">
+                    <div key={p.id} className="rounded-xl border border-border/60 p-5 space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">{p.name}</p>
                           <p className="text-sm text-muted-foreground">{p.typeBadge}</p>
                         </div>
                         <div className="flex gap-2">
-                          <Badge variant="secondary">{p.category_type}</Badge>
-                          <Badge variant="outline">{p.plan_type}</Badge>
-                          <Badge className="bg-green-100 text-green-800">{p.plan_status}</Badge>
+                          <Badge className="bg-navy-600 text-accent-foreground border-0 text-xs">{p.category_type}</Badge>
+                          <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">{p.plan_type}</Badge>
+                          <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">{p.plan_status}</Badge>
                         </div>
                       </div>
                       <div className="grid gap-3 sm:grid-cols-3">
@@ -133,7 +132,7 @@ const AdminPanel = () => {
                           <Label className="text-xs">Category Type</Label>
                           <Select defaultValue={p.category_type}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-card">
                               {categoryTypes.map((ct) => <SelectItem key={ct} value={ct}>{ct}</SelectItem>)}
                             </SelectContent>
                           </Select>
@@ -142,7 +141,7 @@ const AdminPanel = () => {
                           <Label className="text-xs">Plan Type</Label>
                           <Select defaultValue={p.plan_type}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-card">
                               {planTypes.map((pt) => <SelectItem key={pt} value={pt}>{pt}</SelectItem>)}
                             </SelectContent>
                           </Select>
@@ -151,7 +150,7 @@ const AdminPanel = () => {
                           <Label className="text-xs">Plan Status</Label>
                           <Select defaultValue={p.plan_status}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-card">
                               {planStatuses.map((ps) => <SelectItem key={ps} value={ps}>{ps}</SelectItem>)}
                             </SelectContent>
                           </Select>
@@ -165,7 +164,7 @@ const AdminPanel = () => {
           </TabsContent>
 
           <TabsContent value="content" className="mt-6">
-            <Card>
+            <Card className="border-0 shadow-card">
               <CardHeader><CardTitle>Content Strings</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                 {Object.entries(strings).map(([key, value]) => (
@@ -178,7 +177,7 @@ const AdminPanel = () => {
                     )}
                   </div>
                 ))}
-                <Button>Save Changes</Button>
+                <Button className="bg-teal-500 hover:bg-teal-400">Save Changes</Button>
               </CardContent>
             </Card>
           </TabsContent>
