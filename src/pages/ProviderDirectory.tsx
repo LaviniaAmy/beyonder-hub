@@ -53,31 +53,34 @@ const ProviderDirectory = () => {
   const filtered = useMemo(() => {
     let result = providers;
 
-    // 1) Region filtering
-    if (regionParam !== "all") {
-      result = result.filter((p) => {
-        // Product sellers are not region-restricted
-        if (p.type === "product") return true;
-        // Online-only providers show nationally
-        if (p.region === "Online Only" || p.deliveryFormat === "online") return true;
-        // Hybrid providers show in their region
-        if (p.deliveryFormat === "hybrid") {
-          return p.region === regionParam;
-        }
-        // In-person providers only in their region
-        return p.region === regionParam;
-      });
-    }
-
-    // 2) Delivery type filtering
+    // 1) Delivery type filtering — strict match, no cross-inclusion
     if (delivery !== "all") {
       result = result.filter((p) => {
-        if (delivery === "online") return p.deliveryFormat === "online" || p.deliveryFormat === "hybrid";
-        if (delivery === "in-person") return p.deliveryFormat === "in-person" || p.deliveryFormat === "hybrid";
+        // "Online" shows ONLY online providers (not hybrid)
+        if (delivery === "online") return p.deliveryFormat === "online";
+        // "In-person" shows ONLY in-person providers (not hybrid)
+        if (delivery === "in-person") return p.deliveryFormat === "in-person";
+        // "Hybrid" shows ONLY hybrid providers
         if (delivery === "hybrid") return p.deliveryFormat === "hybrid";
         return true;
       });
     }
+
+    // 2) Region filtering
+    if (regionParam !== "all") {
+      result = result.filter((p) => {
+        // Product sellers are purchased nationally — always shown regardless of region
+        if (p.category_type === "product") return true;
+        // Online-only providers are region-independent — Online delivery ignores region intentionally
+        if (p.deliveryFormat === "online") return true;
+        // Hybrid providers are region-scoped (separate from online) — only shown in their region
+        if (p.deliveryFormat === "hybrid") return p.region === regionParam;
+        // In-person providers are strictly region-bound
+        return p.region === regionParam;
+      });
+    }
+    // When Delivery = "Online", region filter is effectively ignored because
+    // all online providers pass through regardless of region selection above.
 
     // 3) Category filtering
     if (activeCategory !== "all") {
@@ -151,8 +154,9 @@ const ProviderDirectory = () => {
           </div>
         )}
 
-        {/* Search bar */}
-        <form onSubmit={handleSearchSubmit} className="mb-6 flex gap-2 max-w-lg">
+        {/* Search bar + Clear All */}
+        <div className="mb-6 flex flex-wrap items-center gap-4">
+        <form onSubmit={handleSearchSubmit} className="flex gap-2 max-w-lg flex-1">
           <Input
             placeholder="Search providers..."
             value={localSearch}
@@ -160,6 +164,17 @@ const ProviderDirectory = () => {
           />
           <Button type="submit">Search</Button>
         </form>
+        {(activeCategory !== "all" || delivery !== "all" || searchQuery || regionParam !== "all") && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={() => { setSearchParams({}); setDelivery("all"); setLocalSearch(""); }}
+          >
+            Clear all filters
+          </Button>
+        )}
+        </div>
 
         {/* Category Tabs */}
         {!isLocalView && (
