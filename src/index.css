@@ -4,23 +4,31 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Beyonder Design System — Navy-dominant, warm, empowering
+/* Beyonder Design System — Beige/Teal warm parent-facing platform
    All colors MUST be HSL.
 */
 
 @layer base {
   :root {
+    /* Brand Colors */
+    --beyonder-navy: 207 56% 19%;       /* #14374E */
+    --beyonder-teal: 176 100% 37%;      /* #00BBB1 */
+    --beyonder-beige: 38 82% 79%;       /* #F5D69D */
+    --beyonder-cream: 37 60% 93%;       /* #F8EFDE */
+    --beyonder-gold: 42 93% 70%;        /* #FACC7A */
+    --beyonder-footer: 207 72% 15%;     /* #082B43 */
+
     /* Navy Scale */
-    --navy-900: 220 60% 12%;
-    --navy-800: 220 55% 16%;
-    --navy-700: 220 50% 22%;
-    --navy-600: 220 45% 28%;
-    --navy-500: 220 40% 36%;
+    --navy-900: 207 72% 15%;
+    --navy-800: 207 56% 19%;
+    --navy-700: 207 50% 25%;
+    --navy-600: 207 45% 32%;
+    --navy-500: 207 40% 40%;
 
     /* Teal (Action Energy) */
-    --teal-500: 174 62% 40%;
-    --teal-400: 174 58% 48%;
-    --teal-300: 174 50% 58%;
+    --teal-500: 176 100% 37%;
+    --teal-400: 176 80% 45%;
+    --teal-300: 176 60% 55%;
 
     /* Warm Orange (Human Warmth — micro accents only) */
     --orange-400: 28 90% 58%;
@@ -34,82 +42,82 @@
 
     /* Semantic Tokens */
     --background: 40 30% 98%;
-    --foreground: 220 55% 16%;
+    --foreground: 207 56% 19%;
 
-    --card: 40 25% 99%;
-    --card-foreground: 220 55% 16%;
+    --card: 37 60% 93%;
+    --card-foreground: 207 56% 19%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 55% 16%;
+    --popover-foreground: 207 56% 19%;
 
-    --primary: 174 62% 40%;
+    --primary: 176 100% 37%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 30% 94%;
-    --secondary-foreground: 220 55% 16%;
+    --secondary: 207 56% 19%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 20% 94%;
-    --muted-foreground: 220 15% 45%;
+    --muted: 30 10% 94%;
+    --muted-foreground: 207 30% 45%;
 
-    --accent: 220 60% 12%;
+    --accent: 207 56% 19%;
     --accent-foreground: 40 30% 98%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 12% 88%;
+    --border: 42 60% 82%;
     --input: 30 12% 88%;
-    --ring: 174 62% 40%;
+    --ring: 176 100% 37%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 220 55% 16%;
+    --sidebar-background: 207 56% 19%;
     --sidebar-foreground: 40 30% 98%;
-    --sidebar-primary: 174 62% 40%;
+    --sidebar-primary: 176 100% 37%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 50% 22%;
+    --sidebar-accent: 207 50% 25%;
     --sidebar-accent-foreground: 40 30% 98%;
-    --sidebar-border: 220 45% 28%;
-    --sidebar-ring: 174 62% 40%;
+    --sidebar-border: 207 45% 32%;
+    --sidebar-ring: 176 100% 37%;
   }
 
   .dark {
-    --background: 220 60% 8%;
+    --background: 207 72% 8%;
     --foreground: 40 30% 95%;
 
-    --card: 220 55% 12%;
+    --card: 207 56% 12%;
     --card-foreground: 40 30% 95%;
 
-    --popover: 220 55% 12%;
+    --popover: 207 56% 12%;
     --popover-foreground: 40 30% 95%;
 
-    --primary: 174 58% 48%;
-    --primary-foreground: 220 60% 8%;
+    --primary: 176 80% 45%;
+    --primary-foreground: 207 72% 8%;
 
-    --secondary: 220 40% 18%;
+    --secondary: 207 40% 18%;
     --secondary-foreground: 40 30% 95%;
 
-    --muted: 220 35% 18%;
-    --muted-foreground: 220 15% 60%;
+    --muted: 207 35% 18%;
+    --muted-foreground: 207 15% 60%;
 
-    --accent: 220 40% 18%;
+    --accent: 207 40% 18%;
     --accent-foreground: 40 30% 95%;
 
     --destructive: 0 62% 30%;
     --destructive-foreground: 40 30% 95%;
 
-    --border: 220 35% 20%;
-    --input: 220 35% 20%;
-    --ring: 174 58% 48%;
+    --border: 207 35% 20%;
+    --input: 207 35% 20%;
+    --ring: 176 80% 45%;
 
-    --sidebar-background: 220 60% 6%;
+    --sidebar-background: 207 72% 6%;
     --sidebar-foreground: 40 30% 95%;
-    --sidebar-primary: 174 58% 48%;
+    --sidebar-primary: 176 80% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 40% 14%;
+    --sidebar-accent: 207 40% 14%;
     --sidebar-accent-foreground: 40 30% 95%;
-    --sidebar-border: 220 35% 16%;
-    --sidebar-ring: 174 58% 48%;
+    --sidebar-border: 207 35% 16%;
+    --sidebar-ring: 176 80% 45%;
   }
 }
 
@@ -143,43 +151,55 @@
   }
 }
 
-/* Utility classes for navy backgrounds */
+/* Utility classes */
 @layer utilities {
+  .bg-beige-gradient {
+    background: linear-gradient(90deg, #FFFFFF 0%, #F5D69D 100%);
+  }
+
   .bg-navy-gradient {
     background: linear-gradient(
       180deg,
-      hsl(220 60% 12%) 0%,
-      hsl(220 55% 16%) 50%,
-      hsl(220 50% 22%) 100%
+      hsl(207 72% 15%) 0%,
+      hsl(207 56% 19%) 50%,
+      hsl(207 50% 25%) 100%
     );
   }
 
   .bg-navy-900 {
-    background-color: hsl(220 60% 12%);
+    background-color: hsl(207 72% 15%);
   }
 
   .bg-navy-800 {
-    background-color: hsl(220 55% 16%);
+    background-color: hsl(207 56% 19%);
   }
 
   .bg-navy-700 {
-    background-color: hsl(220 50% 22%);
+    background-color: hsl(207 50% 25%);
   }
 
   .text-warm-white {
     color: hsl(40 30% 98%);
   }
 
+  .text-beyonder-navy {
+    color: hsl(207 56% 19%);
+  }
+
+  .text-beyonder-teal {
+    color: hsl(176 100% 37%);
+  }
+
   .bg-teal-glow {
-    background-color: hsl(174 62% 40%);
+    background-color: hsl(176 100% 37%);
   }
 
   .shadow-card {
-    box-shadow: 0 1px 3px 0 hsl(220 20% 50% / 0.06), 0 4px 12px 0 hsl(220 20% 50% / 0.04);
+    box-shadow: 0 1px 3px 0 hsl(30 20% 50% / 0.06), 0 4px 12px 0 hsl(30 20% 50% / 0.04);
   }
 
   .shadow-card-hover {
-    box-shadow: 0 4px 16px 0 hsl(220 20% 50% / 0.1), 0 8px 24px 0 hsl(220 20% 50% / 0.06);
+    box-shadow: 0 4px 16px 0 hsl(30 20% 50% / 0.1), 0 8px 24px 0 hsl(30 20% 50% / 0.06);
   }
 
   .card-hover-lift {
@@ -188,46 +208,22 @@
 
   .card-hover-lift:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 16px 0 hsl(220 20% 50% / 0.1), 0 8px 24px 0 hsl(220 20% 50% / 0.06);
+    box-shadow: 0 4px 16px 0 hsl(30 20% 50% / 0.1), 0 8px 24px 0 hsl(30 20% 50% / 0.06);
+  }
+
+  .btn-join-now {
+    background: linear-gradient(180deg, #EFCF67 0%, #FF8563 100%);
+    color: hsl(207 56% 19%);
+  }
+
+  .btn-join-now:hover {
+    background: linear-gradient(180deg, #e8c75e 0%, #f07a58 100%);
   }
 }
 
 /* ========================================
    HERO ANIMATIONS — Beyonder Homepage
    ======================================== */
-
-/* Star twinkle — subtle opacity shift */
-@keyframes hero-star-twinkle {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
-}
-
-.hero-star {
-  animation: hero-star-twinkle 8s ease-in-out infinite;
-}
-
-/* Moon glow pulse — very subtle */
-@keyframes hero-moon-pulse {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.08); }
-}
-
-.hero-moon-glow {
-  animation: hero-moon-pulse 10s ease-in-out infinite;
-  transform-origin: center;
-}
-
-/* Floating particles — drift upward slowly */
-@keyframes hero-particle-float {
-  0% { opacity: 0; transform: translateY(0); }
-  20% { opacity: var(--particle-opacity, 0.15); }
-  80% { opacity: var(--particle-opacity, 0.15); }
-  100% { opacity: 0; transform: translateY(-60px); }
-}
-
-.hero-particle {
-  animation: hero-particle-float 18s ease-in-out infinite;
-}
 
 /* Page-load staggered entrance */
 @keyframes hero-load-in {
@@ -248,8 +244,8 @@
 
 /* Search bar focus halo */
 @keyframes hero-search-halo {
-  0% { box-shadow: 0 0 0 0 hsl(174 62% 40% / 0.3); }
-  100% { box-shadow: 0 0 0 8px hsl(174 62% 40% / 0); }
+  0% { box-shadow: 0 0 0 0 hsl(176 100% 37% / 0.3); }
+  100% { box-shadow: 0 0 0 8px hsl(176 100% 37% / 0); }
 }
 
 .hero-search-bar:focus {
@@ -258,9 +254,6 @@
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .hero-star,
-  .hero-moon-glow,
-  .hero-particle,
   .hero-bg,
   .hero-load-1,
   .hero-load-2,
@@ -270,5 +263,9 @@
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  video {
+    display: none;
   }
 }
