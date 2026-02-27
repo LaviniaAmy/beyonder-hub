@@ -27,12 +27,12 @@ const categoryCards = [
   },
   {
     icon: ClubsIcon,
-    title: "Inclusive Clubs & Activities",
+    title: "Inclusive clubs & Activities",
     to: "/providers?category=activities",
   },
   {
     icon: NewsIcon,
-    title: "News & Updates",
+    title: "News & updates",
     to: "/news",
   },
 ];
@@ -51,27 +51,51 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-beige-gradient">
       {/* ============ HERO SECTION ============ */}
-      <section className="relative min-h-[85vh] overflow-hidden">
-        {/* Teal Arc Layers — positioned top-right */}
-        <div className="hero-bg absolute inset-0 pointer-events-none" aria-hidden="true">
-          <img
-            src={TealDark}
-            alt=""
-            className="absolute top-0 right-0 h-full w-auto max-w-[70%] object-contain object-right-top select-none"
-          />
+      <section className="relative w-full" style={{ minHeight: "620px" }}>
+        {/* Teal Arc Layers — behind video */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+          {/* Light teal layer — furthest back, wider spread */}
           <img
             src={TealLight}
             alt=""
-            className="absolute top-0 right-0 h-[95%] w-auto max-w-[65%] object-contain object-right-top select-none"
-            style={{ transform: "translateX(2%) translateY(2%)" }}
+            className="absolute select-none hero-bg"
+            style={{
+              top: "-5%",
+              right: "-2%",
+              height: "115%",
+              width: "auto",
+              maxWidth: "none",
+              objectFit: "contain",
+              zIndex: 1,
+            }}
+          />
+          {/* Dark teal layer — in front of light, tighter */}
+          <img
+            src={TealDark}
+            alt=""
+            className="absolute select-none hero-bg"
+            style={{
+              top: "-3%",
+              right: "0%",
+              height: "112%",
+              width: "auto",
+              maxWidth: "none",
+              objectFit: "contain",
+              zIndex: 2,
+            }}
           />
         </div>
 
-        {/* Video — masked with curved edge, positioned right */}
+        {/* Video — masked with curved left edge */}
         <div
-          className="absolute top-0 right-0 h-full w-[55%] overflow-hidden"
+          className="absolute overflow-hidden"
           style={{
-            clipPath: "ellipse(85% 100% at 75% 50%)",
+            top: 0,
+            right: 0,
+            width: "58%",
+            height: "100%",
+            clipPath: "ellipse(75% 100% at 70% 50%)",
+            zIndex: 3,
           }}
           aria-hidden="true"
         >
@@ -85,23 +109,28 @@ const Index = () => {
           >
             <source src="/video/star-movie.mp4" type="video/mp4" />
           </video>
-          {/* Dark overlay for text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
         </div>
 
         {/* Left Vertical Icon Column */}
-        <div className="absolute left-6 lg:left-12 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-10">
+        <div
+          className="absolute flex flex-col items-center gap-8"
+          style={{
+            left: "40px",
+            top: "90px",
+            zIndex: 20,
+          }}
+        >
           {sideIcons.map((item) => (
             <Link
               key={item.label}
               to={item.to}
-              className="group flex flex-col items-center gap-2 transition-transform duration-200 hover:-translate-y-1"
+              className="group flex flex-col items-center gap-1.5 transition-transform duration-200 hover:-translate-y-1"
             >
-              <div className="w-14 h-14 rounded-full bg-white/90 shadow-md flex items-center justify-center transition-shadow duration-200 group-hover:shadow-lg">
-                <img src={item.icon} alt="" className="w-9 h-9" />
+              <div className="w-[72px] h-[72px] rounded-full overflow-hidden flex items-center justify-center transition-shadow duration-200 group-hover:shadow-lg">
+                <img src={item.icon} alt="" className="w-full h-full object-cover" />
               </div>
               <span
-                className="text-[11px] font-medium text-center leading-tight max-w-[72px]"
+                className="text-xs font-medium text-center leading-tight max-w-[80px]"
                 style={{ color: "hsl(207, 56%, 19%)" }}
               >
                 {item.label}
@@ -110,41 +139,45 @@ const Index = () => {
           ))}
         </div>
 
-        {/* Hero Content — center/left aligned */}
-        <div className="relative z-10 flex flex-col justify-center min-h-[85vh] px-8 lg:px-20 max-w-[600px]">
+        {/* Hero Content — positioned over the video area (right-center) */}
+        <div
+          className="relative flex flex-col items-center"
+          style={{
+            zIndex: 10,
+            paddingTop: "100px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            width: "fit-content",
+            paddingRight: "6%",
+            paddingLeft: "20%",
+          }}
+        >
           {/* Logo */}
-          <div className="hero-load-1 mb-6">
+          <div className="hero-load-1 mb-3 flex justify-center">
             <img
               src={LogoPrimary}
               alt="Beyonder"
-              className="h-16 lg:h-20 w-auto"
+              className="w-auto"
+              style={{ height: "120px" }}
             />
           </div>
 
-          {/* Title */}
-          <h1
-            className="hero-load-2 text-4xl lg:text-5xl font-bold mb-2"
-            style={{ color: "hsl(207, 56%, 19%)" }}
-          >
-            Beyonder
-          </h1>
-
           {/* Subtitle */}
           <p
-            className="hero-load-2 text-lg lg:text-xl font-light tracking-wide mb-10"
-            style={{ color: "hsl(207, 56%, 19%)" }}
+            className="hero-load-2 text-lg font-light tracking-widest mb-8 text-center"
+            style={{ color: "hsl(0, 0%, 100%)" }}
           >
             SEND Community Hub
           </p>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="hero-load-3 w-full max-w-md mb-8">
+          <form onSubmit={handleSearch} className="hero-load-3 w-full max-w-[420px] mb-10">
             <div className="relative group">
               <input
                 type="text"
-                placeholder="What are you looking for today?"
-                className="w-full h-14 rounded-full bg-white pl-6 pr-16 text-base shadow-md
-                  focus:outline-none focus:ring-2 focus:ring-[hsl(176,100%,37%)]/50
+                placeholder="How can we help you today?"
+                className="w-full h-12 rounded-full bg-white/95 pl-6 pr-14 text-sm shadow-md
+                  focus:outline-none focus:ring-2 focus:ring-[hsl(176,100%,37%)]/40
                   transition-all duration-200
                   group-hover:shadow-lg group-hover:-translate-y-0.5
                   hero-search-bar"
@@ -152,23 +185,25 @@ const Index = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button
-                type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full flex items-center justify-center
-                  transition-colors duration-150"
-                style={{ backgroundColor: "hsl(207, 56%, 19%)" }}
-                aria-label="Search"
-              >
-                <Search className="h-5 w-5 text-white" />
-              </button>
+              {/* Divider + Search icon */}
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                <div className="w-px h-5 bg-gray-300" />
+                <button
+                  type="submit"
+                  className="flex items-center justify-center transition-colors duration-150"
+                  aria-label="Search"
+                >
+                  <Search className="h-5 w-5" style={{ color: "hsl(207, 56%, 19%)" }} />
+                </button>
+              </div>
             </div>
           </form>
 
-          {/* CTA Buttons — stacked */}
-          <div className="hero-load-4 flex flex-col sm:flex-row gap-3 mb-6">
+          {/* CTA Buttons — stacked vertically */}
+          <div className="hero-load-4 flex flex-col gap-3 w-full max-w-[340px]">
             <Button
               size="lg"
-              className="rounded-full h-13 px-8 text-base font-medium shadow-md
+              className="rounded-full h-12 px-8 text-base font-medium shadow-md w-full
                 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] active:duration-100"
               style={{
                 backgroundColor: "hsl(207, 56%, 19%)",
@@ -180,7 +215,7 @@ const Index = () => {
             </Button>
             <Button
               size="lg"
-              className="rounded-full h-13 px-8 text-base font-medium shadow-md
+              className="rounded-full h-12 px-8 text-base font-medium shadow-md w-full
                 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] active:duration-100"
               style={{
                 backgroundColor: "hsl(207, 56%, 19%)",
@@ -188,51 +223,56 @@ const Index = () => {
               }}
               asChild
             >
-              <Link to="/community">Community Groups</Link>
+              <Link to="/community">Community groups</Link>
             </Button>
           </div>
         </div>
       </section>
 
       {/* ============ CATEGORY SECTION ============ */}
-      <section className="relative z-10 py-16 lg:py-20">
-        <div className="container max-w-5xl px-6">
-          {/* Section divider + title */}
-          <div className="mb-10 text-center">
+      <section className="relative py-16 lg:py-20" style={{ zIndex: 10 }}>
+        <div className="mx-auto max-w-[1100px] px-6">
+          {/* Teal divider line */}
+          <div className="flex justify-center mb-4">
             <div
-              className="w-16 h-0.5 mx-auto mb-4"
-              style={{ backgroundColor: "hsl(176, 100%, 37%)" }}
+              className="h-[2px] rounded-full"
+              style={{
+                width: "200px",
+                backgroundColor: "hsl(176, 100%, 37%)",
+              }}
             />
-            <h2
-              className="text-2xl lg:text-3xl font-light"
-              style={{ color: "hsl(176, 100%, 37%)" }}
-            >
-              Choose by Category
-            </h2>
           </div>
 
-          {/* Category Cards */}
+          {/* Section title */}
+          <h2
+            className="text-center text-3xl lg:text-4xl font-light mb-12"
+            style={{ color: "hsl(176, 100%, 37%)" }}
+          >
+            Choose by Category
+          </h2>
+
+          {/* Category Cards — horizontal row, text left + icon right */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {categoryCards.map((card) => (
               <Link key={card.title} to={card.to}>
                 <div
-                  className="rounded-2xl p-6 flex flex-col items-center text-center gap-4
-                    transition-all duration-200 hover:-translate-y-2 hover:shadow-lg
+                  className="rounded-2xl px-6 py-5 flex items-center justify-between gap-4
+                    transition-all duration-200 hover:-translate-y-1 hover:shadow-lg
                     active:scale-[0.98] active:duration-100"
                   style={{
                     backgroundColor: "hsl(37, 60%, 93%)",
-                    border: "1px solid hsl(42, 93%, 70%)",
+                    border: "1px solid hsl(42, 93%, 73%)",
                   }}
                 >
-                  <div className="w-16 h-16 flex items-center justify-center">
-                    <img src={card.icon} alt="" className="w-14 h-14" />
-                  </div>
                   <h3
-                    className="text-base lg:text-lg font-medium"
+                    className="text-base font-semibold leading-snug"
                     style={{ color: "hsl(207, 56%, 19%)" }}
                   >
                     {card.title}
                   </h3>
+                  <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center">
+                    <img src={card.icon} alt="" className="w-12 h-12" />
+                  </div>
                 </div>
               </Link>
             ))}
