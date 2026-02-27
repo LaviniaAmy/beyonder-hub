@@ -52,65 +52,64 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-beige-gradient">
       {/* ============ HERO SECTION ============ */}
-      <section className="relative w-full bg-[#F8F7F3] overflow-hidden">
+      {/* ============ HERO SECTION ============ */}
+      <section className="relative w-full bg-[#F8F7F3] overflow-visible">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 relative">
           {/* LEFT COLUMN */}
           <div className="flex flex-col justify-center gap-10 py-20 pl-10 z-20">
-            {/* Icon Column */}
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center gap-4">
-                <img src={LocalIcon} className="w-14 h-14" />
-                <span className="text-lg font-medium text-[#0A1A2F]">Local Support</span>
+            {/* Icon Column – vertical, text underneath */}
+            <div className="flex flex-row gap-10">
+              <div className="flex flex-col items-center gap-3">
+                <img src={LocalIcon} className="w-16 h-16" />
+                <span className="text-sm font-medium text-[#0A1A2F]">Local Support</span>
               </div>
-
-              <div className="flex items-center gap-4">
-                <img src={GuidesIcon} className="w-14 h-14" />
-                <span className="text-lg font-medium text-[#0A1A2F]">Guides & Info</span>
+              <div className="flex flex-col items-center gap-3">
+                <img src={GuidesIcon} className="w-16 h-16" />
+                <span className="text-sm font-medium text-[#0A1A2F]">Guides & Info</span>
               </div>
-
-              <div className="flex items-center gap-4">
-                <img src={WorkIcon} className="w-14 h-14" />
-                <span className="text-lg font-medium text-[#0A1A2F]">Work with us</span>
+              <div className="flex flex-col items-center gap-3">
+                <img src={WorkIcon} className="w-16 h-16" />
+                <span className="text-sm font-medium text-[#0A1A2F]">Work with us</span>
               </div>
             </div>
 
-            {/* Search Bar */}
-            <div className="w-full max-w-md bg-white rounded-full shadow-md flex items-center px-6 py-4 gap-4">
-              <Search className="w-6 h-6 text-[#0A1A2F]/70" />
+            {/* Search Bar – slightly lower */}
+            <div className="w-full max-w-md bg-white rounded-full shadow-md flex items-center px-6 py-3 gap-4 mt-4">
+              <Search className="w-5 h-5 text-[#0A1A2F]/70" />
               <div className="w-px h-6 bg-[#0A1A2F]/40"></div>
               <input
                 type="text"
                 placeholder="How can we help you today?"
-                className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/60 focus:outline-none"
+                className="flex-1 text-sm text-[#0A1A2F] placeholder-[#0A1A2F]/60 focus:outline-none"
               />
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col gap-4 relative left-10">
-              <button className="bg-[#0A1A2F] text-white px-8 py-4 rounded-xl text-lg shadow-md hover:bg-[#0C223D] transition">
+            {/* CTA Buttons – pill, smaller, no outline on second */}
+            <div className="flex flex-col gap-3 relative left-6 mt-2">
+              <button className="bg-[#0A1A2F] text-white px-7 py-3 rounded-full text-sm font-medium shadow-md hover:bg-[#0C223D] transition">
                 Explore Services
               </button>
-              <button className="bg-white text-[#0A1A2F] border border-[#0A1A2F] px-8 py-4 rounded-xl text-lg shadow-md hover:bg-[#F0F0F0] transition">
+              <button className="bg-white text-[#0A1A2F] px-7 py-3 rounded-full text-sm font-medium shadow-md hover:bg-[#F5F5F5] transition">
                 Community groups
               </button>
             </div>
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="relative h-[700px] flex items-center justify-center">
+          <div className="relative h-[540px] flex items-center justify-center">
             {/* Teal Layer Light */}
             <img src={TealLight} className="absolute inset-0 w-full h-full object-cover z-0" />
 
             {/* Teal Layer Dark */}
             <img src={TealDark} className="absolute inset-0 w-full h-full object-cover z-10" />
 
-            {/* Curved Video Mask */}
-            <div className="absolute inset-0 z-20 overflow-hidden rounded-[0_0_200px_200px]">
+            {/* Curved Video Mask — LEFT SIDE CURVE */}
+            <div className="absolute inset-0 z-20 overflow-hidden rounded-[200px_0_0_200px]">
               <video src={StarMovie} autoPlay loop muted playsInline className="w-full h-full object-cover" />
             </div>
 
-            {/* Logo */}
-            <img src={LogoPrimary} className="absolute top-20 w-64 z-30" />
+            {/* Logo – larger, same position */}
+            <img src={LogoPrimary} className="absolute top-16 w-80 z-30" />
           </div>
         </div>
       </section>
