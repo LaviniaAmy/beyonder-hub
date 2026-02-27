@@ -52,7 +52,7 @@ const Index = () => {
   return (
     <div className="w-full bg-beige-gradient">
       {/* ============ HERO SECTION ============ */}
-      <section className="relative w-full bg-[#F8F7F3] overflow-visible">
+      <section className="relative w-full bg-transparent overflow-visible">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 relative">
           {/* LEFT COLUMN */}
           <div className="flex flex-col justify-center gap-10 py-20 pl-10 z-20">
