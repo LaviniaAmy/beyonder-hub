@@ -84,7 +84,7 @@ const Index = () => {
             </div>
 
             {/* CTA Buttons – pill, smaller, no outline on second */}
-            <div className="flex flex-col gap-3 mt-2 w-1/2 ml-36">
+            <div className="flex flex-col gap-3 mt-2 w-1/2 ml-46">
               <button className="bg-[#0A1A2F] text-white px-7 py-3 rounded-full text-sm font-medium shadow-md hover:bg-[#0C223D] transition">
                 Explore Services
               </button>
