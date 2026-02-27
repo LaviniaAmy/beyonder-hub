@@ -49,44 +49,31 @@ const Index = () => {
     }
   };
 
-  return (return (
+  return (
     <div className="w-full bg-[#F8F7F3]">
       {/* ============ REFINED HERO SECTION ============ */}
       <section className="relative w-full min-h-[600px] overflow-hidden flex items-center">
-        
         {/* RIGHT SIDE: Background Layers & Video */}
         <div className="absolute top-0 right-0 w-[60%] h-full pointer-events-none">
-          {/* Teal Layer Light */}
+          {/* Teal Layers */}
           <img src={TealLight} className="absolute inset-0 w-full h-full object-contain z-0" alt="" />
-          {/* Teal Layer Dark */}
           <img src={TealDark} className="absolute inset-0 w-full h-full object-contain z-10" alt="" />
-          
+
           {/* Curved Video Mask */}
-          <div 
-            className="absolute inset-0 z-20 overflow-hidden"
-            style={{ clipPath: 'ellipse(90% 100% at 100% 50%)' }}
-          >
-            <video 
-              src={StarMovie} 
-              autoPlay 
-              loop 
-              muted 
-              playsInline 
-              className="w-full h-full object-cover" 
-            />
+          <div className="absolute inset-0 z-20 overflow-hidden" style={{ clipPath: "ellipse(90% 100% at 100% 50%)" }}>
+            <video src={StarMovie} autoPlay loop muted playsInline className="w-full h-full object-cover" />
           </div>
 
-          {/* Logo & Hub Text Overlay */}
+          {/* Logo Overlay */}
           <div className="absolute inset-0 flex flex-col items-center justify-center z-30 pt-10">
             <img src={LogoPrimary} className="w-[380px] mb-2" alt="Beyonder" />
             <p className="text-white text-2xl font-light tracking-widest opacity-90">SEND Community Hub</p>
           </div>
         </div>
 
-        {/* LEFT SIDE: Content & Icons */}
+        {/* LEFT SIDE: Icons, Search, and Buttons */}
         <div className="container mx-auto px-10 relative z-40 flex flex-col gap-12 py-20">
-          
-          {/* Left Side Icons - Vertical Stacked with Labels beside */}
+          {/* Side Icons */}
           <div className="flex flex-col gap-8 ml-4">
             {sideIcons.map((item) => (
               <Link key={item.label} to={item.to} className="flex items-center gap-5 group">
@@ -100,9 +87,12 @@ const Index = () => {
             ))}
           </div>
 
-          {/* Search Bar & CTAs */}
+          {/* Search & CTAs */}
           <div className="flex flex-col gap-6 max-w-xl">
-            <form onSubmit={handleSearch} className="relative w-full bg-white rounded-full shadow-lg flex items-center px-6 py-4 border border-black/5">
+            <form
+              onSubmit={handleSearch}
+              className="relative w-full bg-white rounded-full shadow-lg flex items-center px-6 py-4 border border-black/5"
+            >
               <Search className="w-6 h-6 text-[#0A1A2F]/60 mr-3" />
               <div className="w-px h-6 bg-black/10 mx-2"></div>
               <input
@@ -115,16 +105,15 @@ const Index = () => {
             </form>
 
             <div className="flex flex-col gap-4 pl-12">
-              <Button 
-                className="bg-[#0A1A2F] text-white px-12 py-7 rounded-2xl text-xl font-semibold shadow-lg hover:scale-105 transition-transform w-fit"
-                onClick={() => navigate('/explore')}
+              <Button
+                className="bg-[#0A1A2F] text-white px-12 py-7 rounded-full text-xl font-semibold shadow-lg hover:bg-[#0C223D] transition-all w-fit"
+                onClick={() => navigate("/explore")}
               >
                 Explore Services
               </Button>
-              <Button 
-                variant="outline"
-                className="bg-white/90 text-[#0A1A2F] border-2 border-[#0A1A2F] px-12 py-7 rounded-2xl text-xl font-semibold shadow-lg hover:bg-white hover:scale-105 transition-transform w-fit"
-                onClick={() => navigate('/community')}
+              <Button
+                className="bg-white text-[#0A1A2F] border-2 border-[#0A1A2F] px-12 py-7 rounded-full text-xl font-semibold shadow-lg hover:bg-gray-50 transition-all w-fit"
+                onClick={() => navigate("/community")}
               >
                 Community groups
               </Button>
@@ -134,15 +123,13 @@ const Index = () => {
       </section>
 
       {/* ============ CATEGORY SECTION ============ */}
-      <section className="relative py-20 bg-gradient-to-b from-transparent to-[#0A1A2F]/10">
+      <section className="relative py-20">
         <div className="mx-auto max-w-6xl px-6">
           <div className="flex justify-center mb-6">
             <div className="h-[3px] w-48 bg-[#1DB8AB] rounded-full" />
           </div>
-          
-          <h2 className="text-center text-5xl font-light mb-16 text-[#1DB8AB]">
-            Choose by Category
-          </h2>
+
+          <h2 className="text-center text-5xl font-light mb-16 text-[#1DB8AB]">Choose by Category</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {categoryCards.map((card) => (
@@ -154,9 +141,7 @@ const Index = () => {
                     border: "2px solid #F3D18C",
                   }}
                 >
-                  <h3 className="text-xl font-bold leading-tight max-w-[150px] text-[#0A1A2F]">
-                    {card.title}
-                  </h3>
+                  <h3 className="text-xl font-bold leading-tight max-w-[150px] text-[#0A1A2F]">{card.title}</h3>
                   <div className="w-16 h-16 flex-shrink-0">
                     <img src={card.icon} alt="" className="w-full h-full object-contain" />
                   </div>
