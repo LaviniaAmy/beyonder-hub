@@ -115,7 +115,11 @@ const Index = () => {
       </section>
 
       {/* ============ CATEGORY SECTION ============ */}
-      <section className="relative py-16 lg:py-20" style={{ zIndex: 10 }}>
+      {/* ============ CATEGORY SECTION ============ */}
+      <section
+        className="relative py-16 lg:py-20"
+        style={{ zIndex: 10, background: "linear-gradient(to top, hsl(207,56%,19%) 0%, hsl(207,56%,19%,0.02) 100%)" }}
+      >
         <div className="mx-auto max-w-[1100px] px-6">
           {/* Teal divider line */}
           <div className="flex justify-center mb-4">
@@ -133,14 +137,14 @@ const Index = () => {
             Choose by Category
           </h2>
 
-          {/* Category Cards — horizontal row, text left + icon right */}
+          {/* Category Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {categoryCards.map((card) => (
               <Link key={card.title} to={card.to}>
                 <div
                   className="rounded-2xl px-6 py-5 flex items-center justify-between gap-4
-                    transition-all duration-200 hover:-translate-y-1 hover:shadow-lg
-                    active:scale-[0.98] active:duration-100"
+            transition-all duration-200 hover:-translate-y-1 hover:shadow-lg
+            active:scale-[0.98] active:duration-100"
                   style={{
                     backgroundColor: "hsl(37, 60%, 93%)",
                     border: "1px solid hsl(42, 93%, 73%)",
