@@ -51,31 +51,43 @@ const Index = () => {
 
   return (
     <div className="w-full bg-[#F8F7F3]">
-      {/* ============ HERO SECTION ============ */}
-      <section className="relative w-full h-[650px] overflow-hidden flex items-center">
+      {/* ============ REFINED HERO SECTION ============ */}
+      <section className="relative w-full h-[600px] overflow-hidden flex items-center">
+        
         {/* BACKGROUND GRADIENT (Cream) */}
         <div className="absolute inset-0 bg-beige-gradient z-0" />
 
         {/* RIGHT SIDE: Background Layers & Video */}
-        <div className="absolute top-0 right-0 w-[60%] h-full pointer-events-none z-10">
-          {/* Teal Layers - Adjusted Z-index to show behind video mask */}
+        <div className="absolute top-0 right-0 w-[65%] h-full pointer-events-none">
+          {/* Teal Layers - Z-index fixed to show behind mask */}
           <img src={TealLight} className="absolute inset-0 w-full h-full object-contain z-10" alt="" />
           <img src={TealDark} className="absolute inset-0 w-full h-full object-contain z-20" alt="" />
-
+          
           {/* Curved Video Mask */}
-          <div className="absolute inset-0 z-30 overflow-hidden" style={{ clipPath: "ellipse(85% 100% at 100% 50%)" }}>
-            <video src={StarMovie} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+          <div 
+            className="absolute inset-0 z-30 overflow-hidden"
+            style={{ clipPath: 'ellipse(85% 100% at 100% 50%)' }}
+          >
+            <video 
+              src={StarMovie} 
+              autoPlay 
+              loop 
+              muted 
+              playsInline 
+              className="w-full h-full object-cover" 
+            />
           </div>
 
-          {/* Logo & Text - Highest Z-index in the right column */}
+          {/* Logo & Text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pt-10">
-            <img src={LogoPrimary} className="w-[320px] mb-2" alt="Beyonder" />
+            <img src={LogoPrimary} className="w-[340px] mb-2" alt="Beyonder" />
             <p className="text-white text-xl font-light tracking-widest">SEND Community Hub</p>
           </div>
         </div>
 
-        {/* LEFT SIDE CONTENT - High Z-index to stay above background */}
-        <div className="container mx-auto px-10 relative z-50 flex flex-col gap-10 py-20">
+        {/* LEFT SIDE CONTENT */}
+        <div className="container mx-auto px-10 relative z-50 flex flex-col gap-10">
+          
           {/* Vertical Icon Stack */}
           <div className="flex flex-col gap-6 ml-6">
             {sideIcons.map((item) => (
@@ -83,17 +95,16 @@ const Index = () => {
                 <div className="w-14 h-14 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-all">
                   <img src={item.icon} className="w-full h-full object-cover" alt={item.label} />
                 </div>
-                <span className="text-lg font-medium text-[#0A1A2F] group-hover:text-[#1DB8AB]">{item.label}</span>
+                <span className="text-lg font-medium text-[#0A1A2F] group-hover:text-[#1DB8AB]">
+                  {item.label}
+                </span>
               </Link>
             ))}
           </div>
 
           {/* Search Bar & CTAs */}
           <div className="flex flex-col gap-6 max-w-md">
-            <form
-              onSubmit={handleSearch}
-              className="relative w-full bg-white rounded-full shadow-lg flex items-center px-6 py-3.5 border border-black/5"
-            >
+            <form onSubmit={handleSearch} className="relative w-full bg-white rounded-full shadow-lg flex items-center px-6 py-3 border border-black/5">
               <Search className="w-5 h-5 text-[#0A1A2F]/60 mr-3" />
               <div className="w-px h-6 bg-black/10 mx-2"></div>
               <input
@@ -106,16 +117,16 @@ const Index = () => {
             </form>
 
             <div className="flex flex-col gap-4 pl-10">
-              <Button
+              <Button 
                 className="bg-[#0A1A2F] text-white px-10 py-6 rounded-full text-lg font-semibold shadow-lg hover:bg-[#0C223D] w-fit h-auto"
-                onClick={() => navigate("/explore")}
+                onClick={() => navigate('/explore')}
               >
                 Explore Services
               </Button>
-              <Button
+              <Button 
                 variant="outline"
                 className="bg-white text-[#0A1A2F] border-2 border-[#0A1A2F] px-10 py-6 rounded-full text-lg font-semibold shadow-lg hover:bg-gray-50 w-fit h-auto"
-                onClick={() => navigate("/community")}
+                onClick={() => navigate('/community')}
               >
                 Community groups
               </Button>
@@ -125,7 +136,7 @@ const Index = () => {
       </section>
 
       {/* ============ CATEGORY SECTION ============ */}
-      <section
+      <section 
         className="relative py-20"
         style={{ background: "linear-gradient(to top, #0A1A2F 0%, transparent 100%)" }}
       >
@@ -133,8 +144,10 @@ const Index = () => {
           <div className="flex justify-center mb-6">
             <div className="h-[2px] w-40 bg-[#1DB8AB] rounded-full" />
           </div>
-
-          <h2 className="text-center text-4xl font-light mb-12 text-[#1DB8AB]">Choose by Category</h2>
+          
+          <h2 className="text-center text-4xl font-light mb-12 text-[#1DB8AB]">
+            Choose by Category
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {categoryCards.map((card) => (
@@ -146,7 +159,9 @@ const Index = () => {
                     border: "1.5px solid hsl(42, 93%, 73%)",
                   }}
                 >
-                  <h3 className="text-lg font-bold leading-tight max-w-[140px] text-[#0A1A2F]">{card.title}</h3>
+                  <h3 className="text-lg font-bold leading-tight max-w-[140px] text-[#0A1A2F]">
+                    {card.title}
+                  </h3>
                   <div className="w-14 h-14 flex-shrink-0">
                     <img src={card.icon} alt="" className="w-full h-full object-contain" />
                   </div>
@@ -158,6 +173,9 @@ const Index = () => {
       </section>
     </div>
   );
+};
+
+export default Index;
 };
 
 export default Index;
