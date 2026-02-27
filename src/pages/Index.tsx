@@ -50,8 +50,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-beige-gradient">
-      {/* ============ HERO SECTION ============ */}
+    <div className="w-full bg-beige-gradient">
       {/* ============ HERO SECTION ============ */}
       <section className="relative w-full bg-[#F8F7F3] overflow-visible">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 relative">
