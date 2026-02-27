@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import LogoPrimary from "@/assets/Logo-Primary.svg";
 import TealDark from "@/assets/Teal_Layer_dark.png";
 import TealLight from "@/assets/Teal_Layer_light.png";
+import SearchIcon from "@/assets/icons/Search_Icon.svg";
 import LocalIcon from "@/assets/icons/Local_Icon.svg";
 import GuidesIcon from "@/assets/icons/Guides_Icon.svg";
 import WorkIcon from "@/assets/icons/Work_Icon.svg";
@@ -51,33 +51,33 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-beige-gradient">
       {/* ============ HERO SECTION ============ */}
-      <section className="relative w-full" style={{ minHeight: "620px" }}>
+      <section className="relative w-full overflow-hidden" style={{ height: "540px" }}>
         {/* Teal Arc Layers — behind video */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-          {/* Light teal layer — furthest back, wider spread */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          {/* Light teal layer — furthest back */}
           <img
             src={TealLight}
             alt=""
             className="absolute select-none hero-bg"
             style={{
-              top: "-5%",
-              right: "-2%",
-              height: "115%",
+              top: "-8%",
+              right: "-4%",
+              height: "120%",
               width: "auto",
               maxWidth: "none",
               objectFit: "contain",
               zIndex: 1,
             }}
           />
-          {/* Dark teal layer — in front of light, tighter */}
+          {/* Dark teal layer — in front of light */}
           <img
             src={TealDark}
             alt=""
             className="absolute select-none hero-bg"
             style={{
-              top: "-3%",
-              right: "0%",
-              height: "112%",
+              top: "-5%",
+              right: "-1%",
+              height: "116%",
               width: "auto",
               maxWidth: "none",
               objectFit: "contain",
@@ -92,9 +92,9 @@ const Index = () => {
           style={{
             top: 0,
             right: 0,
-            width: "58%",
+            width: "55%",
             height: "100%",
-            clipPath: "ellipse(75% 100% at 70% 50%)",
+            clipPath: "ellipse(80% 110% at 72% 50%)",
             zIndex: 3,
           }}
           aria-hidden="true"
@@ -113,10 +113,10 @@ const Index = () => {
 
         {/* Left Vertical Icon Column */}
         <div
-          className="absolute flex flex-col items-center gap-8"
+          className="absolute flex flex-col items-center gap-6"
           style={{
-            left: "40px",
-            top: "90px",
+            left: "32px",
+            top: "70px",
             zIndex: 20,
           }}
         >
@@ -124,13 +124,13 @@ const Index = () => {
             <Link
               key={item.label}
               to={item.to}
-              className="group flex flex-col items-center gap-1.5 transition-transform duration-200 hover:-translate-y-1"
+              className="group flex flex-col items-center gap-1 transition-transform duration-200 hover:-translate-y-1"
             >
-              <div className="w-[72px] h-[72px] rounded-full overflow-hidden flex items-center justify-center transition-shadow duration-200 group-hover:shadow-lg">
+              <div className="w-[60px] h-[60px] rounded-full overflow-hidden flex items-center justify-center transition-shadow duration-200 group-hover:shadow-md">
                 <img src={item.icon} alt="" className="w-full h-full object-cover" />
               </div>
               <span
-                className="text-xs font-medium text-center leading-tight max-w-[80px]"
+                className="text-[11px] font-medium text-center leading-tight max-w-[72px]"
                 style={{ color: "hsl(207, 56%, 19%)" }}
               >
                 {item.label}
@@ -139,72 +139,71 @@ const Index = () => {
           ))}
         </div>
 
-        {/* Hero Content — positioned over the video area (right-center) */}
+        {/* Hero Content — centered over video */}
         <div
           className="relative flex flex-col items-center"
           style={{
             zIndex: 10,
-            paddingTop: "100px",
+            paddingTop: "60px",
             marginLeft: "auto",
             marginRight: "auto",
             width: "fit-content",
-            paddingRight: "6%",
-            paddingLeft: "20%",
+            paddingRight: "4%",
+            paddingLeft: "16%",
           }}
         >
           {/* Logo */}
-          <div className="hero-load-1 mb-3 flex justify-center">
+          <div className="hero-load-1 mb-2 flex justify-center">
             <img
               src={LogoPrimary}
               alt="Beyonder"
               className="w-auto"
-              style={{ height: "120px" }}
+              style={{ height: "100px" }}
             />
           </div>
 
           {/* Subtitle */}
           <p
-            className="hero-load-2 text-lg font-light tracking-widest mb-8 text-center"
+            className="hero-load-2 text-sm font-light tracking-[0.25em] mb-6 text-center"
             style={{ color: "hsl(0, 0%, 100%)" }}
           >
             SEND Community Hub
           </p>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="hero-load-3 w-full max-w-[420px] mb-10">
+          <form onSubmit={handleSearch} className="hero-load-3 w-full max-w-[380px] mb-8">
             <div className="relative group">
               <input
                 type="text"
                 placeholder="How can we help you today?"
-                className="w-full h-12 rounded-full bg-white/95 pl-6 pr-14 text-sm shadow-md
-                  focus:outline-none focus:ring-2 focus:ring-[hsl(176,100%,37%)]/40
+                className="w-full h-10 rounded-full bg-white/95 pl-5 pr-12 text-[13px] shadow-sm
+                  focus:outline-none focus:ring-2 focus:ring-[hsl(176,100%,37%)]/30
                   transition-all duration-200
-                  group-hover:shadow-lg group-hover:-translate-y-0.5
+                  group-hover:shadow-md group-hover:-translate-y-0.5
                   hero-search-bar"
                 style={{ color: "hsl(207, 56%, 19%)" }}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              {/* Divider + Search icon */}
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                <div className="w-px h-5 bg-gray-300" />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                <div className="w-px h-4" style={{ backgroundColor: "hsl(176, 80%, 55%)" }} />
                 <button
                   type="submit"
-                  className="flex items-center justify-center transition-colors duration-150"
+                  className="flex items-center justify-center transition-opacity duration-150 hover:opacity-70"
                   aria-label="Search"
                 >
-                  <Search className="h-5 w-5" style={{ color: "hsl(207, 56%, 19%)" }} />
+                  <img src={SearchIcon} alt="" className="h-5 w-5" />
                 </button>
               </div>
             </div>
           </form>
 
-          {/* CTA Buttons — stacked vertically */}
-          <div className="hero-load-4 flex flex-col gap-3 w-full max-w-[340px]">
+          {/* CTA Buttons — stacked, overlapping into teal zone */}
+          <div className="hero-load-4 flex flex-col gap-2.5 w-full max-w-[300px]">
             <Button
-              size="lg"
-              className="rounded-full h-12 px-8 text-base font-medium shadow-md w-full
-                transition-all duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] active:duration-100"
+              size="default"
+              className="rounded-full h-10 px-6 text-sm font-medium shadow-sm w-full
+                transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98] active:duration-100"
               style={{
                 backgroundColor: "hsl(207, 56%, 19%)",
                 color: "#FFFFFF",
@@ -214,9 +213,9 @@ const Index = () => {
               <Link to="/explore">Explore Services</Link>
             </Button>
             <Button
-              size="lg"
-              className="rounded-full h-12 px-8 text-base font-medium shadow-md w-full
-                transition-all duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] active:duration-100"
+              size="default"
+              className="rounded-full h-10 px-6 text-sm font-medium shadow-sm w-full
+                transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98] active:duration-100"
               style={{
                 backgroundColor: "hsl(207, 56%, 19%)",
                 color: "#FFFFFF",
@@ -229,15 +228,21 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ============ CATEGORY SECTION ============ */}
-      <section className="relative py-16 lg:py-20" style={{ zIndex: 10 }}>
-        <div className="mx-auto max-w-[1100px] px-6">
+      {/* ============ CATEGORY SECTION on faint navy gradient ============ */}
+      <section
+        className="relative py-14"
+        style={{
+          zIndex: 10,
+          background: "linear-gradient(180deg, hsl(40, 30%, 96%) 0%, hsl(210, 20%, 92%) 60%, hsl(207, 30%, 85%) 100%)",
+        }}
+      >
+        <div className="mx-auto max-w-[960px] px-6">
           {/* Teal divider line */}
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-3">
             <div
               className="h-[2px] rounded-full"
               style={{
-                width: "200px",
+                width: "180px",
                 backgroundColor: "hsl(176, 100%, 37%)",
               }}
             />
@@ -245,19 +250,19 @@ const Index = () => {
 
           {/* Section title */}
           <h2
-            className="text-center text-3xl lg:text-4xl font-light mb-12"
+            className="text-center text-2xl lg:text-3xl font-light mb-10"
             style={{ color: "hsl(176, 100%, 37%)" }}
           >
             Choose by Category
           </h2>
 
-          {/* Category Cards — horizontal row, text left + icon right */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {/* Category Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {categoryCards.map((card) => (
               <Link key={card.title} to={card.to}>
                 <div
-                  className="rounded-2xl px-6 py-5 flex items-center justify-between gap-4
-                    transition-all duration-200 hover:-translate-y-1 hover:shadow-lg
+                  className="rounded-xl px-5 py-4 flex items-center justify-between gap-3
+                    transition-all duration-200 hover:-translate-y-1 hover:shadow-md
                     active:scale-[0.98] active:duration-100"
                   style={{
                     backgroundColor: "hsl(37, 60%, 93%)",
@@ -265,13 +270,13 @@ const Index = () => {
                   }}
                 >
                   <h3
-                    className="text-base font-semibold leading-snug"
+                    className="text-sm font-semibold leading-snug"
                     style={{ color: "hsl(207, 56%, 19%)" }}
                   >
                     {card.title}
                   </h3>
-                  <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center">
-                    <img src={card.icon} alt="" className="w-12 h-12" />
+                  <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+                    <img src={card.icon} alt="" className="w-10 h-10" />
                   </div>
                 </div>
               </Link>

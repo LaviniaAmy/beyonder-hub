@@ -34,7 +34,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <header
         className={`sticky top-0 z-50 transition-colors duration-200 ${
           isHomepage
-            ? "bg-transparent absolute w-full"
+            ? "bg-beige-gradient shadow-sm absolute w-full"
             : "bg-navy-800 shadow-md text-white"
         }`}
       >
