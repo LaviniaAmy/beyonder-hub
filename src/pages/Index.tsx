@@ -12,6 +12,7 @@ import WorkIcon from "@/assets/icons/Work_Icon.svg";
 import TherapistsIcon from "@/assets/icons/Therapists_Icon.svg";
 import ClubsIcon from "@/assets/icons/Clubs_Icon.svg";
 import NewsIcon from "@/assets/icons/News_Icon.svg";
+import StarMovie from "@/../public/video/star-movie.mp4";
 
 const sideIcons = [
   { icon: LocalIcon, label: "Local Support", to: "/providers?view=local" },
@@ -58,24 +59,24 @@ const Index = () => {
             {/* Icon Column */}
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-4">
-                <img src="/Local Icon" className="w-14 h-14" />
+                <img src={LocalIcon} className="w-14 h-14" />
                 <span className="text-lg font-medium text-[#0A1A2F]">Local Support</span>
               </div>
 
               <div className="flex items-center gap-4">
-                <img src="/Guides Icon" className="w-14 h-14" />
+                <img src={GuidesIcon} className="w-14 h-14" />
                 <span className="text-lg font-medium text-[#0A1A2F]">Guides & Info</span>
               </div>
 
               <div className="flex items-center gap-4">
-                <img src="/Work with Icon" className="w-14 h-14" />
+                <img src={WorkIcon} className="w-14 h-14" />
                 <span className="text-lg font-medium text-[#0A1A2F]">Work with us</span>
               </div>
             </div>
 
             {/* Search Bar */}
             <div className="w-full max-w-md bg-white rounded-full shadow-md flex items-center px-6 py-4 gap-4">
-              <img src="/Search Icon" className="w-6 h-6 opacity-70" />
+              <Search className="w-6 h-6 text-[#0A1A2F]/70" />
               <div className="w-px h-6 bg-[#0A1A2F]/40"></div>
               <input
                 type="text"
@@ -98,18 +99,18 @@ const Index = () => {
           {/* RIGHT COLUMN */}
           <div className="relative h-[700px] flex items-center justify-center">
             {/* Teal Layer Light */}
-            <img src="/Teal Layer light" className="absolute inset-0 w-full h-full object-cover z-0" />
+            <img src={TealLight} className="absolute inset-0 w-full h-full object-cover z-0" />
 
             {/* Teal Layer Dark */}
-            <img src="/Teal Layer dark" className="absolute inset-0 w-full h-full object-cover z-10" />
+            <img src={TealDark} className="absolute inset-0 w-full h-full object-cover z-10" />
 
             {/* Curved Video Mask */}
             <div className="absolute inset-0 z-20 overflow-hidden rounded-[0_0_200px_200px]">
-              <video src="/Star Movie mp4" autoPlay loop muted playsInline className="w-full h-full object-cover" />
+              <video src={StarMovie} autoPlay loop muted playsInline className="w-full h-full object-cover" />
             </div>
 
             {/* Logo */}
-            <img src="/Logo- Primary" className="absolute top-20 w-64 z-30" />
+            <img src={LogoPrimary} className="absolute top-20 w-64 z-30" />
           </div>
         </div>
       </section>
