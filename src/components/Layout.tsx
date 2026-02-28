@@ -32,10 +32,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <div className="flex min-h-screen flex-col">
       {/* Header — transparent on homepage, solid navy elsewhere */}
       <header
-        className={`sticky top-0 z-50 transition-colors duration-200 ${
+        className={`top-0 z-50 w-full transition-colors duration-200 ${
           isHomepage
-            ? "bg-beige-gradient shadow-sm absolute w-full"
-            : "bg-navy-800 shadow-md text-white"
+            ? "bg-beige-gradient shadow-sm absolute"
+            : "bg-navy-800 shadow-md text-white sticky"
         }`}
       >
         <div className="container flex h-16 items-center justify-between">
