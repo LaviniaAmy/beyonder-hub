@@ -58,21 +58,24 @@ const Index = () => {
 
         {/* RIGHT SIDE: Background Layers & Video */}
         <div className="absolute top-0 right-0 h-full pointer-events-none z-10 w-[55%] lg:w-[48%]">
-          {/* Teal Layers - Adjusted Z-index to show behind video mask */}
+          {/* Teal Layers - behind video mask */}
           <img
             src={TealLight}
-            className="absolute top-0 right-0 h-full w-[130%] object-contain z-10 scale-[1.35] -translate-x-[28%] lg:scale-[1.5] lg:-translate-x-[38%] translate-y-[6%]"
+            className="absolute top-0 right-0 h-full w-[155%] lg:w-[130%] object-contain z-10 scale-[1.35] -translate-x-[28%] lg:scale-[1.5] lg:-translate-x-[38%] translate-y-[6%]"
             alt=""
           />
 
           <img
             src={TealDark}
-            className="absolute top-0 right-0 h-full w-[130%] object-contain z-20 scale-[1.35] -translate-x-[28%] lg:scale-[1.5] lg:-translate-x-[38%] translate-y-[6%]"
+            className="absolute top-0 right-0 h-full w-[155%] lg:w-[130%] object-contain z-20 scale-[1.35] -translate-x-[28%] lg:scale-[1.5] lg:-translate-x-[38%] translate-y-[6%]"
             alt=""
           />
 
-          {/* Curved Video Mask */}
-          <div className="absolute inset-0 z-30 overflow-hidden" style={{ clipPath: "ellipse(78% 92% at 93% 56%)" }}>
+          {/* Curved Video Mask (responsive clip-path) */}
+          <div
+            className="absolute inset-0 z-30 overflow-hidden lg:[clip-path:ellipse(78%_92%_at_93%_56%)]"
+            style={{ clipPath: "ellipse(82% 92% at 95% 56%)" }}
+          >
             <video src={StarMovie} autoPlay loop muted playsInline className="w-full h-full object-cover" />
           </div>
 
