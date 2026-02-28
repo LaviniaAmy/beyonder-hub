@@ -72,7 +72,7 @@ const Index = () => {
           />
 
           {/* Curved Video Mask */}
-          <div className="absolute inset-0 z-30 overflow-hidden" style={{ clipPath: "ellipse(78% 92% at 93% 50%)" }}>
+          <div className="absolute inset-0 z-30 overflow-hidden" style={{ clipPath: "ellipse(78% 92% at 93% 56%)" }}>
             <video src={StarMovie} autoPlay loop muted playsInline className="w-full h-full object-cover" />
           </div>
 
