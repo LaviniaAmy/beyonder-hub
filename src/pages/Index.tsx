@@ -127,7 +127,6 @@ const Index = () => {
       {/* ============ CATEGORY SECTION ============ */}
       <section
         className="relative py-20 bg-[#0E2F44]">
-        style={{ background: "linear-gradient(to top, #0A1A2F 0%, transparent 100%)" }}
       >
         <div className="mx-auto max-w-5xl px-6">
           <div className="flex justify-center mb-6">
