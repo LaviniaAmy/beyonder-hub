@@ -61,13 +61,13 @@ const Index = () => {
           {/* Teal Layers - Adjusted Z-index to show behind video mask */}
           <img
             src={TealLight}
-            className="absolute top-0 left-0 h-full w-[180%] object-contain z-10 -translate-x-[35%]"
+            className="absolute top-0 right-0 h-full w-[110%] object-contain z-10 scale-[1.4] translate-x-[10%]"
             alt=""
           />
 
           <img
             src={TealDark}
-            className="absolute top-0 left-0 h-full w-[180%] object-contain z-20 -translate-x-[35%]"
+            className="absolute top-0 right-0 h-full w-[110%] object-contain z-20 scale-[1.4] translate-x-[10%]"
             alt=""
           />
 
