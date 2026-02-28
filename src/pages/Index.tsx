@@ -59,8 +59,16 @@ const Index = () => {
         {/* RIGHT SIDE: Background Layers & Video */}
         <div className="absolute top-0 right-0 w-[48%] h-full pointer-events-none z-10">
           {/* Teal Layers - Adjusted Z-index to show behind video mask */}
-          <img src={TealLight} className="absolute inset-0 w-full h-full object-contain z-10" alt="" />
-          <img src={TealDark} className="absolute inset-0 w-full h-full object-contain z-20" alt="" />
+          <img
+            src={TealLight}
+            className="absolute top-0 right-0 h-full w-[120%] object-contain z-10 translate-x-[-8%]"
+            alt=""
+          />
+          <img
+            src={TealDark}
+            className="absolute top-0 right-0 h-full w-[120%] object-contain z-20 translate-x-[-8%]"
+            alt=""
+          />
 
           {/* Curved Video Mask */}
           <div className="absolute inset-0 z-30 overflow-hidden" style={{ clipPath: "ellipse(85% 100% at 100% 50%)" }}>
