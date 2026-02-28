@@ -57,7 +57,7 @@ const Index = () => {
         <div className="absolute inset-0 bg-beige-gradient z-0" />
 
         {/* RIGHT SIDE: Background Layers & Video */}
-        <div className="absolute top-0 right-0 h-full pointer-events-none z-10 w-[55%] min-w-[710px] lg:w-[48%]">
+        <div className="absolute top-0 right-0 h-full pointer-events-none z-10 w-[55%] min-w-[712px] lg:w-[48%]">
           {/* Teal Layers - behind video mask */}
           <img
             src={TealLight}
