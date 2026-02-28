@@ -125,9 +125,7 @@ const Index = () => {
       </section>
 
       {/* ============ CATEGORY SECTION ============ */}
-      <section
-        className="relative py-20 bg-[#0E2F44]">
-      >
+      <section className="relative py-20 bg-[#0E2F44]">
         <div className="mx-auto max-w-5xl px-6">
           <div className="flex justify-center mb-6">
             <div className="h-[2px] w-40 bg-[#1DB8AB] rounded-full" />
