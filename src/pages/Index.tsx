@@ -83,7 +83,7 @@ const Index = () => {
             <img src={LogoPrimary} className="w-[480px] mb-1" alt="Beyonder" />
             <p className="text-white text-xl font-light tracking-widest -mt-1">SEND Community Hub</p>
             {/* Search (locked under logo) */}
-            <div className="pointer-events-auto mt-10 w-[600px]">
+            <div className="pointer-events-auto mt-10 w-[400px]">
               <form
                 onSubmit={handleSearch}
                 className="relative w-full bg-white rounded-full shadow-xl flex items-center px-8 py-4 border border-black/5"
