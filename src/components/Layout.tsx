@@ -110,7 +110,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       {/* Header — locked behaviour */}
       <header
         className={[
-          "fixed top-0 left-0 right-0 z-50 w-full",
+          "fixed top-0 left-0 right-0 z-[100] w-full",
           "transition-[transform,box-shadow,background-color] duration-300 ease-out will-change-transform",
           isHomepage
             ? "bg-gradient-to-b from-white to-[#f8f4ea] shadow-sm border-b border-black/5"

@@ -87,7 +87,7 @@ const Index = () => {
         </div>
 
         {/* LEFT SIDE CONTENT - High Z-index to stay above background */}
-        <div className="container mx-auto px-10 relative z-50 flex flex-col gap-10 py-20">
+        <div className="container mx-auto px-10 relative z-20 flex flex-col gap-10 py-20">
           {/* Vertical Icon Stack */}
           <div className="flex flex-col gap-6 ml-6">
             {sideIcons.map((item) => (
