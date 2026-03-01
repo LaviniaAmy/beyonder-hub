@@ -85,42 +85,41 @@ const Index = () => {
             <p className="text-white text-xl font-light tracking-widest -mt-1">SEND Community Hub</p>
           </div>
           {/* Search Bar - anchored to movie/logo area (does NOT affect CTAs/left) */}
-<div className="pointer-events-auto absolute inset-0 z-50 flex items-center justify-center translate-x-[60px]">
-  {/* tweak this translate-y to sit perfectly under logo */}
-  <div className="translate-y-[110px] w-[420px]">
-    <form
-      onSubmit={handleSearch}
-      className="relative w-full bg-white/95 rounded-full shadow-lg flex items-center px-5 py-2 border border-black/5"
-    >
-      <Search className="w-4 h-4 text-[#0A1A2F]/60 mr-3" />
-      <div className="w-px h-5 bg-black/10 mx-2" />
-      <input
-        type="text"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="How can we help you today?"
-        className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/50 focus:outline-none text-sm"
-      />
-    </form>
-  </div>
-</div>
-        </div>
-
-        {/* LEFT SIDE CONTENT - High Z-index to stay above background */}
-        <div className="container mx-auto px-10 relative z-20 flex flex-col gap-10 py-20">
-          {/* Vertical Icon Stack */}
-          <div className="flex flex-col gap-6 ml-6">
-            {sideIcons.map((item) => (
-              <Link key={item.label} to={item.to} className="flex items-center gap-5 group">
-                <div className="w-14 h-14 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-all">
-                  <img src={item.icon} className="w-full h-full object-cover" alt={item.label} />
-                </div>
-                <span className="text-lg font-medium text-[#0A1A2F] group-hover:text-[#1DB8AB]">{item.label}</span>
-              </Link>
-            ))}
+          <div className="pointer-events-auto absolute inset-0 z-50 flex items-center justify-center translate-x-[60px]">
+            {/* tweak this translate-y to sit perfectly under logo */}
+            <div className="translate-y-[110px] w-[420px]">
+              <form
+                onSubmit={handleSearch}
+                className="relative w-full bg-white/95 rounded-full shadow-lg flex items-center px-5 py-2 border border-black/5"
+              >
+                <Search className="w-4 h-4 text-[#0A1A2F]/60 mr-3" />
+                <div className="w-px h-5 bg-black/10 mx-2" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="How can we help you today?"
+                  className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/50 focus:outline-none text-sm"
+                />
+              </form>
+            </div>
           </div>
 
-          {/* Search Bar & CTAs */}
+          {/* LEFT SIDE CONTENT - High Z-index to stay above background */}
+          <div className="container mx-auto px-10 relative z-20 flex flex-col gap-10 py-20">
+            {/* Vertical Icon Stack */}
+            <div className="flex flex-col gap-6 ml-6">
+              {sideIcons.map((item) => (
+                <Link key={item.label} to={item.to} className="flex items-center gap-5 group">
+                  <div className="w-14 h-14 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-all">
+                    <img src={item.icon} className="w-full h-full object-cover" alt={item.label} />
+                  </div>
+                  <span className="text-lg font-medium text-[#0A1A2F] group-hover:text-[#1DB8AB]">{item.label}</span>
+                </Link>
+              ))}
+            </div>
+
+            {/* Search Bar & CTAs */}
 
             <div className="flex flex-col gap-6 mt-2 lg:ml-[250px] lg:-mt-[60px]">
               <Button
