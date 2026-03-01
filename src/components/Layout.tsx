@@ -129,7 +129,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-1 md:flex relative z-20">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
@@ -197,6 +197,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 <Button
                   className={[
                     "rounded-full btn-join-now font-semibold px-6",
+                    "relative z-0",
                     "transition-all duration-200 ease-out",
                     "shadow-sm hover:shadow-md",
                     "hover:-translate-y-[1px] active:translate-y-0",
