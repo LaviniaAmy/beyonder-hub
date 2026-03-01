@@ -85,6 +85,23 @@ const Index = () => {
             <p className="text-white text-xl font-light tracking-widest -translate-y-[12px]">SEND Community Hub</p>
           </div>
         </div>
+        {/* Search Bar - centered under logo on movie layer */}
+        <div className="absolute left-1/2 -translate-x-1/2 z-40 top-[62%] w-[520px]">
+          <form
+            onSubmit={handleSearch}
+            className="relative w-full bg-white rounded-full shadow-lg flex items-center px-6 py-3 border border-black/5"
+          >
+            <Search className="w-5 h-5 text-[#0A1A2F]/60 mr-3" />
+            <div className="w-px h-6 bg-black/10 mx-2"></div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="How can we help you today?"
+              className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/50 focus:outline-none text-base"
+            />
+          </form>
+        </div>
 
         {/* LEFT SIDE CONTENT - High Z-index to stay above background */}
         <div className="container mx-auto px-10 relative z-20 flex flex-col gap-10 py-20">
@@ -101,22 +118,7 @@ const Index = () => {
           </div>
 
           {/* Search Bar & CTAs */}
-          <div className="flex flex-col gap-6 mt-2 lg:absolute lg:left-[420px] lg:top-[330px]">
-            <form
-              onSubmit={handleSearch}
-              className="relative w-full bg-white rounded-full shadow-lg flex items-center px-6 py-3.5 border border-black/5"
-            >
-              <Search className="w-5 h-5 text-[#0A1A2F]/60 mr-3" />
-              <div className="w-px h-6 bg-black/10 mx-2"></div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="How can we help you today?"
-                className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/50 focus:outline-none text-lg"
-              />
-            </form>
-
+          <div className="flex flex-col mt-2 lg:absolute lg:left-[420px] lg:top-[330px]">
             <div className="flex flex-col gap-6 mt-2 lg:ml-[250px] lg:-mt-[60px]">
               <Button
                 className="bg-[#0A1A2F] text-white px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-[#0C223D] w-[260px] h-auto border border-[#1DB8AB]"
