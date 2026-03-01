@@ -81,7 +81,7 @@ const Index = () => {
 
           {/* Logo & Text - Highest Z-index in the right column */}
           <div className="absolute inset-0 flex flex-col items-center justify-center z-40 -translate-y-[60px] translate-x-[60px]">
-            <img src={LogoPrimary} className="w-[480px] mb-3" alt="Beyonder" />
+            <img src={LogoPrimary} className="w-[480px] mb-1" alt="Beyonder" />
             <p className="text-white text-xl font-light tracking-widest">SEND Community Hub</p>
           </div>
         </div>
