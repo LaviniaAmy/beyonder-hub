@@ -85,29 +85,32 @@ const Index = () => {
           </div>
 
           {/* Search (Centered Under Logo) */}
-          <div className="absolute left-1/2 top-[58%] -translate-x-1/2 translate-x-[20px] z-50 pointer-events-auto">
-            <div className="w-[460px]">
-              <form
-                onSubmit={handleSearch}
-                className="relative w-full bg-white rounded-full shadow-xl flex items-center px-6 py-3 border border-black/5"
-              >
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="How can we help you today?"
-                  className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/50 focus:outline-none text-base"
-                />
+<div className="absolute left-1/2 top-[60%] -translate-x-1/2 z-50 pointer-events-auto">
+  <div className="w-[600px]">
+    <form
+      onSubmit={handleSearch}
+      className="relative w-full bg-white rounded-full shadow-xl flex items-center px-8 py-4 border border-black/5"
+    >
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder="How can we help you today?"
+        className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/50 focus:outline-none text-base"
+      />
 
-                <div className="w-px h-7 bg-black/10 mx-4" />
+      <div className="w-px h-8 bg-black/10 mx-5" />
 
-                <button type="submit" className="w-10 h-10 rounded-full flex items-center justify-center">
-                  <Search className="w-5 h-5 text-[#1DB8AB]" />
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
+      <button
+        type="submit"
+        className="w-11 h-11 rounded-full flex items-center justify-center"
+        aria-label="Search"
+      >
+        <Search className="w-6 h-6 text-[#1DB8AB]" />
+      </button>
+    </form>
+  </div>
+</div>
 
         {/* ---------- LEFT CONTENT COLUMN ---------- */}
         <div className="container mx-auto px-10 relative z-20 flex flex-col gap-10 py-20">
