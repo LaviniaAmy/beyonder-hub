@@ -51,27 +51,26 @@ const Index = () => {
 
   return (
     <div className="w-full bg-[#F8F7F3]">
-      {/* ============ HERO SECTION ============ */}
+      {/* ================= HERO ================= */}
       <section className="relative w-full h-[650px] overflow-hidden flex items-center">
-        {/* BACKGROUND GRADIENT (Cream) */}
+        {/* Cream Background */}
         <div className="absolute inset-0 bg-beige-gradient z-0" />
 
-        {/* RIGHT SIDE: Background Layers & Video */}
-        <div className="absolute top-0 right-0 h-full pointer-events-none z-10 w-[55%] min-w-[712px] lg:w-[48%]">
-          {/* Teal Layers - behind video mask */}
+        {/* ---------- RIGHT MOVIE COLUMN ---------- */}
+        <div className="absolute top-0 right-0 h-full z-10 w-[55%] min-w-[712px] lg:w-[48%] pointer-events-none">
+          {/* Teal Layers */}
           <img
             src={TealLight}
             className="absolute top-0 right-0 h-full w-[155%] lg:w-[130%] object-contain z-10 scale-[1.35] -translate-x-[28%] lg:scale-[1.5] lg:-translate-x-[38%] translate-y-[6%]"
             alt=""
           />
-
           <img
             src={TealDark}
             className="absolute top-0 right-0 h-full w-[155%] lg:w-[130%] object-contain z-20 scale-[1.35] -translate-x-[28%] lg:scale-[1.5] lg:-translate-x-[38%] translate-y-[6%]"
             alt=""
           />
 
-          {/* Curved Video Mask (responsive clip-path) */}
+          {/* Curved Video Mask */}
           <div
             className="absolute inset-0 z-30 overflow-hidden lg:[clip-path:ellipse(78%_92%_at_93%_56%)]"
             style={{ clipPath: "ellipse(82% 92% at 95% 56%)" }}
@@ -79,68 +78,67 @@ const Index = () => {
             <video src={StarMovie} autoPlay loop muted playsInline className="w-full h-full object-cover" />
           </div>
 
-          {/* Logo & Text - Highest Z-index in the right column */}
-          <div className="absolute inset-0 gap-0 z-40 -translate-y-[60px] translate-x-[60px]">
+          {/* Logo Overlay */}
+          <div className="absolute inset-0 z-40 -translate-y-[60px] translate-x-[60px] flex flex-col items-start justify-center">
             <img src={LogoPrimary} className="w-[480px] mb-1" alt="Beyonder" />
             <p className="text-white text-xl font-light tracking-widest -mt-1">SEND Community Hub</p>
           </div>
-          {/* Search Bar - anchored to movie/logo area (does NOT affect CTAs/left) */}
-          <div className="pointer-events-auto absolute left-1/2 top-[58%] -translate-x-1/2 translate-x-[60px] z-50">
-            {/* tweak this translate-y to sit perfectly under logo */}
-            <div className=" w-[420px]">
+
+          {/* Search (Centered Under Logo) */}
+          <div className="absolute left-1/2 top-[58%] -translate-x-1/2 translate-x-[60px] z-50 pointer-events-auto">
+            <div className="w-[460px]">
               <form
                 onSubmit={handleSearch}
-                className="relative w-full bg-white/95 rounded-full shadow-lg flex items-center px-5 py-2 border border-black/5"
+                className="relative w-full bg-white rounded-full shadow-xl flex items-center px-6 py-3 border border-black/5"
               >
-                <Search className="w-4 h-4 text-[#0A1A2F]/60 mr-3" />
-                <div className="w-px h-5 bg-black/10 mx-2" />
+                <Search className="w-5 h-5 text-[#0A1A2F]/60 mr-3" />
+                <div className="w-px h-6 bg-black/10 mx-2" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="How can we help you today?"
-                  className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/50 focus:outline-none text-sm"
+                  className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/50 focus:outline-none text-base"
                 />
               </form>
             </div>
           </div>
+        </div>
 
-          {/* LEFT SIDE CONTENT - High Z-index to stay above background */}
-          <div className="container mx-auto px-10 relative z-20 flex flex-col gap-10 py-20">
-            {/* Vertical Icon Stack */}
-            <div className="flex flex-col gap-6 ml-6">
-              {sideIcons.map((item) => (
-                <Link key={item.label} to={item.to} className="flex items-center gap-5 group">
-                  <div className="w-14 h-14 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-all">
-                    <img src={item.icon} className="w-full h-full object-cover" alt={item.label} />
-                  </div>
-                  <span className="text-lg font-medium text-[#0A1A2F] group-hover:text-[#1DB8AB]">{item.label}</span>
-                </Link>
-              ))}
-            </div>
+        {/* ---------- LEFT CONTENT COLUMN ---------- */}
+        <div className="container mx-auto px-10 relative z-20 flex flex-col gap-10 py-20">
+          {/* Side Icons */}
+          <div className="flex flex-col gap-8 ml-6">
+            {sideIcons.map((item) => (
+              <Link key={item.label} to={item.to} className="flex items-center gap-5 group">
+                <div className="w-14 h-14 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-all">
+                  <img src={item.icon} className="w-full h-full object-cover" alt={item.label} />
+                </div>
+                <span className="text-lg font-medium text-[#0A1A2F] group-hover:text-[#1DB8AB]">{item.label}</span>
+              </Link>
+            ))}
+          </div>
 
-            {/* Search Bar & CTAs */}
+          {/* CTAs (LOCKED POSITIONING) */}
+          <div className="flex flex-col gap-6 mt-2 lg:ml-[250px] lg:-mt-[60px]">
+            <Button
+              className="bg-[#0A1A2F] text-white px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-[#0C223D] w-[260px] border border-[#1DB8AB]"
+              onClick={() => navigate("/explore")}
+            >
+              Explore Services
+            </Button>
 
-            <div className="flex flex-col gap-6 mt-2 lg:ml-[250px] lg:-mt-[60px]">
-              <Button
-                className="bg-[#0A1A2F] text-white px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-[#0C223D] w-[260px] h-auto border border-[#1DB8AB]"
-                onClick={() => navigate("/explore")}
-              >
-                Explore Services
-              </Button>
-
-              <Button
-                className="bg-white text-[#0A1A2F] px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-gray-50 w-[260px] h-auto border border-transparent"
-                onClick={() => navigate("/community")}
-              >
-                Community groups
-              </Button>
-            </div>
+            <Button
+              className="bg-white text-[#0A1A2F] px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-gray-50 w-[260px]"
+              onClick={() => navigate("/community")}
+            >
+              Community groups
+            </Button>
           </div>
         </div>
       </section>
 
-      {/* ============ CATEGORY SECTION ============ */}
+      {/* ================= CATEGORY SECTION ================= */}
       <section
         className="relative py-24"
         style={{
