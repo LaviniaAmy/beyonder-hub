@@ -86,7 +86,7 @@ const Index = () => {
             <div className="pointer-events-auto mt-10 w-[400px]">
               <form
                 onSubmit={handleSearch}
-                className="relative w-full bg-white rounded-full shadow-xl flex items-center px-8 py-4 border border-black/5"
+                className="relative w-full bg-white rounded-full shadow-xl flex items-center px-6 py-2 border border-black/5"
               >
                 <input
                   type="text"
