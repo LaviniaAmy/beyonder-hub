@@ -119,14 +119,14 @@ const Index = () => {
 
             <div className="flex flex-col gap-4 pl-10">
               <Button
-                className="bg-[#0A1A2F] text-white px-10 py-6 rounded-full text-lg font-semibold shadow-lg hover:bg-[#0C223D] w-fit h-auto"
+                className="bg-[#0A1A2F] text-white px-10 py-4 rounded-full text-lg font-semibold shadow-lg hover:bg-[#0C223D] w-fit h-auto border border-[#1DB8AB]"
                 onClick={() => navigate("/explore")}
               >
                 Explore Services
               </Button>
+
               <Button
-                variant="outline"
-                className="bg-white text-[#0A1A2F] border-2 border-[#0A1A2F] px-10 py-6 rounded-full text-lg font-semibold shadow-lg hover:bg-gray-50 w-fit h-auto"
+                className="bg-white text-[#0A1A2F] px-10 py-4 rounded-full text-lg font-semibold shadow-lg hover:bg-gray-50 w-fit h-auto border border-transparent"
                 onClick={() => navigate("/community")}
               >
                 Community groups
