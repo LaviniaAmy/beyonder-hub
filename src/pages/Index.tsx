@@ -132,6 +132,7 @@ const Index = () => {
     </form>
   </div>
 </div>
+        </div>
 
         {/* ---------- LEFT CONTENT COLUMN ---------- */}
         <div className="container mx-auto px-10 relative z-20 flex flex-col gap-10 py-20">
