@@ -101,7 +101,7 @@ const Index = () => {
           </div>
 
           {/* Search Bar & CTAs */}
-          <div className="flex flex-col gap-6 max-w-md">
+          <div className="flex flex-col gap-6 mt-2 lg:absolute lg:left-[420px] lg:top-[330px]">
             <form
               onSubmit={handleSearch}
               className="relative w-full bg-white rounded-full shadow-lg flex items-center px-6 py-3.5 border border-black/5"
@@ -117,7 +117,7 @@ const Index = () => {
               />
             </form>
 
-            <div className="flex flex-col gap-4 pl-10">
+            <div className="flex flex-col gap-6 mt-2 lg:ml-[380px]">
               <Button
                 className="bg-[#0A1A2F] text-white px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-[#0C223D] w-[260px] h-auto border border-[#1DB8AB]"
                 onClick={() => navigate("/explore")}
