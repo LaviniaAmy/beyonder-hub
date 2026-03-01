@@ -80,14 +80,14 @@ const Index = () => {
           </div>
 
           {/* Logo & Text - Highest Z-index in the right column */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-0 z-40 -translate-y-[60px] translate-x-[60px]">
+          <div className="absolute inset-0 gap-0 z-40 -translate-y-[60px] translate-x-[60px]">
             <img src={LogoPrimary} className="w-[480px] mb-1" alt="Beyonder" />
             <p className="text-white text-xl font-light tracking-widest -mt-1">SEND Community Hub</p>
           </div>
           {/* Search Bar - anchored to movie/logo area (does NOT affect CTAs/left) */}
-          <div className="pointer-events-auto absolute inset-0 z-50 flex items-center justify-center translate-x-[60px]">
+          <div className="pointer-events-auto absolute left-1/2 top-[58%] -translate-x-1/2 translate-x-[60px] z-50">
             {/* tweak this translate-y to sit perfectly under logo */}
-            <div className="translate-y-[110px] w-[420px]">
+            <div className=" w-[420px]">
               <form
                 onSubmit={handleSearch}
                 className="relative w-full bg-white/95 rounded-full shadow-lg flex items-center px-5 py-2 border border-black/5"
