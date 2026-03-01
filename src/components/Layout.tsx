@@ -112,7 +112,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         className={[
           "fixed top-0 left-0 right-0 z-50 w-full",
           "transition-[transform,box-shadow,background-color] duration-300 ease-out will-change-transform",
-          isHidden ? "md:-translate-y-full" : "translate-y-0",
           isHomepage
             ? "bg-gradient-to-b from-white to-[#f8f4ea] shadow-sm border-b border-black/5"
             : "bg-navy-800 shadow-md text-white",
