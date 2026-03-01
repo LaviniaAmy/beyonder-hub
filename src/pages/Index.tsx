@@ -84,6 +84,26 @@ const Index = () => {
             <img src={LogoPrimary} className="w-[480px] mb-1" alt="Beyonder" />
             <p className="text-white text-xl font-light tracking-widest -mt-1">SEND Community Hub</p>
           </div>
+          {/* Search Bar - anchored to movie/logo area (does NOT affect CTAs/left) */}
+<div className="pointer-events-auto absolute inset-0 z-50 flex items-center justify-center translate-x-[60px]">
+  {/* tweak this translate-y to sit perfectly under logo */}
+  <div className="translate-y-[110px] w-[420px]">
+    <form
+      onSubmit={handleSearch}
+      className="relative w-full bg-white/95 rounded-full shadow-lg flex items-center px-5 py-2 border border-black/5"
+    >
+      <Search className="w-4 h-4 text-[#0A1A2F]/60 mr-3" />
+      <div className="w-px h-5 bg-black/10 mx-2" />
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder="How can we help you today?"
+        className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/50 focus:outline-none text-sm"
+      />
+    </form>
+  </div>
+</div>
         </div>
 
         {/* LEFT SIDE CONTENT - High Z-index to stay above background */}
@@ -101,21 +121,6 @@ const Index = () => {
           </div>
 
           {/* Search Bar & CTAs */}
-          <div className="flex flex-col gap-6 mt-2 lg:absolute lg:left-[420px] lg:top-[330px]">
-            <form
-              onSubmit={handleSearch}
-              className="relative w-full bg-white rounded-full shadow-lg flex items-center px-6 py-3.5 border border-black/5"
-            >
-              <Search className="w-5 h-5 text-[#0A1A2F]/60 mr-3" />
-              <div className="w-px h-6 bg-black/10 mx-2"></div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="How can we help you today?"
-                className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/50 focus:outline-none text-lg"
-              />
-            </form>
 
             <div className="flex flex-col gap-6 mt-2 lg:ml-[250px] lg:-mt-[60px]">
               <Button
