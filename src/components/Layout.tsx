@@ -117,7 +117,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             : "bg-navy-800 shadow-md text-white",
         ].join(" ")}
       >
-        <div className="container flex h-16 items-center justify-between">
+        <div className="container relative z-10 flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <span
               className="text-xl font-bold"
