@@ -134,7 +134,7 @@ const Index = () => {
           </div>
 
          {/* ---------- LEFT CONTENT COLUMN ---------- */}
-          <div className="absolute top-0 left-0 h-full z-20 flex flex-col justify-center px-10 py-32">
+          <div className="absolute top-0 left-0 h-full z-20 flex flex-col justify-end px-10" style={{ paddingBottom: "80px" }}>
             <div className="flex flex-col gap-16 w-[130px]" style={{ marginLeft: "240px" }}>
               {sideIcons.map((item) => (
                 <Link key={item.label} to={item.to} className="flex flex-col items-center gap-1 group">
