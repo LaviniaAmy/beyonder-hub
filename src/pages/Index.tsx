@@ -135,10 +135,10 @@ const Index = () => {
 
           {/* ---------- LEFT CONTENT COLUMN ---------- */}
           <div className="absolute top-0 left-0 h-full z-20 flex flex-col justify-center px-10 py-20">
-            <div className="flex flex-col gap-10 ml-12 w-[130px]">
+            <div className="flex flex-col gap-10 ml-4 w-[130px]">
               {sideIcons.map((item) => (
                 <Link key={item.label} to={item.to} className="flex flex-col items-center gap-3 group">
-                  <div className="w-16 h-16 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-all">
+                  <div className="w-20 h-20 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-all">
                     <img src={item.icon} className="w-full h-full object-cover" alt={item.label} />
                   </div>
                   <span className="text-base font-medium text-[#0A1A2F] text-center leading-tight group-hover:text-[#1DB8AB]">
