@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,8 @@ import TherapistsIcon from "@/assets/icons/Therapists_Icon.svg";
 import ClubsIcon from "@/assets/icons/Clubs_Icon.svg";
 import NewsIcon from "@/assets/icons/News_Icon.svg";
 import StarMovie from "@/../public/video/star-movie.mp4";
+
+const DESIGN_WIDTH = 1920;
 
 const sideIcons = [
   { icon: LocalIcon, label: "Local Support", to: "/providers?view=local" },
@@ -40,7 +42,22 @@ const categoryCards = [
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [scale, setScale] = useState(1);
   const navigate = useNavigate();
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateScale = () => {
+      const vw = window.innerWidth;
+      const raw = vw / DESIGN_WIDTH;
+      const clamped = Math.min(1, Math.max(raw, 1024 / DESIGN_WIDTH));
+      setScale(clamped);
+    };
+
+    updateScale();
+    window.addEventListener("resize", updateScale);
+    return () => window.removeEventListener("resize", updateScale);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,84 +66,90 @@ const Index = () => {
     }
   };
 
+  const heroHeight = 650 * scale;
+
   return (
     <div className="w-full bg-[#F8F7F3]">
       {/* ================= HERO ================= */}
-      <section className="relative w-full h-[650px] overflow-hidden flex items-center">
-        {/* Cream Background */}
-        <div className="absolute inset-0 bg-beige-gradient z-0" />
+      <section ref={heroRef} className="relative w-full overflow-hidden" style={{ height: `${heroHeight}px` }}>
+        <div
+          style={{
+            width: `${DESIGN_WIDTH}px`,
+            height: "650px",
+            transformOrigin: "top left",
+            transform: `scale(${scale})`,
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        >
+          {/* Cream Background */}
+          <div className="absolute inset-0 bg-beige-gradient z-0" />
 
-        {/* ---------- RIGHT MOVIE COLUMN ---------- */}
-        <div className="absolute top-0 right-0 h-full z-10 w-[55%] min-w-[712px] lg:w-[48%] pointer-events-none">
-          {/* Teal Layers */}
-          <img
-            src={TealLight}
-            className="absolute top-0 right-0 h-full w-[155%] lg:w-[130%] object-contain z-10 scale-[1.35] -translate-x-[28%] lg:scale-[1.5] lg:-translate-x-[38%] translate-y-[6%]"
-            alt=""
-          />
-          <img
-            src={TealDark}
-            className="absolute top-0 right-0 h-full w-[155%] lg:w-[130%] object-contain z-20 scale-[1.35] -translate-x-[28%] lg:scale-[1.5] lg:-translate-x-[38%] translate-y-[6%]"
-            alt=""
-          />
+          {/* ---------- RIGHT MOVIE COLUMN ---------- */}
+          <div className="absolute top-0 right-0 h-full z-10 w-[55%] min-w-[712px] lg:w-[48%] pointer-events-none">
+            <img
+              src={TealLight}
+              className="absolute top-0 right-0 h-full w-[155%] lg:w-[130%] object-contain z-10 scale-[1.35] -translate-x-[28%] lg:scale-[1.5] lg:-translate-x-[38%] translate-y-[6%]"
+              alt=""
+            />
+            <img
+              src={TealDark}
+              className="absolute top-0 right-0 h-full w-[155%] lg:w-[130%] object-contain z-20 scale-[1.35] -translate-x-[28%] lg:scale-[1.5] lg:-translate-x-[38%] translate-y-[6%]"
+              alt=""
+            />
 
-          {/* Curved Video Mask */}
-          <div
-            className="absolute inset-0 z-30 overflow-hidden lg:[clip-path:ellipse(78%_92%_at_93%_56%)]"
-            style={{ clipPath: "ellipse(82% 92% at 95% 56%)" }}
-          >
-            <video src={StarMovie} autoPlay loop muted playsInline className="w-full h-full object-cover" />
-          </div>
+            {/* Curved Video Mask */}
+            <div className="absolute inset-0 z-30 overflow-hidden" style={{ clipPath: "ellipse(82% 92% at 95% 56%)" }}>
+              <video src={StarMovie} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+            </div>
 
-          {/* Logo Overlay */}
-          <div className="absolute inset-0 z-40 -translate-y-[15px] translate-x-[60px] flex flex-col items-center justify-center">
-            <img src={LogoPrimary} className="w-[480px] mb-1" alt="Beyonder" />
-            <p className="text-white text-xl font-light tracking-widest -mt-1">SEND Community Hub</p>
-            {/* Search (locked under logo) */}
-            <div className="pointer-events-auto mt-10 w-[400px]">
-              <form
-                onSubmit={handleSearch}
-                className="relative w-full bg-white rounded-full shadow-xl flex items-center px-6 py-1 border border-black/5"
-              >
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="How can we help you today?"
-                  className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/50 focus:outline-none text-base"
-                />
-
-                <div className="w-px h-8 bg-black/10 mx-5" />
-
-                <button
-                  type="submit"
-                  className="w-11 h-11 rounded-full flex items-center justify-center"
-                  aria-label="Search"
+            {/* Logo Overlay */}
+            <div className="absolute inset-0 z-40 -translate-y-[15px] translate-x-[60px] flex flex-col items-center justify-center">
+              <img src={LogoPrimary} className="w-[480px] mb-1" alt="Beyonder" />
+              <p className="text-white text-xl font-light tracking-widest -mt-1">SEND Community Hub</p>
+              <div className="pointer-events-auto mt-10 w-[400px]">
+                <form
+                  onSubmit={handleSearch}
+                  className="relative w-full bg-white rounded-full shadow-xl flex items-center px-6 py-1 border border-black/5"
                 >
-                  <Search className="w-6 h-6 text-[#1DB8AB]" />
-                </button>
-              </form>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="How can we help you today?"
+                    className="flex-1 text-[#0A1A2F] placeholder-[#0A1A2F]/50 focus:outline-none text-base"
+                  />
+                  <div className="w-px h-8 bg-black/10 mx-5" />
+                  <button
+                    type="submit"
+                    className="w-11 h-11 rounded-full flex items-center justify-center"
+                    aria-label="Search"
+                  >
+                    <Search className="w-6 h-6 text-[#1DB8AB]" />
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* ---------- LEFT CONTENT COLUMN ---------- */}
-        <div className="container mx-auto px-10 relative z-20 flex flex-col gap-10 py-20">
-          {/* Side Icons */}
-          <div className="flex flex-col gap-10 ml-12 w-[130px]">
-            {sideIcons.map((item) => (
-              <Link key={item.label} to={item.to} className="flex flex-col items-center gap-3 group">
-                <div className="w-16 h-16 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-all">
-                  <img src={item.icon} className="w-full h-full object-cover" alt={item.label} />
-                </div>
-                <span className="text-base font-medium text-[#0A1A2F] text-center leading-tight group-hover:text-[#1DB8AB]">
-                  {item.label}
-                </span>
-              </Link>
-            ))}
+          {/* ---------- LEFT CONTENT COLUMN ---------- */}
+          <div className="absolute top-0 left-0 h-full z-20 flex flex-col justify-center px-10 py-20">
+            <div className="flex flex-col gap-10 ml-12 w-[130px]">
+              {sideIcons.map((item) => (
+                <Link key={item.label} to={item.to} className="flex flex-col items-center gap-3 group">
+                  <div className="w-16 h-16 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-all">
+                    <img src={item.icon} className="w-full h-full object-cover" alt={item.label} />
+                  </div>
+                  <span className="text-base font-medium text-[#0A1A2F] text-center leading-tight group-hover:text-[#1DB8AB]">
+                    {item.label}
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
 
-          {/* CTAs (LOCKED POSITIONING) */}
+          {/* ---------- CTAs ---------- */}
           <div className="absolute z-20 left-[clamp(320px,32vw,760px)] top-[clamp(390px,70%,500px)] flex flex-col gap-6">
             <Button
               className="bg-[#0A1A2F] text-white px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-[#0C223D] w-[360px] border border-[#1DB8AB]"
@@ -134,7 +157,6 @@ const Index = () => {
             >
               Explore Services
             </Button>
-
             <Button
               className="bg-white text-[#0A1A2F] px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-gray-50 w-[360px]"
               onClick={() => navigate("/community")}
@@ -146,19 +168,12 @@ const Index = () => {
       </section>
 
       {/* ================= CATEGORY SECTION ================= */}
-      <section
-        className="relative py-24"
-        style={{
-          background: "linear-gradient(to top, #123447 0%, #F8F7F3 70%)",
-        }}
-      >
+      <section className="relative py-24" style={{ background: "linear-gradient(to top, #123447 0%, #F8F7F3 70%)" }}>
         <div className="mx-auto max-w-5xl px-6">
           <div className="flex justify-center mb-6">
             <div className="h-[2px] w-40 bg-[#1DB8AB] rounded-full" />
           </div>
-
           <h2 className="text-center text-4xl font-light mb-12 text-[#1DB8AB]">Choose by Category</h2>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {categoryCards.map((card) => (
               <Link key={card.title} to={card.to} className="group">
