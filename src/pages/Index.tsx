@@ -66,7 +66,7 @@ const Index = () => {
     }
   };
 
-  const heroHeight = 650 * scale;
+  const heroHeight = 750 * scale;
 
   return (
     <div className="w-full bg-[#F8F7F3]">
