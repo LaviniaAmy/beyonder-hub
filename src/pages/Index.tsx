@@ -135,13 +135,13 @@ const Index = () => {
 
           {/* ---------- LEFT CONTENT COLUMN ---------- */}
           <div className="absolute top-0 left-0 h-full z-20 flex flex-col justify-center px-10 py-20">
-            <div className="flex flex-col gap-16 w-[130px]" style={{ marginLeft: "190px" }}>
+            <Link key={item.label} to={item.to} className="flex flex-col items-center gap-1 group">
               {sideIcons.map((item) => (
                 <Link key={item.label} to={item.to} className="flex flex-col items-center gap-5 group">
                   <Link key={item.label} to={item.to} className="flex flex-col items-center gap-3 group">
                     <img src={item.icon} className="w-full h-full object-cover" alt={item.label} />
                   </div>
-                  <span className="text-base font-medium text-[#0A1A2F] text-center leading-tight group-hover:text-[#1DB8AB]">
+                  <span className="text-base font-medium text-[#0A1A2F] text-center leading-tight group-hover:text-[#1DB8AB] w-[80px]">
                     {item.label}
                   </span>
                 </Link>
