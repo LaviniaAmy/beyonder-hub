@@ -152,7 +152,7 @@ const Index = () => {
           {/* ---------- CTAs ---------- */}
           <div className="absolute z-20 flex flex-col gap-6" style={{ left: "800px", top: "620px" }}>
             <Button
-              className="bg-[#0A1A2F] text-white px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-[#0C223D] w-[360px] border border-[#1DB8AB]"
+              className="bg-[#0A1A2F] text-white px-14 py-4 rounded-full text-xl font-semibold shadow-lg hover:bg-[#0C223D] w-[420px] border border-[#1DB8AB]"
               onClick={() => navigate("/explore")}
             >
               Explore Services
