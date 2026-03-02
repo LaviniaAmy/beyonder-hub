@@ -158,7 +158,7 @@ const Index = () => {
               Explore Services
             </Button>
             <Button
-              className="bg-white text-[#0A1A2F] px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-gray-50 w-[360px]"
+              className="bg-white text-[#0A1A2F] px-14 py-4 rounded-full text-lg font-semibold shadow-lg hover:bg-gray-50 w-[360px]"
               onClick={() => navigate("/community")}
             >
               Community groups
