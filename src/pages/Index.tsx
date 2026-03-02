@@ -108,21 +108,6 @@ const Index = () => {
               </form>
             </div>
           </div>
-          <div className="absolute z-50 left-[-320px] top-[440px] flex flex-col gap-6 pointer-events-auto">
-            <Button
-              className="bg-[#0A1A2F] text-white px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-[#0C223D] w-[360px] border border-[#1DB8AB]"
-              onClick={() => navigate("/explore")}
-            >
-              Explore Services
-            </Button>
-
-            <Button
-              className="bg-white text-[#0A1A2F] px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-gray-50 w-[360px]"
-              onClick={() => navigate("/community")}
-            >
-              Community groups
-            </Button>
-          </div>
         </div>
 
         {/* ---------- LEFT CONTENT COLUMN ---------- */}
@@ -139,6 +124,23 @@ const Index = () => {
                 </span>
               </Link>
             ))}
+          </div>
+
+          {/* CTAs (LOCKED POSITIONING) */}
+          <div className="absolute z-20 left-[clamp(320px,32vw,760px)] top-[clamp(390px,70%,500px)] flex flex-col gap-6">
+            <Button
+              className="bg-[#0A1A2F] text-white px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-[#0C223D] w-[360px] border border-[#1DB8AB]"
+              onClick={() => navigate("/explore")}
+            >
+              Explore Services
+            </Button>
+
+            <Button
+              className="bg-white text-[#0A1A2F] px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-gray-50 w-[360px]"
+              onClick={() => navigate("/community")}
+            >
+              Community groups
+            </Button>
           </div>
         </div>
       </section>
