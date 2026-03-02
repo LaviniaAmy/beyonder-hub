@@ -75,7 +75,7 @@ const Index = () => {
         <div
           style={{
             width: `${DESIGN_WIDTH}px`,
-            height: "650px",
+            height: "750px",
             transformOrigin: "top left",
             transform: `scale(${scale})`,
             position: "absolute",
