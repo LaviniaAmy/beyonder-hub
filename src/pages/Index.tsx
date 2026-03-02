@@ -66,7 +66,7 @@ const Index = () => {
     }
   };
 
-  const heroHeight = 750 * scale;
+  const heroHeight = 800 * scale;
 
   return (
     <div className="w-full bg-[#F8F7F3]">
@@ -75,7 +75,7 @@ const Index = () => {
         <div
           style={{
             width: `${DESIGN_WIDTH}px`,
-            height: "750px",
+            height: "800px",
             transformOrigin: "top left",
             transform: `scale(${scale})`,
             position: "absolute",
