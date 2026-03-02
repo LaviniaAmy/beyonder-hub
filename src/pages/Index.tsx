@@ -127,7 +127,7 @@ const Index = () => {
           </div>
 
           {/* CTAs (LOCKED POSITIONING) */}
-          <div className="absolute z-20 left-[clamp(320px,32vw,760px)] top-[clamp(390px,70%,500px)] flex flex-col gap-6">
+          <div className="absolute z-20 left-[clamp(320px,32vw,820px)] top-[clamp(420px,72%,540px)] flex flex-col gap-6">
             <Button
               className="bg-[#0A1A2F] text-white px-10 py-2 rounded-full text-lg font-semibold shadow-lg hover:bg-[#0C223D] w-[360px] border border-[#1DB8AB]"
               onClick={() => navigate("/explore")}
