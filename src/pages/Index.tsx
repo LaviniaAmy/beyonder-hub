@@ -113,7 +113,7 @@ const Index = () => {
         {/* ---------- LEFT CONTENT COLUMN ---------- */}
         <div className="container mx-auto px-10 relative z-20 flex flex-col gap-10 py-20">
           {/* Side Icons */}
-          <div className="flex flex-col gap-10 ml-6 w-[130px]">
+          <div className="flex flex-col gap-10 ml-10 w-[130px]">
             {sideIcons.map((item) => (
               <Link key={item.label} to={item.to} className="flex flex-col items-center gap-3 group">
                 <div className="w-16 h-16 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-all">
