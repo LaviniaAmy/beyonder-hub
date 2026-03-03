@@ -99,9 +99,9 @@ const Index = () => {
               alt=""
             />
 
-            {/* Curved Video Mask */}
+            {/* Star Canvas */}
             <div className="absolute inset-0 z-30 overflow-hidden" style={{ clipPath: "ellipse(82% 92% at 95% 56%)" }}>
-              <video src={StarMovie} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+              <StarCanvas />
             </div>
 
             {/* Logo Overlay */}
@@ -133,8 +133,11 @@ const Index = () => {
             </div>
           </div>
 
-         {/* ---------- LEFT CONTENT COLUMN ---------- */}
-          <div className="absolute top-0 left-0 h-full z-20 flex flex-col justify-end px-10" style={{ paddingBottom: "80px" }}>
+          {/* ---------- LEFT CONTENT COLUMN ---------- */}
+          <div
+            className="absolute top-0 left-0 h-full z-20 flex flex-col justify-end px-10"
+            style={{ paddingBottom: "80px" }}
+          >
             <div className="flex flex-col gap-16 w-[130px]" style={{ marginLeft: "240px" }}>
               {sideIcons.map((item) => (
                 <Link key={item.label} to={item.to} className="flex flex-col items-center gap-1 group">
