@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
+// ── CONFIG ──────────────────────────────────────────────
 const CFG = {
   numStars: 320,
   zoomSpeed: 0.0003,
@@ -27,7 +28,7 @@ function pickStarColor() {
   return STAR_COLORS[0];
 }
 
-function initStars(count) {
+function initStars(count: number) {
   return Array.from({ length: count }, () => ({
     x: (Math.random() - 0.5) * 2,
     y: (Math.random() - 0.5) * 2,
@@ -40,27 +41,22 @@ function initStars(count) {
   }));
 }
 
-// Simplex-like noise using sin harmonics for organic cloud shapes
-function fbm(x, y, octaves = 5) {
-  let val = 0,
-    amp = 0.5,
-    freq = 1,
-    max = 0;
-  for (let i = 0; i < octaves; i++) {
-    val += amp * (Math.sin(x * freq * 1.7 + Math.cos(y * freq * 2.3)) * 0.5 + 0.5);
-    max += amp;
-    amp *= 0.55;
-    freq *= 2.1;
-  }
-  return val / max;
+function initBgTwinklers(count: number) {
+  return Array.from({ length: count }, () => ({
+    x: Math.random(),
+    y: Math.random(),
+    size: Math.random() < 0.3 ? (Math.random() * 0.6 + 0.2) * 3.0 : Math.random() * 0.6 + 0.2,
+    phase: Math.random() * Math.PI * 2,
+    speed: 0.008 + Math.random() * 0.018,
+    baseAlpha: 0.15 + Math.random() * 0.35,
+  }));
 }
 
-function paintNightSky(off) {
+function paintNightSky(off: HTMLCanvasElement) {
   const W = off.width;
   const H = off.height;
-  const ctx = off.getContext("2d");
+  const ctx = off.getContext("2d")!;
 
-  // ── Deep navy base with gradient depth ──
   const baseGrad = ctx.createLinearGradient(0, 0, W * 0.3, H);
   baseGrad.addColorStop(0, "rgb(2, 5, 18)");
   baseGrad.addColorStop(0.25, "rgb(3, 8, 28)");
@@ -70,8 +66,8 @@ function paintNightSky(off) {
   ctx.fillStyle = baseGrad;
   ctx.fillRect(0, 0, W, H);
 
-  // ── Dark organic cloud masses — add depth behind stars ──
-  const darkClouds = [
+  // Dark organic cloud masses
+  const darkClouds: [number, number, number, number, number][] = [
     [W * 0.2, H * 0.35, W * 0.28, H * 0.22, 0.55],
     [W * 0.65, H * 0.2, W * 0.22, H * 0.3, 0.5],
     [W * 0.45, H * 0.6, W * 0.35, H * 0.2, 0.48],
@@ -80,9 +76,8 @@ function paintNightSky(off) {
     [W * 0.55, H * 0.85, W * 0.3, H * 0.16, 0.5],
     [W * 0.3, H * 0.12, W * 0.24, H * 0.2, 0.46],
   ];
-
   darkClouds.forEach(([x, y, rw, rh, alpha], i) => {
-    const rng = (s) => {
+    const rng = (s: number) => {
       const v = Math.sin(s) * 43758.5453;
       return v - Math.floor(v);
     };
@@ -104,22 +99,19 @@ function paintNightSky(off) {
     ctx.restore();
   });
 
-  // ── Depth layers — different navy shades for 3D feel ──
-  const depthBlobs = [
-    // [x, y, rx, ry, r, g, b, alpha]
+  // Depth blobs
+  const depthBlobs: [number, number, number, number, number, number, number, number][] = [
     [W * 0.1, H * 0.2, W * 0.4, H * 0.35, 3, 9, 32, 0.45],
     [W * 0.5, H * 0.1, W * 0.5, H * 0.3, 2, 7, 25, 0.4],
     [W * 0.85, H * 0.35, W * 0.35, H * 0.4, 4, 12, 40, 0.35],
     [W * 0.3, H * 0.7, W * 0.45, H * 0.35, 5, 14, 45, 0.3],
     [W * 0.7, H * 0.75, W * 0.4, H * 0.3, 3, 10, 35, 0.35],
     [W * 0.15, H * 0.8, W * 0.3, H * 0.25, 2, 8, 28, 0.28],
-    // Teal-tinged depth pockets
     [W * 0.6, H * 0.25, W * 0.25, H * 0.2, 5, 28, 55, 0.12],
     [W * 0.2, H * 0.55, W * 0.22, H * 0.18, 4, 24, 50, 0.1],
     [W * 0.75, H * 0.6, W * 0.2, H * 0.16, 6, 30, 58, 0.09],
     [W * 0.45, H * 0.85, W * 0.28, H * 0.18, 5, 26, 52, 0.11],
   ];
-
   depthBlobs.forEach(([x, y, rw, rh, r, g, b, a]) => {
     const maxR = Math.max(rw, rh);
     const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, maxR);
@@ -136,17 +128,17 @@ function paintNightSky(off) {
     ctx.restore();
   });
 
-  // ── Teal accent clouds — multiple shades ──
-  const tealClouds = [
-    [W * 0.55, H * 0.3, W * 0.18, H * 0.14, 0, 45, 65, 0.28], // deep teal
-    [W * 0.22, H * 0.45, W * 0.32, H * 0.07, 0, 90, 60, 0.42], // mid teal
-    [W * 0.78, H * 0.55, W * 0.16, H * 0.13, 5, 60, 80, 0.26], // brighter teal
-    [W * 0.4, H * 0.65, W * 0.12, H * 0.1, 0, 38, 58, 0.2], // dark teal
-    [W * 0.88, H * 0.2, W * 0.1, H * 0.08, 8, 95, 55, 0.42], // light teal hint
-    [W * 0.1, H * 0.7, W * 0.13, H * 0.1, 2, 50, 70, 0.24], // teal-navy
+  // Teal accent clouds
+  const tealClouds: [number, number, number, number, number, number, number, number][] = [
+    [W * 0.55, H * 0.3, W * 0.18, H * 0.14, 0, 45, 65, 0.28],
+    [W * 0.22, H * 0.45, W * 0.32, H * 0.07, 0, 90, 60, 0.42],
+    [W * 0.78, H * 0.55, W * 0.16, H * 0.13, 5, 60, 80, 0.26],
+    [W * 0.4, H * 0.65, W * 0.12, H * 0.1, 0, 38, 58, 0.2],
+    [W * 0.88, H * 0.2, W * 0.1, H * 0.08, 8, 95, 55, 0.42],
+    [W * 0.1, H * 0.7, W * 0.13, H * 0.1, 2, 50, 70, 0.24],
   ];
 
-  // Custom light teal + purple blend blob
+  // Purple-teal blend
   const purpleTealGrad = ctx.createRadialGradient(W * 0.88, H * 0.2, 0, W * 0.88, H * 0.2, W * 0.13);
   purpleTealGrad.addColorStop(0, "rgba(80, 0, 120, 0.38)");
   purpleTealGrad.addColorStop(0.4, "rgba(8, 95, 55, 0.35)");
@@ -180,47 +172,31 @@ function paintNightSky(off) {
     ctx.restore();
   });
 
-  // ── Patchy Milky Way — fbm noise-driven cloud patches ──
-  // Use pixel-level noise sampling for organic cloud look
-  const imageData = ctx.getImageData(0, 0, W, H);
-  const data = imageData.data;
-
-  // Sample at reduced resolution for performance, then we'll use blobs
-  // Generate ~120 irregular cloud patches along a diagonal band
-  const rng = (seed) => {
-    let x = Math.sin(seed) * 43758.5453;
+  // Patchy Milky Way
+  const rng = (seed: number) => {
+    const x = Math.sin(seed) * 43758.5453;
     return x - Math.floor(x);
   };
-
   for (let i = 0; i < 210; i++) {
-    // Diagonal band: top-left to bottom-right with organic scatter
     const t = i / 140;
     const bandX = t * W + (rng(i * 7.3) - 0.5) * W * 0.35;
     const bandY = t * H * 0.65 + H * 0.05 + (rng(i * 3.7) - 0.5) * H * 0.3;
-
-    // Random patch sizes — very irregular
     const patchW = W * (0.04 + rng(i * 11.1) * 0.12);
     const patchH = H * (0.03 + rng(i * 5.9) * 0.1);
     const alpha = 0.06 + rng(i * 9.1) * 0.22;
-
-    // Vary colour — mostly blue-white haze, some teal tints
     const isTeal = rng(i * 13.7) < 0.15;
     const r = isTeal ? 5 : 15;
     const g = isTeal ? 35 : 30;
     const b = isTeal ? 60 : 72;
-
     const maxR = Math.max(patchW, patchH);
     const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, maxR);
     grad.addColorStop(0, `rgba(${r},${g},${b},${alpha})`);
     grad.addColorStop(0.4, `rgba(${r},${g},${b},${alpha * 0.55})`);
     grad.addColorStop(0.7, `rgba(${r},${g},${b},${alpha * 0.2})`);
     grad.addColorStop(1, "rgba(0,0,0,0)");
-
-    // Random rotation per patch for organic feel
-    const rot = rng(i * 17.3) * Math.PI;
     ctx.save();
     ctx.translate(bandX, bandY);
-    ctx.rotate(rot);
+    ctx.rotate(rng(i * 17.3) * Math.PI);
     ctx.scale(patchW / maxR, patchH / maxR);
     ctx.fillStyle = grad;
     ctx.beginPath();
@@ -228,8 +204,6 @@ function paintNightSky(off) {
     ctx.fill();
     ctx.restore();
   }
-
-  // Secondary sparser band offset
   for (let i = 0; i < 120; i++) {
     const t = i / 80;
     const bandX = t * W * 0.8 + W * 0.15 + (rng(i * 6.1 + 100) - 0.5) * W * 0.25;
@@ -237,7 +211,6 @@ function paintNightSky(off) {
     const patchW = W * (0.03 + rng(i * 8.8 + 200) * 0.08);
     const patchH = H * (0.025 + rng(i * 6.6 + 150) * 0.07);
     const alpha = 0.04 + rng(i * 7.7 + 80) * 0.12;
-
     const maxR = Math.max(patchW, patchH);
     const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, maxR);
     grad.addColorStop(0, `rgba(12,28,68,${alpha})`);
@@ -252,19 +225,18 @@ function paintNightSky(off) {
     ctx.restore();
   }
 
-  // ── Atmospheric haze bottom ──
+  // Atmospheric haze
   const atmo = ctx.createLinearGradient(0, H * 0.55, 0, H);
   atmo.addColorStop(0, "rgba(8, 22, 55, 0)");
   atmo.addColorStop(1, "rgba(12, 30, 70, 0.40)");
   ctx.fillStyle = atmo;
   ctx.fillRect(0, 0, W, H);
 
-  // ── Background star field ──
+  // Background stars
   for (let i = 0; i < 6500; i++) {
     const x = Math.random() * W;
     const y = Math.random() * H;
     const sz = Math.random() * 0.7 + 0.1;
-    // More stars in milky way band
     const bandT = x / W;
     const bandCY = bandT * H * 0.65 + H * 0.05;
     const distFromBand = Math.abs(y - bandCY) / H;
@@ -283,7 +255,7 @@ function paintNightSky(off) {
     ctx.fill();
   }
 
-  // ── Brighter accent stars ──
+  // Bright accent stars
   for (let i = 0; i < 18; i++) {
     const x = Math.random() * W;
     const y = Math.random() * H;
@@ -303,26 +275,14 @@ function paintNightSky(off) {
   }
 }
 
-// ── Background twinkling stars (5% of bg stars) ──
-function initBgTwinklers(count) {
-  return Array.from({ length: count }, () => ({
-    x: Math.random(),
-    y: Math.random(),
-    size: Math.random() < 0.3 ? (Math.random() * 0.6 + 0.2) * 3.0 : Math.random() * 0.6 + 0.2,
-    phase: Math.random() * Math.PI * 2,
-    speed: 0.008 + Math.random() * 0.018,
-    baseAlpha: 0.15 + Math.random() * 0.35,
-  }));
-}
-
-export default function StarfieldPreview() {
-  const canvasRef = useRef(null);
-  const offRef = useRef(null);
+// ── COMPONENT ───────────────────────────────────────────
+const StarCanvas = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const offRef = useRef<HTMLCanvasElement | null>(null);
   const starsRef = useRef(initStars(CFG.numStars));
-  const twinklersRef = useRef(initBgTwinklers(140)); // ~5% of 2800 bg stars
+  const twinklersRef = useRef(initBgTwinklers(420));
   const frameRef = useRef(0);
-  const animRef = useRef(null);
-  const [playing, setPlaying] = useState(true);
+  const animRef = useRef<number | null>(null);
   const [bgReady, setBgReady] = useState(false);
 
   useEffect(() => {
@@ -335,9 +295,9 @@ export default function StarfieldPreview() {
   }, []);
 
   useEffect(() => {
-    if (!bgReady) return;
+    if (!bgReady || !canvasRef.current) return;
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d")!;
     const W = canvas.width;
     const H = canvas.height;
     const cx = W / 2;
@@ -351,10 +311,10 @@ export default function StarfieldPreview() {
       ctx.translate(cx, cy);
       ctx.rotate(t * CFG.bgRotationSpeed);
       const size = Math.max(W, H) * 1.55;
-      ctx.drawImage(offRef.current, -size / 2, -size / 2, size, size);
+      ctx.drawImage(offRef.current!, -size / 2, -size / 2, size, size);
       ctx.restore();
 
-      // 2. Twinkling background stars (drawn on top of bg, before zoom stars)
+      // 2. Twinkling bg stars
       twinklersRef.current.forEach((s) => {
         s.phase += s.speed;
         const alpha = s.baseAlpha * (0.5 + 0.5 * Math.sin(s.phase));
@@ -375,7 +335,7 @@ export default function StarfieldPreview() {
       starsRef.current.forEach((star) => {
         star.z -= CFG.zoomSpeed;
         if (star.z <= 0.01) {
-          let nx, ny;
+          let nx: number, ny: number;
           do {
             nx = (Math.random() - 0.5) * 2;
             ny = (Math.random() - 0.5) * 2;
@@ -419,68 +379,27 @@ export default function StarfieldPreview() {
       draw();
       animRef.current = requestAnimationFrame(loop);
     };
-    if (playing) animRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(animRef.current);
-  }, [playing, bgReady]);
+    animRef.current = requestAnimationFrame(loop);
+
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+    };
+  }, [bgReady]);
 
   return (
-    <div
+    <canvas
+      ref={canvasRef}
+      width={1920}
+      height={800}
       style={{
-        background: "#000",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "16px",
-        padding: "20px",
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        display: "block",
       }}
-    >
-      {!bgReady && <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "14px" }}>Generating night sky...</p>}
-      <canvas
-        ref={canvasRef}
-        width={960}
-        height={540}
-        style={{ width: "100%", maxWidth: "960px", borderRadius: "12px", display: bgReady ? "block" : "none" }}
-      />
-      <div style={{ display: "flex", gap: "12px" }}>
-        <button
-          onClick={() => setPlaying((p) => !p)}
-          style={{
-            background: "#1DB8AB",
-            color: "#0A1A2F",
-            border: "none",
-            borderRadius: "999px",
-            padding: "10px 28px",
-            fontWeight: "600",
-            cursor: "pointer",
-            fontSize: "15px",
-          }}
-        >
-          {playing ? "⏸ Pause" : "▶ Play"}
-        </button>
-        <button
-          onClick={() => {
-            starsRef.current = initStars(CFG.numStars);
-            frameRef.current = 0;
-          }}
-          style={{
-            background: "#14374E",
-            color: "white",
-            border: "none",
-            borderRadius: "999px",
-            padding: "10px 28px",
-            fontWeight: "600",
-            cursor: "pointer",
-            fontSize: "15px",
-          }}
-        >
-          ↺ Reset
-        </button>
-      </div>
-      <p style={{ color: "rgba(255,255,255,0.35)", fontSize: "13px", textAlign: "center" }}>
-        Patchy Milky Way · Deep navy depth layers · Teal accents · 5% twinkling bg stars · Parallax rotation
-      </p>
-    </div>
+    />
   );
-}
+};
+
+export default StarCanvas;
