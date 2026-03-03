@@ -86,7 +86,7 @@ const Index = () => {
         >
           {/* Cream Background */}
           <div className="absolute inset-0 bg-beige-gradient z-0" />
-          <GrainOverlay opacity={0.06} />
+          <GrainOverlay opacity={0.08} />
 
           {/* ---------- RIGHT MOVIE COLUMN ---------- */}
           <div className="absolute top-0 right-0 h-full z-10 w-[55%] min-w-[712px] lg:w-[48%] pointer-events-none">
