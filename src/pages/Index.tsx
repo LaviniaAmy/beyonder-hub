@@ -165,13 +165,14 @@ const Index = () => {
           {/* ---------- CTAs ---------- */}
           <div className="absolute z-20 flex flex-col gap-6" style={{ left: "780px", top: "620px" }}>
             <Button
-              className="bg-[#0A1A2F] text-white px-14 py-6 rounded-full text-xl font-semibold shadow-lg hover:bg-[#0C223D] w-[450px] border border-[#1DB8AB]"
+              className="text-[#0A1A2F] px-14 py-8 rounded-full text-xl font-semibold shadow-lg w-[450px] border-0"
+              style={{ background: "linear-gradient(180deg, #EFCF67 0%, #FF8563 100%)" }}
               onClick={() => navigate("/explore")}
             >
               Explore Services
             </Button>
             <Button
-              className="bg-white text-[#0A1A2F] px-14 py-6 rounded-full text-xl font-semibold shadow-lg hover:bg-gray-50 w-[450px]"
+              className="bg-[#0A1A2F] text-white px-14 py-8 rounded-full text-xl font-semibold shadow-lg hover:bg-[#0C223D] w-[450px] border-0"
               onClick={() => navigate("/community")}
             >
               Community groups
