@@ -105,7 +105,7 @@ const Index = () => {
             </div>
 
             {/* Logo Overlay */}
-            <div className="absolute inset-0 z-40 -translate-y-[15px] translate-x-[60px] flex flex-col items-center justify-center pt-[160px]">
+            <div className="absolute inset-0 z-40 -translate-y-[15px] translate-x-[60px] flex flex-col items-center justify-center pt-[190px]">
               <img src={LogoPrimary} className="w-[480px] mb-1" alt="Beyonder" />
               <p className="text-white text-xl font-light tracking-widest -mt-1">SEND Community Hub</p>{" "}
               <div
