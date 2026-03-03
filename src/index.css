@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -11,12 +11,12 @@
 @layer base {
   :root {
     /* Brand Colors */
-    --beyonder-navy: 207 56% 19%;       /* #14374E */
-    --beyonder-teal: 176 100% 37%;      /* #00BBB1 */
-    --beyonder-beige: 38 82% 79%;       /* #F5D69D */
-    --beyonder-cream: 37 60% 93%;       /* #F8EFDE */
-    --beyonder-gold: 42 93% 70%;        /* #FACC7A */
-    --beyonder-footer: 207 72% 15%;     /* #082B43 */
+    --beyonder-navy: 207 56% 19%; /* #14374E */
+    --beyonder-teal: 176 100% 37%; /* #00BBB1 */
+    --beyonder-beige: 38 82% 79%; /* #F5D69D */
+    --beyonder-cream: 37 60% 93%; /* #F8EFDE */
+    --beyonder-gold: 42 93% 70%; /* #FACC7A */
+    --beyonder-footer: 207 72% 15%; /* #082B43 */
 
     /* Navy Scale */
     --navy-900: 207 72% 15%;
@@ -127,7 +127,11 @@
   }
 
   html {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family:
+      "Plus Jakarta Sans",
+      system-ui,
+      -apple-system,
+      sans-serif;
   }
 
   body {
@@ -154,16 +158,11 @@
 /* Utility classes */
 @layer utilities {
   .bg-beige-gradient {
-    background: linear-gradient(90deg, #FFFFFF 0%, #F5D69D 100%);
+    background: linear-gradient(90deg, #ffffff 0%, #f5d69d 100%);
   }
 
   .bg-navy-gradient {
-    background: linear-gradient(
-      180deg,
-      hsl(207 72% 15%) 0%,
-      hsl(207 56% 19%) 50%,
-      hsl(207 50% 25%) 100%
-    );
+    background: linear-gradient(180deg, hsl(207 72% 15%) 0%, hsl(207 56% 19%) 50%, hsl(207 50% 25%) 100%);
   }
 
   .bg-navy-900 {
@@ -195,11 +194,15 @@
   }
 
   .shadow-card {
-    box-shadow: 0 1px 3px 0 hsl(30 20% 50% / 0.06), 0 4px 12px 0 hsl(30 20% 50% / 0.04);
+    box-shadow:
+      0 1px 3px 0 hsl(30 20% 50% / 0.06),
+      0 4px 12px 0 hsl(30 20% 50% / 0.04);
   }
 
   .shadow-card-hover {
-    box-shadow: 0 4px 16px 0 hsl(30 20% 50% / 0.1), 0 8px 24px 0 hsl(30 20% 50% / 0.06);
+    box-shadow:
+      0 4px 16px 0 hsl(30 20% 50% / 0.1),
+      0 8px 24px 0 hsl(30 20% 50% / 0.06);
   }
 
   .card-hover-lift {
@@ -208,11 +211,13 @@
 
   .card-hover-lift:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 16px 0 hsl(30 20% 50% / 0.1), 0 8px 24px 0 hsl(30 20% 50% / 0.06);
+    box-shadow:
+      0 4px 16px 0 hsl(30 20% 50% / 0.1),
+      0 8px 24px 0 hsl(30 20% 50% / 0.06);
   }
 
   .btn-join-now {
-    background: linear-gradient(180deg, #EFCF67 0%, #FF8563 100%);
+    background: linear-gradient(180deg, #efcf67 0%, #ff8563 100%);
     color: hsl(207 56% 19%);
   }
 
@@ -227,15 +232,31 @@
 
 /* Page-load staggered entrance */
 @keyframes hero-load-in {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.hero-load-1 { animation: hero-load-in 0.6s ease-out 0.2s both; }
-.hero-load-2 { animation: hero-load-in 0.6s ease-out 0.35s both; }
-.hero-load-3 { animation: hero-load-in 0.6s ease-out 0.5s both; }
-.hero-load-4 { animation: hero-load-in 0.6s ease-out 0.65s both; }
-.hero-load-5 { animation: hero-load-in 0.6s ease-out 0.8s both; }
+.hero-load-1 {
+  animation: hero-load-in 0.6s ease-out 0.2s both;
+}
+.hero-load-2 {
+  animation: hero-load-in 0.6s ease-out 0.35s both;
+}
+.hero-load-3 {
+  animation: hero-load-in 0.6s ease-out 0.5s both;
+}
+.hero-load-4 {
+  animation: hero-load-in 0.6s ease-out 0.65s both;
+}
+.hero-load-5 {
+  animation: hero-load-in 0.6s ease-out 0.8s both;
+}
 
 /* Hero background fade-in */
 .hero-bg {
@@ -244,8 +265,12 @@
 
 /* Search bar focus halo */
 @keyframes hero-search-halo {
-  0% { box-shadow: 0 0 0 0 hsl(176 100% 37% / 0.3); }
-  100% { box-shadow: 0 0 0 8px hsl(176 100% 37% / 0); }
+  0% {
+    box-shadow: 0 0 0 0 hsl(176 100% 37% / 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 8px hsl(176 100% 37% / 0);
+  }
 }
 
 .hero-search-bar:focus {

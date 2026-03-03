@@ -110,7 +110,7 @@ const Index = () => {
               <p className="text-white text-xl font-light tracking-widest -mt-1 mb-10">SEND Community Hub</p>{" "}
               <div
                 className="text-white mt-4 text-center leading-tight"
-                style={{ fontSize: "36px", fontFamily: "'Arial Nova', 'Arial', sans-serif", letterSpacing: "0.02em" }}
+                style={{ fontSize: "56px", fontFamily: "'Playfair Display', serif", letterSpacing: "0.02em" }}
               >
                 <p className="font-bold">One Place</p>
                 <p>
