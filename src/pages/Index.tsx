@@ -112,9 +112,9 @@ const Index = () => {
                 className="text-white mt-4 text-center leading-tight"
                 style={{ fontSize: "56px", fontFamily: "'Jost', sans-serif", letterSpacing: "0.02em" }}
               >
-                <p className="font-bold">One Place</p>
+                <p className="font-semibold">One Place</p>
                 <p>
-                  for everything <span className="font-bold">SEND</span>
+                  for everything <span className="font-semibold">SEND</span>
                 </p>
               </div>
               <div className="pointer-events-auto mt-6 w-[500px]">
