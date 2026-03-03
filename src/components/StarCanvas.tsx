@@ -1,19 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 
-// ── CONFIG ──────────────────────────────────────────────
 const CFG = {
-  numStars: 320,
-  zoomSpeed: 0.0003,
+  numStars: 1280,
+  zoomSpeed: 0.00042,
   rotationSpeed: 0.00012,
   bgRotationSpeed: 0.00032,
-  minSize: 0.2,
-  maxSize: 0.9,
+  minSize: 0.3,
+  maxSize: 1.3,
+  originX: 0.15,
+  originY: 0.0,
 };
 
 const STAR_COLORS = [
-  { r: 210, g: 228, b: 255, weight: 6 },
+  { r: 210, g: 228, b: 255, weight: 4 },
   { r: 255, g: 255, b: 255, weight: 4 },
   { r: 255, g: 240, b: 180, weight: 3 },
+  { r: 255, g: 225, b: 130, weight: 3 },
+  { r: 255, g: 210, b: 80, weight: 2 },
+  { r: 255, g: 200, b: 60, weight: 2 },
   { r: 255, g: 248, b: 210, weight: 2 },
   { r: 180, g: 210, b: 255, weight: 2 },
 ];
@@ -48,8 +52,65 @@ function initBgTwinklers(count: number) {
     size: Math.random() < 0.3 ? (Math.random() * 0.6 + 0.2) * 3.0 : Math.random() * 0.6 + 0.2,
     phase: Math.random() * Math.PI * 2,
     speed: 0.008 + Math.random() * 0.018,
-    baseAlpha: 0.15 + Math.random() * 0.35,
+    baseAlpha: Math.random() < 0.3 ? 0.35 + Math.random() * 0.5 : 0.03 + Math.random() * 0.07,
   }));
+}
+
+function paintNebula(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  baseR: number,
+  r: number,
+  g: number,
+  b: number,
+  maxAlpha: number,
+  seed: number,
+  layers = 7,
+) {
+  const rng = (s: number) => {
+    const v = Math.sin(s) * 43758.5453;
+    return v - Math.floor(v);
+  };
+  for (let l = 0; l < layers; l++) {
+    const depthFactor = 1 - l / layers;
+    const offsetX = (rng(seed + l * 3.7) - 0.5) * baseR * 1.1;
+    const offsetY = (rng(seed + l * 5.3) - 0.5) * baseR * 1.0;
+    const scaleX = 0.4 + rng(seed + l * 7.1) * 1.4;
+    const scaleY = 0.3 + rng(seed + l * 9.3) * 0.9;
+    const rot = rng(seed + l * 11.7) * Math.PI * 2;
+    const layerR = baseR * (0.5 + rng(seed + l * 13.1) * 0.9);
+    const alpha = maxAlpha * depthFactor * (0.4 + rng(seed + l * 17.3) * 0.6);
+    const maxDim = Math.max(scaleX, scaleY) * layerR;
+    const rS = Math.min(255, r + Math.round((rng(seed + l * 19.1) - 0.5) * 15));
+    const gS = Math.min(255, g + Math.round((rng(seed + l * 23.3) - 0.5) * 20));
+    const bS = Math.min(255, b + Math.round((rng(seed + l * 29.7) - 0.5) * 25));
+    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, maxDim);
+    grad.addColorStop(0, `rgba(${rS},${gS},${bS},${alpha})`);
+    grad.addColorStop(0.3, `rgba(${rS},${gS},${bS},${alpha * 0.7})`);
+    grad.addColorStop(0.6, `rgba(${rS},${gS},${bS},${alpha * 0.25})`);
+    grad.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.save();
+    ctx.translate(cx + offsetX, cy + offsetY);
+    ctx.rotate(rot);
+    ctx.scale(scaleX, scaleY);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(0, 0, maxDim, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, baseR * 0.3);
+  coreGrad.addColorStop(
+    0,
+    `rgba(${Math.min(r + 60, 255)},${Math.min(g + 60, 255)},${Math.min(b + 60, 255)},${maxAlpha * 0.4})`,
+  );
+  coreGrad.addColorStop(0.5, `rgba(${r},${g},${b},${maxAlpha * 0.15})`);
+  coreGrad.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = coreGrad;
+  ctx.beginPath();
+  ctx.arc(cx, cy, baseR * 0.3, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 function paintNightSky(off: HTMLCanvasElement) {
@@ -66,7 +127,6 @@ function paintNightSky(off: HTMLCanvasElement) {
   ctx.fillStyle = baseGrad;
   ctx.fillRect(0, 0, W, H);
 
-  // Dark organic cloud masses
   const darkClouds: [number, number, number, number, number][] = [
     [W * 0.2, H * 0.35, W * 0.28, H * 0.22, 0.55],
     [W * 0.65, H * 0.2, W * 0.22, H * 0.3, 0.5],
@@ -99,7 +159,6 @@ function paintNightSky(off: HTMLCanvasElement) {
     ctx.restore();
   });
 
-  // Depth blobs
   const depthBlobs: [number, number, number, number, number, number, number, number][] = [
     [W * 0.1, H * 0.2, W * 0.4, H * 0.35, 3, 9, 32, 0.45],
     [W * 0.5, H * 0.1, W * 0.5, H * 0.3, 2, 7, 25, 0.4],
@@ -128,55 +187,20 @@ function paintNightSky(off: HTMLCanvasElement) {
     ctx.restore();
   });
 
-  // Teal accent clouds
-  const tealClouds: [number, number, number, number, number, number, number, number][] = [
-    [W * 0.55, H * 0.3, W * 0.18, H * 0.14, 0, 45, 65, 0.28],
-    [W * 0.22, H * 0.45, W * 0.32, H * 0.07, 0, 90, 60, 0.42],
-    [W * 0.78, H * 0.55, W * 0.16, H * 0.13, 5, 60, 80, 0.26],
-    [W * 0.4, H * 0.65, W * 0.12, H * 0.1, 0, 38, 58, 0.2],
-    [W * 0.88, H * 0.2, W * 0.1, H * 0.08, 8, 95, 55, 0.42],
-    [W * 0.1, H * 0.7, W * 0.13, H * 0.1, 2, 50, 70, 0.24],
-  ];
+  paintNebula(ctx, W * 0.88, H * 0.2, W * 0.2, 8, 110, 65, 0.6, 1.0, 8);
+  paintNebula(ctx, W * 0.84, H * 0.18, W * 0.14, 0, 85, 55, 0.4, 2.0, 7);
+  paintNebula(ctx, W * 0.9, H * 0.22, W * 0.16, 90, 0, 130, 0.45, 8.0, 6);
+  paintNebula(ctx, W * 0.22, H * 0.45, W * 0.26, 0, 72, 85, 0.55, 3.0, 8);
+  paintNebula(ctx, W * 0.28, H * 0.42, W * 0.16, 0, 55, 75, 0.35, 4.0, 7);
+  paintNebula(ctx, W * 0.55, H * 0.3, W * 0.18, 0, 55, 75, 0.42, 5.0, 7);
+  paintNebula(ctx, W * 0.78, H * 0.55, W * 0.16, 5, 70, 90, 0.38, 6.0, 6);
+  paintNebula(ctx, W * 0.1, H * 0.7, W * 0.14, 2, 58, 78, 0.35, 7.0, 6);
 
-  // Purple-teal blend
-  const purpleTealGrad = ctx.createRadialGradient(W * 0.88, H * 0.2, 0, W * 0.88, H * 0.2, W * 0.13);
-  purpleTealGrad.addColorStop(0, "rgba(80, 0, 120, 0.38)");
-  purpleTealGrad.addColorStop(0.4, "rgba(8, 95, 55, 0.35)");
-  purpleTealGrad.addColorStop(0.7, "rgba(40, 50, 90, 0.18)");
-  purpleTealGrad.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.save();
-  ctx.translate(W * 0.88, H * 0.2);
-  ctx.rotate(-0.2);
-  ctx.scale(1, 0.55);
-  ctx.fillStyle = purpleTealGrad;
-  ctx.beginPath();
-  ctx.arc(0, 0, W * 0.13, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-
-  const tealRotations = [0, -0.45, 0.3, 0.8, -0.2, 0.5];
-  tealClouds.forEach(([x, y, rw, rh, r, g, b, a], idx) => {
-    const maxR = Math.max(rw, rh);
-    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, maxR);
-    grad.addColorStop(0, `rgba(${r},${g},${b},${a})`);
-    grad.addColorStop(0.6, `rgba(${r},${g},${b},${a * 0.3})`);
-    grad.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(tealRotations[idx] || 0);
-    ctx.scale(rw / maxR, rh / maxR);
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(0, 0, maxR, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  });
-
-  // Patchy Milky Way
   const rng = (seed: number) => {
     const x = Math.sin(seed) * 43758.5453;
     return x - Math.floor(x);
   };
+
   for (let i = 0; i < 210; i++) {
     const t = i / 140;
     const bandX = t * W + (rng(i * 7.3) - 0.5) * W * 0.35;
@@ -204,6 +228,7 @@ function paintNightSky(off: HTMLCanvasElement) {
     ctx.fill();
     ctx.restore();
   }
+
   for (let i = 0; i < 120; i++) {
     const t = i / 80;
     const bandX = t * W * 0.8 + W * 0.15 + (rng(i * 6.1 + 100) - 0.5) * W * 0.25;
@@ -225,14 +250,12 @@ function paintNightSky(off: HTMLCanvasElement) {
     ctx.restore();
   }
 
-  // Atmospheric haze
   const atmo = ctx.createLinearGradient(0, H * 0.55, 0, H);
   atmo.addColorStop(0, "rgba(8, 22, 55, 0)");
   atmo.addColorStop(1, "rgba(12, 30, 70, 0.40)");
   ctx.fillStyle = atmo;
   ctx.fillRect(0, 0, W, H);
 
-  // Background stars
   for (let i = 0; i < 6500; i++) {
     const x = Math.random() * W;
     const y = Math.random() * H;
@@ -241,13 +264,12 @@ function paintNightSky(off: HTMLCanvasElement) {
     const bandCY = bandT * H * 0.65 + H * 0.05;
     const distFromBand = Math.abs(y - bandCY) / H;
     const inBand = distFromBand < 0.18;
+    const bright = Math.random() < 0.3;
     const a = inBand
       ? Math.random() * 0.7 + 0.15
-      : Math.random() < 0.3
+      : bright
         ? (Math.random() * 0.55 + 0.2) * 4.0
-        : Math.random() < 0.5
-          ? Math.random() * 0.55 + 0.2
-          : Math.random() * 0.22 + 0.02;
+        : Math.random() * 0.06 + 0.01;
     const warm = Math.random() < 0.12;
     ctx.fillStyle = warm ? `rgba(255,242,190,${a})` : `rgba(200,220,255,${a})`;
     ctx.beginPath();
@@ -255,7 +277,6 @@ function paintNightSky(off: HTMLCanvasElement) {
     ctx.fill();
   }
 
-  // Bright accent stars
   for (let i = 0; i < 18; i++) {
     const x = Math.random() * W;
     const y = Math.random() * H;
@@ -275,7 +296,6 @@ function paintNightSky(off: HTMLCanvasElement) {
   }
 }
 
-// ── COMPONENT ───────────────────────────────────────────
 const StarCanvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const offRef = useRef<HTMLCanvasElement | null>(null);
@@ -302,11 +322,11 @@ const StarCanvas = () => {
     const H = canvas.height;
     const cx = W / 2;
     const cy = H / 2;
+    const originX = cx + W * CFG.originX;
+    const originY = cy + H * CFG.originY;
 
     const draw = () => {
       const t = frameRef.current;
-
-      // 1. Rotating night sky
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(t * CFG.bgRotationSpeed);
@@ -314,7 +334,6 @@ const StarCanvas = () => {
       ctx.drawImage(offRef.current!, -size / 2, -size / 2, size, size);
       ctx.restore();
 
-      // 2. Twinkling bg stars
       twinklersRef.current.forEach((s) => {
         s.phase += s.speed;
         const alpha = s.baseAlpha * (0.5 + 0.5 * Math.sin(s.phase));
@@ -327,9 +346,8 @@ const StarCanvas = () => {
         ctx.fill();
       });
 
-      // 3. Foreground zooming stars
       ctx.save();
-      ctx.translate(cx, cy);
+      ctx.translate(originX, originY);
       ctx.rotate(t * CFG.rotationSpeed);
 
       starsRef.current.forEach((star) => {
@@ -349,12 +367,12 @@ const StarCanvas = () => {
         const scale = 1 / star.z;
         const px = star.x * scale * (W * 0.5);
         const py = star.y * scale * (H * 0.5);
-        if (Math.abs(px) > W * 0.8 || Math.abs(py) > H * 0.8) return;
+        if (Math.abs(px) > W * 0.9 || Math.abs(py) > H * 0.9) return;
 
         star.twinkle += star.twinkleSpeed;
         const twinkle = 0.78 + 0.22 * Math.sin(star.twinkle);
         const alpha = star.brightness * twinkle;
-        const radius = star.size * scale * 0.5;
+        const radius = Math.min(star.size * scale * 0.45, star.size * 2.5);
         const { r, g, b } = star.color;
 
         const glow = ctx.createRadialGradient(px, py, 0, px, py, radius * 4);
@@ -367,7 +385,7 @@ const StarCanvas = () => {
 
         ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
         ctx.beginPath();
-        ctx.arc(px, py, Math.max(0.2, radius), 0, Math.PI * 2);
+        ctx.arc(px, py, Math.max(0.3, radius), 0, Math.PI * 2);
         ctx.fill();
       });
 
@@ -380,7 +398,6 @@ const StarCanvas = () => {
       animRef.current = requestAnimationFrame(loop);
     };
     animRef.current = requestAnimationFrame(loop);
-
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
@@ -391,13 +408,7 @@ const StarCanvas = () => {
       ref={canvasRef}
       width={1920}
       height={800}
-      style={{
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        display: "block",
-      }}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }}
     />
   );
 };
