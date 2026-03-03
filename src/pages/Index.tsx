@@ -105,12 +105,12 @@ const Index = () => {
             </div>
 
             {/* Logo Overlay */}
-            <div className="absolute inset-0 z-40 -translate-y-[15px] translate-x-[60px] flex flex-col items-center justify-center">
+            <div className="absolute inset-0 z-40 -translate-y-[15px] translate-x-[60px] flex flex-col items-center justify-center pt-[180px]">
               <img src={LogoPrimary} className="w-[480px] mb-1" alt="Beyonder" />
               <p className="text-white text-xl font-light tracking-widest -mt-1">SEND Community Hub</p>{" "}
               <div
                 className="text-white mt-4 text-center leading-tight"
-                style={{ fontSize: "28px", fontFamily: "'Arial Nova', 'Arial', sans-serif", letterSpacing: "0.02em" }}
+                <div className="text-white mt-4 text-center leading-tight" style={{ fontSize: "56px", fontFamily: "'Arial Nova', 'Arial', sans-serif", letterSpacing: "0.02em" }}>
               >
                 <p className="font-bold">One Place</p>
                 <p>
