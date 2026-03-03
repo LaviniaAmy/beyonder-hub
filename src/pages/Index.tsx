@@ -112,7 +112,7 @@ const Index = () => {
                 <form
                   onSubmit={handleSearch}
                   className="relative w-full bg-white rounded-full flex items-center px-6 py-1 border border-black/5"
-                  style={{ boxShadow: "0 0 20px 4px rgba(29, 184, 171, 0.35), 0 4px 24px rgba(0,0,0,0.15)" }}
+                  style={{ boxShadow: "0 0 20px 4px rgba(29, 184, 171, 0.55), 0 4px 24px rgba(0,0,0,0.15)" }}
                 >
                   <input
                     type="text"
