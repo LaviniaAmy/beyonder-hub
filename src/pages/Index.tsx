@@ -1,3 +1,4 @@
+import GrainOverlay from "@/components/GrainOverlay";
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
@@ -85,6 +86,7 @@ const Index = () => {
         >
           {/* Cream Background */}
           <div className="absolute inset-0 bg-beige-gradient z-0" />
+          <GrainOverlay opacity={0.035} />
 
           {/* ---------- RIGHT MOVIE COLUMN ---------- */}
           <div className="absolute top-0 right-0 h-full z-10 w-[55%] min-w-[712px] lg:w-[48%] pointer-events-none">
