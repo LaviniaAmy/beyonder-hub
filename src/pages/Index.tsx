@@ -12,7 +12,7 @@ import WorkIcon from "@/assets/icons/Work_Icon.svg";
 import TherapistsIcon from "@/assets/icons/Therapists_Icon.svg";
 import ClubsIcon from "@/assets/icons/Clubs_Icon.svg";
 import NewsIcon from "@/assets/icons/News_Icon.svg";
-import StarMovie from "@/../public/video/star-movie.mp4";
+import StarCanvas from "@/components/StarCanvas";
 
 const DESIGN_WIDTH = 1920;
 
