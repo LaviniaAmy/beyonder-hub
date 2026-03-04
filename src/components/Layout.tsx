@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
 
@@ -12,22 +11,12 @@ const navLinks = [
   { label: "For Providers", to: "/for-providers" },
 ];
 
-const HERO_OFFSET = 160; // when header becomes "glass" on homepage
-const HIDE_DELTA = 8; // scroll delta required to hide on downward scroll
-const TOP_REVEAL = 12; // near top: always show
-
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  // ✅ desktop scroll states (homepage only)
-  const [isPastHero, setIsPastHero] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
-
-  const isHomepage = location.pathname === "/";
 
   const dashboardLink =
     user?.role === "admin" ? "/admin" : user?.role === "provider" ? "/provider-dashboard" : "/dashboard";
@@ -38,233 +27,301 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     setMobileOpen(false);
   };
 
-  // ✅ Detect desktop (we only hide/reveal header on desktop)
-  const isDesktop = useMemo(() => {
-    if (typeof window === "undefined") return true;
-    return window.matchMedia("(min-width: 768px)").matches;
-  }, []);
-
-  useEffect(() => {
-    // Only apply scroll header behaviour on homepage
-    if (!isHomepage) {
-      setIsPastHero(false);
-      setIsHidden(false);
-      return;
-    }
-
-    // Only apply hide/reveal on desktop
-    const mq = window.matchMedia("(min-width: 768px)");
-    const onMQChange = () => {
-      if (!mq.matches) setIsHidden(false);
-    };
-    mq.addEventListener?.("change", onMQChange);
-
-    let lastY = window.scrollY;
-    let ticking = false;
-
-    const onScroll = () => {
-      const y = window.scrollY;
-
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const atTop = y <= TOP_REVEAL;
-          const pastHero = y >= HERO_OFFSET;
-
-          setIsPastHero(pastHero);
-
-          // mobile/tablet: never hide header
-          if (!mq.matches) {
-            setIsHidden(false);
-          } else {
-            const goingDown = y > lastY;
-            const delta = Math.abs(y - lastY);
-
-            // Always visible near top; hide on down; show on up
-            if (atTop) {
-              setIsHidden(false);
-            } else {
-              if (goingDown && delta >= HIDE_DELTA) setIsHidden(true);
-              if (!goingDown) setIsHidden(false);
-            }
-          }
-
-          lastY = y;
-          ticking = false;
-        });
-
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      mq.removeEventListener?.("change", onMQChange);
-    };
-  }, [isHomepage]);
-
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Header — locked behaviour */}
+      {/* ── NAV — always dark navy, v4 style ─────────── */}
       <header
-        className={[
-          "fixed top-0 left-0 right-0 z-[100] w-full",
-          "transition-[transform,box-shadow,background-color] duration-300 ease-out will-change-transform",
-          isHomepage
-            ? "bg-gradient-to-b from-white to-[#f8f4ea] shadow-sm border-b border-black/5"
-            : "bg-navy-800 shadow-md text-white",
-        ].join(" ")}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          height: 58,
+          background: "rgba(6,24,40,0.96)",
+          borderBottom: "1px solid rgba(42,122,106,0.18)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          display: "flex",
+          alignItems: "center",
+          fontFamily: "'Outfit', sans-serif",
+        }}
       >
-        <div className="container relative z-10 flex h-16 items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <span
-              className="text-xl font-bold"
+        <div
+          className="container"
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%" }}
+        >
+          {/* Logo — orb + wordmark */}
+          <Link to="/" style={{ display: "flex", alignItems: "center", gap: 9, textDecoration: "none" }}>
+            <div
               style={{
-                color: isHomepage ? "hsl(207, 56%, 19%)" : "hsl(176, 100%, 37%)",
+                width: 26,
+                height: 26,
+                borderRadius: "50%",
+                flexShrink: 0,
+                background: "linear-gradient(135deg, #3a9a88, #061828)",
+                border: "1.5px solid rgba(42,122,106,0.60)",
+                position: "relative",
               }}
             >
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%,-50%)",
+                  width: 5,
+                  height: 5,
+                  background: "rgba(255,255,255,0.85)",
+                  borderRadius: "50%",
+                }}
+              />
+            </div>
+            <span style={{ fontSize: "1.15rem", fontWeight: 600, color: "#6abec4", letterSpacing: "-0.5px" }}>
               Beyonder
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex relative z-20">
+          {/* Desktop links */}
+          <nav className="hidden md:flex" style={{ gap: 30, alignItems: "center" }}>
             {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
-                className={[
-                  "rounded-md px-3 py-2 text-sm font-medium",
-                  "transition-colors duration-150",
-                  // hover states
-                  isHomepage ? "hover:bg-black/5" : "hover:bg-white/10",
-                  // active + default text
-                  location.pathname === link.to
-                    ? "text-[hsl(176,100%,37%)]"
-                    : isHomepage
-                      ? "text-[hsl(207,56%,19%)]"
-                      : "text-white/80",
-                ].join(" ")}
+                style={{
+                  color:
+                    link.label === "For Providers"
+                      ? "rgba(58,154,136,0.85)"
+                      : location.pathname === link.to
+                        ? "#3a9a88"
+                        : "rgba(255,255,255,0.60)",
+                  textDecoration: "none",
+                  fontSize: "0.85rem",
+                  borderLeft: link.label === "For Providers" ? "1px solid rgba(255,255,255,0.10)" : "none",
+                  paddingLeft: link.label === "For Providers" ? 30 : 0,
+                  transition: "color 0.15s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#3a9a88")}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color =
+                    link.label === "For Providers"
+                      ? "rgba(58,154,136,0.85)"
+                      : location.pathname === link.to
+                        ? "#3a9a88"
+                        : "rgba(255,255,255,0.60)";
+                }}
               >
                 {link.label}
               </Link>
             ))}
           </nav>
 
-          <div className="hidden items-center gap-2 md:flex">
+          {/* Desktop auth */}
+          <div className="hidden md:flex" style={{ gap: 10, alignItems: "center" }}>
             {isAuthenticated ? (
               <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={
-                    isHomepage ? "text-[hsl(207,56%,19%)] hover:bg-black/5" : "text-white/80 hover:bg-white/10"
-                  }
-                  asChild
+                <Link
+                  to={dashboardLink}
+                  style={{
+                    padding: "7px 18px",
+                    border: "1px solid rgba(255,255,255,0.22)",
+                    borderRadius: 20,
+                    color: "rgba(255,255,255,0.70)",
+                    fontSize: "0.82rem",
+                    background: "transparent",
+                    textDecoration: "none",
+                    transition: "border-color 0.15s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.45)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.22)")}
                 >
-                  <Link to={dashboardLink}>Dashboard</Link>
-                </Button>
-
-                <span className={`text-sm ${isHomepage ? "text-[hsl(207,56%,19%)]/60" : "text-white/60"}`}>
-                  {user?.name}
-                </span>
-
-                <Button
-                  variant="ghost"
-                  size="icon"
+                  Dashboard
+                </Link>
+                <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.35)" }}>{user?.name}</span>
+                <button
                   onClick={handleLogout}
                   aria-label="Log out"
-                  className={
-                    isHomepage ? "text-[hsl(207,56%,19%)]/60 hover:bg-black/5" : "text-white/60 hover:bg-white/10"
-                  }
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "rgba(255,255,255,0.40)",
+                    display: "flex",
+                    alignItems: "center",
+                    padding: 4,
+                  }}
                 >
-                  <LogOut className="h-4 w-4" />
-                </Button>
+                  <LogOut size={15} />
+                </button>
               </>
             ) : (
               <>
-                <Button
-                  variant="ghost"
-                  className={
-                    isHomepage ? "text-[hsl(207,56%,19%)] hover:bg-black/5" : "text-white/80 hover:bg-white/10"
-                  }
-                  asChild
+                <Link
+                  to="/login"
+                  style={{
+                    padding: "7px 18px",
+                    border: "1px solid rgba(255,255,255,0.22)",
+                    borderRadius: 20,
+                    color: "rgba(255,255,255,0.70)",
+                    fontSize: "0.82rem",
+                    background: "transparent",
+                    textDecoration: "none",
+                    transition: "border-color 0.15s, color 0.15s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.45)";
+                    e.currentTarget.style.color = "rgba(255,255,255,0.95)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.22)";
+                    e.currentTarget.style.color = "rgba(255,255,255,0.70)";
+                  }}
                 >
-                  <Link to="/login">Log In</Link>
-                </Button>
-
-                <Button
-                  className={[
-                    "rounded-full btn-join-now font-semibold px-6",
-                    "relative z-0",
-                    "transition-all duration-200 ease-out",
-                    "shadow-sm hover:shadow-md",
-                    "hover:-translate-y-[1px] active:translate-y-0",
-                  ].join(" ")}
-                  asChild
+                  Log in
+                </Link>
+                <Link
+                  to="/signup"
+                  style={{
+                    padding: "8px 22px",
+                    background: "linear-gradient(135deg, #f07840, #e8622a)",
+                    border: "none",
+                    borderRadius: 20,
+                    color: "#ffffff",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                    boxShadow: "0 3px 12px rgba(232,98,42,0.30)",
+                    transition: "opacity 0.15s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
                 >
-                  <Link to="/signup">Join Now</Link>
-                </Button>
+                  Join now
+                </Link>
               </>
             )}
           </div>
 
+          {/* Mobile hamburger */}
           <button
-            className={`md:hidden ${isHomepage ? "text-[hsl(207,56%,19%)]" : "text-white"}`}
+            className="md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
+            style={{
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              color: "rgba(255,255,255,0.70)",
+              padding: 4,
+            }}
           >
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
+        {/* Mobile menu */}
         {mobileOpen && (
-          <div className="border-t border-black/10 bg-white/95 backdrop-blur-sm p-4 md:hidden">
-            <nav className="flex flex-col gap-2">
+          <div
+            className="md:hidden"
+            style={{
+              position: "absolute",
+              top: 58,
+              left: 0,
+              right: 0,
+              background: "rgba(6,24,40,0.98)",
+              borderTop: "1px solid rgba(42,122,106,0.15)",
+              padding: 16,
+              zIndex: 200,
+            }}
+          >
+            <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
               {navLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-black/5 ${
-                    location.pathname === link.to ? "text-[hsl(176,100%,37%)]" : "text-[hsl(207,56%,19%)]"
-                  }`}
                   onClick={() => setMobileOpen(false)}
+                  style={{
+                    padding: "10px 12px",
+                    borderRadius: 8,
+                    fontSize: "0.88rem",
+                    color: location.pathname === link.to ? "#3a9a88" : "rgba(255,255,255,0.65)",
+                    textDecoration: "none",
+                  }}
                 >
                   {link.label}
                 </Link>
               ))}
-
-              <div className="mt-2 flex flex-col gap-2">
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
                 {isAuthenticated ? (
                   <>
-                    <Button variant="ghost" className="text-[hsl(207,56%,19%)] hover:bg-black/5 justify-start" asChild>
-                      <Link to={dashboardLink} onClick={() => setMobileOpen(false)}>
-                        Dashboard
-                      </Link>
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      className="border-[hsl(207,56%,19%)]/20 text-[hsl(207,56%,19%)]"
-                      onClick={handleLogout}
+                    <Link
+                      to={dashboardLink}
+                      onClick={() => setMobileOpen(false)}
+                      style={{
+                        padding: "10px 12px",
+                        borderRadius: 8,
+                        fontSize: "0.88rem",
+                        color: "rgba(255,255,255,0.65)",
+                        textDecoration: "none",
+                        border: "1px solid rgba(255,255,255,0.15)",
+                        textAlign: "center",
+                      }}
                     >
-                      <LogOut className="mr-2 h-4 w-4" /> Log Out
-                    </Button>
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      style={{
+                        padding: "10px 12px",
+                        borderRadius: 8,
+                        fontSize: "0.88rem",
+                        color: "rgba(255,255,255,0.65)",
+                        background: "transparent",
+                        border: "1px solid rgba(255,255,255,0.15)",
+                        cursor: "pointer",
+                        fontFamily: "'Outfit', sans-serif",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 8,
+                      }}
+                    >
+                      <LogOut size={14} /> Log Out
+                    </button>
                   </>
                 ) : (
                   <>
-                    <Button variant="ghost" className="text-[hsl(207,56%,19%)] hover:bg-black/5 justify-start" asChild>
-                      <Link to="/login" onClick={() => setMobileOpen(false)}>
-                        Log In
-                      </Link>
-                    </Button>
-
-                    <Button className="rounded-full btn-join-now font-semibold" asChild>
-                      <Link to="/signup" onClick={() => setMobileOpen(false)}>
-                        Join Now
-                      </Link>
-                    </Button>
+                    <Link
+                      to="/login"
+                      onClick={() => setMobileOpen(false)}
+                      style={{
+                        padding: "10px 12px",
+                        borderRadius: 8,
+                        fontSize: "0.88rem",
+                        color: "rgba(255,255,255,0.65)",
+                        textDecoration: "none",
+                        border: "1px solid rgba(255,255,255,0.15)",
+                        textAlign: "center",
+                      }}
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      to="/signup"
+                      onClick={() => setMobileOpen(false)}
+                      style={{
+                        padding: "10px 12px",
+                        borderRadius: 8,
+                        fontSize: "0.88rem",
+                        fontWeight: 600,
+                        color: "#fff",
+                        textDecoration: "none",
+                        background: "linear-gradient(135deg, #f07840, #e8622a)",
+                        textAlign: "center",
+                      }}
+                    >
+                      Join now
+                    </Link>
                   </>
                 )}
               </div>
@@ -273,8 +330,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         )}
       </header>
 
-      {/* ✅ Prevent fixed header covering content */}
-      <main className="flex-1">{children}</main>
+      {/* Page content — offset by nav height */}
+      <main className="flex-1" style={{ paddingTop: 58 }}>
+        {children}
+      </main>
 
       <Footer />
     </div>
