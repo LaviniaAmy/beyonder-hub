@@ -388,10 +388,7 @@ const Index = () => {
             style={{
               display: "flex",
               width: "min(580px, 92vw)",
-              background: "rgba(42,122,106,0.12)",
-              border: "1px solid rgba(42,122,106,0.22)",
-              borderRadius: 10,
-              overflow: "hidden",
+              background: "transparent",
             }}
           >
             {[
