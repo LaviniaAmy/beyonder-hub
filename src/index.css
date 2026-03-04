@@ -140,7 +140,6 @@
   body {
     @apply bg-background text-foreground antialiased;
     line-height: 1.6;
-    background-color: #061828;
   }
 
   h1 {
@@ -327,4 +326,20 @@
   video {
     display: none;
   }
+}
+
+/* ── Page cosmos background ─────────────────────────────────
+   Applied to <main> on all content pages via Layout.tsx.
+   Excluded from: homepage, /dashboard, /provider-dashboard, /admin.
+   background-attachment: fixed keeps the nebula still while content scrolls.
+────────────────────────────────────────────────────────────── */
+.page-cosmos {
+  background-color: #061828;
+  background-image:
+    radial-gradient(ellipse 70% 55% at 95% 0%, rgba(42, 122, 106, 0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 40% at 0% 100%, rgba(42, 80, 150, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 35% 28% at 50% 45%, rgba(42, 122, 106, 0.07) 0%, transparent 65%),
+    radial-gradient(circle 400px at 90% 8%, rgba(58, 154, 136, 0.08) 0%, transparent 70%),
+    radial-gradient(circle 300px at 5% 92%, rgba(42, 80, 150, 0.06) 0%, transparent 70%);
+  background-attachment: fixed;
 }
