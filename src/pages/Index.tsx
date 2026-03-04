@@ -55,10 +55,10 @@ const Index = () => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: 440,
-          maxHeight: 560,
-          height: "calc(100vh - 64px)",
-          padding: "0 40px 48px",
+          minHeight: 380,
+          maxHeight: 480,
+          height: "calc(100vh - 160px)",
+          padding: "0 40px 40px",
         }}
       >
         {/* Star canvas — fills full hero */}
