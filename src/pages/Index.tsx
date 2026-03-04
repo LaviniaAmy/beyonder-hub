@@ -1,7 +1,6 @@
 import StarCanvas from "@/components/StarCanvas";
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
 
 import LogoPrimary from "@/assets/Logo-Primary.svg";
 import LocalIcon from "@/assets/icons/Local_Icon.svg";
@@ -11,7 +10,6 @@ import TherapistsIcon from "@/assets/icons/Therapists_Icon.svg";
 import ClubsIcon from "@/assets/icons/Clubs_Icon.svg";
 import NewsIcon from "@/assets/icons/News_Icon.svg";
 
-// ─── v4 palette ───────────────────────────────────────────
 const C = {
   navy: "#061828",
   navyMid: "#0d2035",
@@ -28,15 +26,93 @@ const C = {
   textLight: "#8899aa",
 } as const;
 
+// ── Inline hover handlers — bypass shadcn entirely ────────
+
+// Teal CTA: lift + teal glow
+const tealIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  e.currentTarget.style.transform = "translateY(-2px)";
+  e.currentTarget.style.boxShadow = "0 8px 28px rgba(42,122,106,0.52), 0 0 0 4px rgba(42,122,106,0.10)";
+};
+const tealOut = (e: React.MouseEvent<HTMLAnchorElement>, shadow = "0 4px 16px rgba(42,122,106,0.28)") => {
+  e.currentTarget.style.transform = "none";
+  e.currentTarget.style.boxShadow = shadow;
+};
+
+// Ghost outline: faint teal fill
+const ghostIn = (e: React.MouseEvent<HTMLAnchorElement>, baseColor = C.teal) => {
+  e.currentTarget.style.background = "rgba(42,122,106,0.10)";
+  e.currentTarget.style.borderColor = "rgba(58,154,136,0.60)";
+  e.currentTarget.style.color = "#3a9a88";
+};
+const ghostOut = (e: React.MouseEvent<HTMLAnchorElement>, baseColor = C.teal) => {
+  e.currentTarget.style.background = "transparent";
+  e.currentTarget.style.borderColor = "rgba(42,122,106,0.30)";
+  e.currentTarget.style.color = baseColor;
+};
+
+// Card lift
+const cardIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  e.currentTarget.style.transform = "translateY(-3px)";
+  e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.09)";
+  e.currentTarget.style.borderColor = "rgba(42,122,106,0.28)";
+};
+const cardOut = (e: React.MouseEvent<HTMLAnchorElement>, borderColor = "#ede6d8") => {
+  e.currentTarget.style.transform = "none";
+  e.currentTarget.style.boxShadow = "none";
+  e.currentTarget.style.borderColor = borderColor;
+};
+
+// Pillar
+const pillarIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  e.currentTarget.style.background = "rgba(42,122,106,0.10)";
+};
+const pillarOut = (e: React.MouseEvent<HTMLAnchorElement>, hi: boolean) => {
+  e.currentTarget.style.background = hi ? "rgba(42,122,106,0.06)" : "transparent";
+};
+
+// News card
+const newsIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  e.currentTarget.style.transform = "translateY(-2px)";
+  e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.08)";
+};
+const newsOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  e.currentTarget.style.transform = "none";
+  e.currentTarget.style.boxShadow = "none";
+};
+
+// Community card
+const commIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  e.currentTarget.style.transform = "translateY(-2px)";
+  e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.07)";
+};
+const commOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  e.currentTarget.style.transform = "none";
+  e.currentTarget.style.boxShadow = "none";
+};
+
+// Hint chip
+const chipIn = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.currentTarget.style.borderColor = "rgba(58,154,136,0.80)";
+  e.currentTarget.style.background = "rgba(42,122,106,0.16)";
+  e.currentTarget.style.color = "rgba(255,255,255,0.90)";
+  e.currentTarget.style.transform = "scale(1.04)";
+};
+const chipOut = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.currentTarget.style.borderColor = "rgba(42,122,106,0.32)";
+  e.currentTarget.style.background = "rgba(42,122,106,0.06)";
+  e.currentTarget.style.color = "rgba(255,255,255,0.45)";
+  e.currentTarget.style.transform = "none";
+};
+
 const Index = () => {
   const [postcode, setPostcode] = useState("");
   const [support, setSupport] = useState("");
   const navigate = useNavigate();
 
-  // ── Parallax — direct DOM refs, zero re-renders, instant response ──
-  const layerLogoRef = useRef<HTMLDivElement>(null); // 0.12x — slowest
-  const layerSearchRef = useRef<HTMLDivElement>(null); // 0.22x — mid
-  const layerHowRef = useRef<HTMLDivElement>(null); // 0.35x — fastest
+  // ── Multi-speed parallax via direct DOM refs ──
+  const layerLogoRef = useRef<HTMLDivElement>(null);
+  const layerSearchRef = useRef<HTMLDivElement>(null);
+  const layerHowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => {
@@ -52,17 +128,16 @@ const Index = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const q = [postcode, support].filter(Boolean).join(" ");
-    if (q.trim()) navigate(`/providers?search=${encodeURIComponent(q.trim())}`);
-    else navigate("/providers");
+    navigate(q.trim() ? `/providers?search=${encodeURIComponent(q.trim())}` : "/providers");
   };
 
   const hints = ["Speech & Language", "Occupational Therapy", "Autism-friendly clubs", "EHCP support"];
 
   return (
     <div style={{ background: C.cream, fontFamily: "'Outfit', sans-serif" }}>
-      {/* ═══════════════════════════════════════════════════
-          1. HERO — full dark cosmos, centred, v4 layout
-      ═══════════════════════════════════════════════════ */}
+      {/* ══════════════════════════════════════════
+          1. HERO
+      ══════════════════════════════════════════ */}
       <section
         style={{
           position: "relative",
@@ -71,18 +146,15 @@ const Index = () => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: 440,
-          maxHeight: 560,
-          height: "calc(100vh - 64px)",
-          padding: "0 40px 48px",
+          minHeight: 380,
+          maxHeight: 480,
+          height: "calc(100vh - 160px)",
+          padding: "0 40px 40px",
         }}
       >
-        {/* Star canvas — fills full hero */}
         <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
           <StarCanvas />
         </div>
-
-        {/* Dark cosmos gradient overlay on top of canvas */}
         <div
           style={{
             position: "absolute",
@@ -92,8 +164,6 @@ const Index = () => {
               "linear-gradient(158deg, rgba(6,24,40,0.55) 0%, rgba(10,32,56,0.45) 42%, rgba(6,20,32,0.60) 72%, rgba(3,12,20,0.70) 100%)",
           }}
         />
-
-        {/* Teal arc decorators */}
         <div
           style={{
             position: "absolute",
@@ -121,7 +191,7 @@ const Index = () => {
           }}
         />
 
-        {/* ── Layer 1: Logo + tagline — 0.12x, drifts slowest ── */}
+        {/* Layer 1 — Logo + tagline, 0.12x */}
         <div
           ref={layerLogoRef}
           style={{
@@ -142,7 +212,7 @@ const Index = () => {
               fontSize: "1rem",
               color: "rgba(255,255,255,0.50)",
               fontWeight: 300,
-              marginBottom: 0,
+              margin: 0,
               textAlign: "center",
             }}
           >
@@ -150,7 +220,7 @@ const Index = () => {
           </p>
         </div>
 
-        {/* ── Layer 2: Search bar + hints — 0.22x, mid speed ── */}
+        {/* Layer 2 — Search + hints, 0.22x */}
         <div
           ref={layerSearchRef}
           style={{
@@ -164,7 +234,6 @@ const Index = () => {
             willChange: "transform",
           }}
         >
-          {/* Search bar */}
           <form
             onSubmit={handleSearch}
             style={{
@@ -265,19 +334,32 @@ const Index = () => {
                 fontWeight: 600,
                 fontFamily: "'Outfit', sans-serif",
                 cursor: "pointer",
+                transition: "opacity 0.08s ease",
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
             >
               Find Support
             </button>
           </form>
-
-          {/* Hint chips */}
           <div style={{ display: "flex", gap: 7, justifyContent: "center", flexWrap: "wrap" }}>
             <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", alignSelf: "center" }}>Try:</span>
             {hints.map((h) => (
               <button
                 key={h}
-                className="hint-chip"
+                style={{
+                  padding: "4px 11px",
+                  borderRadius: 14,
+                  border: "1px solid rgba(42,122,106,0.32)",
+                  fontSize: "0.68rem",
+                  color: "rgba(255,255,255,0.45)",
+                  background: "rgba(42,122,106,0.06)",
+                  cursor: "pointer",
+                  fontFamily: "'Outfit', sans-serif",
+                  transition: "border-color 0.08s, background 0.08s, color 0.08s, transform 0.08s",
+                }}
+                onMouseEnter={chipIn}
+                onMouseLeave={chipOut}
                 onClick={() => {
                   setSupport(h);
                   navigate(`/providers?search=${encodeURIComponent(h)}`);
@@ -289,7 +371,7 @@ const Index = () => {
           </div>
         </div>
 
-        {/* ── Layer 3: How it works strip — 0.35x, drifts fastest ── */}
+        {/* Layer 3 — How it works, 0.35x */}
         <div
           ref={layerHowRef}
           style={{
@@ -401,9 +483,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════
           2. PILLARS
-      ═══════════════════════════════════════════════════ */}
+      ══════════════════════════════════════════ */}
       <section style={{ background: C.navyMid, borderBottom: "1px solid rgba(42,122,106,0.14)" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", maxWidth: 1280, margin: "0 auto" }}>
           {(
@@ -425,10 +507,10 @@ const Index = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: 14,
-                transition: "background 0.15s",
+                transition: "background 0.08s ease",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(42,122,106,0.10)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = p.hi ? "rgba(42,122,106,0.06)" : "transparent")}
+              onMouseEnter={(e) => pillarIn(e)}
+              onMouseLeave={(e) => pillarOut(e, p.hi)}
             >
               <div
                 style={{
@@ -459,9 +541,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════
           3. CATEGORIES
-      ═══════════════════════════════════════════════════ */}
+      ══════════════════════════════════════════ */}
       <section style={{ background: C.cream, padding: "52px 60px" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
@@ -528,18 +610,10 @@ const Index = () => {
                   alignItems: "center",
                   gap: 10,
                   textAlign: "center",
-                  transition: "transform 0.15s, box-shadow 0.15s, border-color 0.15s",
+                  transition: "transform 0.08s ease, box-shadow 0.08s ease, border-color 0.08s ease",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-3px)";
-                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.08)";
-                  e.currentTarget.style.borderColor = "rgba(42,122,106,0.30)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "";
-                  e.currentTarget.style.boxShadow = "";
-                  e.currentTarget.style.borderColor = C.creamDark;
-                }}
+                onMouseEnter={cardIn}
+                onMouseLeave={(e) => cardOut(e, C.creamDark)}
               >
                 <div
                   style={{
@@ -565,9 +639,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════
           4. PARENT VOICE
-      ═══════════════════════════════════════════════════ */}
+      ══════════════════════════════════════════ */}
       <section style={{ background: C.sage, padding: "52px 60px", borderTop: "1px solid rgba(42,122,106,0.10)" }}>
         <div
           style={{
@@ -676,9 +750,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════
           5. PROVIDER BAND
-      ═══════════════════════════════════════════════════ */}
+      ══════════════════════════════════════════ */}
       <section
         style={{
           background: C.navy,
@@ -781,23 +855,45 @@ const Index = () => {
             <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 4 }}>
               <Link
                 to="/for-providers"
-                className="btn-teal"
                 style={{
                   display: "inline-block",
                   padding: "11px 24px",
                   borderRadius: 8,
+                  background: "linear-gradient(135deg, #3a9a88, #2a7a6a)",
+                  boxShadow: "0 4px 16px rgba(42,122,106,0.28)",
                   color: C.white,
                   fontSize: "0.84rem",
                   fontWeight: 600,
                   textDecoration: "none",
+                  transition: "transform 0.08s ease, box-shadow 0.08s ease",
                 }}
+                onMouseEnter={tealIn}
+                onMouseLeave={(e) => tealOut(e)}
               >
                 Create your free profile
               </Link>
               <Link
                 to="/for-providers"
-                className="btn-ghost"
-                style={{ fontSize: "0.76rem", padding: "10px 16px", borderRadius: 8, textDecoration: "none" }}
+                style={{
+                  fontSize: "0.76rem",
+                  padding: "10px 16px",
+                  borderRadius: 8,
+                  textDecoration: "none",
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                  color: "rgba(255,255,255,0.50)",
+                  transition: "background 0.08s ease, border-color 0.08s ease, color 0.08s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(42,122,106,0.12)";
+                  e.currentTarget.style.borderColor = "rgba(58,154,136,0.55)";
+                  e.currentTarget.style.color = "rgba(255,255,255,0.90)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)";
+                  e.currentTarget.style.color = "rgba(255,255,255,0.50)";
+                }}
               >
                 See how it works →
               </Link>
@@ -871,9 +967,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
-          6. COMMUNITY — sage, noticeboard
-      ═══════════════════════════════════════════════════ */}
+      {/* ══════════════════════════════════════════
+          6. COMMUNITY
+      ══════════════════════════════════════════ */}
       <section style={{ background: C.sage, padding: "52px 60px", borderTop: "1px solid rgba(42,122,106,0.12)" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 32 }}>
@@ -906,7 +1002,6 @@ const Index = () => {
             </p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 28 }}>
-            {/* Meetups */}
             <div>
               <span
                 style={{
@@ -950,16 +1045,10 @@ const Index = () => {
                       display: "flex",
                       gap: 14,
                       alignItems: "flex-start",
-                      transition: "transform 0.15s, box-shadow 0.15s",
+                      transition: "transform 0.08s ease, box-shadow 0.08s ease",
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.07)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "";
-                      e.currentTarget.style.boxShadow = "";
-                    }}
+                    onMouseEnter={commIn}
+                    onMouseLeave={commOut}
                   >
                     <div
                       style={{
@@ -1025,7 +1114,6 @@ const Index = () => {
                 ))}
               </div>
             </div>
-            {/* Threads */}
             <div>
               <span
                 style={{
@@ -1069,16 +1157,10 @@ const Index = () => {
                       border: `1.5px solid ${C.creamDark}`,
                       textDecoration: "none",
                       display: "block",
-                      transition: "transform 0.15s, box-shadow 0.15s",
+                      transition: "transform 0.08s ease, box-shadow 0.08s ease",
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.07)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "";
-                      e.currentTarget.style.boxShadow = "";
-                    }}
+                    onMouseEnter={commIn}
+                    onMouseLeave={commOut}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                       <div
@@ -1129,22 +1211,36 @@ const Index = () => {
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 14 }}>
             <Link
               to="/community"
-              className="btn-teal"
               style={{
                 padding: "11px 28px",
                 borderRadius: 8,
+                background: "linear-gradient(135deg, #3a9a88, #2a7a6a)",
                 color: C.white,
                 fontSize: "0.84rem",
                 fontWeight: 600,
                 textDecoration: "none",
+                boxShadow: "0 4px 16px rgba(42,122,106,0.28)",
+                transition: "transform 0.08s ease, box-shadow 0.08s ease",
               }}
+              onMouseEnter={tealIn}
+              onMouseLeave={(e) => tealOut(e)}
             >
               Join the Community
             </Link>
             <Link
               to="/community"
-              className="btn-ghost"
-              style={{ padding: "10px 20px", borderRadius: 8, fontSize: "0.82rem", textDecoration: "none" }}
+              style={{
+                padding: "10px 20px",
+                borderRadius: 8,
+                background: "transparent",
+                border: "1.5px solid rgba(42,122,106,0.30)",
+                color: C.teal,
+                fontSize: "0.82rem",
+                textDecoration: "none",
+                transition: "background 0.08s ease, border-color 0.08s ease, color 0.08s ease",
+              }}
+              onMouseEnter={(e) => ghostIn(e)}
+              onMouseLeave={(e) => ghostOut(e)}
             >
               Browse all forums
             </Link>
@@ -1155,9 +1251,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════
           7. NEWS
-      ═══════════════════════════════════════════════════ */}
+      ══════════════════════════════════════════ */}
       <section style={{ background: C.cream, padding: "40px 60px", borderTop: `1px solid ${C.creamDark}` }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 22 }}>
@@ -1216,16 +1312,10 @@ const Index = () => {
                   textDecoration: "none",
                   display: "flex",
                   flexDirection: "column",
-                  transition: "transform 0.15s, box-shadow 0.15s",
+                  transition: "transform 0.08s ease, box-shadow 0.08s ease",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 5px 18px rgba(0,0,0,0.07)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "";
-                  e.currentTarget.style.boxShadow = "";
-                }}
+                onMouseEnter={newsIn}
+                onMouseLeave={newsOut}
               >
                 <div
                   style={{
