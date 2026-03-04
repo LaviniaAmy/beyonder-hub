@@ -11,8 +11,6 @@ const navLinks = [
   { label: "For Providers", to: "/for-providers" },
 ];
 
-const EXCLUDED_PATHS = ["/", "/dashboard", "/provider-dashboard", "/admin"];
-
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -29,12 +27,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     setMobileOpen(false);
   };
 
-  // Apply cosmos background on content pages only — not home, dashboards or admin
-  const isExcluded = EXCLUDED_PATHS.some((p) => location.pathname === p || location.pathname.startsWith(p + "/"));
-
   return (
     <div className="flex min-h-screen flex-col">
-      {/* ── NAV ─────────────────────────────────────────── */}
+      {/* ── NAV — always dark navy, v4 style ─────────── */}
       <header
         style={{
           position: "fixed",
@@ -56,7 +51,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           className="container"
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%" }}
         >
-          {/* Logo */}
+          {/* Logo — orb + wordmark */}
           <Link to="/" style={{ display: "flex", alignItems: "center", gap: 9, textDecoration: "none" }}>
             <div
               style={{
@@ -335,11 +330,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         )}
       </header>
 
-      {/* ── Main content ─────────────────────────────────── */}
-      <main
-        className={`flex-1${!isExcluded ? " page-cosmos" : ""}`}
-        style={{ paddingTop: 58, position: "relative", zIndex: 1 }}
-      >
+      {/* Page content — offset by nav height */}
+      <main className="flex-1" style={{ paddingTop: 58 }}>
         {children}
       </main>
 
