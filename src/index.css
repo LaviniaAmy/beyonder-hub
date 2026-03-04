@@ -1,123 +1,126 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Jost:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Jost:wght@400;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Beyonder Design System — Beige/Teal warm parent-facing platform
-   All colors MUST be HSL.
+/*
+  Beyonder Design System — v4
+  Full commit to v4 palette. Outfit globally.
+  Jost retained for hero display text only.
 */
 
 @layer base {
   :root {
-    /* Brand Colors */
-    --beyonder-navy: 207 56% 19%; /* #14374E */
-    --beyonder-teal: 176 100% 37%; /* #00BBB1 */
-    --beyonder-beige: 38 82% 79%; /* #F5D69D */
-    --beyonder-cream: 37 60% 93%; /* #F8EFDE */
-    --beyonder-gold: 42 93% 70%; /* #FACC7A */
-    --beyonder-footer: 207 72% 15%; /* #082B43 */
+    /* ── Brand Primitives ─────────────────────────────── */
+    --beyonder-navy: 214 72% 8%; /* #061828 */
+    --beyonder-navy-mid: 214 55% 13%; /* #0d2035 */
+    --beyonder-teal: 166 49% 30%; /* #2a7a6a */
+    --beyonder-teal-light: 166 46% 40%; /* #3a9a88 */
+    --beyonder-cream: 37 50% 92%; /* #f5f0e8 */
+    --beyonder-cream-dark: 36 40% 87%; /* #ede6d8 */
+    --beyonder-sage: 158 38% 93%; /* #eaf4f0 */
+    --beyonder-orange: 18 80% 57%; /* #e8622a */
+    --beyonder-orange-light: 22 87% 65%; /* #f07840 */
 
-    /* Navy Scale */
-    --navy-900: 207 72% 15%;
-    --navy-800: 207 56% 19%;
-    --navy-700: 207 50% 25%;
-    --navy-600: 207 45% 32%;
-    --navy-500: 207 40% 40%;
+    /* ── Navy Scale ───────────────────────────────────── */
+    --navy-900: 214 72% 8%; /* #061828 */
+    --navy-800: 214 55% 13%; /* #0d2035 */
+    --navy-700: 214 50% 17%; /* #112438 */
+    --navy-600: 214 45% 22%; /* #182f44 */
+    --navy-500: 214 40% 30%; /* #27455a */
 
-    /* Teal (Action Energy) */
-    --teal-500: 176 100% 37%;
-    --teal-400: 176 80% 45%;
-    --teal-300: 176 60% 55%;
+    /* ── Teal Scale ───────────────────────────────────── */
+    --teal-600: 166 49% 24%; /* #1f5e50 */
+    --teal-500: 166 49% 30%; /* #2a7a6a */
+    --teal-400: 166 46% 40%; /* #3a9a88 */
+    --teal-300: 166 40% 55%; /* #5ebdad */
+    --teal-100: 166 38% 93%; /* #eaf4f0  (= sage) */
 
-    /* Warm Orange (Human Warmth — micro accents only) */
-    --orange-400: 28 90% 58%;
-    --orange-300: 28 85% 65%;
-    --orange-200: 28 80% 75%;
+    /* ── Orange ───────────────────────────────────────── */
+    --orange-500: 18 80% 57%; /* #e8622a */
+    --orange-400: 22 87% 65%; /* #f07840 */
+    --orange-300: 26 90% 72%; /* #f5a06a */
 
-    /* Neutrals */
-    --warm-white: 40 30% 98%;
-    --warm-grey: 30 10% 94%;
-    --warm-border: 30 12% 88%;
+    /* ── Semantic Tokens ──────────────────────────────── */
+    --background: 37 50% 92%; /* cream */
+    --foreground: 214 72% 8%; /* navy */
 
-    /* Semantic Tokens */
-    --background: 40 30% 98%;
-    --foreground: 207 56% 19%;
-
-    --card: 37 60% 93%;
-    --card-foreground: 207 56% 19%;
+    --card: 0 0% 100%; /* white */
+    --card-foreground: 214 72% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 207 56% 19%;
+    --popover-foreground: 214 72% 8%;
 
-    --primary: 176 100% 37%;
+    --primary: 166 49% 30%; /* teal-500 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 207 56% 19%;
+    --secondary: 214 72% 8%; /* navy */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 30 10% 94%;
-    --muted-foreground: 207 30% 45%;
+    --muted: 158 38% 93%; /* sage */
+    --muted-foreground: 214 25% 45%;
 
-    --accent: 207 56% 19%;
-    --accent-foreground: 40 30% 98%;
+    --accent: 166 49% 30%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 42 60% 82%;
-    --input: 30 12% 88%;
-    --ring: 176 100% 37%;
+    --border: 36 40% 87%; /* cream-dark */
+    --input: 36 40% 87%;
+    --ring: 166 49% 30%; /* teal */
 
     --radius: 0.75rem;
 
-    --sidebar-background: 207 56% 19%;
-    --sidebar-foreground: 40 30% 98%;
-    --sidebar-primary: 176 100% 37%;
+    /* ── Sidebar (admin / dashboards) ─────────────────── */
+    --sidebar-background: 214 72% 8%;
+    --sidebar-foreground: 37 50% 92%;
+    --sidebar-primary: 166 49% 30%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 207 50% 25%;
-    --sidebar-accent-foreground: 40 30% 98%;
-    --sidebar-border: 207 45% 32%;
-    --sidebar-ring: 176 100% 37%;
+    --sidebar-accent: 214 55% 13%;
+    --sidebar-accent-foreground: 37 50% 92%;
+    --sidebar-border: 214 45% 22%;
+    --sidebar-ring: 166 49% 30%;
   }
 
   .dark {
-    --background: 207 72% 8%;
-    --foreground: 40 30% 95%;
+    --background: 214 72% 6%;
+    --foreground: 37 50% 92%;
 
-    --card: 207 56% 12%;
-    --card-foreground: 40 30% 95%;
+    --card: 214 55% 10%;
+    --card-foreground: 37 50% 92%;
 
-    --popover: 207 56% 12%;
-    --popover-foreground: 40 30% 95%;
+    --popover: 214 55% 10%;
+    --popover-foreground: 37 50% 92%;
 
-    --primary: 176 80% 45%;
-    --primary-foreground: 207 72% 8%;
+    --primary: 166 46% 40%;
+    --primary-foreground: 214 72% 8%;
 
-    --secondary: 207 40% 18%;
-    --secondary-foreground: 40 30% 95%;
+    --secondary: 214 40% 18%;
+    --secondary-foreground: 37 50% 92%;
 
-    --muted: 207 35% 18%;
-    --muted-foreground: 207 15% 60%;
+    --muted: 214 35% 18%;
+    --muted-foreground: 214 15% 60%;
 
-    --accent: 207 40% 18%;
-    --accent-foreground: 40 30% 95%;
+    --accent: 214 40% 18%;
+    --accent-foreground: 37 50% 92%;
 
     --destructive: 0 62% 30%;
-    --destructive-foreground: 40 30% 95%;
+    --destructive-foreground: 37 50% 92%;
 
-    --border: 207 35% 20%;
-    --input: 207 35% 20%;
-    --ring: 176 80% 45%;
+    --border: 214 35% 20%;
+    --input: 214 35% 20%;
+    --ring: 166 46% 40%;
 
-    --sidebar-background: 207 72% 6%;
-    --sidebar-foreground: 40 30% 95%;
-    --sidebar-primary: 176 80% 45%;
+    --sidebar-background: 214 72% 6%;
+    --sidebar-foreground: 37 50% 92%;
+    --sidebar-primary: 166 46% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 207 40% 14%;
-    --sidebar-accent-foreground: 40 30% 95%;
-    --sidebar-border: 207 35% 16%;
-    --sidebar-ring: 176 80% 45%;
+    --sidebar-accent: 214 40% 14%;
+    --sidebar-accent-foreground: 37 50% 92%;
+    --sidebar-border: 214 35% 16%;
+    --sidebar-ring: 166 46% 40%;
   }
 }
 
@@ -128,7 +131,7 @@
 
   html {
     font-family:
-      "Plus Jakarta Sans",
+      "Outfit",
       system-ui,
       -apple-system,
       sans-serif;
@@ -155,54 +158,63 @@
   }
 }
 
-/* Utility classes */
+/* ── Utility classes ────────────────────────────────────── */
 @layer utilities {
+  /* Backgrounds */
   .bg-beige-gradient {
-    background: linear-gradient(90deg, #ffffff 0%, #f5d69d 100%);
+    background: linear-gradient(90deg, #ffffff 0%, #f0deb4 100%);
   }
 
   .bg-navy-gradient {
-    background: linear-gradient(180deg, hsl(207 72% 15%) 0%, hsl(207 56% 19%) 50%, hsl(207 50% 25%) 100%);
+    background: linear-gradient(180deg, hsl(214 72% 8%) 0%, hsl(214 55% 13%) 50%, hsl(214 50% 17%) 100%);
   }
 
   .bg-navy-900 {
-    background-color: hsl(207 72% 15%);
+    background-color: hsl(214 72% 8%);
   }
-
   .bg-navy-800 {
-    background-color: hsl(207 56% 19%);
+    background-color: hsl(214 55% 13%);
   }
-
   .bg-navy-700 {
-    background-color: hsl(207 50% 25%);
+    background-color: hsl(214 50% 17%);
+  }
+  .bg-cream {
+    background-color: hsl(37 50% 92%);
+  }
+  .bg-sage {
+    background-color: hsl(158 38% 93%);
   }
 
+  /* Text */
   .text-warm-white {
-    color: hsl(40 30% 98%);
+    color: hsl(37 50% 92%);
   }
-
   .text-beyonder-navy {
-    color: hsl(207 56% 19%);
+    color: hsl(214 72% 8%);
   }
-
   .text-beyonder-teal {
-    color: hsl(176 100% 37%);
+    color: hsl(166 49% 30%);
+  }
+  .text-teal-light {
+    color: hsl(166 46% 40%);
   }
 
+  /* Teal glow background */
   .bg-teal-glow {
-    background-color: hsl(176 100% 37%);
+    background-color: hsl(166 49% 30%);
   }
 
+  /* Shadows */
   .shadow-card {
     box-shadow:
-      0 1px 3px 0 hsl(30 20% 50% / 0.06),
-      0 4px 12px 0 hsl(30 20% 50% / 0.04);
+      0 1px 3px 0 hsl(214 30% 20% / 0.06),
+      0 4px 12px 0 hsl(214 30% 20% / 0.04);
   }
 
   .shadow-card-hover {
     box-shadow:
-      0 4px 16px 0 hsl(30 20% 50% / 0.1),
-      0 8px 24px 0 hsl(30 20% 50% / 0.06);
+      0 4px 16px 0 hsl(214 30% 20% / 0.1),
+      0 8px 24px 0 hsl(214 30% 20% / 0.06);
   }
 
   .card-hover-lift {
@@ -212,25 +224,49 @@
   .card-hover-lift:hover {
     transform: translateY(-3px);
     box-shadow:
-      0 4px 16px 0 hsl(30 20% 50% / 0.1),
-      0 8px 24px 0 hsl(30 20% 50% / 0.06);
+      0 4px 16px 0 hsl(214 30% 20% / 0.1),
+      0 8px 24px 0 hsl(214 30% 20% / 0.06);
   }
 
+  /* Primary CTA button — orange gradient */
+  .btn-primary-gradient {
+    background: linear-gradient(135deg, #f07840 0%, #e8622a 100%);
+    color: #ffffff;
+  }
+
+  .btn-primary-gradient:hover {
+    background: linear-gradient(135deg, #e86e34 0%, #d45520 100%);
+  }
+
+  /* Join Now — kept for nav compatibility */
   .btn-join-now {
-    background: linear-gradient(180deg, #efcf67 0%, #ff8563 100%);
-    color: hsl(207 56% 19%);
+    background: linear-gradient(135deg, #f07840 0%, #e8622a 100%);
+    color: #ffffff;
   }
 
   .btn-join-now:hover {
-    background: linear-gradient(180deg, #e8c75e 0%, #f07a58 100%);
+    background: linear-gradient(135deg, #e86e34 0%, #d45520 100%);
+  }
+
+  /* Teal CTA button */
+  .btn-teal {
+    background: linear-gradient(135deg, #3a9a88 0%, #2a7a6a 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 16px hsl(166 49% 30% / 0.3);
+  }
+
+  .btn-teal:hover {
+    background: linear-gradient(135deg, #329080 0%, #226a5c 100%);
+  }
+
+  /* Section label strip */
+  .section-label {
+    @apply text-xs font-semibold tracking-[2px] uppercase;
+    color: hsl(166 49% 30%);
   }
 }
 
-/* ========================================
-   HERO ANIMATIONS — Beyonder Homepage
-   ======================================== */
-
-/* Page-load staggered entrance */
+/* ── Hero animations ────────────────────────────────────── */
 @keyframes hero-load-in {
   0% {
     opacity: 0;
@@ -258,26 +294,24 @@
   animation: hero-load-in 0.6s ease-out 0.8s both;
 }
 
-/* Hero background fade-in */
 .hero-bg {
   animation: hero-load-in 0.8s ease-out 0s both;
 }
 
-/* Search bar focus halo */
 @keyframes hero-search-halo {
   0% {
-    box-shadow: 0 0 0 0 hsl(176 100% 37% / 0.3);
+    box-shadow: 0 0 0 0 hsl(166 49% 30% / 0.35);
   }
   100% {
-    box-shadow: 0 0 0 8px hsl(176 100% 37% / 0);
+    box-shadow: 0 0 0 8px hsl(166 49% 30% / 0);
   }
 }
 
-.hero-search-bar:focus {
+.hero-search-bar:focus-within {
   animation: hero-search-halo 0.5s ease-out;
 }
 
-/* Respect reduced motion */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .hero-bg,
   .hero-load-1,
@@ -289,7 +323,6 @@
     opacity: 1 !important;
     transform: none !important;
   }
-
   video {
     display: none;
   }
