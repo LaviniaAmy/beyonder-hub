@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
+import PageBackground from "@/components/PageBackground";
 
 const navLinks = [
   { label: "Home", to: "/" },
@@ -330,8 +331,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         )}
       </header>
 
+      {/* Decorative background — content pages only */}
+      <PageBackground pathname={location.pathname} />
+
       {/* Page content — offset by nav height */}
-      <main className="flex-1" style={{ paddingTop: 58 }}>
+      <main className="flex-1" style={{ paddingTop: 58, position: "relative", zIndex: 1 }}>
         {children}
       </main>
 
