@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
-import PageBackground from "@/components/PageBackground";
 
 const navLinks = [
   { label: "Home", to: "/" },
@@ -11,6 +10,8 @@ const navLinks = [
   { label: "Get Connected", to: "/community" },
   { label: "For Providers", to: "/for-providers" },
 ];
+
+const EXCLUDED_PATHS = ["/", "/dashboard", "/provider-dashboard", "/admin"];
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -28,9 +29,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     setMobileOpen(false);
   };
 
+  // Apply cosmos background on content pages only — not home, dashboards or admin
+  const isExcluded = EXCLUDED_PATHS.some((p) => location.pathname === p || location.pathname.startsWith(p + "/"));
+
   return (
     <div className="flex min-h-screen flex-col">
-      {/* ── NAV — always dark navy, v4 style ─────────── */}
+      {/* ── NAV ─────────────────────────────────────────── */}
       <header
         style={{
           position: "fixed",
@@ -52,7 +56,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           className="container"
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%" }}
         >
-          {/* Logo — orb + wordmark */}
+          {/* Logo */}
           <Link to="/" style={{ display: "flex", alignItems: "center", gap: 9, textDecoration: "none" }}>
             <div
               style={{
@@ -331,11 +335,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         )}
       </header>
 
-      {/* Decorative background — content pages only */}
-      <PageBackground pathname={location.pathname} />
-
-      {/* Page content — offset by nav height */}
-      <main className="flex-1" style={{ paddingTop: 58, position: "relative", zIndex: 1 }}>
+      {/* ── Main content ─────────────────────────────────── */}
+      <main
+        className={`flex-1${!isExcluded ? " page-cosmos" : ""}`}
+        style={{ paddingTop: 58, position: "relative", zIndex: 1 }}
+      >
         {children}
       </main>
 
