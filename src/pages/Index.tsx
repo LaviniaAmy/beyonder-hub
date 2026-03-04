@@ -1,13 +1,9 @@
-import GrainOverlay from "@/components/GrainOverlay";
 import StarCanvas from "@/components/StarCanvas";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 import LogoPrimary from "@/assets/Logo-Primary.svg";
-import TealDark from "@/assets/Teal_Layer_dark.png";
-import TealLight from "@/assets/Teal_Layer_light.png";
 import LocalIcon from "@/assets/icons/Local_Icon.svg";
 import GuidesIcon from "@/assets/icons/Guides_Icon.svg";
 import WorkIcon from "@/assets/icons/Work_Icon.svg";
@@ -15,16 +11,7 @@ import TherapistsIcon from "@/assets/icons/Therapists_Icon.svg";
 import ClubsIcon from "@/assets/icons/Clubs_Icon.svg";
 import NewsIcon from "@/assets/icons/News_Icon.svg";
 
-// ─── hero scaling ─────────────────────────────────────────
-const DESIGN_WIDTH = 1920;
-
-const sideIcons = [
-  { icon: LocalIcon, label: ["Local", "Support"], to: "/providers?view=local" },
-  { icon: GuidesIcon, label: ["Guides &", "Info"], to: "/guides" },
-  { icon: WorkIcon, label: ["Work with", "us"], to: "/for-providers" },
-];
-
-// ─── v4 palette (inline — global tokens update all other pages) ──
+// ─── v4 palette ───────────────────────────────────────────
 const C = {
   navy: "#061828",
   navyMid: "#0d2035",
@@ -41,152 +28,353 @@ const C = {
   textLight: "#8899aa",
 } as const;
 
-// ─── component ────────────────────────────────────────────
 const Index = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [scale, setScale] = useState(1);
+  const [postcode, setPostcode] = useState("");
+  const [support, setSupport] = useState("");
   const navigate = useNavigate();
-  const heroRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const update = () => {
-      const raw = window.innerWidth / DESIGN_WIDTH;
-      const clamped = Math.min(1, Math.max(raw, 1024 / DESIGN_WIDTH));
-      setScale(clamped);
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) navigate(`/providers?search=${encodeURIComponent(searchQuery.trim())}`);
+    const q = [postcode, support].filter(Boolean).join(" ");
+    if (q.trim()) navigate(`/providers?search=${encodeURIComponent(q.trim())}`);
+    else navigate("/providers");
   };
+
+  const hints = ["Speech & Language", "Occupational Therapy", "Autism-friendly clubs", "EHCP support"];
 
   return (
     <div style={{ background: C.cream, fontFamily: "'Outfit', sans-serif" }}>
-      {/* ═══════════════════════════════════════════
-          1. HERO  — pixel-identical to original
-      ═══════════════════════════════════════════ */}
-      <section ref={heroRef} className="relative w-full overflow-hidden" style={{ height: `${800 * scale}px` }}>
+      {/* ═══════════════════════════════════════════════════
+          1. HERO — full dark cosmos, centred, v4 layout
+      ═══════════════════════════════════════════════════ */}
+      <section
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: 440,
+          maxHeight: 560,
+          height: "calc(100vh - 64px)",
+          padding: "0 40px 48px",
+        }}
+      >
+        {/* Star canvas — fills full hero */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+          <StarCanvas />
+        </div>
+
+        {/* Dark cosmos gradient overlay on top of canvas */}
         <div
           style={{
-            width: `${DESIGN_WIDTH}px`,
-            height: "800px",
-            transformOrigin: "top left",
-            transform: `scale(${scale})`,
             position: "absolute",
-            top: 0,
-            left: 0,
+            inset: 0,
+            zIndex: 1,
+            background:
+              "linear-gradient(158deg, rgba(6,24,40,0.55) 0%, rgba(10,32,56,0.45) 42%, rgba(6,20,32,0.60) 72%, rgba(3,12,20,0.70) 100%)",
+          }}
+        />
+
+        {/* Teal arc decorators */}
+        <div
+          style={{
+            position: "absolute",
+            left: -100,
+            top: -100,
+            width: 480,
+            height: 480,
+            borderRadius: "50%",
+            border: "50px solid rgba(42,122,106,0.08)",
+            pointerEvents: "none",
+            zIndex: 2,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: -55,
+            top: -55,
+            width: 300,
+            height: 300,
+            borderRadius: "50%",
+            border: "20px solid rgba(42,122,106,0.055)",
+            pointerEvents: "none",
+            zIndex: 2,
+          }}
+        />
+
+        {/* Central content */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 3,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
+            gap: 0,
           }}
         >
-          <div className="absolute inset-0 bg-beige-gradient z-0" />
-          <GrainOverlay opacity={0.1} />
-
-          {/* ── Right column: layers + canvas + logo ── */}
-          <div className="absolute top-0 right-0 h-full z-10 w-[55%] min-w-[712px] lg:w-[48%] pointer-events-none">
-            <img
-              src={TealLight}
-              alt=""
-              className="absolute top-0 right-0 h-full w-[155%] lg:w-[130%] object-contain z-10 scale-[1.35] -translate-x-[28%] lg:scale-[1.5] lg:-translate-x-[38%] translate-y-[6%]"
-            />
-            <img
-              src={TealDark}
-              alt=""
-              className="absolute top-0 right-0 h-full w-[155%] lg:w-[130%] object-contain z-20 scale-[1.35] -translate-x-[28%] lg:scale-[1.5] lg:-translate-x-[38%] translate-y-[6%]"
-            />
-            <div className="absolute inset-0 z-30 overflow-hidden" style={{ clipPath: "ellipse(82% 92% at 95% 56%)" }}>
-              <StarCanvas />
-            </div>
-            <div className="absolute inset-0 z-40 -translate-y-[15px] translate-x-[60px] flex flex-col items-center justify-center pt-[60px]">
-              <img src={LogoPrimary} alt="Beyonder" className="w-[580px] mb-1" />
-              <p className="text-white text-xl font-light tracking-widest -mt-1 mb-10">SEND Community Hub</p>
-              <div
-                className="text-white mt-4 text-center leading-tight"
-                style={{ fontSize: 36, fontFamily: "'Jost', sans-serif", letterSpacing: "0.02em" }}
-              >
-                <p className="font-semibold">One Place</p>
-                <p>
-                  for everything <span className="font-semibold">SEND</span>
-                </p>
-              </div>
-              <div className="pointer-events-auto mt-6 w-[500px]">
-                <form
-                  onSubmit={handleSearch}
-                  className="relative w-full bg-white rounded-full flex items-center px-6 py-1 border border-black/5"
-                  style={{ boxShadow: "0 0 20px 4px rgba(42,122,106,0.45), 0 4px 24px rgba(0,0,0,0.15)" }}
-                >
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="How can we help you today?"
-                    className="flex-1 focus:outline-none text-base placeholder-[#1a2a3a]/50"
-                    style={{ color: C.textDark }}
-                  />
-                  <div className="w-px h-8 bg-black/10 mx-5" />
-                  <button
-                    type="submit"
-                    className="w-11 h-11 rounded-full flex items-center justify-center"
-                    aria-label="Search"
-                  >
-                    <Search className="w-6 h-6" style={{ color: C.teal }} />
-                  </button>
-                </form>
-              </div>
-            </div>
+          {/* Logo */}
+          <div style={{ marginBottom: 14 }}>
+            <img src={LogoPrimary} alt="Beyonder" style={{ height: "clamp(44px, 8vw, 72px)", width: "auto" }} />
           </div>
 
-          {/* ── Left column: side icons ── */}
-          <div
-            className="absolute top-0 left-0 h-full z-20 flex flex-col justify-end px-10"
-            style={{ paddingBottom: 80 }}
+          {/* Tagline */}
+          <p
+            style={{
+              fontSize: "1rem",
+              color: "rgba(255,255,255,0.50)",
+              fontWeight: 300,
+              marginBottom: 26,
+              textAlign: "center",
+            }}
           >
-            <div className="flex flex-col gap-16 w-[130px]" style={{ marginLeft: 240 }}>
-              {sideIcons.map((item) => (
-                <Link key={item.label[0]} to={item.to} className="flex flex-col items-center gap-1 group">
-                  <div className="w-28 h-28 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-all">
-                    <img src={item.icon} alt={item.label.join(" ")} className="w-full h-full object-cover" />
-                  </div>
-                  <span
-                    className="text-base font-medium text-center leading-tight w-[80px] transition-opacity group-hover:opacity-70"
-                    style={{ color: C.textDark }}
-                  >
-                    {item.label.map((l, i) => (
-                      <span key={i} className="block">
-                        {l}
-                      </span>
-                    ))}
-                  </span>
-                </Link>
-              ))}
+            One place for everything SEND
+          </p>
+
+          {/* Search bar */}
+          <form
+            onSubmit={handleSearch}
+            style={{
+              display: "flex",
+              width: "min(580px, 92vw)",
+              height: 52,
+              background: "rgba(255,255,255,0.97)",
+              borderRadius: 12,
+              overflow: "hidden",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
+              marginBottom: 10,
+            }}
+          >
+            {/* Postcode field */}
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: "7px 16px",
+                borderRight: "1px solid #e8e8e8",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "0.56rem",
+                  fontWeight: 600,
+                  color: C.teal,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.8px",
+                  marginBottom: 1,
+                }}
+              >
+                Your postcode
+              </span>
+              <input
+                type="text"
+                value={postcode}
+                onChange={(e) => setPostcode(e.target.value)}
+                placeholder="e.g. SO14 or Southampton"
+                style={{
+                  fontSize: "0.8rem",
+                  color: C.textDark,
+                  fontWeight: 300,
+                  background: "transparent",
+                  border: "none",
+                  outline: "none",
+                  fontFamily: "'Outfit', sans-serif",
+                }}
+              />
             </div>
+
+            {/* Support type field */}
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: "7px 16px",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "0.56rem",
+                  fontWeight: 600,
+                  color: C.teal,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.8px",
+                  marginBottom: 1,
+                }}
+              >
+                Type of support
+              </span>
+              <input
+                type="text"
+                value={support}
+                onChange={(e) => setSupport(e.target.value)}
+                placeholder="e.g. OT, Speech therapy, Clubs"
+                style={{
+                  fontSize: "0.8rem",
+                  color: C.textDark,
+                  fontWeight: 300,
+                  background: "transparent",
+                  border: "none",
+                  outline: "none",
+                  fontFamily: "'Outfit', sans-serif",
+                }}
+              />
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              style={{
+                width: 110,
+                flexShrink: 0,
+                background: `linear-gradient(135deg, ${C.orangeLight}, ${C.orange})`,
+                border: "none",
+                color: C.white,
+                fontSize: "0.85rem",
+                fontWeight: 600,
+                fontFamily: "'Outfit', sans-serif",
+                cursor: "pointer",
+              }}
+            >
+              Find Support
+            </button>
+          </form>
+
+          {/* Hint chips */}
+          <div style={{ display: "flex", gap: 7, justifyContent: "center", marginBottom: 18, flexWrap: "wrap" }}>
+            <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", alignSelf: "center" }}>Try:</span>
+            {hints.map((h) => (
+              <button
+                key={h}
+                onClick={() => {
+                  setSupport(h);
+                  navigate(`/providers?search=${encodeURIComponent(h)}`);
+                }}
+                style={{
+                  padding: "4px 11px",
+                  borderRadius: 14,
+                  border: "1px solid rgba(42,122,106,0.32)",
+                  fontSize: "0.68rem",
+                  color: "rgba(255,255,255,0.45)",
+                  background: "rgba(42,122,106,0.06)",
+                  cursor: "pointer",
+                  fontFamily: "'Outfit', sans-serif",
+                }}
+              >
+                {h}
+              </button>
+            ))}
           </div>
 
-          {/* ── CTAs ── */}
-          <div className="absolute z-20 flex flex-col gap-6" style={{ left: 780, top: 620 }}>
-            <Button
-              className="px-14 py-8 rounded-full text-xl font-semibold shadow-lg w-[450px] border-0"
-              style={{ background: `linear-gradient(135deg,${C.orangeLight},${C.orange})`, color: C.white }}
-              onClick={() => navigate("/explore")}
-            >
-              Explore Services
-            </Button>
-            <Button
-              className="px-14 py-8 rounded-full text-xl font-semibold shadow-lg w-[450px] border-0 hover:opacity-90 transition-opacity"
-              style={{ background: C.navy, color: C.white }}
-              onClick={() => navigate("/community")}
-            >
-              Community groups
-            </Button>
+          {/* How it works strip */}
+          <div
+            style={{
+              display: "flex",
+              width: "min(580px, 92vw)",
+              background: "rgba(42,122,106,0.12)",
+              border: "1px solid rgba(42,122,106,0.22)",
+              borderRadius: 10,
+              overflow: "hidden",
+            }}
+          >
+            {[
+              { n: "1", t: "Enter your postcode", s: "See what's near you" },
+              { n: "2", t: "Choose your support", s: "Browse by type" },
+              { n: "3", t: "Connect directly", s: "Enquire through Beyonder" },
+            ].map((step, i) => (
+              <div
+                key={step.n}
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  gap: 10,
+                  alignItems: "center",
+                  padding: "11px 16px",
+                  borderRight: i < 2 ? "1px solid rgba(42,122,106,0.18)" : "none",
+                }}
+              >
+                <div
+                  style={{
+                    width: 22,
+                    height: 22,
+                    borderRadius: "50%",
+                    flexShrink: 0,
+                    background: C.teal,
+                    color: C.white,
+                    fontSize: "0.7rem",
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {step.n}
+                </div>
+                <div>
+                  <div
+                    style={{ fontSize: "0.72rem", fontWeight: 600, color: "rgba(255,255,255,0.85)", lineHeight: 1.2 }}
+                  >
+                    {step.t}
+                  </div>
+                  <div
+                    style={{ fontSize: "0.62rem", color: "rgba(255,255,255,0.38)", fontWeight: 300, lineHeight: 1.3 }}
+                  >
+                    {step.s}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
+        </div>
+
+        {/* Scroll cue */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 55,
+            zIndex: 3,
+            background: "linear-gradient(to bottom, transparent, rgba(6,24,40,0.15))",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            paddingBottom: 10,
+          }}
+        >
+          <div
+            style={{
+              width: 1,
+              height: 20,
+              background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.20))",
+              marginBottom: 5,
+            }}
+          />
+          <span
+            style={{
+              fontSize: "0.55rem",
+              color: "rgba(255,255,255,0.20)",
+              letterSpacing: "2.5px",
+              textTransform: "uppercase",
+            }}
+          >
+            Explore
+          </span>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════
           2. PILLARS
-      ═══════════════════════════════════════════ */}
+      ═══════════════════════════════════════════════════ */}
       <section style={{ background: C.navyMid, borderBottom: "1px solid rgba(42,122,106,0.14)" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", maxWidth: 1280, margin: "0 auto" }}>
           {(
@@ -200,12 +388,15 @@ const Index = () => {
             <Link
               key={p.label}
               to={p.to}
-              className="flex items-center gap-4 transition-colors duration-150"
               style={{
                 padding: "20px 28px",
                 borderRight: "1px solid rgba(42,122,106,0.10)",
                 background: p.hi ? "rgba(42,122,106,0.06)" : "transparent",
                 textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: 14,
+                transition: "background 0.15s",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(42,122,106,0.10)")}
               onMouseLeave={(e) => (e.currentTarget.style.background = p.hi ? "rgba(42,122,106,0.06)" : "transparent")}
@@ -225,7 +416,7 @@ const Index = () => {
               >
                 <span style={{ color: C.tealLight, fontSize: 14, fontWeight: 600 }}>→</span>
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 600, color: p.hi ? C.tealLight : C.white, lineHeight: 1.3 }}>
                   {p.label}
                 </div>
@@ -239,9 +430,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════
           3. CATEGORIES
-      ═══════════════════════════════════════════ */}
+      ═══════════════════════════════════════════════════ */}
       <section style={{ background: C.cream, padding: "52px 60px" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
@@ -345,9 +536,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════
           4. PARENT VOICE
-      ═══════════════════════════════════════════ */}
+      ═══════════════════════════════════════════════════ */}
       <section style={{ background: C.sage, padding: "52px 60px", borderTop: "1px solid rgba(42,122,106,0.10)" }}>
         <div
           style={{
@@ -456,9 +647,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════
           5. PROVIDER BAND
-      ═══════════════════════════════════════════ */}
+      ═══════════════════════════════════════════════════ */}
       <section
         style={{
           background: C.navy,
@@ -491,9 +682,7 @@ const Index = () => {
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: "1rem", fontWeight: 700, color: C.tealLight, letterSpacing: "0.2px" }}>
-                For Providers
-              </span>
+              <span style={{ fontSize: "1rem", fontWeight: 700, color: C.tealLight }}>For Providers</span>
               <div style={{ width: 32, height: 1.5, background: "rgba(58,154,136,0.40)" }} />
               <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.30)", fontWeight: 300 }}>
                 Therapists, clubs, specialists &amp; organisations
@@ -658,9 +847,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════
           6. COMMUNITY — sage, noticeboard
-      ═══════════════════════════════════════════ */}
+      ═══════════════════════════════════════════════════ */}
       <section style={{ background: C.sage, padding: "52px 60px", borderTop: "1px solid rgba(42,122,106,0.12)" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 32 }}>
@@ -692,7 +881,6 @@ const Index = () => {
               Real conversations, local meetups and shared experiences — all in one place, just for SEND families.
             </p>
           </div>
-
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 28 }}>
             {/* Meetups */}
             <div>
@@ -813,7 +1001,6 @@ const Index = () => {
                 ))}
               </div>
             </div>
-
             {/* Threads */}
             <div>
               <span
@@ -915,8 +1102,6 @@ const Index = () => {
               </div>
             </div>
           </div>
-
-          {/* CTA row */}
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 14 }}>
             <Link
               to="/community"
@@ -954,9 +1139,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════
           7. NEWS
-      ═══════════════════════════════════════════ */}
+      ═══════════════════════════════════════════════════ */}
       <section style={{ background: C.cream, padding: "40px 60px", borderTop: `1px solid ${C.creamDark}` }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 22 }}>
