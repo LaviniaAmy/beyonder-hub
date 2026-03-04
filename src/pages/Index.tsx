@@ -1,5 +1,5 @@
 import StarCanvas from "@/components/StarCanvas";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 
@@ -31,7 +31,16 @@ const C = {
 const Index = () => {
   const [postcode, setPostcode] = useState("");
   const [support, setSupport] = useState("");
+  const [parallaxY, setParallaxY] = useState(0);
+  const heroContentRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  // Parallax — hero content drifts up at 0.3x scroll speed
+  useEffect(() => {
+    const onScroll = () => setParallaxY(window.scrollY * 0.3);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,10 +64,10 @@ const Index = () => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: 380,
-          maxHeight: 480,
-          height: "calc(100vh - 160px)",
-          padding: "0 40px 40px",
+          minHeight: 440,
+          maxHeight: 560,
+          height: "calc(100vh - 64px)",
+          padding: "0 40px 48px",
         }}
       >
         {/* Star canvas — fills full hero */}
@@ -105,8 +114,9 @@ const Index = () => {
           }}
         />
 
-        {/* Central content */}
+        {/* Central content — drifts up at 0.3x scroll for parallax */}
         <div
+          ref={heroContentRef}
           style={{
             position: "relative",
             zIndex: 3,
@@ -115,6 +125,8 @@ const Index = () => {
             alignItems: "center",
             width: "100%",
             gap: 0,
+            transform: `translateY(${-parallaxY}px)`,
+            willChange: "transform",
           }}
         >
           {/* Logo */}
@@ -253,19 +265,10 @@ const Index = () => {
             {hints.map((h) => (
               <button
                 key={h}
+                className="hint-chip"
                 onClick={() => {
                   setSupport(h);
                   navigate(`/providers?search=${encodeURIComponent(h)}`);
-                }}
-                style={{
-                  padding: "4px 11px",
-                  borderRadius: 14,
-                  border: "1px solid rgba(42,122,106,0.32)",
-                  fontSize: "0.68rem",
-                  color: "rgba(255,255,255,0.45)",
-                  background: "rgba(42,122,106,0.06)",
-                  cursor: "pointer",
-                  fontFamily: "'Outfit', sans-serif",
                 }}
               >
                 {h}
@@ -752,12 +755,11 @@ const Index = () => {
             <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 4 }}>
               <Link
                 to="/for-providers"
+                className="btn-teal"
                 style={{
                   display: "inline-block",
                   padding: "11px 24px",
                   borderRadius: 8,
-                  background: `linear-gradient(135deg,${C.tealLight},${C.teal})`,
-                  boxShadow: "0 4px 16px rgba(42,122,106,0.30)",
                   color: C.white,
                   fontSize: "0.84rem",
                   fontWeight: 600,
@@ -768,12 +770,8 @@ const Index = () => {
               </Link>
               <Link
                 to="/for-providers"
-                style={{
-                  fontSize: "0.76rem",
-                  color: "rgba(255,255,255,0.30)",
-                  borderBottom: "1px solid rgba(255,255,255,0.15)",
-                  textDecoration: "none",
-                }}
+                className="btn-ghost"
+                style={{ fontSize: "0.76rem", padding: "10px 16px", borderRadius: 8, textDecoration: "none" }}
               >
                 See how it works →
               </Link>
@@ -1105,30 +1103,22 @@ const Index = () => {
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 14 }}>
             <Link
               to="/community"
+              className="btn-teal"
               style={{
                 padding: "11px 28px",
                 borderRadius: 8,
-                background: C.teal,
                 color: C.white,
                 fontSize: "0.84rem",
                 fontWeight: 600,
                 textDecoration: "none",
-                boxShadow: "0 3px 12px rgba(42,122,106,0.20)",
               }}
             >
               Join the Community
             </Link>
             <Link
               to="/community"
-              style={{
-                padding: "10px 20px",
-                borderRadius: 8,
-                background: "transparent",
-                border: "1.5px solid rgba(42,122,106,0.30)",
-                color: C.teal,
-                fontSize: "0.82rem",
-                textDecoration: "none",
-              }}
+              className="btn-ghost"
+              style={{ padding: "10px 20px", borderRadius: 8, fontSize: "0.82rem", textDecoration: "none" }}
             >
               Browse all forums
             </Link>
