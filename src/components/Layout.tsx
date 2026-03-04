@@ -4,6 +4,56 @@ import { Menu, X, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
 
+// ── Reusable inline hover helpers ─────────────────────────
+// Orange button — lift + glow
+const orangeBtn: React.CSSProperties = {
+  display: "inline-block",
+  padding: "8px 22px",
+  background: "linear-gradient(135deg, #f07840, #e8622a)",
+  borderRadius: 20,
+  color: "#ffffff",
+  fontSize: "0.85rem",
+  fontWeight: 600,
+  fontFamily: "'Outfit', sans-serif",
+  textDecoration: "none",
+  border: "none",
+  cursor: "pointer",
+  boxShadow: "0 3px 12px rgba(232,98,42,0.28)",
+  transition: "transform 0.08s ease, box-shadow 0.08s ease",
+};
+const orangeBtnHoverIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  e.currentTarget.style.transform = "translateY(-2px) scale(1.02)";
+  e.currentTarget.style.boxShadow = "0 8px 26px rgba(232,98,42,0.52), 0 0 0 4px rgba(232,98,42,0.10)";
+};
+const orangeBtnHoverOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  e.currentTarget.style.transform = "none";
+  e.currentTarget.style.boxShadow = "0 3px 12px rgba(232,98,42,0.28)";
+};
+
+// Ghost nav button
+const ghostBtn: React.CSSProperties = {
+  display: "inline-block",
+  padding: "7px 18px",
+  border: "1px solid rgba(255,255,255,0.22)",
+  borderRadius: 20,
+  color: "rgba(255,255,255,0.70)",
+  fontSize: "0.82rem",
+  fontFamily: "'Outfit', sans-serif",
+  textDecoration: "none",
+  background: "transparent",
+  transition: "border-color 0.08s ease, color 0.08s ease, background 0.08s ease",
+};
+const ghostBtnHoverIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  e.currentTarget.style.borderColor = "rgba(58,154,136,0.60)";
+  e.currentTarget.style.color = "rgba(255,255,255,0.95)";
+  e.currentTarget.style.background = "rgba(42,122,106,0.10)";
+};
+const ghostBtnHoverOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  e.currentTarget.style.borderColor = "rgba(255,255,255,0.22)";
+  e.currentTarget.style.color = "rgba(255,255,255,0.70)";
+  e.currentTarget.style.background = "transparent";
+};
+
 const navLinks = [
   { label: "Home", to: "/" },
   { label: "About Us", to: "/about" },
@@ -13,7 +63,6 @@ const navLinks = [
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
@@ -29,7 +78,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* ── NAV ─────────────────────────────────────────── */}
+      {/* ── NAV ── */}
       <header
         style={{
           position: "fixed",
@@ -122,18 +171,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               <>
                 <Link
                   to={dashboardLink}
-                  style={{
-                    padding: "7px 18px",
-                    border: "1px solid rgba(255,255,255,0.22)",
-                    borderRadius: 20,
-                    color: "rgba(255,255,255,0.70)",
-                    fontSize: "0.82rem",
-                    background: "transparent",
-                    textDecoration: "none",
-                    transition: "border-color 0.08s",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.45)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.22)")}
+                  style={ghostBtn}
+                  onMouseEnter={ghostBtnHoverIn}
+                  onMouseLeave={ghostBtnHoverOut}
                 >
                   Dashboard
                 </Link>
@@ -156,46 +196,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </>
             ) : (
               <>
-                <Link
-                  to="/login"
-                  style={{
-                    padding: "7px 18px",
-                    border: "1px solid rgba(255,255,255,0.22)",
-                    borderRadius: 20,
-                    color: "rgba(255,255,255,0.70)",
-                    fontSize: "0.82rem",
-                    background: "transparent",
-                    textDecoration: "none",
-                    transition: "border-color 0.08s, color 0.08s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.45)";
-                    e.currentTarget.style.color = "rgba(255,255,255,0.95)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.22)";
-                    e.currentTarget.style.color = "rgba(255,255,255,0.70)";
-                  }}
-                >
+                <Link to="/login" style={ghostBtn} onMouseEnter={ghostBtnHoverIn} onMouseLeave={ghostBtnHoverOut}>
                   Log in
                 </Link>
-                <Link
-                  to="/signup"
-                  style={{
-                    padding: "8px 22px",
-                    background: "linear-gradient(135deg, #f07840, #e8622a)",
-                    border: "none",
-                    borderRadius: 20,
-                    color: "#ffffff",
-                    fontSize: "0.85rem",
-                    fontWeight: 600,
-                    textDecoration: "none",
-                    boxShadow: "0 3px 12px rgba(232,98,42,0.30)",
-                    transition: "opacity 0.08s, transform 0.08s, box-shadow 0.08s",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-                >
+                <Link to="/signup" style={orangeBtn} onMouseEnter={orangeBtnHoverIn} onMouseLeave={orangeBtnHoverOut}>
                   Join now
                 </Link>
               </>
@@ -330,7 +334,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         )}
       </header>
 
-      <main className="flex-1" style={{ paddingTop: 58, position: "relative", zIndex: 1 }}>
+      <main className="flex-1" style={{ paddingTop: 58 }}>
         {children}
       </main>
 
