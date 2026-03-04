@@ -1,25 +1,16 @@
-/**
- * PageBackground
- *
- * Renders a fixed, full-screen decorative background on content pages.
- * Excluded from dashboards and admin — those stay clean.
- *
- * The design: very faint concentric arcs/circles referencing the Beyonder
- * logo orb. Positioned top-right (primary) and bottom-left (echo).
- * Opacity is deliberately low — content always reads clearly on top.
- */
-
 const EXCLUDED_PATHS = ["/dashboard", "/provider-dashboard", "/admin"];
 
 interface PageBackgroundProps {
   pathname: string;
+  intensity?: number; // 0–1, default 0.5. Raise to make arcs more visible.
 }
 
-const PageBackground = ({ pathname }: PageBackgroundProps) => {
-  // Don't render on homepage (has its own hero) or excluded pages
+const PageBackground = ({ pathname, intensity = 0.5 }: PageBackgroundProps) => {
   const isExcluded = pathname === "/" || EXCLUDED_PATHS.some((p) => pathname.startsWith(p));
 
   if (isExcluded) return null;
+
+  const i = intensity;
 
   return (
     <div
@@ -33,8 +24,7 @@ const PageBackground = ({ pathname }: PageBackgroundProps) => {
         background: "#061828",
       }}
     >
-      {/* ── Primary orb cluster — top right ─────────────────── */}
-      {/* Outermost arc */}
+      {/* Top-right cluster */}
       <div
         style={{
           position: "absolute",
@@ -43,10 +33,9 @@ const PageBackground = ({ pathname }: PageBackgroundProps) => {
           width: 900,
           height: 900,
           borderRadius: "50%",
-          border: "1px solid rgba(42,122,106,0.055)",
+          border: `1px solid rgba(42,122,106,${0.11 * i})`,
         }}
       />
-      {/* Mid arc */}
       <div
         style={{
           position: "absolute",
@@ -55,10 +44,9 @@ const PageBackground = ({ pathname }: PageBackgroundProps) => {
           width: 660,
           height: 660,
           borderRadius: "50%",
-          border: "1px solid rgba(42,122,106,0.07)",
+          border: `1px solid rgba(42,122,106,${0.14 * i})`,
         }}
       />
-      {/* Inner arc */}
       <div
         style={{
           position: "absolute",
@@ -67,10 +55,9 @@ const PageBackground = ({ pathname }: PageBackgroundProps) => {
           width: 440,
           height: 440,
           borderRadius: "50%",
-          border: "1px solid rgba(42,122,106,0.09)",
+          border: `1px solid rgba(42,122,106,${0.18 * i})`,
         }}
       />
-      {/* Core glow */}
       <div
         style={{
           position: "absolute",
@@ -79,12 +66,12 @@ const PageBackground = ({ pathname }: PageBackgroundProps) => {
           width: 240,
           height: 240,
           borderRadius: "50%",
-          border: "1px solid rgba(58,154,136,0.12)",
-          background: "radial-gradient(circle, rgba(42,122,106,0.06) 0%, transparent 70%)",
+          border: `1px solid rgba(58,154,136,${0.24 * i})`,
+          background: `radial-gradient(circle, rgba(42,122,106,${0.12 * i}) 0%, transparent 70%)`,
         }}
       />
 
-      {/* ── Echo cluster — bottom left ───────────────────────── */}
+      {/* Bottom-left echo */}
       <div
         style={{
           position: "absolute",
@@ -93,7 +80,7 @@ const PageBackground = ({ pathname }: PageBackgroundProps) => {
           width: 720,
           height: 720,
           borderRadius: "50%",
-          border: "1px solid rgba(42,122,106,0.04)",
+          border: `1px solid rgba(42,122,106,${0.08 * i})`,
         }}
       />
       <div
@@ -104,7 +91,7 @@ const PageBackground = ({ pathname }: PageBackgroundProps) => {
           width: 500,
           height: 500,
           borderRadius: "50%",
-          border: "1px solid rgba(42,122,106,0.055)",
+          border: `1px solid rgba(42,122,106,${0.11 * i})`,
         }}
       />
       <div
@@ -115,43 +102,43 @@ const PageBackground = ({ pathname }: PageBackgroundProps) => {
           width: 300,
           height: 300,
           borderRadius: "50%",
-          border: "1px solid rgba(42,122,106,0.07)",
-          background: "radial-gradient(circle, rgba(42,80,150,0.04) 0%, transparent 70%)",
+          border: `1px solid rgba(42,122,106,${0.14 * i})`,
+          background: `radial-gradient(circle, rgba(42,80,150,${0.08 * i}) 0%, transparent 70%)`,
         }}
       />
 
-      {/* ── Subtle centre-page atmosphere ────────────────────── */}
+      {/* Centre atmosphere */}
       <div
         style={{
           position: "absolute",
           top: "30%",
           left: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: "translate(-50%,-50%)",
           width: 800,
           height: 800,
           borderRadius: "50%",
-          background: "radial-gradient(ellipse, rgba(42,122,106,0.03) 0%, transparent 65%)",
+          background: `radial-gradient(ellipse, rgba(42,122,106,${0.06 * i}) 0%, transparent 65%)`,
         }}
       />
 
-      {/* ── Very faint star dots ──────────────────────────────── */}
+      {/* Star dots */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           backgroundImage: [
-            "radial-gradient(1px 1px at 8% 15%, rgba(255,255,255,0.25) 0%, transparent 100%)",
-            "radial-gradient(1px 1px at 18% 62%, rgba(255,255,255,0.18) 0%, transparent 100%)",
-            "radial-gradient(1.5px 1.5px at 29% 38%, rgba(255,255,255,0.20) 0%, transparent 100%)",
-            "radial-gradient(1px 1px at 42% 81%, rgba(255,255,255,0.15) 0%, transparent 100%)",
-            "radial-gradient(1px 1px at 55% 22%, rgba(255,255,255,0.18) 0%, transparent 100%)",
-            "radial-gradient(1.5px 1.5px at 67% 55%, rgba(255,255,255,0.22) 0%, transparent 100%)",
-            "radial-gradient(1px 1px at 76% 12%, rgba(255,255,255,0.16) 0%, transparent 100%)",
-            "radial-gradient(1px 1px at 84% 70%, rgba(255,255,255,0.18) 0%, transparent 100%)",
-            "radial-gradient(1.5px 1.5px at 91% 44%, rgba(255,255,255,0.20) 0%, transparent 100%)",
-            "radial-gradient(1px 1px at 35% 91%, rgba(255,255,255,0.14) 0%, transparent 100%)",
-            "radial-gradient(1px 1px at 62% 88%, rgba(255,255,255,0.16) 0%, transparent 100%)",
-            "radial-gradient(1px 1px at 14% 88%, rgba(255,255,255,0.13) 0%, transparent 100%)",
+            `radial-gradient(1px 1px at  8% 15%, rgba(255,255,255,${0.5 * i}) 0%, transparent 100%)`,
+            `radial-gradient(1px 1px at 18% 62%, rgba(255,255,255,${0.36 * i}) 0%, transparent 100%)`,
+            `radial-gradient(1.5px 1.5px at 29% 38%, rgba(255,255,255,${0.4 * i}) 0%, transparent 100%)`,
+            `radial-gradient(1px 1px at 42% 81%, rgba(255,255,255,${0.3 * i}) 0%, transparent 100%)`,
+            `radial-gradient(1px 1px at 55% 22%, rgba(255,255,255,${0.36 * i}) 0%, transparent 100%)`,
+            `radial-gradient(1.5px 1.5px at 67% 55%, rgba(255,255,255,${0.44 * i}) 0%, transparent 100%)`,
+            `radial-gradient(1px 1px at 76% 12%, rgba(255,255,255,${0.32 * i}) 0%, transparent 100%)`,
+            `radial-gradient(1px 1px at 84% 70%, rgba(255,255,255,${0.36 * i}) 0%, transparent 100%)`,
+            `radial-gradient(1.5px 1.5px at 91% 44%, rgba(255,255,255,${0.4 * i}) 0%, transparent 100%)`,
+            `radial-gradient(1px 1px at 35% 91%, rgba(255,255,255,${0.28 * i}) 0%, transparent 100%)`,
+            `radial-gradient(1px 1px at 62% 88%, rgba(255,255,255,${0.32 * i}) 0%, transparent 100%)`,
+            `radial-gradient(1px 1px at 14% 88%, rgba(255,255,255,${0.26 * i}) 0%, transparent 100%)`,
           ].join(","),
         }}
       />
