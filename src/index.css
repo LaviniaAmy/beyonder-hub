@@ -228,35 +228,110 @@
       0 8px 24px 0 hsl(214 30% 20% / 0.06);
   }
 
-  /* Primary CTA button — orange gradient */
+  /* ── Primary CTA — orange gradient, lift + warm glow ── */
   .btn-primary-gradient {
     background: linear-gradient(135deg, #f07840 0%, #e8622a 100%);
     color: #ffffff;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      background 0.18s ease;
+    box-shadow: 0 4px 14px rgba(232, 98, 42, 0.28);
   }
-
   .btn-primary-gradient:hover {
-    background: linear-gradient(135deg, #e86e34 0%, #d45520 100%);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+      0 8px 24px rgba(232, 98, 42, 0.42),
+      0 2px 8px rgba(232, 98, 42, 0.2);
+    background: linear-gradient(135deg, #f58048 0%, #e8622a 100%);
+  }
+  .btn-primary-gradient:active {
+    transform: translateY(0px) scale(0.99);
+    box-shadow: 0 3px 10px rgba(232, 98, 42, 0.3);
   }
 
-  /* Join Now — kept for nav compatibility */
+  /* ── Join Now — same orange treatment ── */
   .btn-join-now {
     background: linear-gradient(135deg, #f07840 0%, #e8622a 100%);
     color: #ffffff;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
+    box-shadow: 0 4px 14px rgba(232, 98, 42, 0.28);
   }
-
   .btn-join-now:hover {
-    background: linear-gradient(135deg, #e86e34 0%, #d45520 100%);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+      0 8px 24px rgba(232, 98, 42, 0.42),
+      0 2px 8px rgba(232, 98, 42, 0.2);
+  }
+  .btn-join-now:active {
+    transform: translateY(0px) scale(0.99);
   }
 
-  /* Teal CTA button */
+  /* ── Teal CTA — lift + teal glow radiating out ── */
   .btn-teal {
     background: linear-gradient(135deg, #3a9a88 0%, #2a7a6a 100%);
     color: #ffffff;
-    box-shadow: 0 4px 16px hsl(166 49% 30% / 0.3);
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
+    box-shadow: 0 4px 16px rgba(42, 122, 106, 0.3);
+  }
+  .btn-teal:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 8px 28px rgba(42, 122, 106, 0.5),
+      0 0 0 4px rgba(42, 122, 106, 0.1);
+  }
+  .btn-teal:active {
+    transform: translateY(0px);
+    box-shadow: 0 3px 12px rgba(42, 122, 106, 0.3);
   }
 
-  .btn-teal:hover {
-    background: linear-gradient(135deg, #329080 0%, #226a5c 100%);
+  /* ── Ghost button — border brightens, faint teal wash fills ── */
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: rgba(255, 255, 255, 0.7);
+    transition:
+      background 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+  }
+  .btn-ghost:hover {
+    background: rgba(42, 122, 106, 0.1);
+    border-color: rgba(58, 154, 136, 0.55);
+    color: rgba(255, 255, 255, 0.95);
+  }
+  .btn-ghost:active {
+    background: rgba(42, 122, 106, 0.16);
+  }
+
+  /* ── Hint chip — teal border pulse on hover ── */
+  .hint-chip {
+    padding: 4px 11px;
+    border-radius: 14px;
+    border: 1px solid rgba(42, 122, 106, 0.32);
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.45);
+    background: rgba(42, 122, 106, 0.06);
+    cursor: pointer;
+    font-family: "Outfit", sans-serif;
+    transition:
+      border-color 0.15s ease,
+      background 0.15s ease,
+      color 0.15s ease,
+      transform 0.15s ease;
+  }
+  .hint-chip:hover {
+    border-color: rgba(58, 154, 136, 0.75);
+    background: rgba(42, 122, 106, 0.14);
+    color: rgba(255, 255, 255, 0.85);
+    transform: scale(1.04);
+  }
+  .hint-chip:active {
+    transform: scale(0.97);
   }
 
   /* Section label strip */
