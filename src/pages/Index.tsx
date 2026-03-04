@@ -334,7 +334,7 @@ const Index = () => {
                 fontWeight: 600,
                 fontFamily: "'Outfit', sans-serif",
                 cursor: "pointer",
-                transition: "opacity 0.08s ease",
+                transition: "none",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
               onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
@@ -356,7 +356,6 @@ const Index = () => {
                   background: "rgba(42,122,106,0.06)",
                   cursor: "pointer",
                   fontFamily: "'Outfit', sans-serif",
-                  transition: "border-color 0.08s, background 0.08s, color 0.08s, transform 0.08s",
                 }}
                 onMouseEnter={chipIn}
                 onMouseLeave={chipOut}
@@ -507,7 +506,6 @@ const Index = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: 14,
-                transition: "background 0.08s ease",
               }}
               onMouseEnter={(e) => pillarIn(e)}
               onMouseLeave={(e) => pillarOut(e, p.hi)}
@@ -610,7 +608,6 @@ const Index = () => {
                   alignItems: "center",
                   gap: 10,
                   textAlign: "center",
-                  transition: "transform 0.08s ease, box-shadow 0.08s ease, border-color 0.08s ease",
                 }}
                 onMouseEnter={cardIn}
                 onMouseLeave={(e) => cardOut(e, C.creamDark)}
@@ -865,7 +862,6 @@ const Index = () => {
                   fontSize: "0.84rem",
                   fontWeight: 600,
                   textDecoration: "none",
-                  transition: "transform 0.08s ease, box-shadow 0.08s ease",
                 }}
                 onMouseEnter={tealIn}
                 onMouseLeave={(e) => tealOut(e)}
@@ -882,7 +878,6 @@ const Index = () => {
                   background: "transparent",
                   border: "1px solid rgba(255,255,255,0.18)",
                   color: "rgba(255,255,255,0.50)",
-                  transition: "background 0.08s ease, border-color 0.08s ease, color 0.08s ease",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = "rgba(42,122,106,0.12)";
@@ -1045,7 +1040,6 @@ const Index = () => {
                       display: "flex",
                       gap: 14,
                       alignItems: "flex-start",
-                      transition: "transform 0.08s ease, box-shadow 0.08s ease",
                     }}
                     onMouseEnter={commIn}
                     onMouseLeave={commOut}
@@ -1157,7 +1151,6 @@ const Index = () => {
                       border: `1.5px solid ${C.creamDark}`,
                       textDecoration: "none",
                       display: "block",
-                      transition: "transform 0.08s ease, box-shadow 0.08s ease",
                     }}
                     onMouseEnter={commIn}
                     onMouseLeave={commOut}
@@ -1220,7 +1213,6 @@ const Index = () => {
                 fontWeight: 600,
                 textDecoration: "none",
                 boxShadow: "0 4px 16px rgba(42,122,106,0.28)",
-                transition: "transform 0.08s ease, box-shadow 0.08s ease",
               }}
               onMouseEnter={tealIn}
               onMouseLeave={(e) => tealOut(e)}
@@ -1237,7 +1229,6 @@ const Index = () => {
                 color: C.teal,
                 fontSize: "0.82rem",
                 textDecoration: "none",
-                transition: "background 0.08s ease, border-color 0.08s ease, color 0.08s ease",
               }}
               onMouseEnter={(e) => ghostIn(e)}
               onMouseLeave={(e) => ghostOut(e)}
@@ -1312,7 +1303,6 @@ const Index = () => {
                   textDecoration: "none",
                   display: "flex",
                   flexDirection: "column",
-                  transition: "transform 0.08s ease, box-shadow 0.08s ease",
                 }}
                 onMouseEnter={newsIn}
                 onMouseLeave={newsOut}
