@@ -233,82 +233,81 @@
     background: linear-gradient(135deg, #f07840 0%, #e8622a 100%);
     color: #ffffff;
     transition:
-      transform 0.18s ease,
-      box-shadow 0.18s ease,
-      background 0.18s ease;
+      transform 0.1s ease,
+      box-shadow 0.1s ease;
     box-shadow: 0 4px 14px rgba(232, 98, 42, 0.28);
   }
   .btn-primary-gradient:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow:
-      0 8px 24px rgba(232, 98, 42, 0.42),
-      0 2px 8px rgba(232, 98, 42, 0.2);
-    background: linear-gradient(135deg, #f58048 0%, #e8622a 100%);
+      0 8px 24px rgba(232, 98, 42, 0.5),
+      0 0 0 4px rgba(232, 98, 42, 0.12);
   }
   .btn-primary-gradient:active {
     transform: translateY(0px) scale(0.99);
     box-shadow: 0 3px 10px rgba(232, 98, 42, 0.3);
   }
 
-  /* ── Join Now — same orange treatment ── */
+  /* ── Join Now — orange, lift + glow ── */
   .btn-join-now {
     background: linear-gradient(135deg, #f07840 0%, #e8622a 100%);
     color: #ffffff;
     transition:
-      transform 0.18s ease,
-      box-shadow 0.18s ease;
+      transform 0.1s ease,
+      box-shadow 0.1s ease;
     box-shadow: 0 4px 14px rgba(232, 98, 42, 0.28);
   }
   .btn-join-now:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow:
-      0 8px 24px rgba(232, 98, 42, 0.42),
-      0 2px 8px rgba(232, 98, 42, 0.2);
+      0 8px 28px rgba(232, 98, 42, 0.55),
+      0 0 0 4px rgba(232, 98, 42, 0.12);
   }
   .btn-join-now:active {
     transform: translateY(0px) scale(0.99);
+    box-shadow: 0 3px 10px rgba(232, 98, 42, 0.3);
   }
 
-  /* ── Teal CTA — lift + teal glow radiating out ── */
+  /* ── Teal CTA — lift + teal glow ── */
   .btn-teal {
     background: linear-gradient(135deg, #3a9a88 0%, #2a7a6a 100%);
     color: #ffffff;
     transition:
-      transform 0.18s ease,
-      box-shadow 0.18s ease;
+      transform 0.1s ease,
+      box-shadow 0.1s ease;
     box-shadow: 0 4px 16px rgba(42, 122, 106, 0.3);
   }
   .btn-teal:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 8px 28px rgba(42, 122, 106, 0.5),
-      0 0 0 4px rgba(42, 122, 106, 0.1);
+      0 8px 28px rgba(42, 122, 106, 0.55),
+      0 0 0 4px rgba(42, 122, 106, 0.12);
   }
   .btn-teal:active {
     transform: translateY(0px);
     box-shadow: 0 3px 12px rgba(42, 122, 106, 0.3);
   }
 
-  /* ── Ghost button — border brightens, faint teal wash fills ── */
+  /* ── Ghost button — faint teal fill ── */
   .btn-ghost {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.22);
     color: rgba(255, 255, 255, 0.7);
     transition:
-      background 0.18s ease,
-      border-color 0.18s ease,
-      color 0.18s ease;
+      background 0.08s ease,
+      border-color 0.08s ease,
+      color 0.08s ease;
   }
   .btn-ghost:hover {
-    background: rgba(42, 122, 106, 0.1);
-    border-color: rgba(58, 154, 136, 0.55);
+    background: rgba(42, 122, 106, 0.12);
+    border-color: rgba(58, 154, 136, 0.6);
     color: rgba(255, 255, 255, 0.95);
   }
   .btn-ghost:active {
-    background: rgba(42, 122, 106, 0.16);
+    background: rgba(42, 122, 106, 0.18);
   }
 
-  /* ── Hint chip — teal border pulse on hover ── */
+  /* ── Hint chip — instant teal pulse ── */
   .hint-chip {
     padding: 4px 11px;
     border-radius: 14px;
@@ -319,15 +318,15 @@
     cursor: pointer;
     font-family: "Outfit", sans-serif;
     transition:
-      border-color 0.15s ease,
-      background 0.15s ease,
-      color 0.15s ease,
-      transform 0.15s ease;
+      border-color 0.08s ease,
+      background 0.08s ease,
+      color 0.08s ease,
+      transform 0.08s ease;
   }
   .hint-chip:hover {
-    border-color: rgba(58, 154, 136, 0.75);
-    background: rgba(42, 122, 106, 0.14);
-    color: rgba(255, 255, 255, 0.85);
+    border-color: rgba(58, 154, 136, 0.8);
+    background: rgba(42, 122, 106, 0.16);
+    color: rgba(255, 255, 255, 0.9);
     transform: scale(1.04);
   }
   .hint-chip:active {

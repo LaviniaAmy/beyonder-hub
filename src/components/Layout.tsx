@@ -29,7 +29,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* ── NAV — always dark navy, v4 style ─────────── */}
+      {/* ── NAV ─────────────────────────────────────────── */}
       <header
         style={{
           position: "fixed",
@@ -51,7 +51,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           className="container"
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%" }}
         >
-          {/* Logo — orb + wordmark */}
+          {/* Logo */}
           <Link to="/" style={{ display: "flex", alignItems: "center", gap: 9, textDecoration: "none" }}>
             <div
               style={{
@@ -99,7 +99,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   fontSize: "0.85rem",
                   borderLeft: link.label === "For Providers" ? "1px solid rgba(255,255,255,0.10)" : "none",
                   paddingLeft: link.label === "For Providers" ? 30 : 0,
-                  transition: "color 0.15s",
+                  transition: "color 0.08s ease",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#3a9a88")}
                 onMouseLeave={(e) => {
@@ -130,7 +130,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     fontSize: "0.82rem",
                     background: "transparent",
                     textDecoration: "none",
-                    transition: "border-color 0.15s",
+                    transition: "border-color 0.08s",
                   }}
                   onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.45)")}
                   onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.22)")}
@@ -166,7 +166,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     fontSize: "0.82rem",
                     background: "transparent",
                     textDecoration: "none",
-                    transition: "border-color 0.15s, color 0.15s",
+                    transition: "border-color 0.08s, color 0.08s",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = "rgba(255,255,255,0.45)";
@@ -191,7 +191,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     fontWeight: 600,
                     textDecoration: "none",
                     boxShadow: "0 3px 12px rgba(232,98,42,0.30)",
-                    transition: "opacity 0.15s",
+                    transition: "opacity 0.08s, transform 0.08s, box-shadow 0.08s",
                   }}
                   onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
                   onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
@@ -330,8 +330,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         )}
       </header>
 
-      {/* Page content — offset by nav height */}
-      <main className="flex-1" style={{ paddingTop: 58 }}>
+      <main className="flex-1" style={{ paddingTop: 58, position: "relative", zIndex: 1 }}>
         {children}
       </main>
 
