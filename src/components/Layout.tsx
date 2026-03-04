@@ -19,7 +19,7 @@ const orangeBtn: React.CSSProperties = {
   border: "none",
   cursor: "pointer",
   boxShadow: "0 3px 12px rgba(232,98,42,0.28)",
-  transition: "transform 0.08s ease, box-shadow 0.08s ease",
+  transition: "none",
 };
 const orangeBtnHoverIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.transform = "translateY(-2px) scale(1.02)";
@@ -41,7 +41,7 @@ const ghostBtn: React.CSSProperties = {
   fontFamily: "'Outfit', sans-serif",
   textDecoration: "none",
   background: "transparent",
-  transition: "border-color 0.08s ease, color 0.08s ease, background 0.08s ease",
+  transition: "none",
 };
 const ghostBtnHoverIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.borderColor = "rgba(58,154,136,0.60)";
@@ -148,7 +148,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   fontSize: "0.85rem",
                   borderLeft: link.label === "For Providers" ? "1px solid rgba(255,255,255,0.10)" : "none",
                   paddingLeft: link.label === "For Providers" ? 30 : 0,
-                  transition: "color 0.08s ease",
+                  transition: "none",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#3a9a88")}
                 onMouseLeave={(e) => {
