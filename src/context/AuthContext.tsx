@@ -20,10 +20,8 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
 const STORAGE_KEY = "beyonder_user";
 
-/** Deterministic test-email → provider mapping for pilot testing */
 const TEST_PROVIDER_EMAILS: Record<string, CategoryType> = {
   "therapist@beyonder.test": "therapist",
   "club@beyonder.test": "club",
@@ -32,18 +30,23 @@ const TEST_PROVIDER_EMAILS: Record<string, CategoryType> = {
   "product@beyonder.test": "product",
 };
 
-function resolveProviderId(email: string): string | undefined {
+function resolveProviderId(email: string): string {
   const lower = email.toLowerCase();
+
+  // 1) Exact test email match
   const categoryTarget = TEST_PROVIDER_EMAILS[lower];
   if (categoryTarget) {
     const match = providers.find((p) => p.category_type === categoryTarget);
-    return match?.id;
+    if (match) return match.id;
   }
-  // Default provider login (legacy): pick first provider
+
+  // 2) Legacy "provider" keyword
   if (lower.includes("provider")) {
-    return providers[0]?.id;
+    return providers[0]?.id ?? "";
   }
-  return undefined;
+
+  // 3) Any provider login — default to first provider so dashboard always loads
+  return providers[0]?.id ?? "";
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -77,9 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>{children}</AuthContext.Provider>
   );
 };
 
