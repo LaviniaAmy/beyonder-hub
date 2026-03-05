@@ -8,7 +8,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { providers, reviews } from "@/data/mockData";
-import { adminSettings, getFounderCount, updateAdminSettings, applyPlanOverride } from "@/data/founderStore";
+import {
+  adminSettings,
+  getFounderCount,
+  updateAdminSettings,
+  applyPlanOverride,
+  pendingClaims,
+  approvePendingClaim,
+  rejectPendingClaim,
+  PendingClaim,
+} from "@/data/founderStore";
 import type { PlanType, PlanStatus, CategoryType } from "@/lib/featureGating";
 
 const mockParents = [
@@ -49,6 +58,18 @@ const AdminPanel = () => {
     ),
   );
   const [savedRows, setSavedRows] = useState<Record<string, boolean>>({});
+
+  const [claimList, setClaimList] = useState<PendingClaim[]>(pendingClaims);
+
+  const handleApproveClaim = (id: string) => {
+    approvePendingClaim(id);
+    setClaimList([...pendingClaims]);
+  };
+
+  const handleRejectClaim = (id: string) => {
+    rejectPendingClaim(id);
+    setClaimList([...pendingClaims]);
+  };
 
   const founderCount = getFounderCount();
   const slotsLeft = Math.max(0, founderLimit - founderCount);
@@ -110,6 +131,17 @@ const AdminPanel = () => {
               className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
             >
               Founder Settings
+            </TabsTrigger>
+            <TabsTrigger
+              value="claims"
+              className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
+            >
+              Claim Requests{" "}
+              {claimList.filter((c) => c.status === "pending_review").length > 0 && (
+                <span className="ml-1 rounded-full bg-orange-500 px-1.5 py-0.5 text-xs text-white">
+                  {claimList.filter((c) => c.status === "pending_review").length}
+                </span>
+              )}
             </TabsTrigger>
             <TabsTrigger
               value="content"
@@ -359,6 +391,75 @@ const AdminPanel = () => {
                     Free plan. Admins can override individual plans in the Plans & Categories tab.
                   </p>
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ── Claim Requests ── */}
+          <TabsContent value="claims" className="mt-6">
+            <Card className="border-0 shadow-card">
+              <CardHeader>
+                <CardTitle>Provider Claim Requests</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {claimList.length === 0 ? (
+                  <p className="text-muted-foreground text-sm">No claim requests yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {claimList.map((claim) => (
+                      <div key={claim.id} className="rounded-xl border border-border/60 p-4 space-y-3">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="space-y-1">
+                            <p className="font-medium">{claim.providerName}</p>
+                            <p className="text-sm text-muted-foreground">
+                              <span className="text-foreground/60">Claiming email:</span> {claim.claimantEmail}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              <span className="text-foreground/60">Listing domain:</span>{" "}
+                              <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">
+                                {claim.websiteDomain}
+                              </span>
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              <span className="text-foreground/60">Email domain:</span>{" "}
+                              <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">
+                                {claim.claimantDomain}
+                              </span>
+                            </p>
+                            <p className="text-xs text-muted-foreground">Submitted: {claim.submittedAt}</p>
+                          </div>
+                          <Badge
+                            className={
+                              claim.status === "pending_review"
+                                ? "bg-orange-500/15 text-orange-400 border-0 shrink-0"
+                                : claim.status === "approved"
+                                  ? "bg-emerald-500/15 text-emerald-400 border-0 shrink-0"
+                                  : "bg-red-500/15 text-red-400 border-0 shrink-0"
+                            }
+                          >
+                            {claim.status === "pending_review"
+                              ? "Pending"
+                              : claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}
+                          </Badge>
+                        </div>
+                        {claim.status === "pending_review" && (
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              className="bg-teal-500 hover:bg-teal-400"
+                              onClick={() => handleApproveClaim(claim.id)}
+                            >
+                              Approve
+                            </Button>
+                            <Button size="sm" variant="destructive" onClick={() => handleRejectClaim(claim.id)}>
+                              Reject
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

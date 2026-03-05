@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { providers, reviews } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
-import { assignPlanOnClaim, isProviderClaimed } from "@/data/founderStore";
+import { attemptClaim, isProviderClaimed } from "@/data/founderStore";
 
 const ProviderPage = () => {
   const { id } = useParams();
@@ -34,9 +34,14 @@ const ProviderPage = () => {
       navigate(`/for-providers?claimProviderId=${provider.id}`);
       return;
     }
-    // Logged in as provider — claim now
-    assignPlanOnClaim(user.id, provider.id);
-    navigate("/provider-dashboard");
+    // Logged in as provider — attempt domain-verified claim
+    const result = attemptClaim(user.id, user.email, provider.id, provider.name, provider.websiteDomain);
+    if (result.outcome === "approved") {
+      navigate("/provider-dashboard");
+    } else if (result.outcome === "pending_review") {
+      navigate("/provider-dashboard?claimStatus=pending_review");
+    }
+    // "already_claimed" — button is hidden anyway
   };
 
   return (

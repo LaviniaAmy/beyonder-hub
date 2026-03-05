@@ -36,12 +36,13 @@ export interface Provider {
   reviewCount: number;
   contactMethod: string;
   searchTags: string[];
+  websiteDomain: string;
   // Plan fields
   plan_type: PlanType;
   plan_status: PlanStatus;
   plan_expires_at: string | null;
   search_boost: number;
-  // Legacy optional fields (now in module tables but kept for compat)
+  // Legacy optional fields
   credentials?: string[];
   timetable?: { day: string; time: string; activity: string }[];
   products?: { name: string; price: string; image: string }[];
@@ -78,13 +79,42 @@ export interface Category {
 }
 
 export const categories: Category[] = [
-  { id: "therapists", name: "Therapists & Specialists", description: "Speech therapists, OTs, psychologists and more", icon: "Heart", providerType: "therapist" },
-  { id: "activities", name: "Inclusive Clubs & Activities", description: "Sports, arts, social groups designed for SEND children", icon: "Users", providerType: "activity" },
-  { id: "products", name: "Products & Equipment", description: "Sensory tools, adaptive equipment, specialist resources", icon: "ShoppingBag", providerType: "product" },
-  { id: "education", name: "Education & Learning Support", description: "Tutors, SEN schools, home education resources", icon: "GraduationCap", providerType: "education" },
-  { id: "charities", name: "Charities & Support Organisations", description: "Local and national charities offering guidance and support", icon: "HandHeart", providerType: "charity" },
+  {
+    id: "therapists",
+    name: "Therapists & Specialists",
+    description: "Speech therapists, OTs, psychologists and more",
+    icon: "Heart",
+    providerType: "therapist",
+  },
+  {
+    id: "activities",
+    name: "Inclusive Clubs & Activities",
+    description: "Sports, arts, social groups designed for SEND children",
+    icon: "Users",
+    providerType: "activity",
+  },
+  {
+    id: "products",
+    name: "Products & Equipment",
+    description: "Sensory tools, adaptive equipment, specialist resources",
+    icon: "ShoppingBag",
+    providerType: "product",
+  },
+  {
+    id: "education",
+    name: "Education & Learning Support",
+    description: "Tutors, SEN schools, home education resources",
+    icon: "GraduationCap",
+    providerType: "education",
+  },
+  {
+    id: "charities",
+    name: "Charities & Support Organisations",
+    description: "Local and national charities offering guidance and support",
+    icon: "HandHeart",
+    providerType: "charity",
+  },
 ];
-
 
 const founderPlanDefaults = {
   plan_type: "founder" as const,
@@ -100,7 +130,8 @@ export const providers: Provider[] = [
     type: "therapist",
     category_type: "therapist",
     typeBadge: "Speech & Language Therapist",
-    description: "We provide specialist speech and language therapy for children with a range of communication needs. Our team of experienced therapists work with families to develop individualised programmes that support children's development in a warm, welcoming environment.",
+    description:
+      "We provide specialist speech and language therapy for children with a range of communication needs. Our team of experienced therapists work with families to develop individualised programmes that support children's development in a warm, welcoming environment.",
     shortDescription: "Specialist speech therapy for children with communication needs",
     location: "Bristol, BS1",
     region: "South West England",
@@ -114,6 +145,7 @@ export const providers: Provider[] = [
     reviewCount: 24,
     contactMethod: "Email or phone",
     searchTags: ["therapist", "therapy", "speech", "language", "communication", "salt", "hybrid", "bristol"],
+    websiteDomain: "brightminds.co.uk",
     credentials: ["HCPC Registered", "RCSLT Member", "DBS Enhanced"],
     ...founderPlanDefaults,
   },
@@ -123,7 +155,8 @@ export const providers: Provider[] = [
     type: "activity",
     category_type: "club",
     typeBadge: "Inclusive Activity",
-    description: "Splash offers fully inclusive swimming sessions for children and young people with additional needs. Our instructors are trained in SEND awareness and adapt sessions to suit each individual.",
+    description:
+      "Splash offers fully inclusive swimming sessions for children and young people with additional needs. Our instructors are trained in SEND awareness and adapt sessions to suit each individual.",
     shortDescription: "Inclusive swimming sessions adapted for SEND children",
     location: "Bath, BA1",
     region: "South West England",
@@ -136,7 +169,19 @@ export const providers: Provider[] = [
     rating: 4.6,
     reviewCount: 18,
     contactMethod: "Online booking",
-    searchTags: ["swimming", "swim", "club", "clubs", "activity", "activities", "sessions", "inclusive", "sport", "water"],
+    searchTags: [
+      "swimming",
+      "swim",
+      "club",
+      "clubs",
+      "activity",
+      "activities",
+      "sessions",
+      "inclusive",
+      "sport",
+      "water",
+    ],
+    websiteDomain: "splashswimming.co.uk",
     timetable: [
       { day: "Monday", time: "16:00-17:00", activity: "Beginners (ages 4-8)" },
       { day: "Wednesday", time: "16:00-17:00", activity: "Intermediate (ages 8-14)" },
@@ -150,7 +195,8 @@ export const providers: Provider[] = [
     type: "product",
     category_type: "product",
     typeBadge: "Product Seller",
-    description: "We curate and sell specialist sensory products, fidget tools, and adaptive equipment for children with sensory processing needs, autism, and ADHD.",
+    description:
+      "We curate and sell specialist sensory products, fidget tools, and adaptive equipment for children with sensory processing needs, autism, and ADHD.",
     shortDescription: "Specialist sensory products and adaptive equipment",
     location: "Online",
     region: null,
@@ -164,6 +210,7 @@ export const providers: Provider[] = [
     reviewCount: 32,
     contactMethod: "Website contact form",
     searchTags: ["products", "equipment", "sensory", "fidget", "aids", "resources", "shop", "adaptive", "tools"],
+    websiteDomain: "sensoryplayshop.co.uk",
     products: [
       { name: "Weighted Lap Pad", price: "£24.99", image: "/placeholder.svg" },
       { name: "Chewable Necklace Set", price: "£12.99", image: "/placeholder.svg" },
@@ -177,7 +224,8 @@ export const providers: Provider[] = [
     type: "education",
     category_type: "education",
     typeBadge: "Education Support",
-    description: "Specialist tutoring for children with dyslexia, dyscalculia, and other specific learning differences. We use evidence-based approaches tailored to each child's unique learning style.",
+    description:
+      "Specialist tutoring for children with dyslexia, dyscalculia, and other specific learning differences. We use evidence-based approaches tailored to each child's unique learning style.",
     shortDescription: "Specialist tutoring for children with learning differences",
     location: "Cardiff, CF10",
     region: "Wales",
@@ -190,8 +238,20 @@ export const providers: Provider[] = [
     rating: 4.9,
     reviewCount: 15,
     contactMethod: "Email",
-    searchTags: ["tutor", "tutoring", "education", "learning", "dyslexia", "dyscalculia", "school", "homework", "reading"],
-    educationDetails: "All tutors hold QTS or equivalent and have specialist SEND training. We offer 1:1 and small group sessions.",
+    searchTags: [
+      "tutor",
+      "tutoring",
+      "education",
+      "learning",
+      "dyslexia",
+      "dyscalculia",
+      "school",
+      "homework",
+      "reading",
+    ],
+    websiteDomain: "learningtree.co.uk",
+    educationDetails:
+      "All tutors hold QTS or equivalent and have specialist SEND training. We offer 1:1 and small group sessions.",
     ...founderPlanDefaults,
   },
   {
@@ -200,7 +260,8 @@ export const providers: Provider[] = [
     type: "charity",
     category_type: "charity",
     typeBadge: "Charity",
-    description: "A local charity providing emotional support, advice, and community events for families of children with special educational needs and disabilities.",
+    description:
+      "A local charity providing emotional support, advice, and community events for families of children with special educational needs and disabilities.",
     shortDescription: "Community support and advice for SEND families",
     location: "Manchester, M1",
     region: "North West England",
@@ -214,6 +275,7 @@ export const providers: Provider[] = [
     reviewCount: 41,
     contactMethod: "Phone helpline",
     searchTags: ["charity", "support", "community", "advice", "families", "events", "helpline", "send"],
+    websiteDomain: "sendfamiliesunited.org.uk",
     ...founderPlanDefaults,
   },
   {
@@ -222,7 +284,8 @@ export const providers: Provider[] = [
     type: "therapist",
     category_type: "therapist",
     typeBadge: "Occupational Therapist",
-    description: "Expert occupational therapy helping children develop fine motor skills, sensory regulation, and daily living skills. We work closely with schools and families.",
+    description:
+      "Expert occupational therapy helping children develop fine motor skills, sensory regulation, and daily living skills. We work closely with schools and families.",
     shortDescription: "Expert OT for motor skills and sensory regulation",
     location: "London, SE1",
     region: "London",
@@ -236,6 +299,7 @@ export const providers: Provider[] = [
     reviewCount: 12,
     contactMethod: "Email or phone",
     searchTags: ["therapist", "therapy", "ot", "occupational", "motor", "sensory", "regulation", "dyspraxia"],
+    websiteDomain: "focusot.co.uk",
     credentials: ["HCPC Registered", "RCOT Member", "Sensory Integration Certified"],
     ...founderPlanDefaults,
   },
@@ -245,7 +309,8 @@ export const providers: Provider[] = [
     type: "therapist",
     category_type: "therapist",
     typeBadge: "Music Therapist",
-    description: "Music therapy sessions designed to support emotional regulation, communication, and social interaction for children and young people with SEND.",
+    description:
+      "Music therapy sessions designed to support emotional regulation, communication, and social interaction for children and young people with SEND.",
     shortDescription: "Music therapy for emotional and social development",
     location: "Newcastle, NE1",
     region: "North East England",
@@ -259,6 +324,7 @@ export const providers: Provider[] = [
     reviewCount: 9,
     contactMethod: "Email",
     searchTags: ["therapist", "therapy", "music", "emotional", "regulation", "social", "creative"],
+    websiteDomain: "northernstarsmusic.co.uk",
     credentials: ["HCPC Registered", "BAMT Member"],
     ...founderPlanDefaults,
   },
@@ -268,7 +334,8 @@ export const providers: Provider[] = [
     type: "therapist",
     category_type: "therapist",
     typeBadge: "Counsellor",
-    description: "Accessible online counselling for parents and young people navigating SEND challenges. Available UK-wide via video call.",
+    description:
+      "Accessible online counselling for parents and young people navigating SEND challenges. Available UK-wide via video call.",
     shortDescription: "UK-wide online counselling for SEND families",
     location: "Online",
     region: "Online Only",
@@ -281,7 +348,17 @@ export const providers: Provider[] = [
     rating: 4.6,
     reviewCount: 22,
     contactMethod: "Online booking",
-    searchTags: ["counsellor", "counselling", "therapy", "therapist", "online", "mental health", "anxiety", "depression"],
+    searchTags: [
+      "counsellor",
+      "counselling",
+      "therapy",
+      "therapist",
+      "online",
+      "mental health",
+      "anxiety",
+      "depression",
+    ],
+    websiteDomain: "sendonlinecounselling.co.uk",
     credentials: ["BACP Registered"],
     ...founderPlanDefaults,
   },
@@ -291,7 +368,8 @@ export const providers: Provider[] = [
     type: "activity",
     category_type: "club",
     typeBadge: "Inclusive Activity",
-    description: "Sunshine SEND Club runs weekly after-school and weekend clubs for children with additional needs. Activities include arts & crafts, drama, cooking, and outdoor play in a safe, inclusive environment.",
+    description:
+      "Sunshine SEND Club runs weekly after-school and weekend clubs for children with additional needs. Activities include arts & crafts, drama, cooking, and outdoor play in a safe, inclusive environment.",
     shortDescription: "Weekly inclusive clubs with arts, drama, cooking & outdoor play",
     location: "London, E3",
     region: "London",
@@ -304,7 +382,25 @@ export const providers: Provider[] = [
     rating: 4.8,
     reviewCount: 27,
     contactMethod: "Email or phone",
-    searchTags: ["club", "clubs", "activity", "activities", "sessions", "classes", "after school", "inclusive", "kids", "arts", "crafts", "drama", "cooking", "outdoor", "play", "weekend"],
+    searchTags: [
+      "club",
+      "clubs",
+      "activity",
+      "activities",
+      "sessions",
+      "classes",
+      "after school",
+      "inclusive",
+      "kids",
+      "arts",
+      "crafts",
+      "drama",
+      "cooking",
+      "outdoor",
+      "play",
+      "weekend",
+    ],
+    websiteDomain: "sunshinesendclub.co.uk",
     timetable: [
       { day: "Tuesday", time: "15:30-17:30", activity: "After-school club (ages 4-8)" },
       { day: "Thursday", time: "15:30-17:30", activity: "After-school club (ages 8-14)" },
@@ -315,18 +411,92 @@ export const providers: Provider[] = [
 ];
 
 export const reviews: Review[] = [
-  { id: "r1", providerId: "1", authorName: "Sarah M.", rating: 5, text: "Absolutely fantastic. My son has made incredible progress with his speech since starting here.", date: "2025-11-15" },
-  { id: "r2", providerId: "1", authorName: "James T.", rating: 5, text: "Professional, warm, and truly understanding of our daughter's needs.", date: "2025-10-22" },
-  { id: "r3", providerId: "2", authorName: "Emma L.", rating: 4, text: "My daughter loves the Saturday sessions. The instructors are so patient.", date: "2025-12-01" },
-  { id: "r4", providerId: "3", authorName: "Rachel K.", rating: 5, text: "Great quality sensory products. Fast delivery and well-packaged.", date: "2025-11-28" },
-  { id: "r5", providerId: "4", authorName: "David P.", rating: 5, text: "The tutoring has transformed our son's confidence with reading.", date: "2025-12-10" },
-  { id: "r6", providerId: "5", authorName: "Lisa H.", rating: 5, text: "This charity has been a lifeline for our family. Cannot recommend enough.", date: "2025-09-15" },
+  {
+    id: "r1",
+    providerId: "1",
+    authorName: "Sarah M.",
+    rating: 5,
+    text: "Absolutely fantastic. My son has made incredible progress with his speech since starting here.",
+    date: "2025-11-15",
+  },
+  {
+    id: "r2",
+    providerId: "1",
+    authorName: "James T.",
+    rating: 5,
+    text: "Professional, warm, and truly understanding of our daughter's needs.",
+    date: "2025-10-22",
+  },
+  {
+    id: "r3",
+    providerId: "2",
+    authorName: "Emma L.",
+    rating: 4,
+    text: "My daughter loves the Saturday sessions. The instructors are so patient.",
+    date: "2025-12-01",
+  },
+  {
+    id: "r4",
+    providerId: "3",
+    authorName: "Rachel K.",
+    rating: 5,
+    text: "Great quality sensory products. Fast delivery and well-packaged.",
+    date: "2025-11-28",
+  },
+  {
+    id: "r5",
+    providerId: "4",
+    authorName: "David P.",
+    rating: 5,
+    text: "The tutoring has transformed our son's confidence with reading.",
+    date: "2025-12-10",
+  },
+  {
+    id: "r6",
+    providerId: "5",
+    authorName: "Lisa H.",
+    rating: 5,
+    text: "This charity has been a lifeline for our family. Cannot recommend enough.",
+    date: "2025-09-15",
+  },
 ];
 
 export const enquiries: Enquiry[] = [
-  { id: "e1", providerId: "1", providerName: "Bright Minds Speech Therapy", parentName: "Jane Smith", message: "Hi, I'm looking for speech therapy for my 5-year-old son who has a speech delay. Could you tell me about your availability and approach?", childAge: "5", status: "replied", date: "2026-01-15", reply: "Hi Jane, thank you for reaching out. We'd be happy to discuss how we can help your son. We currently have availability on Tuesday and Thursday afternoons. Would you like to book an initial assessment?" },
-  { id: "e2", providerId: "2", providerName: "Splash Inclusive Swimming", parentName: "Jane Smith", message: "Are there spaces in the Saturday all-abilities session for my 7-year-old daughter?", childAge: "7", status: "sent", date: "2026-01-20" },
-  { id: "e3", providerId: "4", providerName: "Learning Tree Tutoring", parentName: "Mark Johnson", message: "My 10-year-old has been diagnosed with dyslexia. Do you offer online sessions?", childAge: "10", status: "replied", date: "2026-01-10", reply: "Hi Mark, yes we do offer online sessions for dyslexia support. We'd recommend starting with an assessment to understand your child's specific needs." },
+  {
+    id: "e1",
+    providerId: "1",
+    providerName: "Bright Minds Speech Therapy",
+    parentName: "Jane Smith",
+    message:
+      "Hi, I'm looking for speech therapy for my 5-year-old son who has a speech delay. Could you tell me about your availability and approach?",
+    childAge: "5",
+    status: "replied",
+    date: "2026-01-15",
+    reply:
+      "Hi Jane, thank you for reaching out. We'd be happy to discuss how we can help your son. We currently have availability on Tuesday and Thursday afternoons. Would you like to book an initial assessment?",
+  },
+  {
+    id: "e2",
+    providerId: "2",
+    providerName: "Splash Inclusive Swimming",
+    parentName: "Jane Smith",
+    message: "Are there spaces in the Saturday all-abilities session for my 7-year-old daughter?",
+    childAge: "7",
+    status: "sent",
+    date: "2026-01-20",
+  },
+  {
+    id: "e3",
+    providerId: "4",
+    providerName: "Learning Tree Tutoring",
+    parentName: "Mark Johnson",
+    message: "My 10-year-old has been diagnosed with dyslexia. Do you offer online sessions?",
+    childAge: "10",
+    status: "replied",
+    date: "2026-01-10",
+    reply:
+      "Hi Mark, yes we do offer online sessions for dyslexia support. We'd recommend starting with an assessment to understand your child's specific needs.",
+  },
 ];
 
 export const mockParent = {

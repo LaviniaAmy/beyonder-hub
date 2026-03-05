@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { CheckCircle, Lock, Clock, Users, FileText, Image, Star, ShoppingBag, Link as LinkIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,8 @@ const MAX_REPLY = 800;
 
 const ProviderDashboard = () => {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const claimStatus = searchParams.get("claimStatus");
   const providerId = user?.provider_id ?? providers[0]?.id;
   const profile = providers.find((p) => p.id === providerId);
 
@@ -68,6 +71,27 @@ const ProviderDashboard = () => {
           <Badge className="bg-teal-500/20 text-teal-400 border-0">{profile.plan_type} plan</Badge>
           <Badge className="bg-emerald-500/15 text-emerald-400 border-0">{profile.plan_status}</Badge>
         </div>
+
+        {/* Claim pending banner */}
+        {claimStatus === "pending_review" && (
+          <div
+            style={{
+              marginBottom: 20,
+              padding: "14px 18px",
+              borderRadius: 10,
+              background: "rgba(232,98,42,0.08)",
+              border: "1px solid rgba(232,98,42,0.25)",
+            }}
+          >
+            <p style={{ fontSize: "0.85rem", fontWeight: 600, color: "#e8622a", margin: "0 0 4px" }}>
+              Your claim is being reviewed
+            </p>
+            <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.55)", margin: 0, lineHeight: 1.6 }}>
+              We're verifying your connection to this listing. Our team will be in touch shortly. In the meantime, you
+              can explore your dashboard.
+            </p>
+          </div>
+        )}
 
         {/* Your Profile */}
         <Card className="mb-6 border-0 shadow-card">

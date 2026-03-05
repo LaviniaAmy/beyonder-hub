@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth, UserRole } from "@/context/AuthContext";
-import { assignPlanOnClaim } from "@/data/founderStore";
+import { attemptClaim } from "@/data/founderStore";
+import { providers } from "@/data/mockData";
 
 const SignupPage = () => {
   const [searchParams] = useSearchParams();
@@ -34,11 +35,23 @@ const SignupPage = () => {
         const stored = localStorage.getItem("beyonder_user");
         if (stored) {
           const user = JSON.parse(stored);
-          const record = assignPlanOnClaim(user.id, claimProviderId);
+          const provider = providers.find((p) => p.id === claimProviderId);
+          const result = attemptClaim(
+            user.id,
+            user.email,
+            claimProviderId,
+            provider?.name ?? "",
+            provider?.websiteDomain ?? "",
+          );
           console.log("[Beyonder Claim on Signup]", {
             claimProviderId,
-            assignedPlan: record.planType,
+            outcome: result.outcome,
+            assignedPlan: result.outcome === "approved" ? result.record.planType : "pending",
           });
+          if (result.outcome === "pending_review") {
+            navigate("/provider-dashboard?claimStatus=pending_review");
+            return;
+          }
         }
       } catch {
         // silent fail — claim can be retried from provider page
