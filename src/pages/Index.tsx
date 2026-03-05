@@ -261,7 +261,7 @@ const Index = () => {
           ref={layerSearchRef}
           style={{
             position: "relative",
-            zIndex: 3,
+            zIndex: 200,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -282,6 +282,7 @@ const Index = () => {
               boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
               marginBottom: 10,
               position: "relative",
+              zIndex: 200,
             }}
           >
             {/* Region field with dropdown */}
