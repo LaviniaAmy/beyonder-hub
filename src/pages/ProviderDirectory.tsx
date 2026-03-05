@@ -100,7 +100,7 @@ const ProviderDirectory = () => {
       const q = term.toLowerCase();
       result = result.filter((p) => {
         const searchable = [
-          p.name,
+          p.businessName,
           p.description,
           p.shortDescription,
           p.typeBadge,
@@ -129,7 +129,7 @@ const ProviderDirectory = () => {
       result = result.filter((p) => {
         const catName = categories.find((c) => c.providerType === p.type)?.name?.toLowerCase() || "";
         const searchable = [
-          p.name,
+          p.businessName,
           p.description,
           p.shortDescription,
           p.typeBadge,
