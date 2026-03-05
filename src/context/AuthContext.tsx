@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { providers } from "@/data/mockData";
-import type { CategoryType } from "@/lib/featureGating";
 
 export type UserRole = "parent" | "provider" | "admin";
 
@@ -15,38 +14,37 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string, role: UserRole) => void;
+  login: (email: string, password: string) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const STORAGE_KEY = "beyonder_user";
 
-const TEST_PROVIDER_EMAILS: Record<string, CategoryType> = {
-  "therapist@beyonder.test": "therapist",
-  "club@beyonder.test": "club",
-  "education@beyonder.test": "education",
-  "charity@beyonder.test": "charity",
-  "product@beyonder.test": "product",
+// ── Exact email → role + provider_id map ──────────────────
+const EMAIL_MAP: Record<string, { role: UserRole; provider_id?: string }> = {
+  "admin@beyonder.com": { role: "admin" },
+  "test@admin.com": { role: "admin" },
+  "test@parent.com": { role: "parent" },
+  "therapist@beyonder.test": {
+    role: "provider",
+    provider_id: providers.find((p) => p.category_type === "therapist")?.id,
+  },
+  "club@beyonder.test": { role: "provider", provider_id: providers.find((p) => p.category_type === "club")?.id },
+  "education@beyonder.test": {
+    role: "provider",
+    provider_id: providers.find((p) => p.category_type === "education")?.id,
+  },
+  "charity@beyonder.test": { role: "provider", provider_id: providers.find((p) => p.category_type === "charity")?.id },
+  "products@beyonder.test": { role: "provider", provider_id: providers.find((p) => p.category_type === "product")?.id },
 };
 
-function resolveProviderId(email: string): string {
-  const lower = email.toLowerCase();
-
-  // 1) Exact test email match
-  const categoryTarget = TEST_PROVIDER_EMAILS[lower];
-  if (categoryTarget) {
-    const match = providers.find((p) => p.category_type === categoryTarget);
-    if (match) return match.id;
-  }
-
-  // 2) Legacy "provider" keyword
-  if (lower.includes("provider")) {
-    return providers[0]?.id ?? "";
-  }
-
-  // 3) Any provider login — default to first provider so dashboard always loads
-  return providers[0]?.id ?? "";
+function resolveUser(email: string): { role: UserRole; provider_id?: string } {
+  const lower = email.toLowerCase().trim();
+  // 1) Exact match
+  if (EMAIL_MAP[lower]) return EMAIL_MAP[lower];
+  // 2) Fallback — any unknown email logs in as parent
+  return { role: "parent" };
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -61,14 +59,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const login = (email: string, _password: string, role: UserRole) => {
-    const providerId = role === "provider" ? resolveProviderId(email) : undefined;
+  const login = (email: string, _password: string) => {
+    const { role, provider_id } = resolveUser(email);
     const newUser: User = {
       id: crypto.randomUUID(),
       name: email.split("@")[0],
       email,
       role,
-      provider_id: providerId,
+      provider_id,
     };
     setUser(newUser);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));

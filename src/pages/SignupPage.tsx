@@ -25,7 +25,7 @@ const SignupPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const role: UserRole = tab;
-    login(email, password, role);
+    login(email, password);
 
     // If provider signup with a claim intent — claim the listing now
     if (role === "provider" && claimProviderId) {
@@ -60,7 +60,7 @@ const SignupPage = () => {
       return;
     }
 
-    navigate(role === "provider" ? "/provider-dashboard" : "/dashboard");
+    navigate(tab === "provider" ? "/provider-dashboard" : "/dashboard");
   };
 
   return (

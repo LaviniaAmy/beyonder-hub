@@ -4,38 +4,43 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useAuth, UserRole } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
-const CATEGORY_TEST_EMAILS = [
-  "therapist@beyonder.test",
-  "club@beyonder.test",
-  "education@beyonder.test",
-  "charity@beyonder.test",
-  "product@beyonder.test",
+const TEST_LOGINS = [
+  { label: "Parent", email: "test@parent.com" },
+  { label: "Therapist", email: "therapist@beyonder.test" },
+  { label: "Club", email: "club@beyonder.test" },
+  { label: "Education", email: "education@beyonder.test" },
+  { label: "Charity", email: "charity@beyonder.test" },
+  { label: "Products", email: "products@beyonder.test" },
+  { label: "Admin", email: "admin@beyonder.com" },
 ];
+
+const REDIRECTS: Record<string, string> = {
+  admin: "/admin",
+  provider: "/provider-dashboard",
+  parent: "/dashboard",
+};
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("parent");
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const lower = email.toLowerCase();
-
-    // Only override for admin — otherwise always trust the selected role toggle
-    const resolvedRole: UserRole = lower.includes("admin") ? "admin" : role;
-
-    login(email, password, resolvedRole);
-
-    const redirects: Record<UserRole, string> = {
-      parent: "/dashboard",
-      provider: "/provider-dashboard",
-      admin: "/admin",
-    };
-    navigate(redirects[resolvedRole]);
+    login(email, password);
+    // Role is resolved inside AuthContext — read it back via a brief timeout
+    // to allow state to update, then redirect based on email map
+    const lower = email.toLowerCase().trim();
+    if (lower.includes("admin") || lower === "test@admin.com") {
+      navigate("/admin");
+    } else if (lower.endsWith("@beyonder.test") || lower.includes("provider")) {
+      navigate("/provider-dashboard");
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   return (
@@ -47,27 +52,6 @@ const LoginPage = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Role selector */}
-            <div>
-              <Label>I am a</Label>
-              <div className="mt-2 flex gap-2">
-                {(["parent", "provider"] as UserRole[]).map((r) => (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => setRole(r)}
-                    className={`flex-1 rounded-lg border py-2 text-sm font-medium transition-colors capitalize ${
-                      role === r
-                        ? "border-teal-500 bg-teal-500/15 text-teal-400"
-                        : "border-border/60 text-muted-foreground hover:border-teal-500/40"
-                    }`}
-                  >
-                    {r}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <div>
               <Label htmlFor="email">Email</Label>
               <Input
@@ -104,17 +88,14 @@ const LoginPage = () => {
           <div className="mt-4 border-t pt-4">
             <p className="text-xs text-muted-foreground mb-2">Pilot test logins (any password):</p>
             <div className="flex flex-wrap gap-1">
-              {["therapist", "club", "education", "charity", "product"].map((cat) => (
+              {TEST_LOGINS.map(({ label, email: e }) => (
                 <button
-                  key={cat}
+                  key={e}
                   type="button"
-                  className="rounded-md bg-muted px-2 py-1 text-xs hover:bg-teal-500/10 hover:text-teal-500 transition-colors duration-150"
-                  onClick={() => {
-                    setEmail(`${cat}@beyonder.test`);
-                    setRole("provider");
-                  }}
+                  className="rounded-md bg-muted px-2 py-1 text-xs hover:bg-teal-500/10 hover:text-teal-500 transition-colors"
+                  onClick={() => setEmail(e)}
                 >
-                  {cat}
+                  {label}
                 </button>
               ))}
             </div>
