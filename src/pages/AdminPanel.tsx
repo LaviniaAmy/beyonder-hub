@@ -18,6 +18,7 @@ import {
   rejectPendingClaim,
   PendingClaim,
 } from "@/data/founderStore";
+import { getAllProviders, updateProvider } from "@/data/providerStore";
 import type { PlanType, PlanStatus, CategoryType } from "@/lib/featureGating";
 
 const mockParents = [
@@ -159,29 +160,54 @@ const AdminPanel = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {providers.map((p) => (
+                  {getAllProviders().map((p) => (
                     <div
                       key={p.id}
                       className="flex items-center justify-between rounded-xl border border-border/60 p-4"
                     >
                       <div>
-                        <p className="font-medium">{p.name}</p>
+                        <p className="font-medium">{p.businessName}</p>
                         <p className="text-sm text-muted-foreground">
                           {p.typeBadge} · {p.location}
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         <Badge className="bg-navy-600 text-accent-foreground border-0 text-xs">{p.category_type}</Badge>
-                        <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">
-                          {p.plan_type.charAt(0).toUpperCase() + p.plan_type.slice(1)}
-                        </Badge>
-                        <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">{p.plan_status}</Badge>
+                        <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">{p.plan_type}</Badge>
+                        {p.moderationStatus === "suspended" ? (
+                          <Badge className="bg-red-500/15 text-red-400 border-0 text-xs">Suspended</Badge>
+                        ) : (
+                          <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">Active</Badge>
+                        )}
                         <Button size="sm" variant="outline">
                           Request Changes
                         </Button>
-                        <Button size="sm" variant="destructive">
-                          Suspend
-                        </Button>
+                        {p.moderationStatus === "suspended" ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-teal-400 border-teal-500/40"
+                            onClick={() => {
+                              updateProvider(p.id, { moderationStatus: "active", suspendedMessage: "" });
+                            }}
+                          >
+                            Reinstate
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => {
+                              updateProvider(p.id, {
+                                moderationStatus: "suspended",
+                                suspendedMessage:
+                                  "Your listing has been suspended by Beyonder. Please contact support.",
+                              });
+                            }}
+                          >
+                            Suspend
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ))}

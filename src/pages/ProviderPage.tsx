@@ -1,18 +1,19 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Star, ShieldCheck, Award, Clock, Mail } from "lucide-react";
+import { MapPin, Star, ShieldCheck, Award, Clock, Mail, Phone, Globe, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { providers, reviews } from "@/data/mockData";
+import { reviews } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
 import { attemptClaim, isProviderClaimed } from "@/data/founderStore";
+import { getProvider } from "@/data/providerStore";
 
 const ProviderPage = () => {
   const { id } = useParams();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const provider = providers.find((p) => p.id === id);
+  const provider = getProvider(id ?? "");
   const providerReviews = reviews.filter((r) => r.providerId === id);
 
   if (!provider) {
@@ -26,22 +27,21 @@ const ProviderPage = () => {
     );
   }
 
+  // Suspended providers show a minimal page — no enquiry CTA
+  const isSuspended = provider.moderationStatus === "suspended";
   const alreadyClaimed = isProviderClaimed(provider.id);
 
   const handleClaim = () => {
     if (!isAuthenticated || user?.role !== "provider") {
-      // Not logged in or not a provider — send to for-providers with claim intent
       navigate(`/for-providers?claimProviderId=${provider.id}`);
       return;
     }
-    // Logged in as provider — attempt domain-verified claim
-    const result = attemptClaim(user.id, user.email, provider.id, provider.name, provider.websiteDomain);
+    const result = attemptClaim(user.id, user.email, provider.id, provider.businessName, provider.websiteDomain);
     if (result.outcome === "approved") {
       navigate("/provider-dashboard");
     } else if (result.outcome === "pending_review") {
       navigate("/provider-dashboard?claimStatus=pending_review");
     }
-    // "already_claimed" — button is hidden anyway
   };
 
   return (
@@ -49,6 +49,13 @@ const ProviderPage = () => {
       {/* Hero */}
       <section className="bg-navy-gradient py-12">
         <div className="container animate-fade-in">
+          {isSuspended ? (
+            <div className="flex items-center gap-3 rounded-xl border border-red-500/25 bg-red-500/08 p-4 mb-6">
+              <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />
+              <p className="text-sm text-red-400">This listing is currently unavailable.</p>
+            </div>
+          ) : null}
+
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <div className="mb-3 flex flex-wrap gap-2">
@@ -56,9 +63,8 @@ const ProviderPage = () => {
                   {provider.typeBadge}
                 </Badge>
                 <Badge className="bg-teal-500/20 text-teal-400 border-0 capitalize">{provider.plan_type}</Badge>
-                <Badge className="bg-emerald-500/15 text-emerald-400 border-0 capitalize">{provider.plan_status}</Badge>
               </div>
-              <h1 className="text-3xl font-bold text-accent-foreground">{provider.name}</h1>
+              <h1 className="text-3xl font-bold text-accent-foreground">{provider.businessName}</h1>
               <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-accent-foreground/70">
                 <span className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
@@ -82,8 +88,8 @@ const ProviderPage = () => {
                 )}
               </div>
 
-              {/* Claim CTA — neutral, visible to all, hidden if already claimed */}
-              {!alreadyClaimed && (
+              {/* Claim CTA */}
+              {!alreadyClaimed && !isSuspended && (
                 <div className="mt-4 flex items-center gap-3">
                   <span className="text-sm text-accent-foreground/40">Own this profile?</span>
                   <Button
@@ -97,9 +103,11 @@ const ProviderPage = () => {
                 </div>
               )}
             </div>
-            <Button size="lg" className="bg-teal-500 hover:bg-teal-400 shadow-lg" asChild>
-              <Link to={`/enquiry/${provider.id}`}>Send Enquiry</Link>
-            </Button>
+            {!isSuspended && (
+              <Button size="lg" className="bg-teal-500 hover:bg-teal-400 shadow-lg" asChild>
+                <Link to={`/enquiry/${provider.id}`}>Send Enquiry</Link>
+              </Button>
+            )}
           </div>
         </div>
       </section>
@@ -131,7 +139,18 @@ const ProviderPage = () => {
             </CardContent>
           </Card>
 
-          {provider.credentials && (
+          {/* Spotlight — charities */}
+          {provider.spotlightMessage && (
+            <Card className="border-0 shadow-card border-l-4 border-l-teal-500">
+              <CardContent className="p-5">
+                <p className="text-sm font-semibold text-teal-500 mb-2">From the team</p>
+                <p className="text-muted-foreground leading-relaxed">{provider.spotlightMessage}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Credentials — therapists */}
+          {provider.credentials && provider.credentials.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle>Credentials & Qualifications</CardTitle>
@@ -149,7 +168,8 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {provider.timetable && (
+          {/* Timetable — clubs */}
+          {provider.timetable && provider.timetable.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle>Timetable</CardTitle>
@@ -169,7 +189,43 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {provider.products && (
+          {/* Gallery — clubs */}
+          {provider.gallery && provider.gallery.length > 0 && (
+            <Card className="border-0 shadow-card">
+              <CardHeader>
+                <CardTitle>Gallery</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-2">
+                  {provider.gallery.map((url, i) => (
+                    <div key={i} className="rounded-lg overflow-hidden bg-muted aspect-square">
+                      <img src={url} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Case Studies — education */}
+          {provider.caseStudies && provider.caseStudies.length > 0 && (
+            <Card className="border-0 shadow-card">
+              <CardHeader>
+                <CardTitle>Education Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {provider.caseStudies.map((cs, i) => (
+                  <div key={i} className="border-l-2 border-teal-500 pl-3">
+                    <p className="font-medium text-sm">{cs.title}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{cs.description}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Products */}
+          {provider.products && provider.products.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle>Products</CardTitle>
@@ -184,17 +240,6 @@ const ProviderPage = () => {
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {provider.educationDetails && (
-            <Card className="border-0 shadow-card">
-              <CardHeader>
-                <CardTitle>Education Details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed">{provider.educationDetails}</p>
               </CardContent>
             </Card>
           )}
@@ -237,24 +282,60 @@ const ProviderPage = () => {
                 <strong className="text-foreground">Coverage Area</strong>
                 <p className="text-muted-foreground">{provider.coverageArea}</p>
               </div>
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-teal-500" />
-                <span>{provider.contactMethod}</span>
-              </div>
+              {provider.email && (
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-teal-500" />
+                  <span>{provider.email}</span>
+                </div>
+              )}
+              {provider.phone && (
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-teal-500" />
+                  <span>{provider.phone}</span>
+                </div>
+              )}
+              {provider.website && (
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-teal-500" />
+                  <a
+                    href={provider.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-teal-400 hover:underline"
+                  >
+                    {provider.website}
+                  </a>
+                </div>
+              )}
+              {provider.storeUrl && (
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-teal-500" />
+                  <a
+                    href={provider.storeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-teal-400 hover:underline"
+                  >
+                    Visit Store
+                  </a>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
 
       {/* Sticky CTA */}
-      <div className="fixed bottom-0 left-0 right-0 bg-navy-900 p-4 shadow-lg border-t border-navy-700">
-        <div className="container flex items-center justify-between">
-          <span className="font-semibold text-accent-foreground">{provider.name}</span>
-          <Button className="bg-teal-500 hover:bg-teal-400" asChild>
-            <Link to={`/enquiry/${provider.id}`}>Send Enquiry</Link>
-          </Button>
+      {!isSuspended && (
+        <div className="fixed bottom-0 left-0 right-0 bg-navy-900 p-4 shadow-lg border-t border-navy-700">
+          <div className="container flex items-center justify-between">
+            <span className="font-semibold text-accent-foreground">{provider.businessName}</span>
+            <Button className="bg-teal-500 hover:bg-teal-400" asChild>
+              <Link to={`/enquiry/${provider.id}`}>Send Enquiry</Link>
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

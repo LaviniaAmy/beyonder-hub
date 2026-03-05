@@ -6,7 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { categories, providers, regions } from "@/data/mockData";
+import { categories, regions } from "@/data/mockData";
+import { getActiveProviders } from "@/data/providerStore";
 
 const deliveryOptions = [
   { value: "all", label: "All Delivery Types" },
@@ -64,7 +65,7 @@ const ProviderDirectory = () => {
   };
 
   const filtered = useMemo(() => {
-    let result = providers;
+    let result = getActiveProviders();
 
     // 1) Delivery type filtering
     if (delivery !== "all") {
@@ -361,7 +362,7 @@ const ProviderDirectory = () => {
                         <Badge variant="secondary" className="mb-2 text-xs">
                           {provider.typeBadge}
                         </Badge>
-                        <h3 className="font-semibold">{provider.name}</h3>
+                        <h3 className="font-semibold">{provider.businessName}</h3>
                       </div>
                       <button
                         onClick={(e) => {
