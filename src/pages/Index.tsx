@@ -105,7 +105,7 @@ const chipOut = (e: React.MouseEvent<HTMLButtonElement>) => {
 };
 
 const Index = () => {
-  const [postcode, setPostcode] = useState("");
+  const [region, setRegion] = useState("");
   const [support, setSupport] = useState("");
   const navigate = useNavigate();
 
@@ -127,15 +127,17 @@ const Index = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const q = [postcode, support].filter(Boolean).join(" ");
-    navigate(q.trim() ? `/providers?search=${encodeURIComponent(q.trim())}` : "/providers");
+    const params = new URLSearchParams();
+    if (region.trim()) params.set("region", region.trim());
+    if (support.trim()) params.set("support", support.trim());
+    navigate(params.toString() ? `/providers?${params.toString()}` : "/providers");
   };
 
   const hints = [
-    { label: "Speech & Language", to: "/providers?search=Speech+%26+Language" },
-    { label: "Occupational Therapy", to: "/providers?search=Occupational+Therapy" },
-    { label: "Autism-friendly clubs", to: "/providers?category=activities&search=autism" },
-    { label: "EHCP support", to: "/providers?category=education&search=EHCP" },
+    { label: "Speech & Language", to: "/providers?support=speech-language" },
+    { label: "Occupational Therapy", to: "/providers?support=occupational-therapy" },
+    { label: "Autism-friendly clubs", to: "/providers?category=activities&needs=autism" },
+    { label: "EHCP support", to: "/providers?category=education&support=ehcp" },
   ];
 
   return (
@@ -272,13 +274,13 @@ const Index = () => {
                   marginBottom: 1,
                 }}
               >
-                Your postcode
+                Region
               </span>
               <input
                 type="text"
-                value={postcode}
-                onChange={(e) => setPostcode(e.target.value)}
-                placeholder="e.g. SO14 or Southampton"
+                value={region}
+                onChange={(e) => setRegion(e.target.value)}
+                placeholder="e.g. South East, Hampshire"
                 style={{
                   fontSize: "0.8rem",
                   color: C.textDark,
