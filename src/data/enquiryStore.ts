@@ -1,0 +1,2 @@
+// Enquiry store placeholder
+export {};
