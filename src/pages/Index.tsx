@@ -363,12 +363,12 @@ const Index = () => {
                     top: "calc(100% + 6px)",
                     left: 0,
                     width: "100%",
-                    background: C.navy,
+                    background: "rgba(255,255,255,0.99)",
                     borderRadius: 10,
-                    boxShadow: "0 8px 24px rgba(0,0,0,0.40)",
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
                     zIndex: 100,
                     overflow: "hidden",
-                    border: "1px solid rgba(42,122,106,0.20)",
+                    border: "1px solid #e8e8e8",
                   }}
                 >
                   {filteredRegions.map((r, i) => (
@@ -377,14 +377,14 @@ const Index = () => {
                       style={{
                         padding: "9px 16px",
                         fontSize: "0.80rem",
-                        color: r === region ? C.tealLight : "rgba(255,255,255,0.75)",
+                        color: r === region ? C.teal : C.textDark,
                         fontWeight: r === region ? 600 : 300,
                         fontFamily: "'Outfit', sans-serif",
                         cursor: "pointer",
-                        borderTop: i > 0 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                        borderTop: i > 0 ? "1px solid #f0ece4" : "none",
                         background: "transparent",
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(42,122,106,0.12)")}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(42,122,106,0.06)")}
                       onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                       onMouseDown={(e) => {
                         e.preventDefault();
