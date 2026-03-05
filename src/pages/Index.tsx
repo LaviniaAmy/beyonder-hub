@@ -104,15 +104,31 @@ const chipOut = (e: React.MouseEvent<HTMLButtonElement>) => {
   e.currentTarget.style.transform = "none";
 };
 
+const REGIONS = [
+  "South East England",
+  "South West England",
+  "North East England",
+  "North West England",
+  "East Midlands",
+  "West Midlands",
+  "London",
+  "Wales",
+  "Scotland",
+  "Northern Ireland",
+  "Online Only",
+];
+
 const Index = () => {
   const [region, setRegion] = useState("");
   const [support, setSupport] = useState("");
+  const [regionOpen, setRegionOpen] = useState(false);
   const navigate = useNavigate();
 
   // ── Multi-speed parallax via direct DOM refs ──
   const layerLogoRef = useRef<HTMLDivElement>(null);
   const layerSearchRef = useRef<HTMLDivElement>(null);
   const layerHowRef = useRef<HTMLDivElement>(null);
+  const regionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => {
@@ -124,6 +140,19 @@ const Index = () => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (regionRef.current && !regionRef.current.contains(e.target as Node)) {
+        setRegionOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const filteredRegions = REGIONS.filter((r) => r.toLowerCase().includes(region.toLowerCase()));
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -249,12 +278,15 @@ const Index = () => {
               height: 52,
               background: "rgba(255,255,255,0.97)",
               borderRadius: 12,
-              overflow: "hidden",
+              overflow: "visible",
               boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
               marginBottom: 10,
+              position: "relative",
             }}
           >
+            {/* Region field with dropdown */}
             <div
+              ref={regionRef}
               style={{
                 flex: 1,
                 display: "flex",
@@ -262,7 +294,10 @@ const Index = () => {
                 justifyContent: "center",
                 padding: "7px 16px",
                 borderRight: "1px solid #e8e8e8",
+                position: "relative",
+                cursor: "pointer",
               }}
+              onClick={() => setRegionOpen((o) => !o)}
             >
               <span
                 style={{
@@ -276,21 +311,92 @@ const Index = () => {
               >
                 Region
               </span>
-              <input
-                type="text"
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                placeholder="Select a region"
-                style={{
-                  fontSize: "0.8rem",
-                  color: C.textDark,
-                  fontWeight: 300,
-                  background: "transparent",
-                  border: "none",
-                  outline: "none",
-                  fontFamily: "'Outfit', sans-serif",
-                }}
-              />
+              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <input
+                  type="text"
+                  value={region}
+                  onChange={(e) => {
+                    setRegion(e.target.value);
+                    setRegionOpen(true);
+                  }}
+                  placeholder="Select a region"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setRegionOpen(true);
+                  }}
+                  style={{
+                    fontSize: "0.8rem",
+                    color: C.textDark,
+                    fontWeight: 300,
+                    background: "transparent",
+                    border: "none",
+                    outline: "none",
+                    fontFamily: "'Outfit', sans-serif",
+                    flex: 1,
+                    minWidth: 0,
+                    cursor: "pointer",
+                  }}
+                />
+                {/* Faint chevron */}
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  style={{ flexShrink: 0, opacity: 0.25, marginRight: 2 }}
+                >
+                  <path
+                    d="M2 3.5 L5 6.5 L8 3.5"
+                    stroke="#1a2a3a"
+                    strokeWidth="1.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+
+              {/* Dropdown */}
+              {regionOpen && filteredRegions.length > 0 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "calc(100% + 6px)",
+                    left: 0,
+                    width: "100%",
+                    background: C.navy,
+                    borderRadius: 10,
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.40)",
+                    zIndex: 100,
+                    overflow: "hidden",
+                    border: "1px solid rgba(42,122,106,0.20)",
+                  }}
+                >
+                  {filteredRegions.map((r, i) => (
+                    <div
+                      key={r}
+                      style={{
+                        padding: "9px 16px",
+                        fontSize: "0.80rem",
+                        color: r === region ? C.tealLight : "rgba(255,255,255,0.75)",
+                        fontWeight: r === region ? 600 : 300,
+                        fontFamily: "'Outfit', sans-serif",
+                        cursor: "pointer",
+                        borderTop: i > 0 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                        background: "transparent",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(42,122,106,0.12)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setRegion(r);
+                        setRegionOpen(false);
+                      }}
+                    >
+                      {r}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div
               style={{
