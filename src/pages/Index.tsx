@@ -368,7 +368,9 @@ const Index = () => {
                     borderRadius: 10,
                     boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
                     zIndex: 9999,
-                    overflow: "hidden",
+                    overflowY: "auto",
+                    overflowX: "hidden",
+                    maxHeight: "234px",
                     border: "1px solid #e8e8e8",
                   }}
                 >
