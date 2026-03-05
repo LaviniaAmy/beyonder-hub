@@ -12,7 +12,7 @@ const TEST_LOGINS = [
   { label: "Club", email: "club@beyonder.test" },
   { label: "Education", email: "education@beyonder.test" },
   { label: "Charity", email: "charity@beyonder.test" },
-  { label: "Products", email: "products@beyonder.test" },
+  { label: "Product", email: "product@beyonder.test" },
   { label: "Admin", email: "admin@beyonder.com" },
 ];
 

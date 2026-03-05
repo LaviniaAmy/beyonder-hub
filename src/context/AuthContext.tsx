@@ -36,7 +36,7 @@ const EMAIL_MAP: Record<string, { role: UserRole; provider_id?: string }> = {
     provider_id: providers.find((p) => p.category_type === "education")?.id,
   },
   "charity@beyonder.test": { role: "provider", provider_id: providers.find((p) => p.category_type === "charity")?.id },
-  "products@beyonder.test": { role: "provider", provider_id: providers.find((p) => p.category_type === "product")?.id },
+  "product@beyonder.test": { role: "provider", provider_id: providers.find((p) => p.category_type === "product")?.id },
 };
 
 function resolveUser(email: string): { role: UserRole; provider_id?: string } {
