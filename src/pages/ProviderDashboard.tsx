@@ -1,22 +1,38 @@
+import { useState } from "react";
 import { CheckCircle, Lock, Clock, Users, FileText, Image, Star, ShoppingBag, Link as LinkIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { enquiries, providers } from "@/data/mockData";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { providers } from "@/data/mockData";
 import { hasFeature, categorySections } from "@/lib/featureGating";
 import { getModuleProfile, providerTestimonials } from "@/data/providerModules";
 import type { TherapistProfile, ClubProfile, EducationProfile, ProductProfile } from "@/data/providerModules";
 import { useAuth } from "@/context/AuthContext";
+import { getEnquiriesForProvider, replyToEnquiry, EnquiryRecord } from "@/data/enquiryStore";
+
+const MAX_REPLY = 800;
 
 const ProviderDashboard = () => {
   const { user } = useAuth();
   const providerId = user?.provider_id ?? providers[0]?.id;
-  const providerEnquiries = enquiries.filter((e) => e.providerId === providerId);
   const profile = providers.find((p) => p.id === providerId);
 
-  if (!profile) return <div className="container py-20 text-center"><h1 className="text-2xl font-bold">Provider not found</h1></div>;
+  // Reply modal state
+  const [replyOpen, setReplyOpen] = useState(false);
+  const [replyTarget, setReplyTarget] = useState<EnquiryRecord | null>(null);
+  const [replyText, setReplyText] = useState("");
+  const [, forceUpdate] = useState(0);
+
+  if (!profile)
+    return (
+      <div className="container py-20 text-center">
+        <h1 className="text-2xl font-bold">Provider not found</h1>
+      </div>
+    );
 
   const moduleProfile = getModuleProfile(profile.id, profile.category_type);
   const sections = categorySections[profile.category_type] ?? [];
@@ -25,6 +41,21 @@ const ProviderDashboard = () => {
   const isFeatureEnabled = (featureKey?: string) => {
     if (!featureKey) return true;
     return hasFeature(profile, featureKey as any);
+  };
+
+  const openReply = (enquiry: EnquiryRecord) => {
+    setReplyTarget(enquiry);
+    setReplyText(enquiry.reply ?? "");
+    setReplyOpen(true);
+  };
+
+  const handleSaveReply = () => {
+    if (!replyTarget || !replyText.trim()) return;
+    replyToEnquiry(replyTarget.enquiryId, replyText.trim());
+    setReplyOpen(false);
+    setReplyTarget(null);
+    setReplyText("");
+    forceUpdate((n) => n + 1); // trigger re-render to show updated status
   };
 
   return (
@@ -41,14 +72,31 @@ const ProviderDashboard = () => {
         <Card className="mb-6 border-0 shadow-card">
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle>Your Profile</CardTitle>
-            <Button size="sm" variant="outline">Edit Profile</Button>
+            <Button size="sm" variant="outline">
+              Edit Profile
+            </Button>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <p><strong className="text-foreground">Name:</strong> <span className="text-muted-foreground">{profile.name}</span></p>
-            <p><strong className="text-foreground">Type:</strong> <span className="text-muted-foreground">{profile.typeBadge}</span></p>
-            <p><strong className="text-foreground">Category:</strong> <span className="text-muted-foreground">{profile.category_type}</span></p>
-            <p><strong className="text-foreground">Location:</strong> <span className="text-muted-foreground">{profile.location}</span></p>
-            <p><strong className="text-foreground">Delivery:</strong> <span className="text-muted-foreground">{profile.deliveryFormat}</span></p>
+            <p>
+              <strong className="text-foreground">Name:</strong>{" "}
+              <span className="text-muted-foreground">{profile.name}</span>
+            </p>
+            <p>
+              <strong className="text-foreground">Type:</strong>{" "}
+              <span className="text-muted-foreground">{profile.typeBadge}</span>
+            </p>
+            <p>
+              <strong className="text-foreground">Category:</strong>{" "}
+              <span className="text-muted-foreground">{profile.category_type}</span>
+            </p>
+            <p>
+              <strong className="text-foreground">Location:</strong>{" "}
+              <span className="text-muted-foreground">{profile.location}</span>
+            </p>
+            <p>
+              <strong className="text-foreground">Delivery:</strong>{" "}
+              <span className="text-muted-foreground">{profile.deliveryFormat}</span>
+            </p>
           </CardContent>
         </Card>
 
@@ -71,7 +119,14 @@ const ProviderDashboard = () => {
               </CardHeader>
               <CardContent>
                 {enabled ? (
-                  renderSectionContent(section.key, profile, moduleProfile, providerEnquiries, testimonials)
+                  renderSectionContent(
+                    section.key,
+                    profile,
+                    moduleProfile,
+                    getEnquiriesForProvider(providerId),
+                    testimonials,
+                    openReply,
+                  )
                 ) : (
                   <p className="text-sm text-muted-foreground">
                     This feature is available on a higher plan. Upgrade to access {section.label.toLowerCase()}.
@@ -82,13 +137,19 @@ const ProviderDashboard = () => {
           );
         })}
 
-        {/* Plan Info (pilot) */}
+        {/* Plan Info */}
         <Card className="border-0 shadow-card">
-          <CardHeader><CardTitle>Your Plan</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Your Plan</CardTitle>
+          </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
-              <Badge className="bg-teal-500/20 text-teal-400 border-0">{profile.plan_type.charAt(0).toUpperCase() + profile.plan_type.slice(1)} Plan</Badge>
-              <Badge className="bg-emerald-500/15 text-emerald-400 border-0">{profile.plan_status.charAt(0).toUpperCase() + profile.plan_status.slice(1)}</Badge>
+              <Badge className="bg-teal-500/20 text-teal-400 border-0">
+                {profile.plan_type.charAt(0).toUpperCase() + profile.plan_type.slice(1)} Plan
+              </Badge>
+              <Badge className="bg-emerald-500/15 text-emerald-400 border-0">
+                {profile.plan_status.charAt(0).toUpperCase() + profile.plan_status.slice(1)}
+              </Badge>
             </div>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
               You're on the {profile.plan_type} plan. All features are enabled during the pilot period.
@@ -96,6 +157,46 @@ const ProviderDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Reply Modal */}
+      <Dialog open={replyOpen} onOpenChange={setReplyOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reply to {replyTarget?.parentName}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground border-l-2 border-teal-500 pl-3 italic">
+              "{replyTarget?.message}"
+            </p>
+            <Label htmlFor="replyText">Your reply</Label>
+            <Textarea
+              id="replyText"
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value.slice(0, MAX_REPLY))}
+              placeholder="Write your response here..."
+              rows={5}
+            />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span />
+              <span style={{ color: MAX_REPLY - replyText.length < 100 ? "#f07840" : undefined }}>
+                {MAX_REPLY - replyText.length} remaining
+              </span>
+            </div>
+          </div>
+          <div className="flex gap-2 mt-2">
+            <Button variant="outline" className="flex-1" onClick={() => setReplyOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="flex-1 bg-teal-500 hover:bg-teal-400"
+              disabled={!replyText.trim()}
+              onClick={handleSaveReply}
+            >
+              Send Reply
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
@@ -120,8 +221,9 @@ function renderSectionContent(
   key: string,
   profile: any,
   moduleProfile: any,
-  enquiries: any[],
+  enquiries: EnquiryRecord[],
   testimonials: any[],
+  openReply: (e: EnquiryRecord) => void,
 ) {
   switch (key) {
     case "availability":
@@ -145,14 +247,19 @@ function renderSectionContent(
       ) : (
         <div className="space-y-3">
           {enquiries.map((e) => (
-            <div key={e.id} className="flex items-center justify-between rounded-xl border border-border/60 p-4">
+            <div key={e.enquiryId} className="flex items-center justify-between rounded-xl border border-border/60 p-4">
               <div>
                 <p className="font-medium">{e.parentName}</p>
                 <p className="text-sm text-muted-foreground line-clamp-1">{e.message}</p>
               </div>
-              <Badge variant={e.status === "sent" ? "destructive" : "secondary"}>
-                {e.status === "sent" ? "New" : e.status}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant={e.statusForProvider === "new" ? "destructive" : "secondary"}>
+                  {e.statusForProvider === "new" ? "New" : "Replied"}
+                </Badge>
+                <Button size="sm" variant="outline" onClick={() => openReply(e)}>
+                  {e.statusForProvider === "replied" ? "Edit Reply" : "Reply"}
+                </Button>
+              </div>
             </div>
           ))}
         </div>
@@ -164,10 +271,13 @@ function renderSectionContent(
         <div className="space-y-2">
           {(therapist?.certifications ?? []).map((c) => (
             <div key={c} className="flex items-center gap-2 text-sm">
-              <CheckCircle className="h-4 w-4 text-teal-500" />{c}
+              <CheckCircle className="h-4 w-4 text-teal-500" />
+              {c}
             </div>
           ))}
-          <Button size="sm" variant="outline" className="mt-2">Upload Certification</Button>
+          <Button size="sm" variant="outline" className="mt-2">
+            Upload Certification
+          </Button>
         </div>
       );
 
@@ -181,7 +291,9 @@ function renderSectionContent(
               <div className="flex items-center gap-2">
                 {t.rating && <span className="text-sm font-medium text-orange-400">{t.rating}★</span>}
                 {t.parent_name && <span className="text-sm text-muted-foreground">{t.parent_name}</span>}
-                <Badge variant="secondary" className="ml-auto text-xs">{t.status}</Badge>
+                <Badge variant="secondary" className="ml-auto text-xs">
+                  {t.status}
+                </Badge>
               </div>
               <p className="mt-1 text-sm leading-relaxed">{t.text}</p>
             </div>
@@ -201,7 +313,9 @@ function renderSectionContent(
               <span>{t.activity}</span>
             </div>
           ))}
-          <Button size="sm" variant="outline" className="mt-2">Edit Timetable</Button>
+          <Button size="sm" variant="outline" className="mt-2">
+            Edit Timetable
+          </Button>
         </div>
       );
 
@@ -209,7 +323,9 @@ function renderSectionContent(
       return (
         <div>
           <p className="text-sm text-muted-foreground mb-2">Upload photos to showcase your activities.</p>
-          <Button size="sm" variant="outline">Upload Photos</Button>
+          <Button size="sm" variant="outline">
+            Upload Photos
+          </Button>
         </div>
       );
 
@@ -218,9 +334,13 @@ function renderSectionContent(
       return (
         <div className="space-y-2">
           {(edu?.case_studies ?? []).map((cs, i) => (
-            <p key={i} className="text-sm border-l-2 border-teal-500 pl-3">{cs}</p>
+            <p key={i} className="text-sm border-l-2 border-teal-500 pl-3">
+              {cs}
+            </p>
           ))}
-          <Button size="sm" variant="outline" className="mt-2">Add Case Study</Button>
+          <Button size="sm" variant="outline" className="mt-2">
+            Add Case Study
+          </Button>
         </div>
       );
 
@@ -231,8 +351,13 @@ function renderSectionContent(
       const prod = moduleProfile as ProductProfile | null;
       return (
         <div className="space-y-2">
-          <p className="text-sm"><strong className="text-foreground">Store URL:</strong> <span className="text-muted-foreground">{prod?.store_link ?? "Not set"}</span></p>
-          <Button size="sm" variant="outline">Edit Store Link</Button>
+          <p className="text-sm">
+            <strong className="text-foreground">Store URL:</strong>{" "}
+            <span className="text-muted-foreground">{prod?.store_link ?? "Not set"}</span>
+          </p>
+          <Button size="sm" variant="outline">
+            Edit Store Link
+          </Button>
         </div>
       );
 
@@ -241,12 +366,17 @@ function renderSectionContent(
       return (
         <div className="space-y-2">
           {(prodProfile?.featured_products ?? []).map((p) => (
-            <div key={p.name} className="flex items-center justify-between rounded-xl border border-border/60 p-4 text-sm">
+            <div
+              key={p.name}
+              className="flex items-center justify-between rounded-xl border border-border/60 p-4 text-sm"
+            >
               <span>{p.name}</span>
               <span className="font-semibold text-teal-500">{p.price}</span>
             </div>
           ))}
-          <Button size="sm" variant="outline" className="mt-2">Manage Products</Button>
+          <Button size="sm" variant="outline" className="mt-2">
+            Manage Products
+          </Button>
         </div>
       );
 

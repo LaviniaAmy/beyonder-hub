@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -7,10 +7,18 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { providers } from "@/data/mockData";
 import { CheckCircle } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { addEnquiry } from "@/data/enquiryStore";
+
+const MIN_CHARS = 20;
+const MAX_CHARS = 800;
 
 const EnquiryPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const provider = providers.find((p) => p.id === id);
+
   const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState("");
   const [childAge, setChildAge] = useState("");
@@ -20,11 +28,36 @@ const EnquiryPage = () => {
       <div className="bg-navy-gradient min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-accent-foreground">Provider not found</h1>
-          <Button asChild className="mt-4 bg-teal-500 hover:bg-teal-400"><Link to="/providers">Back to Directory</Link></Button>
+          <Button asChild className="mt-4 bg-teal-500 hover:bg-teal-400">
+            <Link to="/providers">Back to Directory</Link>
+          </Button>
         </div>
       </div>
     );
   }
+
+  const remaining = MAX_CHARS - message.length;
+  const tooShort = message.trim().length < MIN_CHARS;
+  const tooLong = message.length > MAX_CHARS;
+  const canSubmit = !tooShort && !tooLong && childAge.trim().length > 0;
+
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+    addEnquiry({
+      enquiryId: crypto.randomUUID(),
+      providerId: provider.id,
+      providerName: provider.name,
+      parentId: user?.id ?? "guest",
+      parentName: user?.name ?? "Guest",
+      childAge: childAge.trim(),
+      message: message.trim(),
+      reply: null,
+      statusForParent: "sent",
+      statusForProvider: "new",
+      createdAt: new Date().toISOString().split("T")[0],
+    });
+    setSubmitted(true);
+  };
 
   if (submitted) {
     return (
@@ -32,8 +65,12 @@ const EnquiryPage = () => {
         <div className="text-center animate-fade-in">
           <CheckCircle className="mx-auto mb-4 h-16 w-16 text-teal-500" />
           <h1 className="mb-2 text-2xl font-bold text-accent-foreground">Enquiry Sent!</h1>
-          <p className="mb-6 text-accent-foreground/70 leading-relaxed">Your message has been sent to {provider.name}. They'll get back to you soon.</p>
-          <Button className="bg-teal-500 hover:bg-teal-400" asChild><Link to="/dashboard">Go to Dashboard</Link></Button>
+          <p className="mb-6 text-accent-foreground/70 leading-relaxed">
+            Your message has been sent to {provider.name}. They'll get back to you soon.
+          </p>
+          <Button className="bg-teal-500 hover:bg-teal-400" onClick={() => navigate("/dashboard")}>
+            Go to Dashboard
+          </Button>
         </div>
       </div>
     );
@@ -46,18 +83,38 @@ const EnquiryPage = () => {
         <Card className="border-0 shadow-card">
           <CardHeader>
             <CardTitle className="text-lg">{provider.name}</CardTitle>
-            <p className="text-sm text-muted-foreground">{provider.deliveryFormat} · {provider.ageRange}</p>
+            <p className="text-sm text-muted-foreground">
+              {provider.deliveryFormat} · {provider.ageRange}
+            </p>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="childAge">Child's Age</Label>
-              <Input id="childAge" value={childAge} onChange={(e) => setChildAge(e.target.value)} placeholder="e.g. 7" />
+              <Input
+                id="childAge"
+                value={childAge}
+                onChange={(e) => setChildAge(e.target.value)}
+                placeholder="e.g. 7"
+              />
             </div>
             <div>
               <Label htmlFor="message">Your Message</Label>
-              <Textarea id="message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Tell them about your child's needs and what you're looking for..." rows={5} />
+              <Textarea
+                id="message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Tell them about your child's needs and what you're looking for..."
+                rows={5}
+              />
+              {/* Character counter */}
+              <div className="mt-1 flex justify-between text-xs text-muted-foreground">
+                <span>{tooShort && message.length > 0 ? `At least ${MIN_CHARS} characters required` : ""}</span>
+                <span style={{ color: tooLong ? "#e8622a" : remaining < 100 ? "#f07840" : undefined }}>
+                  {remaining} remaining
+                </span>
+              </div>
             </div>
-            <Button className="w-full bg-teal-500 hover:bg-teal-400" onClick={() => setSubmitted(true)} disabled={!message.trim()}>
+            <Button className="w-full bg-teal-500 hover:bg-teal-400" onClick={handleSubmit} disabled={!canSubmit}>
               Send Enquiry
             </Button>
           </CardContent>
