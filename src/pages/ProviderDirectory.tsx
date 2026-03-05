@@ -23,9 +23,9 @@ const localCategoryCards = [
 
 // Map support param slugs to searchable terms
 const supportSlugMap: Record<string, string> = {
-  "speech-language": "speech language",
-  "speech-language-therapy": "speech language",
-  "occupational-therapy": "occupational therapy",
+  "speech-language": "speech",
+  "speech-language-therapy": "speech",
+  "occupational-therapy": "occupational",
   ehcp: "ehcp",
   speech: "speech",
 };
