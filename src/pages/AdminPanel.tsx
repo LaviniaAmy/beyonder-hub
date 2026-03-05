@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { providers, reviews } from "@/data/mockData";
+import { adminSettings, getFounderCount, updateAdminSettings, applyPlanOverride } from "@/data/founderStore";
 import type { PlanType, PlanStatus, CategoryType } from "@/lib/featureGating";
 
 const mockParents = [
@@ -29,37 +30,126 @@ const categoryTypes: CategoryType[] = ["therapist", "club", "education", "charit
 
 const AdminPanel = () => {
   const [strings, setStrings] = useState(defaultStrings);
+  const [founderLimit, setFounderLimit] = useState(adminSettings.founderLimit);
+  const [limitSaved, setLimitSaved] = useState(false);
+
+  // Per-provider plan override state
+  const [providerPlans, setProviderPlans] = useState<
+    Record<
+      string,
+      {
+        planType: string;
+        planStatus: string;
+        categoryType: string;
+      }
+    >
+  >(
+    Object.fromEntries(
+      providers.map((p) => [p.id, { planType: p.plan_type, planStatus: p.plan_status, categoryType: p.category_type }]),
+    ),
+  );
+  const [savedRows, setSavedRows] = useState<Record<string, boolean>>({});
+
+  const founderCount = getFounderCount();
+  const slotsLeft = Math.max(0, founderLimit - founderCount);
+
+  const handleSaveFounderLimit = () => {
+    updateAdminSettings(founderLimit);
+    setLimitSaved(true);
+    setTimeout(() => setLimitSaved(false), 2000);
+  };
+
+  const handlePlanChange = (providerId: string, field: string, value: string) => {
+    setProviderPlans((prev) => ({
+      ...prev,
+      [providerId]: { ...prev[providerId], [field]: value },
+    }));
+    setSavedRows((prev) => ({ ...prev, [providerId]: false }));
+  };
+
+  const handleSaveProviderPlan = (providerId: string) => {
+    const row = providerPlans[providerId];
+    applyPlanOverride(providerId, row.planType, row.planStatus, row.categoryType);
+    setSavedRows((prev) => ({ ...prev, [providerId]: true }));
+    setTimeout(() => setSavedRows((prev) => ({ ...prev, [providerId]: false })), 2000);
+  };
 
   return (
     <div className="bg-navy-gradient min-h-screen py-10">
       <div className="container animate-fade-in">
         <h1 className="mb-6 text-3xl font-bold text-accent-foreground">Admin Panel</h1>
+
         <Tabs defaultValue="providers">
           <TabsList className="bg-navy-700 border-0">
-            <TabsTrigger value="providers" className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground">Providers</TabsTrigger>
-            <TabsTrigger value="parents" className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground">Parents</TabsTrigger>
-            <TabsTrigger value="reviews" className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground">Reviews</TabsTrigger>
-            <TabsTrigger value="plans" className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground">Plans & Categories</TabsTrigger>
-            <TabsTrigger value="content" className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground">Content Strings</TabsTrigger>
+            <TabsTrigger
+              value="providers"
+              className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
+            >
+              Providers
+            </TabsTrigger>
+            <TabsTrigger
+              value="parents"
+              className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
+            >
+              Parents
+            </TabsTrigger>
+            <TabsTrigger
+              value="reviews"
+              className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
+            >
+              Reviews
+            </TabsTrigger>
+            <TabsTrigger
+              value="plans"
+              className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
+            >
+              Plans & Categories
+            </TabsTrigger>
+            <TabsTrigger
+              value="founder"
+              className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
+            >
+              Founder Settings
+            </TabsTrigger>
+            <TabsTrigger
+              value="content"
+              className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
+            >
+              Content Strings
+            </TabsTrigger>
           </TabsList>
 
+          {/* ── Providers ── */}
           <TabsContent value="providers" className="mt-6">
             <Card className="border-0 shadow-card">
-              <CardHeader><CardTitle>Provider Moderation</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Provider Moderation</CardTitle>
+              </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {providers.map((p) => (
-                    <div key={p.id} className="flex items-center justify-between rounded-xl border border-border/60 p-4">
+                    <div
+                      key={p.id}
+                      className="flex items-center justify-between rounded-xl border border-border/60 p-4"
+                    >
                       <div>
                         <p className="font-medium">{p.name}</p>
-                        <p className="text-sm text-muted-foreground">{p.typeBadge} · {p.location}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {p.typeBadge} · {p.location}
+                        </p>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         <Badge className="bg-navy-600 text-accent-foreground border-0 text-xs">{p.category_type}</Badge>
-                        <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">{p.plan_type.charAt(0).toUpperCase() + p.plan_type.slice(1)}</Badge>
+                        <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">
+                          {p.plan_type.charAt(0).toUpperCase() + p.plan_type.slice(1)}
+                        </Badge>
                         <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">{p.plan_status}</Badge>
-                        <Button size="sm" variant="outline">Request Changes</Button>
-                        <Button size="sm" variant="destructive">Suspend</Button>
+                        <Button size="sm" variant="outline">
+                          Request Changes
+                        </Button>
+                        <Button size="sm" variant="destructive">
+                          Suspend
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -68,20 +158,28 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
+          {/* ── Parents ── */}
           <TabsContent value="parents" className="mt-6">
             <Card className="border-0 shadow-card">
-              <CardHeader><CardTitle>Parent Moderation</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Parent Moderation</CardTitle>
+              </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {mockParents.map((p) => (
-                    <div key={p.id} className="flex items-center justify-between rounded-xl border border-border/60 p-4">
+                    <div
+                      key={p.id}
+                      className="flex items-center justify-between rounded-xl border border-border/60 p-4"
+                    >
                       <div>
                         <p className="font-medium">{p.name}</p>
                         <p className="text-sm text-muted-foreground">{p.email}</p>
                       </div>
                       <div className="flex gap-2">
                         <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">{p.status}</Badge>
-                        <Button size="sm" variant="destructive">Suspend</Button>
+                        <Button size="sm" variant="destructive">
+                          Suspend
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -90,18 +188,28 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
+          {/* ── Reviews ── */}
           <TabsContent value="reviews" className="mt-6">
             <Card className="border-0 shadow-card">
-              <CardHeader><CardTitle>Review Moderation</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Review Moderation</CardTitle>
+              </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {reviews.map((r) => (
-                    <div key={r.id} className="flex items-center justify-between rounded-xl border border-border/60 p-4">
+                    <div
+                      key={r.id}
+                      className="flex items-center justify-between rounded-xl border border-border/60 p-4"
+                    >
                       <div>
-                        <p className="font-medium">{r.authorName} — <span className="text-orange-400">{r.rating}★</span></p>
+                        <p className="font-medium">
+                          {r.authorName} — <span className="text-orange-400">{r.rating}★</span>
+                        </p>
                         <p className="text-sm text-muted-foreground line-clamp-1">{r.text}</p>
                       </div>
-                      <Button size="sm" variant="destructive">Remove</Button>
+                      <Button size="sm" variant="destructive">
+                        Remove
+                      </Button>
                     </div>
                   ))}
                 </div>
@@ -109,63 +217,158 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
+          {/* ── Plans & Categories (with per-row Save) ── */}
           <TabsContent value="plans" className="mt-6">
             <Card className="border-0 shadow-card">
-              <CardHeader><CardTitle>Provider Plans & Categories</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Provider Plans & Categories</CardTitle>
+              </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {providers.map((p) => (
-                    <div key={p.id} className="rounded-xl border border-border/60 p-5 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">{p.name}</p>
-                          <p className="text-sm text-muted-foreground">{p.typeBadge}</p>
+                  {providers.map((p) => {
+                    const row = providerPlans[p.id];
+                    return (
+                      <div key={p.id} className="rounded-xl border border-border/60 p-5 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">{p.name}</p>
+                            <p className="text-sm text-muted-foreground">{p.typeBadge}</p>
+                          </div>
+                          <div className="flex gap-2 flex-wrap justify-end">
+                            <Badge className="bg-navy-600 text-accent-foreground border-0 text-xs">
+                              {row.categoryType}
+                            </Badge>
+                            <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">{row.planType}</Badge>
+                            <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">
+                              {row.planStatus}
+                            </Badge>
+                          </div>
                         </div>
-                        <div className="flex gap-2">
-                          <Badge className="bg-navy-600 text-accent-foreground border-0 text-xs">{p.category_type}</Badge>
-                          <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">{p.plan_type}</Badge>
-                          <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">{p.plan_status}</Badge>
+                        <div className="grid gap-3 sm:grid-cols-3">
+                          <div>
+                            <Label className="text-xs">Category Type</Label>
+                            <Select
+                              value={row.categoryType}
+                              onValueChange={(v) => handlePlanChange(p.id, "categoryType", v)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-card">
+                                {categoryTypes.map((ct) => (
+                                  <SelectItem key={ct} value={ct}>
+                                    {ct}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label className="text-xs">Plan Type</Label>
+                            <Select value={row.planType} onValueChange={(v) => handlePlanChange(p.id, "planType", v)}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-card">
+                                {planTypes.map((pt) => (
+                                  <SelectItem key={pt} value={pt}>
+                                    {pt}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label className="text-xs">Plan Status</Label>
+                            <Select
+                              value={row.planStatus}
+                              onValueChange={(v) => handlePlanChange(p.id, "planStatus", v)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-card">
+                                {planStatuses.map((ps) => (
+                                  <SelectItem key={ps} value={ps}>
+                                    {ps}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <div className="flex justify-end">
+                          <Button
+                            size="sm"
+                            className="bg-teal-500 hover:bg-teal-400"
+                            onClick={() => handleSaveProviderPlan(p.id)}
+                          >
+                            {savedRows[p.id] ? "Saved ✓" : "Save Changes"}
+                          </Button>
                         </div>
                       </div>
-                      <div className="grid gap-3 sm:grid-cols-3">
-                        <div>
-                          <Label className="text-xs">Category Type</Label>
-                          <Select defaultValue={p.category_type}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent className="bg-card">
-                              {categoryTypes.map((ct) => <SelectItem key={ct} value={ct}>{ct}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label className="text-xs">Plan Type</Label>
-                          <Select defaultValue={p.plan_type}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent className="bg-card">
-                              {planTypes.map((pt) => <SelectItem key={pt} value={pt}>{pt}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label className="text-xs">Plan Status</Label>
-                          <Select defaultValue={p.plan_status}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent className="bg-card">
-                              {planStatuses.map((ps) => <SelectItem key={ps} value={ps}>{ps}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
+          {/* ── Founder Settings ── */}
+          <TabsContent value="founder" className="mt-6">
+            <Card className="border-0 shadow-card">
+              <CardHeader>
+                <CardTitle>Founder Settings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <Label>Founder Limit</Label>
+                    <Input
+                      type="number"
+                      value={founderLimit}
+                      onChange={(e) => setFounderLimit(Number(e.target.value))}
+                      min={0}
+                    />
+                    <p className="mt-1 text-xs text-muted-foreground">Max number of founding providers</p>
+                  </div>
+                  <div>
+                    <Label>Current Founder Count</Label>
+                    <Input value={founderCount} readOnly className="bg-muted cursor-not-allowed" />
+                    <p className="mt-1 text-xs text-muted-foreground">Active founder plans claimed</p>
+                  </div>
+                  <div>
+                    <Label>Remaining Slots</Label>
+                    <Input
+                      value={Math.max(0, founderLimit - founderCount)}
+                      readOnly
+                      className="bg-muted cursor-not-allowed"
+                      style={{ color: slotsLeft === 0 ? "#e8622a" : undefined }}
+                    />
+                    <p className="mt-1 text-xs text-muted-foreground">Available for new claims</p>
+                  </div>
+                </div>
+                <Button className="bg-teal-500 hover:bg-teal-400" onClick={handleSaveFounderLimit}>
+                  {limitSaved ? "Saved ✓" : "Save Founder Limit"}
+                </Button>
+                <div className="rounded-xl border border-border/60 p-4 text-sm text-muted-foreground">
+                  <p className="font-medium text-foreground mb-1">How founder assignment works</p>
+                  <p>
+                    When a provider claims a listing, the system checks the current founder count against this limit. If
+                    slots remain, the provider is automatically assigned Founder plan. Once full, new claims receive the
+                    Free plan. Admins can override individual plans in the Plans & Categories tab.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ── Content Strings ── */}
           <TabsContent value="content" className="mt-6">
             <Card className="border-0 shadow-card">
-              <CardHeader><CardTitle>Content Strings</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Content Strings</CardTitle>
+              </CardHeader>
               <CardContent className="space-y-4">
                 {Object.entries(strings).map(([key, value]) => (
                   <div key={key}>

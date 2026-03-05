@@ -12,6 +12,7 @@ import { hasFeature, categorySections } from "@/lib/featureGating";
 import { getModuleProfile, providerTestimonials } from "@/data/providerModules";
 import type { TherapistProfile, ClubProfile, EducationProfile, ProductProfile } from "@/data/providerModules";
 import { useAuth } from "@/context/AuthContext";
+import { getClaimForProvider } from "@/data/founderStore";
 import { getEnquiriesForProvider, replyToEnquiry, EnquiryRecord } from "@/data/enquiryStore";
 
 const MAX_REPLY = 800;
@@ -137,23 +138,32 @@ const ProviderDashboard = () => {
           );
         })}
 
-        {/* Plan Info */}
+        {/* Plan Info — founder vs free copy */}
         <Card className="border-0 shadow-card">
           <CardHeader>
             <CardTitle>Your Plan</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-3">
-              <Badge className="bg-teal-500/20 text-teal-400 border-0">
-                {profile.plan_type.charAt(0).toUpperCase() + profile.plan_type.slice(1)} Plan
-              </Badge>
-              <Badge className="bg-emerald-500/15 text-emerald-400 border-0">
-                {profile.plan_status.charAt(0).toUpperCase() + profile.plan_status.slice(1)}
-              </Badge>
-            </div>
-            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-              You're on the {profile.plan_type} plan. All features are enabled during the pilot period.
-            </p>
+            {(() => {
+              const claim = getClaimForProvider(profile.id);
+              const planType = claim?.planType ?? profile.plan_type;
+              const isFounder = planType === "founder";
+              return (
+                <>
+                  <div className="flex items-center gap-3">
+                    <Badge className="bg-teal-500/20 text-teal-400 border-0">
+                      {isFounder ? "Founder Plan" : "Free Plan"}
+                    </Badge>
+                    <Badge className="bg-emerald-500/15 text-emerald-400 border-0">Active</Badge>
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                    {isFounder
+                      ? "You're a founding provider on Beyonder. Founder benefits stay with you after launch."
+                      : "You're on the free plan. Upgrade anytime for more visibility and tools."}
+                  </p>
+                </>
+              );
+            })()}
           </CardContent>
         </Card>
       </div>
