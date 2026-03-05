@@ -134,7 +134,7 @@ const Index = () => {
   };
 
   const hints = [
-    { label: "Speech & Language", to: "/providers?support=speech-language" },
+    { label: "Speech & Language", to: "/providers?category=therapists&support=speech-language-therapy" },
     { label: "Occupational Therapy", to: "/providers?support=occupational-therapy" },
     { label: "Autism-friendly clubs", to: "/providers?category=activities&needs=autism" },
     { label: "EHCP support", to: "/providers?category=education&support=ehcp" },
@@ -280,7 +280,7 @@ const Index = () => {
                 type="text"
                 value={region}
                 onChange={(e) => setRegion(e.target.value)}
-                placeholder="e.g. South East, Hampshire"
+                placeholder="Select a region"
                 style={{
                   fontSize: "0.8rem",
                   color: C.textDark,
