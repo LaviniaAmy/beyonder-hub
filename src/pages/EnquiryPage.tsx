@@ -22,6 +22,7 @@ const EnquiryPage = () => {
   const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState("");
   const [childAge, setChildAge] = useState("");
+  const [messageFocused, setMessageFocused] = useState(false);
 
   if (!provider) {
     return (
@@ -99,10 +100,47 @@ const EnquiryPage = () => {
             </div>
             <div>
               <Label htmlFor="message">Your Message</Label>
+
+              {/* Inline notice — appears on focus, fades in gently */}
+              {messageFocused && (
+                <div
+                  style={{
+                    marginBottom: 10,
+                    marginTop: 8,
+                    padding: "12px 16px",
+                    borderRadius: 10,
+                    background: "rgba(42,122,106,0.08)",
+                    border: "1px solid rgba(42,122,106,0.22)",
+                    animation: "fadeIn 0.2s ease",
+                  }}
+                >
+                  <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#2a7a6a", marginBottom: 4 }}>
+                    A quick note before you send
+                  </p>
+                  <p style={{ fontSize: "0.74rem", color: "#556677", lineHeight: 1.65, margin: 0 }}>
+                    This is an enquiry to start a conversation — not a booking or consultation. It's simply the first
+                    step in finding the right support for your child.
+                  </p>
+                  <p style={{ fontSize: "0.74rem", color: "#556677", lineHeight: 1.65, margin: "6px 0 0" }}>
+                    To keep things simple and respectful for everyone, we ask that exchanges stay focused — typically a
+                    message or two each way is all it takes to find out if there's a good fit.
+                  </p>
+                  <p style={{ fontSize: "0.74rem", color: "#556677", lineHeight: 1.65, margin: "6px 0 0" }}>
+                    We're a community built on trust. Any misuse of messaging may result in access being removed — but
+                    we know that's not you.
+                  </p>
+                  <p style={{ fontSize: "0.76rem", fontWeight: 600, color: "#2a7a6a", marginTop: 8 }}>
+                    You've got this. Hit send. 💙
+                  </p>
+                </div>
+              )}
+
               <Textarea
                 id="message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                onFocus={() => setMessageFocused(true)}
+                onBlur={() => setMessageFocused(false)}
                 placeholder="Tell them about your child's needs and what you're looking for..."
                 rows={5}
               />
