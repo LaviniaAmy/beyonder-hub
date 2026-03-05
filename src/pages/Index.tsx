@@ -131,7 +131,12 @@ const Index = () => {
     navigate(q.trim() ? `/providers?search=${encodeURIComponent(q.trim())}` : "/providers");
   };
 
-  const hints = ["Speech & Language", "Occupational Therapy", "Autism-friendly clubs", "EHCP support"];
+  const hints = [
+    { label: "Speech & Language", to: "/providers?search=Speech+%26+Language" },
+    { label: "Occupational Therapy", to: "/providers?search=Occupational+Therapy" },
+    { label: "Autism-friendly clubs", to: "/providers?category=activities&search=autism" },
+    { label: "EHCP support", to: "/providers?category=education&search=EHCP" },
+  ];
 
   return (
     <div style={{ background: C.cream, fontFamily: "'Outfit', sans-serif" }}>
@@ -346,7 +351,7 @@ const Index = () => {
             <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", alignSelf: "center" }}>Try:</span>
             {hints.map((h) => (
               <button
-                key={h}
+                key={h.label}
                 style={{
                   padding: "4px 11px",
                   borderRadius: 14,
@@ -359,12 +364,9 @@ const Index = () => {
                 }}
                 onMouseEnter={chipIn}
                 onMouseLeave={chipOut}
-                onClick={() => {
-                  setSupport(h);
-                  navigate(`/providers?search=${encodeURIComponent(h)}`);
-                }}
+                onClick={() => navigate(h.to)}
               >
-                {h}
+                {h.label}
               </button>
             ))}
           </div>
@@ -388,7 +390,10 @@ const Index = () => {
             style={{
               display: "flex",
               width: "min(580px, 92vw)",
-              background: "transparent",
+              background: "rgba(42,122,106,0.12)",
+              border: "1px solid rgba(42,122,106,0.22)",
+              borderRadius: 10,
+              overflow: "hidden",
             }}
           >
             {[
@@ -486,7 +491,7 @@ const Index = () => {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", maxWidth: 1280, margin: "0 auto" }}>
           {(
             [
-              { label: "Find Local Support", sub: "Therapists, clubs & specialists", to: "/providers", hi: false },
+              { label: "Find Local Support", sub: "Therapists, clubs & specialists", to: "/explore", hi: false },
               { label: "Community", sub: "Forums, meetups & peer support", to: "/community", hi: false },
               { label: "News & Research", sub: "Legislation, guides & updates", to: "/news", hi: false },
               { label: "For Providers", sub: "Create your free profile today", to: "/for-providers", hi: true },
