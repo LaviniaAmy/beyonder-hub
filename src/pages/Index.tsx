@@ -177,7 +177,7 @@ const Index = () => {
       <section
         style={{
           position: "relative",
-          overflow: "hidden",
+          overflow: "visible",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
