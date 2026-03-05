@@ -25,10 +25,8 @@ const LoginPage = () => {
     e.preventDefault();
     const lower = email.toLowerCase();
 
-    // Auto-detect role for known test emails and admin — otherwise use selected role
-    let resolvedRole: UserRole = role;
-    if (lower.includes("admin")) resolvedRole = "admin";
-    else if (CATEGORY_TEST_EMAILS.includes(lower) || lower.includes("provider")) resolvedRole = "provider";
+    // Only override for admin — otherwise always trust the selected role toggle
+    const resolvedRole: UserRole = lower.includes("admin") ? "admin" : role;
 
     login(email, password, resolvedRole);
 
