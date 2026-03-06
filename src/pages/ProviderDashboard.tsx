@@ -135,6 +135,36 @@ const ProviderDashboard = () => {
       </div>
     );
 
+  // ── Block dashboard if claim is pending review ──
+  if (claimStatus === "pending_review") {
+    return (
+      <div className="bg-navy-gradient min-h-screen py-10">
+        <div className="container max-w-xl animate-fade-in">
+          <h1 className="mb-6 text-3xl font-bold text-accent-foreground">Provider Dashboard</h1>
+          <div
+            className="rounded-xl border p-6 text-center space-y-4"
+            style={{
+              background: "rgba(232,98,42,0.08)",
+              border: "1px solid rgba(232,98,42,0.25)",
+            }}
+          >
+            <div className="flex justify-center">
+              <Clock className="h-10 w-10 text-orange-400" />
+            </div>
+            <h2 className="text-xl font-semibold text-orange-400">Your claim is being reviewed</h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              We're verifying your connection to this listing. Our team will be in touch shortly. Your dashboard will
+              become available once your claim has been approved.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              If you have any questions, please contact <span className="text-teal-400">support@beyonder.com</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const isSuspended = profile.moderationStatus === "suspended";
   const changeRequest = profile.changeRequest;
   const isAcknowledged = changeRequestDone || changeRequest?.status === "acknowledged";
@@ -284,26 +314,6 @@ const ProviderDashboard = () => {
                 </>
               )}
             </div>
-          </div>
-        )}
-
-        {/* Claim pending banner */}
-        {claimStatus === "pending_review" && (
-          <div
-            className="mb-6"
-            style={{
-              padding: "14px 18px",
-              borderRadius: 10,
-              background: "rgba(232,98,42,0.08)",
-              border: "1px solid rgba(232,98,42,0.25)",
-            }}
-          >
-            <p style={{ fontSize: "0.85rem", fontWeight: 600, color: "#e8622a", margin: "0 0 4px" }}>
-              Your claim is being reviewed
-            </p>
-            <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.55)", margin: 0, lineHeight: 1.6 }}>
-              We're verifying your connection to this listing. Our team will be in touch shortly.
-            </p>
           </div>
         )}
 
