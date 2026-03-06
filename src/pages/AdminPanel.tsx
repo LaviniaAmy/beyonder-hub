@@ -43,23 +43,36 @@ const AdminPanel = () => {
   const [founderLimit, setFounderLimit] = useState(adminSettings.founderLimit);
   const [limitSaved, setLimitSaved] = useState(false);
 
-  // Per-provider plan override state
+  // Track moderation status locally so UI re-renders immediately on toggle
+  const [moderationState, setModerationState] = useState<Record<string, "active" | "suspended">>(
+    Object.fromEntries(getAllProviders().map((p) => [p.id, p.moderationStatus])),
+  );
+
+  // Track change request state per provider
+  const [changeRequestState, setChangeRequestState] = useState<
+    Record<string, { status: "idle" | "composing" | "sent" | "acknowledged"; message: string }>
+  >(
+    Object.fromEntries(
+      getAllProviders().map((p) => [
+        p.id,
+        p.changeRequest
+          ? {
+              status: p.changeRequest.status === "acknowledged" ? "acknowledged" : "sent",
+              message: p.changeRequest.message,
+            }
+          : { status: "idle", message: "" },
+      ]),
+    ),
+  );
+
   const [providerPlans, setProviderPlans] = useState<
-    Record<
-      string,
-      {
-        planType: string;
-        planStatus: string;
-        categoryType: string;
-      }
-    >
+    Record<string, { planType: string; planStatus: string; categoryType: string }>
   >(
     Object.fromEntries(
       providers.map((p) => [p.id, { planType: p.plan_type, planStatus: p.plan_status, categoryType: p.category_type }]),
     ),
   );
   const [savedRows, setSavedRows] = useState<Record<string, boolean>>({});
-
   const [claimList, setClaimList] = useState<PendingClaim[]>(pendingClaims);
 
   const handleApproveClaim = (id: string) => {
@@ -81,6 +94,31 @@ const AdminPanel = () => {
     setTimeout(() => setLimitSaved(false), 2000);
   };
 
+  // Suspend toggle — updates store and local state
+  const handleToggleSuspend = (id: string) => {
+    const next = moderationState[id] === "suspended" ? "active" : "suspended";
+    updateProvider(id, {
+      moderationStatus: next,
+      suspendedMessage:
+        next === "suspended" ? "Your listing has been suspended by Beyonder. Please contact support." : "",
+    });
+    setModerationState((prev) => ({ ...prev, [id]: next }));
+  };
+
+  // Send a change request note to the provider
+  const handleSendChangeRequest = (id: string) => {
+    const msg = changeRequestState[id]?.message?.trim();
+    if (!msg) return;
+    updateProvider(id, { changeRequest: { message: msg, status: "pending" } });
+    setChangeRequestState((prev) => ({ ...prev, [id]: { status: "sent", message: msg } }));
+  };
+
+  // Admin clears the request after reviewing provider's changes
+  const handleMarkReviewed = (id: string) => {
+    updateProvider(id, { changeRequest: null });
+    setChangeRequestState((prev) => ({ ...prev, [id]: { status: "idle", message: "" } }));
+  };
+
   const handlePlanChange = (providerId: string, field: string, value: string) => {
     setProviderPlans((prev) => ({
       ...prev,
@@ -89,12 +127,27 @@ const AdminPanel = () => {
     setSavedRows((prev) => ({ ...prev, [providerId]: false }));
   };
 
+  // Save plan — writes to providerStore so dashboard and public profile update
   const handleSaveProviderPlan = (providerId: string) => {
     const row = providerPlans[providerId];
+    updateProvider(providerId, {
+      plan_type: row.planType,
+      plan_status: row.planStatus,
+      category_type: row.categoryType,
+    });
     applyPlanOverride(providerId, row.planType, row.planStatus, row.categoryType);
     setSavedRows((prev) => ({ ...prev, [providerId]: true }));
     setTimeout(() => setSavedRows((prev) => ({ ...prev, [providerId]: false })), 2000);
   };
+
+  // Providers with active change requests float to the top
+  const sortedProviders = [...getAllProviders()].sort((a, b) => {
+    const aActive = ["sent", "acknowledged"].includes(changeRequestState[a.id]?.status);
+    const bActive = ["sent", "acknowledged"].includes(changeRequestState[b.id]?.status);
+    if (aActive && !bActive) return -1;
+    if (!aActive && bActive) return 1;
+    return 0;
+  });
 
   return (
     <div className="bg-navy-gradient min-h-screen py-10">
@@ -160,57 +213,131 @@ const AdminPanel = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {getAllProviders().map((p) => (
-                    <div
-                      key={p.id}
-                      className="flex items-center justify-between rounded-xl border border-border/60 p-4"
-                    >
-                      <div>
-                        <p className="font-medium">{p.businessName}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {p.typeBadge} · {p.location}
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge className="bg-navy-600 text-accent-foreground border-0 text-xs">{p.category_type}</Badge>
-                        <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">{p.plan_type}</Badge>
-                        {p.moderationStatus === "suspended" ? (
-                          <Badge className="bg-red-500/15 text-red-400 border-0 text-xs">Suspended</Badge>
-                        ) : (
-                          <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">Active</Badge>
+                  {sortedProviders.map((p) => {
+                    const isSuspended = moderationState[p.id] === "suspended";
+                    const cr = changeRequestState[p.id];
+                    const isComposing = cr?.status === "composing";
+                    const isSent = cr?.status === "sent";
+                    const isAcknowledged = cr?.status === "acknowledged";
+                    const hasActiveRequest = isSent || isAcknowledged;
+
+                    return (
+                      <div
+                        key={p.id}
+                        className={`rounded-xl border p-4 transition-colors ${
+                          hasActiveRequest ? "border-orange-500/40 bg-orange-500/[0.04]" : "border-border/60"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div>
+                            <p className="font-medium flex items-center gap-2 flex-wrap">
+                              {p.businessName}
+                              {isAcknowledged && (
+                                <Badge className="bg-emerald-500/15 text-emerald-400 border-0 text-xs">
+                                  Changes Confirmed
+                                </Badge>
+                              )}
+                              {isSent && (
+                                <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs">
+                                  Awaiting Changes
+                                </Badge>
+                              )}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {p.typeBadge} · {p.location}
+                            </p>
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            <Badge className="bg-navy-600 text-accent-foreground border-0 text-xs">
+                              {p.category_type}
+                            </Badge>
+                            <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">{p.plan_type}</Badge>
+                            {isSuspended ? (
+                              <Badge className="bg-red-500/15 text-red-400 border-0 text-xs">Suspended</Badge>
+                            ) : (
+                              <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">Active</Badge>
+                            )}
+
+                            {/* Request Changes — hidden while a request is active */}
+                            {!hasActiveRequest && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className={isComposing ? "border-orange-500/60 text-orange-400" : ""}
+                                onClick={() =>
+                                  setChangeRequestState((prev) => ({
+                                    ...prev,
+                                    [p.id]: {
+                                      status: isComposing ? "idle" : "composing",
+                                      message: prev[p.id]?.message ?? "",
+                                    },
+                                  }))
+                                }
+                              >
+                                {isComposing ? "Cancel" : "Request Changes"}
+                              </Button>
+                            )}
+
+                            {/* Mark Reviewed — shown once provider has confirmed */}
+                            {isAcknowledged && (
+                              <Button
+                                size="sm"
+                                className="bg-teal-500 hover:bg-teal-400"
+                                onClick={() => handleMarkReviewed(p.id)}
+                              >
+                                Mark Reviewed
+                              </Button>
+                            )}
+
+                            {/* Suspend / Reinstate toggle */}
+                            <Button
+                              size="sm"
+                              variant={isSuspended ? "outline" : "destructive"}
+                              className={isSuspended ? "text-teal-400 border-teal-500/40" : ""}
+                              onClick={() => handleToggleSuspend(p.id)}
+                            >
+                              {isSuspended ? "Reinstate" : "Suspend"}
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Compose text box */}
+                        {isComposing && (
+                          <div className="mt-3 space-y-2">
+                            <Textarea
+                              rows={3}
+                              placeholder="Describe what needs to be updated..."
+                              value={cr.message}
+                              onChange={(e) =>
+                                setChangeRequestState((prev) => ({
+                                  ...prev,
+                                  [p.id]: { ...prev[p.id], message: e.target.value },
+                                }))
+                              }
+                              className="text-sm"
+                            />
+                            <Button
+                              size="sm"
+                              className="bg-orange-500 hover:bg-orange-400"
+                              disabled={!cr.message.trim()}
+                              onClick={() => handleSendChangeRequest(p.id)}
+                            >
+                              Send Request
+                            </Button>
+                          </div>
                         )}
-                        <Button size="sm" variant="outline">
-                          Request Changes
-                        </Button>
-                        {p.moderationStatus === "suspended" ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-teal-400 border-teal-500/40"
-                            onClick={() => {
-                              updateProvider(p.id, { moderationStatus: "active", suspendedMessage: "" });
-                            }}
-                          >
-                            Reinstate
-                          </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => {
-                              updateProvider(p.id, {
-                                moderationStatus: "suspended",
-                                suspendedMessage:
-                                  "Your listing has been suspended by Beyonder. Please contact support.",
-                              });
-                            }}
-                          >
-                            Suspend
-                          </Button>
+
+                        {/* Sent note preview */}
+                        {(isSent || isAcknowledged) && (
+                          <div className="mt-3 rounded-lg border border-orange-500/20 bg-orange-500/[0.08] px-3 py-2 text-sm text-orange-300">
+                            <span className="font-medium text-orange-400">Your note: </span>
+                            {cr.message}
+                          </div>
                         )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -275,7 +402,7 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
-          {/* ── Plans & Categories (with per-row Save) ── */}
+          {/* ── Plans & Categories ── */}
           <TabsContent value="plans" className="mt-6">
             <Card className="border-0 shadow-card">
               <CardHeader>

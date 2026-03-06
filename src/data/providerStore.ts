@@ -2,8 +2,12 @@
 // In-memory editable provider records. Seeded from mockData.
 // ProviderPage, ProviderDirectory, and ProviderDashboard all
 // read from here so edits appear immediately everywhere.
-
 import { providers as mockProviders } from "@/data/mockData";
+
+export interface ChangeRequest {
+  message: string;
+  status: "pending" | "acknowledged";
+}
 
 export interface EditableProvider {
   id: string;
@@ -24,7 +28,7 @@ export interface EditableProvider {
   // Category modules
   credentials: string[];
   timetable: { day: string; time: string; activity: string }[];
-  gallery: string[]; // image URLs
+  gallery: string[];
   caseStudies: { title: string; description: string }[];
   spotlightMessage: string;
   storeUrl: string;
@@ -32,6 +36,7 @@ export interface EditableProvider {
   // Moderation
   moderationStatus: "active" | "suspended";
   suspendedMessage: string;
+  changeRequest: ChangeRequest | null;
   // Pass-through (unchanged)
   type: string;
   category_type: string;
@@ -47,7 +52,6 @@ export interface EditableProvider {
   contactMethod: string;
 }
 
-// Seed from mockData
 export const providerStore: EditableProvider[] = mockProviders.map((p) => ({
   id: p.id,
   businessName: p.name,
@@ -73,6 +77,7 @@ export const providerStore: EditableProvider[] = mockProviders.map((p) => ({
   products: p.products ? [...p.products] : [],
   moderationStatus: "active",
   suspendedMessage: "",
+  changeRequest: null,
   type: p.type,
   category_type: p.category_type,
   typeBadge: p.typeBadge,
