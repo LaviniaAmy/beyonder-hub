@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
+import { claimRecords, pendingClaims } from "@/data/founderStore";
 
 const TEST_LOGINS = [
   { label: "Parent", email: "test@parent.com" },
@@ -16,31 +17,48 @@ const TEST_LOGINS = [
   { label: "Admin", email: "admin@beyonder.com" },
 ];
 
-const REDIRECTS: Record<string, string> = {
-  admin: "/admin",
-  provider: "/provider-dashboard",
-  parent: "/dashboard",
-};
-
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, user } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     login(email, password);
-    // Role is resolved inside AuthContext — read it back via a brief timeout
-    // to allow state to update, then redirect based on email map
+
     const lower = email.toLowerCase().trim();
-    if (lower.includes("admin") || lower === "test@admin.com") {
+
+    // Check for admin
+    if (lower === "admin@beyonder.com" || lower === "test@admin.com") {
       navigate("/admin");
-    } else if (lower.endsWith("@beyonder.test") || lower.includes("provider")) {
-      navigate("/provider-dashboard");
-    } else {
-      navigate("/dashboard");
+      return;
     }
+
+    // Check if this email has an approved claim → full provider dashboard
+    const approvedClaim = claimRecords.find((r) => r.claimantEmail.toLowerCase() === lower);
+    if (approvedClaim) {
+      navigate("/provider-dashboard");
+      return;
+    }
+
+    // Check if this email has a pending claim → pending screen
+    const pendingClaim = pendingClaims.find(
+      (p) => p.claimantEmail.toLowerCase() === lower && p.status === "pending_review",
+    );
+    if (pendingClaim) {
+      navigate("/provider-dashboard?claimStatus=pending_review");
+      return;
+    }
+
+    // Hardcoded test provider emails
+    if (lower.endsWith("@beyonder.test")) {
+      navigate("/provider-dashboard");
+      return;
+    }
+
+    // Everyone else → parent dashboard
+    navigate("/dashboard");
   };
 
   return (
