@@ -1,17 +1,6 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import {
-  MapPin,
-  Star,
-  Bookmark,
-  Heart,
-  Users,
-  Layers,
-  X as XIcon,
-  ShoppingBag,
-  Image as ImageIcon,
-  Upload,
-} from "lucide-react";
+import { MapPin, Star, Bookmark, Heart, Users, Layers, X as XIcon, ShoppingBag, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,11 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { categories, regions } from "@/data/mockData";
 import { getActiveProviders } from "@/data/providerStore";
 
-const MAX_PRODUCT_IMAGE_SIZE = 1 * 1024 * 1024; // 1MB limit for mass providers
-
-// ── Extended mock product catalogue ──────────────────────────
-// In production these would come from providerStore products arrays.
-// For pilot we define them inline so filters have enough data to demo.
+// ── Product catalogue types & data ───────────────────────────
 interface CatalogueProduct {
   id: string;
   providerId: string;
@@ -214,7 +199,6 @@ const mockCatalogueProducts: CatalogueProduct[] = [
   },
 ];
 
-// ── Helpers ───────────────────────────────────────────────────
 function priceInRange(value: number, range: string): boolean {
   if (range === "all") return true;
   if (range === "under10") return value < 10;
@@ -224,7 +208,7 @@ function priceInRange(value: number, range: string): boolean {
   return true;
 }
 
-// ── Delivery / category options ───────────────────────────────
+// ── Static options ────────────────────────────────────────────
 const deliveryOptions = [
   { value: "all", label: "All Delivery Types" },
   { value: "in-person", label: "In-Person" },
@@ -267,11 +251,8 @@ const ProviderDirectory = () => {
   const [needFilter, setNeedFilter] = useState("all");
   const [productSearch, setProductSearch] = useState("");
 
-  // Per-product image state (keyed by product id)
-  const [productImages, setProductImages] = useState<Record<string, string>>({});
-  const [productDescriptions, setProductDescriptions] = useState<Record<string, string>>({});
-  const [imageErrors, setImageErrors] = useState<Record<string, string>>({});
-  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  // Cart state — visual only for now
+  const [addedToCart, setAddedToCart] = useState<Record<string, boolean>>({});
 
   const isProductView = activeCategory === "products";
 
@@ -293,7 +274,12 @@ const ProviderDirectory = () => {
     updateParams({ search: localSearch || null });
   };
 
-  // ── Provider filtering (unchanged logic) ─────────────────────
+  const handleAddToCart = (productId: string) => {
+    setAddedToCart((prev) => ({ ...prev, [productId]: true }));
+    setTimeout(() => setAddedToCart((prev) => ({ ...prev, [productId]: false })), 2000);
+  };
+
+  // ── Provider filtering ────────────────────────────────────────
   const filteredProviders = useMemo(() => {
     let result = getActiveProviders();
     if (delivery !== "all") {
@@ -359,15 +345,9 @@ const ProviderDirectory = () => {
   // ── Product catalogue filtering ───────────────────────────────
   const filteredProducts = useMemo(() => {
     let result = mockCatalogueProducts;
-    if (productCategory !== "all") {
-      result = result.filter((p) => p.productCategory === productCategory);
-    }
-    if (priceRange !== "all") {
-      result = result.filter((p) => priceInRange(p.priceValue, priceRange));
-    }
-    if (needFilter !== "all") {
-      result = result.filter((p) => p.needTypes.includes(needFilter));
-    }
+    if (productCategory !== "all") result = result.filter((p) => p.productCategory === productCategory);
+    if (priceRange !== "all") result = result.filter((p) => priceInRange(p.priceValue, priceRange));
+    if (needFilter !== "all") result = result.filter((p) => p.needTypes.includes(needFilter));
     if (productSearch.trim()) {
       const q = productSearch.toLowerCase();
       result = result.filter(
@@ -380,27 +360,6 @@ const ProviderDirectory = () => {
     }
     return result;
   }, [productCategory, priceRange, needFilter, productSearch]);
-
-  const handleProductImageUpload = (productId: string, e: React.ChangeEvent<HTMLInputElement>) => {
-    setImageErrors((prev) => ({ ...prev, [productId]: "" }));
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!["image/png", "image/jpeg"].includes(file.type)) {
-      setImageErrors((prev) => ({ ...prev, [productId]: "PNG or JPEG only." }));
-      e.target.value = "";
-      return;
-    }
-    if (file.size > MAX_PRODUCT_IMAGE_SIZE) {
-      setImageErrors((prev) => ({ ...prev, [productId]: "Max file size is 1MB." }));
-      e.target.value = "";
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setProductImages((prev) => ({ ...prev, [productId]: reader.result as string }));
-    };
-    reader.readAsDataURL(file);
-  };
 
   const visible = filteredProviders.slice(0, visibleCount);
   const hasActiveFilters =
@@ -419,7 +378,7 @@ const ProviderDirectory = () => {
           {isLocalView ? "Find Local Support" : "Provider Directory"}
         </h1>
 
-        {/* ── Main filters (always shown) ── */}
+        {/* Main filters — hidden in product view */}
         {!isProductView && (
           <div className="mb-8 rounded-xl bg-card p-6 shadow-card space-y-4">
             <div className="flex flex-wrap items-center gap-4">
@@ -476,7 +435,7 @@ const ProviderDirectory = () => {
           </div>
         )}
 
-        {/* ── Local View Category Cards ── */}
+        {/* Local View Category Cards */}
         {isLocalView && (
           <div className="mb-8 grid gap-3 sm:grid-cols-3">
             {localCategoryCards.map((card) => (
@@ -494,7 +453,7 @@ const ProviderDirectory = () => {
           </div>
         )}
 
-        {/* ── Category Tabs ── */}
+        {/* Category Tabs */}
         {!isLocalView && (
           <div className="mb-6 flex flex-wrap gap-2">
             <Button
@@ -527,7 +486,7 @@ const ProviderDirectory = () => {
           </div>
         )}
 
-        {/* ── Active filter pills (provider view) ── */}
+        {/* Active filter pills — provider view only */}
         {!isProductView && hasActiveFilters && (
           <div className="mb-6 flex flex-wrap gap-2">
             {regionParam !== "all" && (
@@ -587,12 +546,12 @@ const ProviderDirectory = () => {
           </div>
         )}
 
-        {/* ════════════════════════════════════════════════════════
+        {/* ════════════════════════════════════════════════════
             PRODUCT CATALOGUE VIEW
-        ════════════════════════════════════════════════════════ */}
+        ════════════════════════════════════════════════════ */}
         {isProductView ? (
           <div>
-            {/* Product filter panel */}
+            {/* Product filters */}
             <div className="mb-8 rounded-xl bg-card p-6 shadow-card space-y-4">
               <div className="flex flex-wrap gap-3">
                 <Select value={productCategory} onValueChange={setProductCategory}>
@@ -607,7 +566,6 @@ const ProviderDirectory = () => {
                     ))}
                   </SelectContent>
                 </Select>
-
                 <Select value={priceRange} onValueChange={setPriceRange}>
                   <SelectTrigger className="w-40">
                     <SelectValue />
@@ -620,7 +578,6 @@ const ProviderDirectory = () => {
                     ))}
                   </SelectContent>
                 </Select>
-
                 <Select value={needFilter} onValueChange={setNeedFilter}>
                   <SelectTrigger className="w-52">
                     <SelectValue />
@@ -633,7 +590,6 @@ const ProviderDirectory = () => {
                     ))}
                   </SelectContent>
                 </Select>
-
                 {hasProductFilters && (
                   <Button
                     variant="ghost"
@@ -659,7 +615,6 @@ const ProviderDirectory = () => {
                 />
               </div>
 
-              {/* Active product filter pills */}
               {hasProductFilters && (
                 <div className="flex flex-wrap gap-2 pt-1">
                   {productCategory !== "all" && (
@@ -698,12 +653,10 @@ const ProviderDirectory = () => {
               )}
             </div>
 
-            {/* Results count */}
             <p className="mb-4 text-sm text-muted-foreground">
               {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"} found
             </p>
 
-            {/* Product grid */}
             {filteredProducts.length === 0 ? (
               <div className="py-20 text-center rounded-xl bg-card shadow-card">
                 <p className="text-lg text-foreground mb-2">No products match your filters.</p>
@@ -723,75 +676,30 @@ const ProviderDirectory = () => {
             ) : (
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredProducts.map((product) => {
-                  const displayImage = productImages[product.id] || product.image;
-                  const displayDescription = productDescriptions[product.id] || product.shortDescription;
-                  const isPlaceholder = displayImage === "/placeholder.svg";
-
+                  const isAdded = addedToCart[product.id];
                   return (
                     <Card key={product.id} className="border-0 shadow-card card-hover-lift flex flex-col">
                       <CardContent className="p-0 flex flex-col h-full">
                         {/* Product image */}
-                        <div className="relative rounded-t-xl overflow-hidden bg-muted" style={{ aspectRatio: "4/3" }}>
-                          {isPlaceholder ? (
+                        <div className="rounded-t-xl overflow-hidden bg-muted" style={{ aspectRatio: "4/3" }}>
+                          {product.image === "/placeholder.svg" ? (
                             <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                               <ShoppingBag className="h-10 w-10 text-muted-foreground/30" />
-                              <span className="text-xs text-muted-foreground/50">No image yet</span>
                             </div>
                           ) : (
-                            <img src={displayImage} alt={product.name} className="w-full h-full object-cover" />
+                            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                           )}
-
-                          {/* Upload overlay button */}
-                          <label
-                            htmlFor={`img-${product.id}`}
-                            className="absolute bottom-2 right-2 flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-xs text-white cursor-pointer hover:bg-black/80 transition-colors"
-                            title="Upload image"
-                          >
-                            <Upload className="h-3 w-3" />
-                            {isPlaceholder ? "Add image" : "Change"}
-                          </label>
-                          <input
-                            id={`img-${product.id}`}
-                            type="file"
-                            accept="image/png, image/jpeg"
-                            className="hidden"
-                            ref={(el) => {
-                              fileInputRefs.current[product.id] = el;
-                            }}
-                            onChange={(e) => handleProductImageUpload(product.id, e)}
-                          />
                         </div>
 
-                        {/* Image error */}
-                        {imageErrors[product.id] && (
-                          <p className="px-4 pt-1 text-xs text-red-400">{imageErrors[product.id]}</p>
-                        )}
-
                         <div className="flex flex-col flex-1 p-4 gap-3">
-                          {/* Product name & price */}
-                          <div>
-                            <div className="flex items-start justify-between gap-2">
-                              <h3 className="font-semibold text-sm leading-snug">{product.name}</h3>
-                              <span className="text-teal-400 font-bold text-sm shrink-0">{product.price}</span>
-                            </div>
-
-                            {/* Short description — editable */}
-                            <textarea
-                              value={displayDescription}
-                              onChange={(e) => {
-                                if (e.target.value.length <= 120) {
-                                  setProductDescriptions((prev) => ({ ...prev, [product.id]: e.target.value }));
-                                }
-                              }}
-                              rows={2}
-                              maxLength={120}
-                              placeholder="Short description..."
-                              className="mt-2 w-full resize-none rounded-lg border border-border/40 bg-muted/30 px-3 py-2 text-xs text-muted-foreground focus:outline-none focus:border-teal-500/50 transition-colors"
-                            />
-                            <p className="text-right text-xs text-muted-foreground/50 mt-0.5">
-                              {(productDescriptions[product.id] ?? product.shortDescription).length}/120
-                            </p>
+                          {/* Name & price */}
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="font-semibold text-sm leading-snug">{product.name}</h3>
+                            <span className="text-teal-400 font-bold text-sm shrink-0">{product.price}</span>
                           </div>
+
+                          {/* Short description */}
+                          <p className="text-xs text-muted-foreground leading-relaxed">{product.shortDescription}</p>
 
                           {/* Need tags */}
                           <div className="flex flex-wrap gap-1">
@@ -803,7 +711,7 @@ const ProviderDirectory = () => {
                           </div>
 
                           {/* Provider link */}
-                          <div className="mt-auto pt-2 border-t border-border/30">
+                          <div className="border-t border-border/30 pt-2">
                             <Link
                               to={`/provider/${product.providerId}`}
                               className="text-xs text-teal-400 hover:text-teal-300 hover:underline transition-colors"
@@ -811,6 +719,20 @@ const ProviderDirectory = () => {
                               by {product.providerName} →
                             </Link>
                           </div>
+
+                          {/* Add to Cart button */}
+                          <Button
+                            size="sm"
+                            className={`w-full mt-auto transition-all ${
+                              isAdded
+                                ? "bg-emerald-500 hover:bg-emerald-500 text-white"
+                                : "bg-teal-500 hover:bg-teal-400 text-white"
+                            }`}
+                            onClick={() => handleAddToCart(product.id)}
+                          >
+                            <ShoppingCart className="h-4 w-4 mr-2" />
+                            {isAdded ? "Added ✓" : "Add to Cart"}
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -820,9 +742,9 @@ const ProviderDirectory = () => {
             )}
           </div>
         ) : (
-          /* ════════════════════════════════════════════════════
+          /* ════════════════════════════════════════════════
              STANDARD PROVIDER GRID VIEW
-          ════════════════════════════════════════════════════ */
+          ════════════════════════════════════════════════ */
           <>
             {visible.length === 0 ? (
               <div className="py-20 text-center rounded-xl bg-card shadow-card">
@@ -887,7 +809,6 @@ const ProviderDirectory = () => {
                 ))}
               </div>
             )}
-
             {visibleCount < filteredProviders.length && (
               <div className="mt-10 text-center">
                 <Button
