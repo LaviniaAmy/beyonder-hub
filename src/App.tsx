@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/context/AuthContext";
 import Layout from "@/components/Layout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -31,27 +32,50 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/explore" element={<ExploreServices />} />
-            <Route path="/providers" element={<ProviderDirectory />} />
-            <Route path="/provider/:id" element={<ProviderPage />} />
-            <Route path="/enquiry/:id" element={<EnquiryPage />} />
-            <Route path="/dashboard" element={<ProtectedRoute allowedRoles={["parent"]}><ParentDashboard /></ProtectedRoute>} />
-            <Route path="/provider-dashboard" element={<ProtectedRoute allowedRoles={["provider"]}><ProviderDashboard /></ProtectedRoute>} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/for-providers" element={<ForProviders />} />
-            <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]}><AdminPanel /></ProtectedRoute>} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/help" element={<HelpCentre />} />
-            <Route path="/guides" element={<GuidesPage />} />
-            <Route path="/news" element={<NewsPage />} />
-            <Route path="/community" element={<CommunityPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
+        <AuthProvider>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/explore" element={<ExploreServices />} />
+              <Route path="/providers" element={<ProviderDirectory />} />
+              <Route path="/provider/:id" element={<ProviderPage />} />
+              <Route path="/enquiry/:id" element={<EnquiryPage />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["parent"]}>
+                    <ParentDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/provider-dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["provider"]}>
+                    <ProviderDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/for-providers" element={<ForProviders />} />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <AdminPanel />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/help" element={<HelpCentre />} />
+              <Route path="/guides" element={<GuidesPage />} />
+              <Route path="/news" element={<NewsPage />} />
+              <Route path="/community" element={<CommunityPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
