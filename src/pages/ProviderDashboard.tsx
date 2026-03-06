@@ -32,7 +32,7 @@ import { getProvider, updateProvider, AvailabilityStatus } from "@/data/provider
 
 const MAX_REPLY = 800;
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
-const MAX_PRODUCT_IMAGE_SIZE = 1 * 1024 * 1024; // 1MB for product images
+const MAX_PRODUCT_IMAGE_SIZE = 1 * 1024 * 1024;
 const MAX_SHORT_DESC = 120;
 
 const NEEDS_OPTIONS = [
@@ -51,12 +51,7 @@ const NEEDS_OPTIONS = [
 const DELIVERY_OPTIONS: Array<"in-person" | "online" | "hybrid"> = ["in-person", "online", "hybrid"];
 
 const AVAILABILITY_OPTIONS: { value: AvailabilityStatus; label: string; description: string; color: string }[] = [
-  {
-    value: "accepting",
-    label: "Accepting Clients",
-    description: "Open to new clients now",
-    color: "text-emerald-400",
-  },
+  { value: "accepting", label: "Accepting Clients", description: "Open to new clients now", color: "text-emerald-400" },
   {
     value: "waitlist",
     label: "Waitlist Only",
@@ -134,7 +129,6 @@ const ProviderDashboard = () => {
   const [galleryError, setGalleryError] = useState("");
   const [changeRequestDone, setChangeRequestDone] = useState(false);
 
-  // Product image state
   const [productImageErrors, setProductImageErrors] = useState<Record<number, string>>({});
   const [newProductImageError, setNewProductImageError] = useState("");
   const newProductFileRef = useRef<HTMLInputElement | null>(null);
@@ -155,7 +149,13 @@ const ProviderDashboard = () => {
           caseStudies: fallback.educationDetails ? [{ title: "Overview", description: fallback.educationDetails }] : [],
           spotlightMessage: "",
           storeUrl: "",
-          products: fallback.products ?? [],
+          // ── Fix: normalise fallback products to include shortDescription ──
+          products: (fallback.products ?? []).map((p) => ({
+            name: p.name,
+            price: p.price,
+            image: p.image ?? "/placeholder.svg",
+            shortDescription: "",
+          })),
           availabilityStatus: "accepting" as AvailabilityStatus,
           moderationStatus: "active" as const,
           suspendedMessage: "",
@@ -284,7 +284,6 @@ const ProviderDashboard = () => {
     reader.readAsDataURL(file);
   };
 
-  // ── Product image handlers ──
   const handleExistingProductImageUpload = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     setProductImageErrors((prev) => ({ ...prev, [index]: "" }));
     const file = e.target.files?.[0];
@@ -1105,12 +1104,11 @@ function renderSectionContent(
     case "products":
       return (
         <div className="space-y-4">
-          {/* ── Existing products ── */}
+          {/* Existing products */}
           {(profile.products ?? []).map((p: any, i: number) => {
             const hasImage = p.image && p.image !== "/placeholder.svg";
             return (
               <div key={i} className="rounded-xl border border-border/60 p-4 space-y-3">
-                {/* Name, price, remove */}
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <span className="font-medium text-sm">{p.name}</span>
@@ -1131,7 +1129,6 @@ function renderSectionContent(
                   </Button>
                 </div>
 
-                {/* Image */}
                 <div className="flex items-center gap-3">
                   {hasImage ? (
                     <div
@@ -1172,7 +1169,6 @@ function renderSectionContent(
                   </div>
                 </div>
 
-                {/* Short description */}
                 <div className="space-y-0.5">
                   <textarea
                     value={p.shortDescription ?? ""}
@@ -1188,10 +1184,9 @@ function renderSectionContent(
             );
           })}
 
-          {/* ── Add new product ── */}
+          {/* Add new product */}
           <div className="rounded-xl border border-dashed border-border/50 bg-muted/10 p-4 space-y-3">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Add New Product</p>
-
             <div className="grid grid-cols-2 gap-2">
               <Input
                 placeholder="Product name"
@@ -1205,7 +1200,6 @@ function renderSectionContent(
               />
             </div>
 
-            {/* New product image */}
             <div className="space-y-1">
               <div className="flex items-center gap-3">
                 {newProduct.image && newProduct.image !== "/placeholder.svg" && (
@@ -1244,7 +1238,6 @@ function renderSectionContent(
               {newProductImageError && <p className="text-xs text-red-400">{newProductImageError}</p>}
             </div>
 
-            {/* New product short description */}
             <div className="space-y-0.5">
               <textarea
                 value={newProduct.shortDescription}
