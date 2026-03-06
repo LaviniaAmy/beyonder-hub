@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { providers } from "@/data/mockData";
+import { claimRecords, pendingClaims } from "@/data/founderStore";
 
 export type UserRole = "parent" | "provider" | "admin";
 
@@ -51,7 +52,25 @@ const EMAIL_MAP: Record<string, { role: UserRole; provider_id?: string }> = {
 
 function resolveUser(email: string): { role: UserRole; provider_id?: string } {
   const lower = email.toLowerCase().trim();
+
+  // 1) Exact match in hardcoded map
   if (EMAIL_MAP[lower]) return EMAIL_MAP[lower];
+
+  // 2) Check if this email has an approved claim record
+  const approvedClaim = claimRecords.find((r) => r.claimantEmail.toLowerCase() === lower);
+  if (approvedClaim) {
+    return { role: "provider", provider_id: approvedClaim.providerId };
+  }
+
+  // 3) Check if this email has a pending claim
+  const pendingClaim = pendingClaims.find(
+    (p) => p.claimantEmail.toLowerCase() === lower && p.status === "pending_review",
+  );
+  if (pendingClaim) {
+    return { role: "provider", provider_id: pendingClaim.providerId };
+  }
+
+  // 4) Fallback — unknown email logs in as parent
   return { role: "parent" };
 }
 
@@ -67,7 +86,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // forceRole — used by signup flow to set provider role for new accounts
   const login = (email: string, _password: string, forceRole?: UserRole) => {
     const resolved = resolveUser(email);
     const role: UserRole = forceRole ?? resolved.role;
