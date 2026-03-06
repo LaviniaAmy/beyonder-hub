@@ -9,6 +9,8 @@ import { useAuth, UserRole } from "@/context/AuthContext";
 import { attemptClaim } from "@/data/founderStore";
 import { providers } from "@/data/mockData";
 
+const STORAGE_KEY = "beyonder_user";
+
 const SignupPage = () => {
   const [searchParams] = useSearchParams();
   const claimProviderId = searchParams.get("claimProviderId");
@@ -26,13 +28,13 @@ const SignupPage = () => {
     e.preventDefault();
     const role: UserRole = tab;
 
-    // Always pass the role explicitly so provider signups aren't downgraded to parent
+    // Pass role explicitly so provider signups aren't downgraded to parent
     login(email, password, role);
 
     // If provider signup with a claim intent — attempt the claim now
     if (role === "provider" && claimProviderId) {
       try {
-        const stored = localStorage.getItem("beyonder_user");
+        const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
           const user = JSON.parse(stored);
           const provider = providers.find((p) => p.id === claimProviderId);
@@ -43,6 +45,12 @@ const SignupPage = () => {
             provider?.name ?? "",
             provider?.websiteDomain ?? "",
           );
+
+          // Write the correct provider_id back into localStorage so the
+          // dashboard loads the right profile regardless of claim outcome
+          const updatedUser = { ...user, provider_id: claimProviderId };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedUser));
+
           if (result.outcome === "pending_review") {
             navigate("/provider-dashboard?claimStatus=pending_review");
             return;
@@ -70,7 +78,6 @@ const SignupPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* If arriving via claim intent, lock to provider tab */}
           {claimProviderId ? (
             <div>
               <div
