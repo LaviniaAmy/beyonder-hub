@@ -663,12 +663,6 @@ function getSectionIcon(key: string) {
   return icons[key] ?? null;
 }
 
-const AVAILABILITY_OPTIONS: { value: AvailabilityStatus; label: string; description: string }[] = [
-  { value: "accepting", label: "Accepting Clients", description: "Open to new clients now" },
-  { value: "waitlist", label: "Waitlist Only", description: "Accepting waitlist enquiries only" },
-  { value: "closed", label: "Closed", description: "Not accepting new clients or enquiries" },
-];
-
 function renderSectionContent(
   key: string,
   profile: any,
