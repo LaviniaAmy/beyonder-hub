@@ -7,6 +7,22 @@ import { reviews } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
 import { attemptClaim, isProviderClaimed } from "@/data/founderStore";
 import { getProvider } from "@/data/providerStore";
+import type { AvailabilityStatus } from "@/data/providerStore";
+
+const availabilityConfig: Record<AvailabilityStatus, { label: string; classes: string }> = {
+  accepting: {
+    label: "Accepting new clients",
+    classes: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+  },
+  waitlist: {
+    label: "Waitlist only",
+    classes: "bg-orange-400/15 text-orange-400 border-orange-400/30",
+  },
+  closed: {
+    label: "Not accepting clients",
+    classes: "bg-red-400/15 text-red-400 border-red-400/30",
+  },
+};
 
 const ProviderPage = () => {
   const { id } = useParams();
@@ -27,9 +43,11 @@ const ProviderPage = () => {
     );
   }
 
-  // Suspended providers show a minimal page — no enquiry CTA
   const isSuspended = provider.moderationStatus === "suspended";
   const alreadyClaimed = isProviderClaimed(provider.id);
+  const isTherapist = provider.category_type === "therapist";
+  const availStatus = provider.availabilityStatus ?? "accepting";
+  const availInfo = availabilityConfig[availStatus];
 
   const handleClaim = () => {
     if (!isAuthenticated || user?.role !== "provider") {
@@ -63,6 +81,12 @@ const ProviderPage = () => {
                   {provider.typeBadge}
                 </Badge>
                 <Badge className="bg-teal-500/20 text-teal-400 border-0 capitalize">{provider.plan_type}</Badge>
+                {/* Availability badge — therapists only */}
+                {isTherapist && !isSuspended && (
+                  <Badge variant="outline" className={`border ${availInfo.classes}`}>
+                    {availInfo.label}
+                  </Badge>
+                )}
               </div>
               <h1 className="text-3xl font-bold text-accent-foreground">{provider.businessName}</h1>
               <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-accent-foreground/70">
