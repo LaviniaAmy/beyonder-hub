@@ -31,6 +31,7 @@ import { getClaimForProvider } from "@/data/founderStore";
 import { getProvider, updateProvider } from "@/data/providerStore";
 
 const MAX_REPLY = 800;
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
 const NEEDS_OPTIONS = [
   "Autism",
   "ADHD",
@@ -51,7 +52,6 @@ const ProviderDashboard = () => {
   const [searchParams] = useSearchParams();
   const claimStatus = searchParams.get("claimStatus");
 
-  // Read provider_id directly from localStorage to avoid stale context on first render
   const resolvedUser = (() => {
     try {
       const stored = localStorage.getItem("beyonder_user");
@@ -62,11 +62,9 @@ const ProviderDashboard = () => {
   })();
   const providerId = resolvedUser?.provider_id ?? providers[0]?.id;
 
-  // Load from providerStore so edits persist across navigation
   const storeProfile = getProvider(providerId);
   const fallback = providers.find((p) => p.id === providerId);
 
-  // Edit profile modal state
   const [editOpen, setEditOpen] = useState(false);
   const [editFields, setEditFields] = useState<{
     businessName: string;
@@ -92,13 +90,11 @@ const ProviderDashboard = () => {
     needsSupported: storeProfile?.needsSupported ?? fallback?.needsSupported ?? [],
   });
 
-  // Reply modal state
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState<EnquiryRecord | null>(null);
   const [replyText, setReplyText] = useState("");
   const [, forceUpdate] = useState(0);
 
-  // Cert / timetable / gallery / case study / spotlight / products edit state
   const [newCert, setNewCert] = useState("");
   const [newTimetable, setNewTimetable] = useState({ day: "", time: "", activity: "" });
   const [spotlightMsg, setSpotlightMsg] = useState(storeProfile?.spotlightMessage ?? "");
@@ -106,6 +102,7 @@ const ProviderDashboard = () => {
   const [newProduct, setNewProduct] = useState({ name: "", price: "", image: "" });
   const [newCaseStudy, setNewCaseStudy] = useState({ title: "", description: "" });
   const [savedMsg, setSavedMsg] = useState("");
+  const [galleryError, setGalleryError] = useState("");
 
   const profile =
     storeProfile ??
@@ -195,6 +192,34 @@ const ProviderDashboard = () => {
     forceUpdate((n) => n + 1);
   };
 
+  const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setGalleryError("");
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!["image/png", "image/jpeg"].includes(file.type)) {
+      setGalleryError("Only PNG or JPEG files are accepted.");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      setGalleryError("File is too large. Maximum size is 2MB.");
+      e.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      updateProvider(providerId, { gallery: [...(profile.gallery ?? []), dataUrl] });
+      forceUpdate((n) => n + 1);
+      showSaved("Image added ✓");
+      e.target.value = "";
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="bg-navy-gradient min-h-screen py-10">
       <div className="container max-w-3xl animate-fade-in">
@@ -206,7 +231,6 @@ const ProviderDashboard = () => {
           {isSuspended && <Badge className="bg-red-500/20 text-red-400 border-0">Suspended</Badge>}
         </div>
 
-        {/* Suspension banner */}
         {isSuspended && (
           <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/08 p-4">
             <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
@@ -220,7 +244,6 @@ const ProviderDashboard = () => {
           </div>
         )}
 
-        {/* Claim pending banner */}
         {claimStatus === "pending_review" && (
           <div
             className="mb-6"
@@ -246,7 +269,6 @@ const ProviderDashboard = () => {
           </div>
         )}
 
-        {/* Your Profile */}
         <Card className="mb-6 border-0 shadow-card">
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle>Your Profile</CardTitle>
@@ -300,7 +322,6 @@ const ProviderDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Category-driven sections */}
         {sections.map((section) => {
           const enabled = isFeatureEnabled(section.featureKey);
           return (
@@ -343,6 +364,8 @@ const ProviderDashboard = () => {
                       providerId,
                       forceUpdate,
                       showSaved,
+                      handleGalleryUpload,
+                      galleryError,
                     },
                   )
                 ) : (
@@ -353,7 +376,6 @@ const ProviderDashboard = () => {
           );
         })}
 
-        {/* Plan Info */}
         <Card className="border-0 shadow-card">
           <CardHeader>
             <CardTitle>Your Plan</CardTitle>
@@ -383,7 +405,7 @@ const ProviderDashboard = () => {
         </Card>
       </div>
 
-      {/* ── Edit Profile Modal ── */}
+      {/* Edit Profile Modal */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -499,7 +521,7 @@ const ProviderDashboard = () => {
         </DialogContent>
       </Dialog>
 
-      {/* ── Reply Modal ── */}
+      {/* Reply Modal */}
       <Dialog open={replyOpen} onOpenChange={setReplyOpen}>
         <DialogContent>
           <DialogHeader>
@@ -583,6 +605,8 @@ function renderSectionContent(
     providerId,
     forceUpdate,
     showSaved,
+    handleGalleryUpload,
+    galleryError,
   } = ctx;
 
   switch (key) {
@@ -765,23 +789,23 @@ function renderSectionContent(
               ))}
             </div>
           )}
-          <p className="text-sm text-muted-foreground">Paste an image URL to add to your gallery.</p>
-          <div className="flex gap-2">
-            <Input placeholder="https://..." id="galleryInput" />
-            <Button
-              size="sm"
-              className="bg-teal-500 hover:bg-teal-400 shrink-0"
-              onClick={() => {
-                const input = document.getElementById("galleryInput") as HTMLInputElement;
-                if (!input?.value.trim()) return;
-                updateProvider(providerId, { gallery: [...(profile.gallery ?? []), input.value.trim()] });
-                input.value = "";
-                forceUpdate((n: number) => n + 1);
-                showSaved();
-              }}
+          <div className="space-y-1">
+            <label
+              htmlFor="galleryUpload"
+              className="flex flex-col items-center justify-center w-full rounded-xl border border-dashed border-border/60 bg-muted/30 px-4 py-6 cursor-pointer hover:bg-muted/50 transition-colors text-center"
             >
-              Add
-            </Button>
+              <Image className="h-6 w-6 text-teal-500 mb-2" />
+              <span className="text-sm font-medium text-foreground">Click to upload an image</span>
+              <span className="text-xs text-muted-foreground mt-1">PNG or JPEG only · Max 2MB</span>
+              <input
+                id="galleryUpload"
+                type="file"
+                accept="image/png, image/jpeg"
+                className="hidden"
+                onChange={handleGalleryUpload}
+              />
+            </label>
+            {galleryError && <p className="text-xs text-red-400">{galleryError}</p>}
           </div>
         </div>
       );
@@ -891,7 +915,8 @@ function renderSectionContent(
           {(profile.products ?? []).map((p: any, i: number) => (
             <div key={i} className="flex items-center justify-between rounded-xl border border-border/60 p-4 text-sm">
               <div>
-                <span className="font-medium">{p.name}</span> <span className="text-teal-500 ml-2">{p.price}</span>
+                <span className="font-medium">{p.name}</span>
+                <span className="text-teal-500 ml-2">{p.price}</span>
               </div>
               <Button
                 size="sm"
