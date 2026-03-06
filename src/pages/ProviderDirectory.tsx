@@ -9,7 +9,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { categories, regions } from "@/data/mockData";
 import { getActiveProviders } from "@/data/providerStore";
 
-// ── Product catalogue filters ─────────────────────────────────
+// ── Product catalogue types & data ───────────────────────────
+interface CatalogueProduct {
+  id: string;
+  providerId: string;
+  providerName: string;
+  name: string;
+  price: string;
+  priceValue: number;
+  image: string;
+  shortDescription: string;
+  productCategory: string;
+  needTypes: string[];
+}
+
 const PRODUCT_CATEGORIES = [
   { value: "all", label: "All Categories" },
   { value: "sensory", label: "Sensory & Regulation" },
@@ -39,11 +52,152 @@ const NEED_FILTERS = [
   { value: "Learning Disability", label: "Learning Disability" },
 ];
 
-// ── Helpers ───────────────────────────────────────────────────
-function parsePriceValue(price: string): number {
-  const match = price.replace(/[£,]/g, "").match(/[\d.]+/);
-  return match ? parseFloat(match[0]) : 0;
-}
+const mockCatalogueProducts: CatalogueProduct[] = [
+  {
+    id: "p1",
+    providerId: "3",
+    providerName: "SensoryPlay Shop",
+    name: "Weighted Lap Pad",
+    price: "£24.99",
+    priceValue: 24.99,
+    image: "/placeholder.svg",
+    shortDescription: "Provides calming deep pressure for children who struggle to sit and focus.",
+    productCategory: "sensory",
+    needTypes: ["Sensory Processing", "Autism", "ADHD"],
+  },
+  {
+    id: "p2",
+    providerId: "3",
+    providerName: "SensoryPlay Shop",
+    name: "Chewable Necklace Set",
+    price: "£12.99",
+    priceValue: 12.99,
+    image: "/placeholder.svg",
+    shortDescription: "Safe, durable chew necklaces for children who seek oral sensory input.",
+    productCategory: "sensory",
+    needTypes: ["Sensory Processing", "Autism"],
+  },
+  {
+    id: "p3",
+    providerId: "3",
+    providerName: "SensoryPlay Shop",
+    name: "Sensory Fidget Kit",
+    price: "£18.99",
+    priceValue: 18.99,
+    image: "/placeholder.svg",
+    shortDescription: "A curated set of fidget tools to support focus and self-regulation.",
+    productCategory: "sensory",
+    needTypes: ["ADHD", "Autism", "Anxiety"],
+  },
+  {
+    id: "p4",
+    providerId: "3",
+    providerName: "SensoryPlay Shop",
+    name: "Weighted Blanket (3kg)",
+    price: "£44.99",
+    priceValue: 44.99,
+    image: "/placeholder.svg",
+    shortDescription: "Calming weighted blanket designed to ease anxiety and improve sleep.",
+    productCategory: "sensory",
+    needTypes: ["Anxiety", "Autism", "Sensory Processing"],
+  },
+  {
+    id: "p5",
+    providerId: "3",
+    providerName: "SensoryPlay Shop",
+    name: "Visual Schedule Board",
+    price: "£19.99",
+    priceValue: 19.99,
+    image: "/placeholder.svg",
+    shortDescription: "Magnetic daily routine board to support predictability and transitions.",
+    productCategory: "communication",
+    needTypes: ["Autism", "ADHD", "Learning Disability"],
+  },
+  {
+    id: "p6",
+    providerId: "3",
+    providerName: "SensoryPlay Shop",
+    name: "Communication Cards Set",
+    price: "£9.99",
+    priceValue: 9.99,
+    image: "/placeholder.svg",
+    shortDescription: "Picture communication cards to support non-verbal and early verbal children.",
+    productCategory: "communication",
+    needTypes: ["Speech & Language", "Autism"],
+  },
+  {
+    id: "p7",
+    providerId: "3",
+    providerName: "SensoryPlay Shop",
+    name: "Adaptive Pencil Grips (Pack of 6)",
+    price: "£7.99",
+    priceValue: 7.99,
+    image: "/placeholder.svg",
+    shortDescription: "Ergonomic pencil grips to support children with fine motor difficulties.",
+    productCategory: "motor",
+    needTypes: ["Physical Disability", "Sensory Processing"],
+  },
+  {
+    id: "p8",
+    providerId: "3",
+    providerName: "SensoryPlay Shop",
+    name: "Wobble Cushion",
+    price: "£14.99",
+    priceValue: 14.99,
+    image: "/placeholder.svg",
+    shortDescription: "Inflatable seat cushion that provides sensory feedback and helps with focus.",
+    productCategory: "sensory",
+    needTypes: ["ADHD", "Sensory Processing", "Autism"],
+  },
+  {
+    id: "p9",
+    providerId: "3",
+    providerName: "SensoryPlay Shop",
+    name: "Emotions Flashcard Set",
+    price: "£8.99",
+    priceValue: 8.99,
+    image: "/placeholder.svg",
+    shortDescription: "Illustrated cards to help children identify and talk about their feelings.",
+    productCategory: "emotional",
+    needTypes: ["Autism", "Anxiety", "ADHD"],
+  },
+  {
+    id: "p10",
+    providerId: "3",
+    providerName: "SensoryPlay Shop",
+    name: "Adaptive Wheelchair Tray",
+    price: "£64.99",
+    priceValue: 64.99,
+    image: "/placeholder.svg",
+    shortDescription: "Adjustable activity tray designed to attach to most standard wheelchairs.",
+    productCategory: "mobility",
+    needTypes: ["Physical Disability"],
+  },
+  {
+    id: "p11",
+    providerId: "3",
+    providerName: "SensoryPlay Shop",
+    name: "Non-Slip Bath Mat Set",
+    price: "£11.99",
+    priceValue: 11.99,
+    image: "/placeholder.svg",
+    shortDescription: "Sensory-safe non-slip bath mats to support daily living routines.",
+    productCategory: "daily",
+    needTypes: ["Physical Disability", "Sensory Processing"],
+  },
+  {
+    id: "p12",
+    providerId: "3",
+    providerName: "SensoryPlay Shop",
+    name: "Compression Vest",
+    price: "£34.99",
+    priceValue: 34.99,
+    image: "/placeholder.svg",
+    shortDescription: "Provides proprioceptive input to support sensory regulation throughout the day.",
+    productCategory: "sensory",
+    needTypes: ["Sensory Processing", "Autism", "ADHD"],
+  },
+];
 
 function priceInRange(value: number, range: string): boolean {
   if (range === "all") return true;
@@ -97,7 +251,7 @@ const ProviderDirectory = () => {
   const [needFilter, setNeedFilter] = useState("all");
   const [productSearch, setProductSearch] = useState("");
 
-  // Cart — visual only for now
+  // Cart state — visual only for now
   const [addedToCart, setAddedToCart] = useState<Record<string, boolean>>({});
 
   const isProductView = activeCategory === "products";
@@ -120,9 +274,9 @@ const ProviderDirectory = () => {
     updateParams({ search: localSearch || null });
   };
 
-  const handleAddToCart = (key: string) => {
-    setAddedToCart((prev) => ({ ...prev, [key]: true }));
-    setTimeout(() => setAddedToCart((prev) => ({ ...prev, [key]: false })), 2000);
+  const handleAddToCart = (productId: string) => {
+    setAddedToCart((prev) => ({ ...prev, [productId]: true }));
+    setTimeout(() => setAddedToCart((prev) => ({ ...prev, [productId]: false })), 2000);
   };
 
   // ── Provider filtering ────────────────────────────────────────
@@ -188,34 +342,12 @@ const ProviderDirectory = () => {
     return result;
   }, [activeCategory, delivery, searchQuery, regionParam, supportParam, needsParam, localSearch]);
 
-  // ── Live product catalogue from providerStore ─────────────────
-  // Flatten all products from all active product-type providers
-  const allLiveProducts = useMemo(() => {
-    const providers = getActiveProviders().filter((p) => p.type === "product");
-    return providers.flatMap((provider) =>
-      (provider.products ?? []).map((prod, i) => ({
-        key: `${provider.id}-${i}`,
-        providerId: provider.id,
-        providerName: provider.businessName,
-        name: prod.name,
-        price: prod.price,
-        priceValue: parsePriceValue(prod.price),
-        image: prod.image || "/placeholder.svg",
-        shortDescription: prod.shortDescription || "",
-        // Derive need types from the provider's needsSupported
-        needTypes: provider.needsSupported,
-      })),
-    );
-  }, []);
-
+  // ── Product catalogue filtering ───────────────────────────────
   const filteredProducts = useMemo(() => {
-    let result = allLiveProducts;
-    if (priceRange !== "all") {
-      result = result.filter((p) => priceInRange(p.priceValue, priceRange));
-    }
-    if (needFilter !== "all") {
-      result = result.filter((p) => p.needTypes.includes(needFilter));
-    }
+    let result = mockCatalogueProducts;
+    if (productCategory !== "all") result = result.filter((p) => p.productCategory === productCategory);
+    if (priceRange !== "all") result = result.filter((p) => priceInRange(p.priceValue, priceRange));
+    if (needFilter !== "all") result = result.filter((p) => p.needTypes.includes(needFilter));
     if (productSearch.trim()) {
       const q = productSearch.toLowerCase();
       result = result.filter(
@@ -227,7 +359,7 @@ const ProviderDirectory = () => {
       );
     }
     return result;
-  }, [allLiveProducts, priceRange, needFilter, productSearch]);
+  }, [productCategory, priceRange, needFilter, productSearch]);
 
   const visible = filteredProviders.slice(0, visibleCount);
   const hasActiveFilters =
@@ -237,7 +369,7 @@ const ProviderDirectory = () => {
     regionParam !== "all" ||
     supportParam ||
     needsParam;
-  const hasProductFilters = priceRange !== "all" || needFilter !== "all" || productSearch;
+  const hasProductFilters = productCategory !== "all" || priceRange !== "all" || needFilter !== "all" || productSearch;
 
   return (
     <div className="bg-navy-gradient min-h-screen py-10">
@@ -354,7 +486,7 @@ const ProviderDirectory = () => {
           </div>
         )}
 
-        {/* Active filter pills — provider view */}
+        {/* Active filter pills — provider view only */}
         {!isProductView && hasActiveFilters && (
           <div className="mb-6 flex flex-wrap gap-2">
             {regionParam !== "all" && (
@@ -422,6 +554,18 @@ const ProviderDirectory = () => {
             {/* Product filters */}
             <div className="mb-8 rounded-xl bg-card p-6 shadow-card space-y-4">
               <div className="flex flex-wrap gap-3">
+                <Select value={productCategory} onValueChange={setProductCategory}>
+                  <SelectTrigger className="w-52">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card z-50">
+                    {PRODUCT_CATEGORIES.map((c) => (
+                      <SelectItem key={c.value} value={c.value}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Select value={priceRange} onValueChange={setPriceRange}>
                   <SelectTrigger className="w-40">
                     <SelectValue />
@@ -452,6 +596,7 @@ const ProviderDirectory = () => {
                     size="sm"
                     className="text-muted-foreground hover:text-foreground"
                     onClick={() => {
+                      setProductCategory("all");
                       setPriceRange("all");
                       setNeedFilter("all");
                       setProductSearch("");
@@ -472,6 +617,14 @@ const ProviderDirectory = () => {
 
               {hasProductFilters && (
                 <div className="flex flex-wrap gap-2 pt-1">
+                  {productCategory !== "all" && (
+                    <Badge className="gap-1 bg-teal-500/15 text-teal-400 border-0 px-3 py-1">
+                      {PRODUCT_CATEGORIES.find((c) => c.value === productCategory)?.label}
+                      <button onClick={() => setProductCategory("all")} className="ml-1 hover:text-accent-foreground">
+                        <XIcon className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  )}
                   {priceRange !== "all" && (
                     <Badge className="gap-1 bg-teal-500/15 text-teal-400 border-0 px-3 py-1">
                       {PRICE_RANGES.find((r) => r.value === priceRange)?.label}
@@ -506,42 +659,35 @@ const ProviderDirectory = () => {
 
             {filteredProducts.length === 0 ? (
               <div className="py-20 text-center rounded-xl bg-card shadow-card">
-                <ShoppingBag className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-lg text-foreground mb-2">No products found.</p>
-                <p className="text-muted-foreground mb-6">
-                  {allLiveProducts.length === 0
-                    ? "No products have been added yet. Providers can add products from their dashboard."
-                    : "Try adjusting your search or filters."}
-                </p>
-                {hasProductFilters && (
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setPriceRange("all");
-                      setNeedFilter("all");
-                      setProductSearch("");
-                    }}
-                  >
-                    Clear all filters
-                  </Button>
-                )}
+                <p className="text-lg text-foreground mb-2">No products match your filters.</p>
+                <p className="text-muted-foreground mb-6">Try adjusting your search or filters.</p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setProductCategory("all");
+                    setPriceRange("all");
+                    setNeedFilter("all");
+                    setProductSearch("");
+                  }}
+                >
+                  Clear all filters
+                </Button>
               </div>
             ) : (
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredProducts.map((product) => {
-                  const isAdded = addedToCart[product.key];
-                  const hasImage = product.image && product.image !== "/placeholder.svg";
+                  const isAdded = addedToCart[product.id];
                   return (
-                    <Card key={product.key} className="border-0 shadow-card card-hover-lift flex flex-col">
+                    <Card key={product.id} className="border-0 shadow-card card-hover-lift flex flex-col">
                       <CardContent className="p-0 flex flex-col h-full">
                         {/* Product image */}
                         <div className="rounded-t-xl overflow-hidden bg-muted" style={{ aspectRatio: "4/3" }}>
-                          {hasImage ? (
-                            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
+                          {product.image === "/placeholder.svg" ? (
+                            <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                               <ShoppingBag className="h-10 w-10 text-muted-foreground/30" />
                             </div>
+                          ) : (
+                            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                           )}
                         </div>
 
@@ -553,9 +699,7 @@ const ProviderDirectory = () => {
                           </div>
 
                           {/* Short description */}
-                          {product.shortDescription && (
-                            <p className="text-xs text-muted-foreground leading-relaxed">{product.shortDescription}</p>
-                          )}
+                          <p className="text-xs text-muted-foreground leading-relaxed">{product.shortDescription}</p>
 
                           {/* Need tags */}
                           <div className="flex flex-wrap gap-1">
@@ -576,7 +720,7 @@ const ProviderDirectory = () => {
                             </Link>
                           </div>
 
-                          {/* Add to Cart */}
+                          {/* Add to Cart button */}
                           <Button
                             size="sm"
                             className={`w-full mt-auto transition-all ${
@@ -584,7 +728,7 @@ const ProviderDirectory = () => {
                                 ? "bg-emerald-500 hover:bg-emerald-500 text-white"
                                 : "bg-teal-500 hover:bg-teal-400 text-white"
                             }`}
-                            onClick={() => handleAddToCart(product.key)}
+                            onClick={() => handleAddToCart(product.id)}
                           >
                             <ShoppingCart className="h-4 w-4 mr-2" />
                             {isAdded ? "Added ✓" : "Add to Cart"}
@@ -621,7 +765,9 @@ const ProviderDirectory = () => {
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {visible.map((provider) => (
                   <Link key={provider.id} to={`/provider/${provider.id}`}>
-                    <Card className="h-full border-0 shadow-card card-hover-lift">
+                    <Card
+                      className={`h-full border-0 shadow-card card-hover-lift ${provider.type === "product" ? "ring-1 ring-teal-500/20" : ""}`}
+                    >
                       <CardContent className="p-6">
                         <div className="mb-3 flex items-start justify-between">
                           <div>
