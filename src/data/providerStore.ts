@@ -34,7 +34,7 @@ export interface EditableProvider {
   caseStudies: { title: string; description: string }[];
   spotlightMessage: string;
   storeUrl: string;
-  products: { name: string; price: string; image: string }[];
+  products: { name: string; price: string; image: string; shortDescription: string }[];
   // Availability (therapists)
   availabilityStatus: AvailabilityStatus;
   // Moderation
@@ -78,7 +78,14 @@ export const providerStore: EditableProvider[] = mockProviders.map((p) => ({
   caseStudies: p.educationDetails ? [{ title: "Overview", description: p.educationDetails }] : [],
   spotlightMessage: "",
   storeUrl: "",
-  products: p.products ? [...p.products] : [],
+  products: p.products
+    ? p.products.map((prod) => ({
+        name: prod.name,
+        price: prod.price,
+        image: prod.image ?? "/placeholder.svg",
+        shortDescription: "",
+      }))
+    : [],
   availabilityStatus: "accepting",
   moderationStatus: "active",
   suspendedMessage: "",
