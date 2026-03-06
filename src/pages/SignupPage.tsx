@@ -25,12 +25,12 @@ const SignupPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const role: UserRole = tab;
-    login(email, password);
 
-    // If provider signup with a claim intent — claim the listing now
+    // Always pass the role explicitly so provider signups aren't downgraded to parent
+    login(email, password, role);
+
+    // If provider signup with a claim intent — attempt the claim now
     if (role === "provider" && claimProviderId) {
-      // user.id is generated inside login via crypto.randomUUID — we re-derive it
-      // by reading back from localStorage immediately after login sets it
       try {
         const stored = localStorage.getItem("beyonder_user");
         if (stored) {
@@ -43,11 +43,6 @@ const SignupPage = () => {
             provider?.name ?? "",
             provider?.websiteDomain ?? "",
           );
-          console.log("[Beyonder Claim on Signup]", {
-            claimProviderId,
-            outcome: result.outcome,
-            assignedPlan: result.outcome === "approved" ? result.record.planType : "pending",
-          });
           if (result.outcome === "pending_review") {
             navigate("/provider-dashboard?claimStatus=pending_review");
             return;
@@ -60,7 +55,7 @@ const SignupPage = () => {
       return;
     }
 
-    navigate(tab === "provider" ? "/provider-dashboard" : "/dashboard");
+    navigate(role === "provider" ? "/provider-dashboard" : "/dashboard");
   };
 
   return (
@@ -78,7 +73,6 @@ const SignupPage = () => {
           {/* If arriving via claim intent, lock to provider tab */}
           {claimProviderId ? (
             <div>
-              {/* Subtle claim notice */}
               <div
                 style={{
                   marginBottom: 16,
