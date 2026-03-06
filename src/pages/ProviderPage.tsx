@@ -1,5 +1,18 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Star, ShieldCheck, Award, Clock, Mail, Phone, Globe, AlertTriangle } from "lucide-react";
+import {
+  MapPin,
+  Star,
+  ShieldCheck,
+  Award,
+  Clock,
+  Mail,
+  Phone,
+  Globe,
+  AlertTriangle,
+  CheckCircle,
+  Clock3,
+  XCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,18 +22,44 @@ import { attemptClaim, isProviderClaimed } from "@/data/founderStore";
 import { getProvider } from "@/data/providerStore";
 import type { AvailabilityStatus } from "@/data/providerStore";
 
-const availabilityConfig: Record<AvailabilityStatus, { label: string; classes: string }> = {
+const availabilityConfig: Record<
+  AvailabilityStatus,
+  {
+    label: string;
+    message: string;
+    icon: React.ReactNode;
+    bg: string;
+    border: string;
+    text: string;
+    iconColor: string;
+  }
+> = {
   accepting: {
-    label: "Accepting new clients",
-    classes: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+    label: "Accepting New Clients",
+    message: "This provider is currently taking new referrals. Send an enquiry to get started.",
+    icon: <CheckCircle className="h-6 w-6" />,
+    bg: "rgba(16,185,129,0.08)",
+    border: "rgba(16,185,129,0.30)",
+    text: "#34d399",
+    iconColor: "#34d399",
   },
   waitlist: {
-    label: "Waitlist only",
-    classes: "bg-orange-400/15 text-orange-400 border-orange-400/30",
+    label: "Waitlist Only",
+    message: "This provider isn't taking new clients right now but you can join their waitlist by sending an enquiry.",
+    icon: <Clock3 className="h-6 w-6" />,
+    bg: "rgba(251,146,60,0.08)",
+    border: "rgba(251,146,60,0.30)",
+    text: "#fb923c",
+    iconColor: "#fb923c",
   },
   closed: {
-    label: "Not accepting clients",
-    classes: "bg-red-400/15 text-red-400 border-red-400/30",
+    label: "Not Accepting Clients",
+    message: "This provider is currently closed to new enquiries. Check back later or explore other providers.",
+    icon: <XCircle className="h-6 w-6" />,
+    bg: "rgba(248,113,113,0.08)",
+    border: "rgba(248,113,113,0.30)",
+    text: "#f87171",
+    iconColor: "#f87171",
   },
 };
 
@@ -75,20 +114,16 @@ const ProviderPage = () => {
           ) : null}
 
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
+            <div className="flex-1 min-w-0">
               <div className="mb-3 flex flex-wrap gap-2">
                 <Badge variant="secondary" className="bg-navy-600 text-accent-foreground border-0">
                   {provider.typeBadge}
                 </Badge>
                 <Badge className="bg-teal-500/20 text-teal-400 border-0 capitalize">{provider.plan_type}</Badge>
-                {/* Availability badge — therapists only */}
-                {isTherapist && !isSuspended && (
-                  <Badge variant="outline" className={`border ${availInfo.classes}`}>
-                    {availInfo.label}
-                  </Badge>
-                )}
               </div>
+
               <h1 className="text-3xl font-bold text-accent-foreground">{provider.businessName}</h1>
+
               <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-accent-foreground/70">
                 <span className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
@@ -112,6 +147,27 @@ const ProviderPage = () => {
                 )}
               </div>
 
+              {/* ── Availability banner — therapists only ── */}
+              {isTherapist && !isSuspended && (
+                <div
+                  className="mt-5 flex items-center gap-4 rounded-xl px-5 py-4"
+                  style={{
+                    background: availInfo.bg,
+                    border: `1.5px solid ${availInfo.border}`,
+                  }}
+                >
+                  <span style={{ color: availInfo.iconColor, flexShrink: 0 }}>{availInfo.icon}</span>
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: availInfo.text }}>
+                      {availInfo.label}
+                    </p>
+                    <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.55)" }}>
+                      {availInfo.message}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Claim CTA */}
               {!alreadyClaimed && !isSuspended && (
                 <div className="mt-4 flex items-center gap-3">
@@ -127,8 +183,9 @@ const ProviderPage = () => {
                 </div>
               )}
             </div>
+
             {!isSuspended && (
-              <Button size="lg" className="bg-teal-500 hover:bg-teal-400 shadow-lg" asChild>
+              <Button size="lg" className="bg-teal-500 hover:bg-teal-400 shadow-lg shrink-0" asChild>
                 <Link to={`/enquiry/${provider.id}`}>Send Enquiry</Link>
               </Button>
             )}
