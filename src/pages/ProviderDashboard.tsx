@@ -16,7 +16,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -25,11 +24,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { providers } from "@/data/mockData";
 import { hasFeature, categorySections } from "@/lib/featureGating";
 import { getModuleProfile, providerTestimonials } from "@/data/providerModules";
-import type { TherapistProfile } from "@/data/providerModules";
 import { useAuth } from "@/context/AuthContext";
 import { getEnquiriesForProvider, replyToEnquiry, EnquiryRecord } from "@/data/enquiryStore";
 import { getClaimForProvider } from "@/data/founderStore";
-import { getProvider, updateProvider } from "@/data/providerStore";
+import { getProvider, updateProvider, AvailabilityStatus } from "@/data/providerStore";
 
 const MAX_REPLY = 800;
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
@@ -47,6 +45,27 @@ const NEEDS_OPTIONS = [
   "All SEND needs",
 ];
 const DELIVERY_OPTIONS: Array<"in-person" | "online" | "hybrid"> = ["in-person", "online", "hybrid"];
+
+const AVAILABILITY_OPTIONS: { value: AvailabilityStatus; label: string; description: string; color: string }[] = [
+  {
+    value: "accepting",
+    label: "Accepting Clients",
+    description: "Open to new clients now",
+    color: "text-emerald-400",
+  },
+  {
+    value: "waitlist",
+    label: "Waitlist Only",
+    description: "Not taking new clients directly, but accepting waitlist enquiries",
+    color: "text-orange-400",
+  },
+  {
+    value: "closed",
+    label: "Closed",
+    description: "Not accepting new clients or waitlist enquiries at this time",
+    color: "text-red-400",
+  },
+];
 
 const ProviderDashboard = () => {
   const { user } = useAuth();
@@ -122,6 +141,7 @@ const ProviderDashboard = () => {
           spotlightMessage: "",
           storeUrl: "",
           products: fallback.products ?? [],
+          availabilityStatus: "accepting" as AvailabilityStatus,
           moderationStatus: "active" as const,
           suspendedMessage: "",
           changeRequest: null,
@@ -261,6 +281,12 @@ const ProviderDashboard = () => {
     }
     setChangeRequestDone(true);
     forceUpdate((n) => n + 1);
+  };
+
+  const handleAvailabilityChange = (value: AvailabilityStatus) => {
+    updateProvider(providerId, { availabilityStatus: value });
+    forceUpdate((n) => n + 1);
+    showSaved("Availability updated ✓");
   };
 
   return (
@@ -403,6 +429,7 @@ const ProviderDashboard = () => {
                     getEnquiriesForProvider(providerId),
                     testimonials,
                     openReply,
+                    handleAvailabilityChange,
                     {
                       newCert,
                       setNewCert,
@@ -636,6 +663,12 @@ function getSectionIcon(key: string) {
   return icons[key] ?? null;
 }
 
+const AVAILABILITY_OPTIONS: { value: AvailabilityStatus; label: string; description: string }[] = [
+  { value: "accepting", label: "Accepting Clients", description: "Open to new clients now" },
+  { value: "waitlist", label: "Waitlist Only", description: "Accepting waitlist enquiries only" },
+  { value: "closed", label: "Closed", description: "Not accepting new clients or enquiries" },
+];
+
 function renderSectionContent(
   key: string,
   profile: any,
@@ -643,6 +676,7 @@ function renderSectionContent(
   enquiries: EnquiryRecord[],
   testimonials: any[],
   openReply: (e: EnquiryRecord) => void,
+  handleAvailabilityChange: (value: AvailabilityStatus) => void,
   ctx: any,
 ) {
   const {
@@ -668,16 +702,50 @@ function renderSectionContent(
 
   switch (key) {
     case "availability":
-      const tp = moduleProfile as TherapistProfile | null;
+      const current: AvailabilityStatus = profile.availabilityStatus ?? "accepting";
       return (
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label>Accepting New Clients</Label>
-            <Switch checked={tp?.accepting_new_clients ?? true} />
-          </div>
-          <div className="flex items-center justify-between">
-            <Label>Waitlist Enabled</Label>
-            <Switch checked={tp?.waitlist_enabled ?? false} />
+          <p className="text-sm text-muted-foreground">
+            This status is shown on your public profile so families know whether to get in touch.
+          </p>
+          <div className="grid gap-2">
+            {AVAILABILITY_OPTIONS.map((opt) => {
+              const isSelected = current === opt.value;
+              const borderColor =
+                opt.value === "accepting"
+                  ? isSelected
+                    ? "border-emerald-500 bg-emerald-500/10"
+                    : "border-border/60"
+                  : opt.value === "waitlist"
+                    ? isSelected
+                      ? "border-orange-400 bg-orange-400/10"
+                      : "border-border/60"
+                    : isSelected
+                      ? "border-red-400 bg-red-400/10"
+                      : "border-border/60";
+              const labelColor =
+                opt.value === "accepting"
+                  ? "text-emerald-400"
+                  : opt.value === "waitlist"
+                    ? "text-orange-400"
+                    : "text-red-400";
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => handleAvailabilityChange(opt.value)}
+                  className={`w-full rounded-xl border p-4 text-left transition-colors ${borderColor}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className={`font-medium text-sm ${isSelected ? labelColor : "text-foreground"}`}>
+                      {opt.label}
+                    </span>
+                    {isSelected && <span className={`text-xs font-semibold ${labelColor}`}>● Active</span>}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">{opt.description}</p>
+                </button>
+              );
+            })}
           </div>
         </div>
       );
