@@ -9,6 +9,8 @@ export interface ChangeRequest {
   status: "pending" | "acknowledged";
 }
 
+export type AvailabilityStatus = "accepting" | "waitlist" | "closed";
+
 export interface EditableProvider {
   id: string;
   businessName: string;
@@ -33,6 +35,8 @@ export interface EditableProvider {
   spotlightMessage: string;
   storeUrl: string;
   products: { name: string; price: string; image: string }[];
+  // Availability (therapists)
+  availabilityStatus: AvailabilityStatus;
   // Moderation
   moderationStatus: "active" | "suspended";
   suspendedMessage: string;
@@ -75,6 +79,7 @@ export const providerStore: EditableProvider[] = mockProviders.map((p) => ({
   spotlightMessage: "",
   storeUrl: "",
   products: p.products ? [...p.products] : [],
+  availabilityStatus: "accepting",
   moderationStatus: "active",
   suspendedMessage: "",
   changeRequest: null,
