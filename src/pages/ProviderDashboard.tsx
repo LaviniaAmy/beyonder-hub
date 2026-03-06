@@ -11,6 +11,7 @@ import {
   ShoppingBag,
   Link as LinkIcon,
   AlertTriangle,
+  ClipboardList,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,14 +25,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { providers } from "@/data/mockData";
 import { hasFeature, categorySections } from "@/lib/featureGating";
 import { getModuleProfile, providerTestimonials } from "@/data/providerModules";
-import type { TherapistProfile, ClubProfile, EducationProfile, ProductProfile } from "@/data/providerModules";
+import type { TherapistProfile } from "@/data/providerModules";
 import { useAuth } from "@/context/AuthContext";
 import { getEnquiriesForProvider, replyToEnquiry, EnquiryRecord } from "@/data/enquiryStore";
 import { getClaimForProvider } from "@/data/founderStore";
 import { getProvider, updateProvider } from "@/data/providerStore";
 
 const MAX_REPLY = 800;
-const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 const NEEDS_OPTIONS = [
   "Autism",
   "ADHD",
@@ -103,6 +104,7 @@ const ProviderDashboard = () => {
   const [newCaseStudy, setNewCaseStudy] = useState({ title: "", description: "" });
   const [savedMsg, setSavedMsg] = useState("");
   const [galleryError, setGalleryError] = useState("");
+  const [changeRequestDone, setChangeRequestDone] = useState(false);
 
   const profile =
     storeProfile ??
@@ -122,6 +124,7 @@ const ProviderDashboard = () => {
           products: fallback.products ?? [],
           moderationStatus: "active" as const,
           suspendedMessage: "",
+          changeRequest: null,
         }
       : null);
 
@@ -133,6 +136,9 @@ const ProviderDashboard = () => {
     );
 
   const isSuspended = profile.moderationStatus === "suspended";
+  const changeRequest = profile.changeRequest;
+  const isAcknowledged = changeRequestDone || changeRequest?.status === "acknowledged";
+
   const moduleProfile = getModuleProfile(providerId, profile.category_type);
   const sections = categorySections[profile.category_type as keyof typeof categorySections] ?? [];
   const testimonials = providerTestimonials.filter((t) => t.provider_id === providerId);
@@ -196,19 +202,16 @@ const ProviderDashboard = () => {
     setGalleryError("");
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (!["image/png", "image/jpeg"].includes(file.type)) {
       setGalleryError("Only PNG or JPEG files are accepted.");
       e.target.value = "";
       return;
     }
-
     if (file.size > MAX_IMAGE_SIZE) {
       setGalleryError("File is too large. Maximum size is 2MB.");
       e.target.value = "";
       return;
     }
-
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = reader.result as string;
@@ -218,6 +221,16 @@ const ProviderDashboard = () => {
       e.target.value = "";
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleChangesMade = () => {
+    if (changeRequest) {
+      updateProvider(providerId, {
+        changeRequest: { message: changeRequest.message, status: "acknowledged" },
+      });
+    }
+    setChangeRequestDone(true);
+    forceUpdate((n) => n + 1);
   };
 
   return (
@@ -231,8 +244,9 @@ const ProviderDashboard = () => {
           {isSuspended && <Badge className="bg-red-500/20 text-red-400 border-0">Suspended</Badge>}
         </div>
 
+        {/* Suspension banner */}
         {isSuspended && (
-          <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/08 p-4">
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/[0.08] p-4">
             <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
             <div>
               <p className="font-semibold text-red-400 text-sm">Your account has been suspended</p>
@@ -244,6 +258,36 @@ const ProviderDashboard = () => {
           </div>
         )}
 
+        {/* Change request banner */}
+        {changeRequest && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-orange-500/25 bg-orange-500/[0.08] p-4">
+            <ClipboardList className="h-5 w-5 text-orange-400 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              {isAcknowledged ? (
+                <>
+                  <p className="font-semibold text-orange-400 text-sm">Thanks — we'll review your changes shortly</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Our team has been notified and will check your profile soon.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-semibold text-orange-400 text-sm">Action required: please update your profile</p>
+                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{changeRequest.message}</p>
+                  <Button
+                    size="sm"
+                    className="mt-3 bg-orange-500 hover:bg-orange-400 text-white"
+                    onClick={handleChangesMade}
+                  >
+                    Changes Made
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Claim pending banner */}
         {claimStatus === "pending_review" && (
           <div
             className="mb-6"
@@ -269,6 +313,7 @@ const ProviderDashboard = () => {
           </div>
         )}
 
+        {/* Profile card */}
         <Card className="mb-6 border-0 shadow-card">
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle>Your Profile</CardTitle>
@@ -322,6 +367,7 @@ const ProviderDashboard = () => {
           </CardContent>
         </Card>
 
+        {/* Category sections */}
         {sections.map((section) => {
           const enabled = isFeatureEnabled(section.featureKey);
           return (
@@ -376,6 +422,7 @@ const ProviderDashboard = () => {
           );
         })}
 
+        {/* Plan card */}
         <Card className="border-0 shadow-card">
           <CardHeader>
             <CardTitle>Your Plan</CardTitle>
@@ -724,8 +771,9 @@ function renderSectionContent(
                 variant="ghost"
                 className="text-red-400 h-6 px-2"
                 onClick={() => {
-                  const updated = profile.timetable.filter((_: any, idx: number) => idx !== i);
-                  updateProvider(providerId, { timetable: updated });
+                  updateProvider(providerId, {
+                    timetable: profile.timetable.filter((_: any, idx: number) => idx !== i),
+                  });
                   forceUpdate((n: number) => n + 1);
                 }}
               >
