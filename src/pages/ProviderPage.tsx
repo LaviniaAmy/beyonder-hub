@@ -12,6 +12,7 @@ import {
   CheckCircle,
   Clock3,
   XCircle,
+  ShoppingBag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -147,7 +148,7 @@ const ProviderPage = () => {
                 )}
               </div>
 
-              {/* ── Availability banner — therapists only ── */}
+              {/* Availability banner — therapists only */}
               {isTherapist && !isSuspended && (
                 <div
                   className="mt-5 flex items-center gap-4 rounded-xl px-5 py-4"
@@ -220,7 +221,7 @@ const ProviderPage = () => {
             </CardContent>
           </Card>
 
-          {/* Spotlight — charities */}
+          {/* Spotlight */}
           {provider.spotlightMessage && (
             <Card className="border-0 shadow-card border-l-4 border-l-teal-500">
               <CardContent className="p-5">
@@ -230,7 +231,7 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* Credentials — therapists */}
+          {/* Credentials */}
           {provider.credentials && provider.credentials.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
@@ -249,7 +250,7 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* Timetable — clubs */}
+          {/* Timetable */}
           {provider.timetable && provider.timetable.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
@@ -270,7 +271,7 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* Gallery — clubs */}
+          {/* Gallery */}
           {provider.gallery && provider.gallery.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
@@ -288,7 +289,7 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* Case Studies — education */}
+          {/* Case Studies */}
           {provider.caseStudies && provider.caseStudies.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
@@ -313,13 +314,31 @@ const ProviderPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 sm:grid-cols-3">
-                  {provider.products.map((p) => (
-                    <div key={p.name} className="rounded-xl border border-border/60 p-4 text-center card-hover-lift">
-                      <div className="mb-2 h-20 rounded-lg bg-muted" />
-                      <p className="text-sm font-medium">{p.name}</p>
-                      <p className="text-sm text-teal-500 font-semibold">{p.price}</p>
-                    </div>
-                  ))}
+                  {provider.products.map((p, i) => {
+                    const hasImage = p.image && p.image !== "/placeholder.svg";
+                    return (
+                      <div key={i} className="rounded-xl border border-border/60 overflow-hidden card-hover-lift">
+                        {/* Product image */}
+                        <div className="bg-muted" style={{ aspectRatio: "4/3" }}>
+                          {hasImage ? (
+                            <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <ShoppingBag className="h-8 w-8 text-muted-foreground/30" />
+                            </div>
+                          )}
+                        </div>
+                        {/* Product details */}
+                        <div className="p-3 text-center space-y-1">
+                          <p className="text-sm font-medium leading-snug">{p.name}</p>
+                          {p.shortDescription && (
+                            <p className="text-xs text-muted-foreground leading-relaxed">{p.shortDescription}</p>
+                          )}
+                          <p className="text-sm text-teal-500 font-semibold">{p.price}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
