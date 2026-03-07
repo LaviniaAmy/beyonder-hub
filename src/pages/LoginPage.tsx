@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,8 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,8 +59,8 @@ const LoginPage = () => {
       return;
     }
 
-    // Everyone else → parent dashboard
-    navigate("/dashboard");
+    // Everyone else → parent dashboard (or redirect back to where they came from)
+    navigate(redirectTo ?? "/dashboard");
   };
 
   return (
