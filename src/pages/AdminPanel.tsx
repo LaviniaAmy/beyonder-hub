@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ShieldCheck, Star, Heart } from "lucide-react";
 import { providers, reviews } from "@/data/mockData";
 import {
   adminSettings,
@@ -34,7 +35,6 @@ const defaultStrings: Record<string, string> = {
   confirmationMessage: "Your message has been sent. They'll get back to you soon.",
 };
 
-// ── Simplified to 3 plans only ──
 const planTypes: PlanType[] = ["free", "founder", "professional"];
 const planStatuses: PlanStatus[] = ["active", "trial", "expired"];
 const categoryTypes: CategoryType[] = ["therapist", "club", "education", "charity", "product"];
@@ -46,6 +46,17 @@ const AdminPanel = () => {
 
   const [moderationState, setModerationState] = useState<Record<string, "active" | "suspended">>(
     Object.fromEntries(getAllProviders().map((p) => [p.id, p.moderationStatus])),
+  );
+
+  // 1.1 / 1.2 / 1.3 toggle state
+  const [verifiedState, setVerifiedState] = useState<Record<string, boolean>>(
+    Object.fromEntries(getAllProviders().map((p) => [p.id, p.isVerified])),
+  );
+  const [featuredState, setFeaturedState] = useState<Record<string, boolean>>(
+    Object.fromEntries(getAllProviders().map((p) => [p.id, p.isFeatured])),
+  );
+  const [ehcpState, setEhcpState] = useState<Record<string, boolean>>(
+    Object.fromEntries(getAllProviders().map((p) => [p.id, p.ehcpSupport])),
   );
 
   const [changeRequestState, setChangeRequestState] = useState<
@@ -101,6 +112,27 @@ const AdminPanel = () => {
         next === "suspended" ? "Your listing has been suspended by Beyonder. Please contact support." : "",
     });
     setModerationState((prev) => ({ ...prev, [id]: next }));
+  };
+
+  // 1.1 — Verification toggle (admin only)
+  const handleToggleVerified = (id: string) => {
+    const next = !verifiedState[id];
+    updateProvider(id, { isVerified: next });
+    setVerifiedState((prev) => ({ ...prev, [id]: next }));
+  };
+
+  // 1.2 — Featured toggle
+  const handleToggleFeatured = (id: string) => {
+    const next = !featuredState[id];
+    updateProvider(id, { isFeatured: next });
+    setFeaturedState((prev) => ({ ...prev, [id]: next }));
+  };
+
+  // 1.3 — EHCP toggle (therapist only)
+  const handleToggleEhcp = (id: string) => {
+    const next = !ehcpState[id];
+    updateProvider(id, { ehcpSupport: next });
+    setEhcpState((prev) => ({ ...prev, [id]: next }));
   };
 
   const handleSendChangeRequest = (id: string) => {
@@ -214,6 +246,7 @@ const AdminPanel = () => {
                     const isSent = cr?.status === "sent";
                     const isAcknowledged = cr?.status === "acknowledged";
                     const hasActiveRequest = isSent || isAcknowledged;
+                    const isTherapist = p.category_type === "therapist";
 
                     return (
                       <div
@@ -224,6 +257,21 @@ const AdminPanel = () => {
                           <div>
                             <p className="font-medium flex items-center gap-2 flex-wrap">
                               {p.businessName}
+                              {verifiedState[p.id] && (
+                                <Badge className="bg-teal-500/20 text-teal-400 border-0 text-xs gap-1">
+                                  <ShieldCheck className="h-3 w-3" /> Verified
+                                </Badge>
+                              )}
+                              {featuredState[p.id] && (
+                                <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs gap-1">
+                                  <Star className="h-3 w-3" /> Featured
+                                </Badge>
+                              )}
+                              {isTherapist && ehcpState[p.id] && (
+                                <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs gap-1">
+                                  <Heart className="h-3 w-3" /> EHCP
+                                </Badge>
+                              )}
                               {isAcknowledged && (
                                 <Badge className="bg-emerald-500/15 text-emerald-400 border-0 text-xs">
                                   Changes Confirmed
@@ -249,6 +297,42 @@ const AdminPanel = () => {
                             ) : (
                               <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">Active</Badge>
                             )}
+
+                            {/* 1.1 — Verify toggle */}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className={verifiedState[p.id] ? "border-teal-500/60 text-teal-400" : ""}
+                              onClick={() => handleToggleVerified(p.id)}
+                            >
+                              <ShieldCheck className="h-3 w-3 mr-1" />
+                              {verifiedState[p.id] ? "Unverify" : "Verify"}
+                            </Button>
+
+                            {/* 1.2 — Feature toggle */}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className={featuredState[p.id] ? "border-orange-500/60 text-orange-400" : ""}
+                              onClick={() => handleToggleFeatured(p.id)}
+                            >
+                              <Star className="h-3 w-3 mr-1" />
+                              {featuredState[p.id] ? "Unfeature" : "Feature"}
+                            </Button>
+
+                            {/* 1.3 — EHCP toggle (therapist only) */}
+                            {isTherapist && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className={ehcpState[p.id] ? "border-orange-500/60 text-orange-400" : ""}
+                                onClick={() => handleToggleEhcp(p.id)}
+                              >
+                                <Heart className="h-3 w-3 mr-1" />
+                                {ehcpState[p.id] ? "Remove EHCP" : "EHCP"}
+                              </Button>
+                            )}
+
                             {!hasActiveRequest && (
                               <Button
                                 size="sm"
