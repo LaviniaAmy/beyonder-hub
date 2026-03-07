@@ -50,20 +50,14 @@ const NEEDS_OPTIONS = [
 ];
 const DELIVERY_OPTIONS: Array<"in-person" | "online" | "hybrid"> = ["in-person", "online", "hybrid"];
 
-const AVAILABILITY_OPTIONS: { value: AvailabilityStatus; label: string; description: string; color: string }[] = [
-  { value: "accepting", label: "Accepting Clients", description: "Open to new clients now", color: "text-emerald-400" },
+const AVAILABILITY_OPTIONS: { value: AvailabilityStatus; label: string; description: string }[] = [
+  { value: "accepting", label: "Accepting Clients", description: "Open to new clients now" },
   {
     value: "waitlist",
     label: "Waitlist Only",
     description: "Not taking new clients directly, but accepting waitlist enquiries",
-    color: "text-orange-400",
   },
-  {
-    value: "closed",
-    label: "Closed",
-    description: "Not accepting new clients or waitlist enquiries at this time",
-    color: "text-red-400",
-  },
+  { value: "closed", label: "Closed", description: "Not accepting new clients or waitlist enquiries at this time" },
 ];
 
 const ProviderDashboard = () => {
@@ -109,8 +103,8 @@ const ProviderDashboard = () => {
     needsSupported: storeProfile?.needsSupported ?? fallback?.needsSupported ?? [],
   });
 
-  const [replyOpen, setReplyOpen] = useState(false);
-  const [replyTarget, setReplyTarget] = useState<EnquiryRecord | null>(null);
+  // ── Inline thread state (replaces modal) ──
+  const [selectedEnquiryId, setSelectedEnquiryId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const [, forceUpdate] = useState(0);
 
@@ -128,7 +122,6 @@ const ProviderDashboard = () => {
   const [savedMsg, setSavedMsg] = useState("");
   const [galleryError, setGalleryError] = useState("");
   const [changeRequestDone, setChangeRequestDone] = useState(false);
-
   const [productImageErrors, setProductImageErrors] = useState<Record<number, string>>({});
   const [newProductImageError, setNewProductImageError] = useState("");
   const newProductFileRef = useRef<HTMLInputElement | null>(null);
@@ -149,7 +142,6 @@ const ProviderDashboard = () => {
           caseStudies: fallback.educationDetails ? [{ title: "Overview", description: fallback.educationDetails }] : [],
           spotlightMessage: "",
           storeUrl: "",
-          // ── Fix: normalise fallback products to include shortDescription ──
           products: (fallback.products ?? []).map((p) => ({
             name: p.name,
             price: p.price,
@@ -184,11 +176,10 @@ const ProviderDashboard = () => {
             </div>
             <h2 className="text-xl font-semibold text-orange-400">Your claim is being reviewed</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              We're verifying your connection to this listing. Our team will be in touch shortly. Your dashboard will
-              become available once your claim has been approved.
+              We're verifying your connection to this listing. Our team will be in touch shortly.
             </p>
             <p className="text-xs text-muted-foreground">
-              If you have any questions, please contact <span className="text-teal-400">support@beyonder.com</span>
+              Contact <span className="text-teal-400">support@beyonder.com</span>
             </p>
           </div>
         </div>
@@ -199,7 +190,6 @@ const ProviderDashboard = () => {
   const isSuspended = profile.moderationStatus === "suspended";
   const changeRequest = profile.changeRequest;
   const isAcknowledged = changeRequestDone || changeRequest?.status === "acknowledged";
-
   const moduleProfile = getModuleProfile(providerId, profile.category_type);
   const sections = categorySections[profile.category_type as keyof typeof categorySections] ?? [];
   const testimonials = providerTestimonials.filter((t) => t.provider_id === providerId);
@@ -218,18 +208,7 @@ const ProviderDashboard = () => {
   };
 
   const handleSaveProfile = () => {
-    updateProvider(providerId, {
-      businessName: editFields.businessName,
-      description: editFields.description,
-      location: editFields.location,
-      email: editFields.email,
-      phone: editFields.phone,
-      website: editFields.website,
-      coverageArea: editFields.coverageArea,
-      ageRange: editFields.ageRange,
-      deliveryFormat: editFields.deliveryFormat,
-      needsSupported: editFields.needsSupported,
-    });
+    updateProvider(providerId, { ...editFields });
     setEditOpen(false);
     showSaved("Profile saved ✓");
     forceUpdate((n) => n + 1);
@@ -244,17 +223,10 @@ const ProviderDashboard = () => {
     }));
   };
 
-  const openReply = (enquiry: EnquiryRecord) => {
-    setReplyTarget(enquiry);
-    setReplyText(enquiry.reply ?? "");
-    setReplyOpen(true);
-  };
-
-  const handleSaveReply = () => {
-    if (!replyTarget || !replyText.trim()) return;
-    replyToEnquiry(replyTarget.enquiryId, replyText.trim());
-    setReplyOpen(false);
-    setReplyTarget(null);
+  // ── Send provider reply into the thread ──
+  const handleSendReply = () => {
+    if (!selectedEnquiryId || !replyText.trim()) return;
+    replyToEnquiry(selectedEnquiryId, replyText.trim(), profile.businessName);
     setReplyText("");
     forceUpdate((n) => n + 1);
   };
@@ -275,8 +247,7 @@ const ProviderDashboard = () => {
     }
     const reader = new FileReader();
     reader.onload = () => {
-      const dataUrl = reader.result as string;
-      updateProvider(providerId, { gallery: [...(profile.gallery ?? []), dataUrl] });
+      updateProvider(providerId, { gallery: [...(profile.gallery ?? []), reader.result as string] });
       forceUpdate((n) => n + 1);
       showSaved("Image added ✓");
       e.target.value = "";
@@ -341,11 +312,8 @@ const ProviderDashboard = () => {
   };
 
   const handleChangesMade = () => {
-    if (changeRequest) {
-      updateProvider(providerId, {
-        changeRequest: { message: changeRequest.message, status: "acknowledged" },
-      });
-    }
+    if (changeRequest)
+      updateProvider(providerId, { changeRequest: { message: changeRequest.message, status: "acknowledged" } });
     setChangeRequestDone(true);
     forceUpdate((n) => n + 1);
   };
@@ -354,6 +322,138 @@ const ProviderDashboard = () => {
     updateProvider(providerId, { availabilityStatus: value });
     forceUpdate((n) => n + 1);
     showSaved("Availability updated ✓");
+  };
+
+  // ── Enquiries with inline thread ──
+  const providerEnquiries = getEnquiriesForProvider(providerId);
+  const selectedEnquiry = providerEnquiries.find((e) => e.enquiryId === selectedEnquiryId) ?? null;
+
+  const renderEnquiriesSection = () => {
+    if (selectedEnquiry) {
+      const atCap = (selectedEnquiry.messageCount ?? 0) >= 4;
+      return (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">{selectedEnquiry.parentName}</p>
+              <p className="text-xs text-muted-foreground">
+                Child age: {selectedEnquiry.childAge} · {selectedEnquiry.createdAt}
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setSelectedEnquiryId(null);
+                setReplyText("");
+              }}
+            >
+              ← Back
+            </Button>
+          </div>
+
+          {/* Full thread */}
+          <div className="space-y-2">
+            {(selectedEnquiry.messages ?? []).length > 0 ? (
+              selectedEnquiry.messages.map((msg) => (
+                <div
+                  key={msg.messageId}
+                  className={`rounded-xl p-4 ${
+                    msg.senderId === "parent"
+                      ? "bg-muted/30 border border-border/40 mr-8"
+                      : "bg-teal-500/[0.06] border border-teal-500/20 ml-8"
+                  }`}
+                >
+                  <p
+                    className={`text-xs mb-1 ${msg.senderId === "parent" ? "text-muted-foreground" : "text-teal-500"}`}
+                  >
+                    {msg.senderId === "parent" ? selectedEnquiry.parentName : "You"} · {msg.sentAt}
+                  </p>
+                  <p className="text-sm leading-relaxed">{msg.text}</p>
+                </div>
+              ))
+            ) : (
+              // Fallback for seeded records without messages array
+              <>
+                <div className="rounded-xl bg-muted/30 border border-border/40 p-4 mr-8">
+                  <p className="text-xs text-muted-foreground mb-1">{selectedEnquiry.parentName}</p>
+                  <p className="text-sm leading-relaxed">{selectedEnquiry.message}</p>
+                </div>
+                {selectedEnquiry.reply && (
+                  <div className="rounded-xl bg-teal-500/[0.06] border border-teal-500/20 p-4 ml-8">
+                    <p className="text-xs text-teal-500 mb-1">You</p>
+                    <p className="text-sm leading-relaxed">{selectedEnquiry.reply}</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {atCap ? (
+            <div className="rounded-xl border border-border/40 bg-muted/20 p-4 text-center">
+              <p className="text-sm text-muted-foreground">This conversation has reached its limit.</p>
+            </div>
+          ) : (
+            <div className="pt-2 space-y-2 border-t border-border/30">
+              <p className="text-xs text-muted-foreground">
+                {4 - (selectedEnquiry.messageCount ?? 0)} message
+                {4 - (selectedEnquiry.messageCount ?? 0) !== 1 ? "s" : ""} remaining
+              </p>
+              <Textarea
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value.slice(0, MAX_REPLY))}
+                placeholder="Write your reply..."
+                rows={4}
+              />
+              <div className="flex items-center justify-between">
+                <span
+                  className="text-xs text-muted-foreground"
+                  style={{ color: MAX_REPLY - replyText.length < 100 ? "#f07840" : undefined }}
+                >
+                  {MAX_REPLY - replyText.length} remaining
+                </span>
+                <Button
+                  size="sm"
+                  className="bg-teal-500 hover:bg-teal-400"
+                  disabled={!replyText.trim()}
+                  onClick={handleSendReply}
+                >
+                  Send Reply
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return providerEnquiries.length === 0 ? (
+      <p className="text-muted-foreground">No enquiries yet.</p>
+    ) : (
+      <div className="space-y-3">
+        {providerEnquiries.map((e) => (
+          <div
+            key={e.enquiryId}
+            className="flex items-center justify-between rounded-xl border border-border/60 p-4 cursor-pointer hover:bg-muted/10 transition-colors"
+            onClick={() => {
+              setSelectedEnquiryId(e.enquiryId);
+              setReplyText("");
+            }}
+          >
+            <div>
+              <p className="font-medium">{e.parentName}</p>
+              <p className="text-sm text-muted-foreground line-clamp-1">{e.message}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant={e.statusForProvider === "new" ? "destructive" : "secondary"}>
+                {e.statusForProvider === "new" ? "New" : "Replied"}
+              </Badge>
+              <span className="text-xs text-muted-foreground">View →</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -373,8 +473,7 @@ const ProviderDashboard = () => {
             <div>
               <p className="font-semibold text-red-400 text-sm">Your account has been suspended</p>
               <p className="text-sm text-muted-foreground mt-1">
-                {profile.suspendedMessage ||
-                  "Your listing has been suspended by Beyonder. Please contact support for more information."}
+                {profile.suspendedMessage || "Your listing has been suspended by Beyonder. Please contact support."}
               </p>
             </div>
           </div>
@@ -485,15 +584,10 @@ const ProviderDashboard = () => {
               </CardHeader>
               <CardContent>
                 {enabled ? (
-                  renderSectionContent(
-                    section.key,
-                    profile,
-                    moduleProfile,
-                    getEnquiriesForProvider(providerId),
-                    testimonials,
-                    openReply,
-                    handleAvailabilityChange,
-                    {
+                  section.key === "enquiries" ? (
+                    renderEnquiriesSection()
+                  ) : (
+                    renderSectionContent(section.key, profile, moduleProfile, testimonials, handleAvailabilityChange, {
                       newCert,
                       setNewCert,
                       newTimetable,
@@ -519,7 +613,7 @@ const ProviderDashboard = () => {
                       newProductImageError,
                       existingProductFileRefs,
                       newProductFileRef,
-                    },
+                    })
                   )
                 ) : (
                   <p className="text-sm text-muted-foreground">Upgrade to access {section.label.toLowerCase()}.</p>
@@ -674,45 +768,6 @@ const ProviderDashboard = () => {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Reply Modal */}
-      <Dialog open={replyOpen} onOpenChange={setReplyOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Reply to {replyTarget?.parentName}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground border-l-2 border-teal-500 pl-3 italic">
-              "{replyTarget?.message}"
-            </p>
-            <Label htmlFor="replyText">Your reply</Label>
-            <Textarea
-              id="replyText"
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value.slice(0, MAX_REPLY))}
-              rows={5}
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span />
-              <span style={{ color: MAX_REPLY - replyText.length < 100 ? "#f07840" : undefined }}>
-                {MAX_REPLY - replyText.length} remaining
-              </span>
-            </div>
-          </div>
-          <div className="flex gap-2 mt-2">
-            <Button variant="outline" className="flex-1" onClick={() => setReplyOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              className="flex-1 bg-teal-500 hover:bg-teal-400"
-              disabled={!replyText.trim()}
-              onClick={handleSaveReply}
-            >
-              Send Reply
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
@@ -737,9 +792,7 @@ function renderSectionContent(
   key: string,
   profile: any,
   moduleProfile: any,
-  enquiries: EnquiryRecord[],
   testimonials: any[],
-  openReply: (e: EnquiryRecord) => void,
   handleAvailabilityChange: (value: AvailabilityStatus) => void,
   ctx: any,
 ) {
@@ -782,66 +835,39 @@ function renderSectionContent(
           <div className="grid gap-2">
             {AVAILABILITY_OPTIONS.map((opt) => {
               const isSelected = current === opt.value;
-              const borderColor =
+              const colors =
                 opt.value === "accepting"
-                  ? isSelected
-                    ? "border-emerald-500 bg-emerald-500/10"
-                    : "border-border/60"
+                  ? {
+                      border: isSelected ? "border-emerald-500 bg-emerald-500/10" : "border-border/60",
+                      label: "text-emerald-400",
+                    }
                   : opt.value === "waitlist"
-                    ? isSelected
-                      ? "border-orange-400 bg-orange-400/10"
-                      : "border-border/60"
-                    : isSelected
-                      ? "border-red-400 bg-red-400/10"
-                      : "border-border/60";
-              const labelColor =
-                opt.value === "accepting"
-                  ? "text-emerald-400"
-                  : opt.value === "waitlist"
-                    ? "text-orange-400"
-                    : "text-red-400";
+                    ? {
+                        border: isSelected ? "border-orange-400 bg-orange-400/10" : "border-border/60",
+                        label: "text-orange-400",
+                      }
+                    : {
+                        border: isSelected ? "border-red-400 bg-red-400/10" : "border-border/60",
+                        label: "text-red-400",
+                      };
               return (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => handleAvailabilityChange(opt.value)}
-                  className={`w-full rounded-xl border p-4 text-left transition-colors ${borderColor}`}
+                  className={`w-full rounded-xl border p-4 text-left transition-colors ${colors.border}`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className={`font-medium text-sm ${isSelected ? labelColor : "text-foreground"}`}>
+                    <span className={`font-medium text-sm ${isSelected ? colors.label : "text-foreground"}`}>
                       {opt.label}
                     </span>
-                    {isSelected && <span className={`text-xs font-semibold ${labelColor}`}>● Active</span>}
+                    {isSelected && <span className={`text-xs font-semibold ${colors.label}`}>● Active</span>}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">{opt.description}</p>
                 </button>
               );
             })}
           </div>
-        </div>
-      );
-
-    case "enquiries":
-      return enquiries.length === 0 ? (
-        <p className="text-muted-foreground">No enquiries yet.</p>
-      ) : (
-        <div className="space-y-3">
-          {enquiries.map((e) => (
-            <div key={e.enquiryId} className="flex items-center justify-between rounded-xl border border-border/60 p-4">
-              <div>
-                <p className="font-medium">{e.parentName}</p>
-                <p className="text-sm text-muted-foreground line-clamp-1">{e.message}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant={e.statusForProvider === "new" ? "destructive" : "secondary"}>
-                  {e.statusForProvider === "new" ? "New" : "Replied"}
-                </Badge>
-                <Button size="sm" variant="outline" onClick={() => openReply(e)}>
-                  {e.statusForProvider === "replied" ? "Edit Reply" : "Reply"}
-                </Button>
-              </div>
-            </div>
-          ))}
         </div>
       );
 
@@ -1109,7 +1135,6 @@ function renderSectionContent(
     case "products":
       return (
         <div className="space-y-4">
-          {/* Existing products */}
           {(profile.products ?? []).map((p: any, i: number) => {
             const hasImage = p.image && p.image !== "/placeholder.svg";
             return (
@@ -1133,7 +1158,6 @@ function renderSectionContent(
                     ✕
                   </Button>
                 </div>
-
                 <div className="flex items-center gap-3">
                   {hasImage ? (
                     <div
@@ -1173,7 +1197,6 @@ function renderSectionContent(
                     {productImageErrors[i] && <p className="text-xs text-red-400">{productImageErrors[i]}</p>}
                   </div>
                 </div>
-
                 <div className="space-y-0.5">
                   <textarea
                     value={p.shortDescription ?? ""}
@@ -1188,8 +1211,6 @@ function renderSectionContent(
               </div>
             );
           })}
-
-          {/* Add new product */}
           <div className="rounded-xl border border-dashed border-border/50 bg-muted/10 p-4 space-y-3">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Add New Product</p>
             <div className="grid grid-cols-2 gap-2">
@@ -1204,7 +1225,6 @@ function renderSectionContent(
                 onChange={(e) => setNewProduct((p: any) => ({ ...p, price: e.target.value }))}
               />
             </div>
-
             <div className="space-y-1">
               <div className="flex items-center gap-3">
                 {newProduct.image && newProduct.image !== "/placeholder.svg" && (
@@ -1242,7 +1262,6 @@ function renderSectionContent(
               </div>
               {newProductImageError && <p className="text-xs text-red-400">{newProductImageError}</p>}
             </div>
-
             <div className="space-y-0.5">
               <textarea
                 value={newProduct.shortDescription}
@@ -1257,7 +1276,6 @@ function renderSectionContent(
               />
               <p className="text-right text-xs text-muted-foreground/50">{newProduct.shortDescription.length}/120</p>
             </div>
-
             <Button
               size="sm"
               className="bg-teal-500 hover:bg-teal-400"
