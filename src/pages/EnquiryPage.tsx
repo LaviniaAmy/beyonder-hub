@@ -5,10 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { providers } from "@/data/mockData";
 import { CheckCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { addEnquiry } from "@/data/enquiryStore";
+import { getProvider } from "@/data/providerStore";
 
 const MIN_CHARS = 20;
 const MAX_CHARS = 800;
@@ -17,7 +17,9 @@ const EnquiryPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const provider = providers.find((p) => p.id === id);
+
+  // ── Pre-build fix: read from providerStore (live) not mockData (static) ──
+  const provider = getProvider(id ?? "");
 
   const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState("");
@@ -44,10 +46,11 @@ const EnquiryPage = () => {
 
   const handleSubmit = () => {
     if (!canSubmit) return;
+    // ── Pre-build fix: include all new field defaults ──
     addEnquiry({
       enquiryId: crypto.randomUUID(),
       providerId: provider.id,
-      providerName: provider.name,
+      providerName: provider.businessName,
       parentId: user?.id ?? "guest",
       parentName: user?.name ?? "Guest",
       childAge: childAge.trim(),
@@ -56,6 +59,10 @@ const EnquiryPage = () => {
       statusForParent: "sent",
       statusForProvider: "new",
       createdAt: new Date().toISOString().split("T")[0],
+      isUnlocked: false,
+      messageCount: 0,
+      providerNotes: "",
+      customAnswers: [],
     });
     setSubmitted(true);
   };
@@ -67,7 +74,7 @@ const EnquiryPage = () => {
           <CheckCircle className="mx-auto mb-4 h-16 w-16 text-teal-500" />
           <h1 className="mb-2 text-2xl font-bold text-accent-foreground">Enquiry Sent!</h1>
           <p className="mb-6 text-accent-foreground/70 leading-relaxed">
-            Your message has been sent to {provider.name}. They'll get back to you soon.
+            Your message has been sent to {provider.businessName}. They'll get back to you soon.
           </p>
           <Button className="bg-teal-500 hover:bg-teal-400" onClick={() => navigate("/dashboard")}>
             Go to Dashboard
@@ -83,7 +90,7 @@ const EnquiryPage = () => {
         <h1 className="mb-6 text-2xl font-bold text-accent-foreground">Send Enquiry</h1>
         <Card className="border-0 shadow-card">
           <CardHeader>
-            <CardTitle className="text-lg">{provider.name}</CardTitle>
+            <CardTitle className="text-lg">{provider.businessName}</CardTitle>
             <p className="text-sm text-muted-foreground">
               {provider.deliveryFormat} · {provider.ageRange}
             </p>
@@ -101,7 +108,6 @@ const EnquiryPage = () => {
             <div>
               <Label htmlFor="message">Your Message</Label>
 
-              {/* Inline notice — appears on focus, fades in gently */}
               {messageFocused && (
                 <div
                   style={{
@@ -144,7 +150,6 @@ const EnquiryPage = () => {
                 placeholder="Tell them about your child's needs and what you're looking for..."
                 rows={5}
               />
-              {/* Character counter */}
               <div className="mt-1 flex justify-between text-xs text-muted-foreground">
                 <span>{tooShort && message.length > 0 ? `At least ${MIN_CHARS} characters required` : ""}</span>
                 <span style={{ color: tooLong ? "#e8622a" : remaining < 100 ? "#f07840" : undefined }}>
