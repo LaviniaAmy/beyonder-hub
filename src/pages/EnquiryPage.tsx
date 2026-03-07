@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Lock } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { addEnquiry } from "@/data/enquiryStore";
 import { getProvider } from "@/data/providerStore";
@@ -16,15 +16,25 @@ const MAX_CHARS = 800;
 const EnquiryPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const location = useLocation();
+  const { user, isAuthenticated } = useAuth();
 
-  // ── Pre-build fix: read from providerStore (live) not mockData (static) ──
   const provider = getProvider(id ?? "");
 
   const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState("");
   const [childAge, setChildAge] = useState("");
   const [messageFocused, setMessageFocused] = useState(false);
+
+  // ── Auth gate: redirect non-parents to login, return here after ──
+  const isParent = isAuthenticated && user?.role === "parent";
+  const isProviderOrAdmin = isAuthenticated && (user?.role === "provider" || user?.role === "admin");
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location.pathname]);
 
   if (!provider) {
     return (
@@ -39,6 +49,25 @@ const EnquiryPage = () => {
     );
   }
 
+  // Provider or admin trying to send an enquiry
+  if (isProviderOrAdmin) {
+    return (
+      <div className="bg-navy-gradient min-h-screen flex items-center justify-center">
+        <div className="text-center animate-fade-in max-w-sm">
+          <Lock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+          <h1 className="mb-2 text-xl font-bold text-accent-foreground">Enquiries are for families</h1>
+          <p className="mb-6 text-sm text-accent-foreground/70 leading-relaxed">
+            Provider and admin accounts can't send enquiries. If you're a parent, please log in with your parent
+            account.
+          </p>
+          <Button className="bg-teal-500 hover:bg-teal-400" asChild>
+            <Link to="/providers">Back to Directory</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   const remaining = MAX_CHARS - message.length;
   const tooShort = message.trim().length < MIN_CHARS;
   const tooLong = message.length > MAX_CHARS;
@@ -46,16 +75,24 @@ const EnquiryPage = () => {
 
   const handleSubmit = () => {
     if (!canSubmit) return;
-    // ── Pre-build fix: include all new field defaults ──
     addEnquiry({
       enquiryId: crypto.randomUUID(),
       providerId: provider.id,
       providerName: provider.businessName,
-      parentId: user?.id ?? "mock-parent", // fallback matches dashboard seed parentId
+      parentId: user?.id ?? "mock-parent",
       parentName: user?.name ?? "Guest",
       childAge: childAge.trim(),
       message: message.trim(),
       reply: null,
+      messages: [
+        {
+          messageId: crypto.randomUUID(),
+          senderId: "parent",
+          senderName: user?.name ?? "Guest",
+          text: message.trim(),
+          sentAt: new Date().toISOString().split("T")[0],
+        },
+      ],
       statusForParent: "sent",
       statusForProvider: "new",
       createdAt: new Date().toISOString().split("T")[0],
@@ -83,6 +120,9 @@ const EnquiryPage = () => {
       </div>
     );
   }
+
+  // Not authenticated yet — useEffect will redirect, show nothing while redirecting
+  if (!isAuthenticated) return null;
 
   return (
     <div className="bg-navy-gradient min-h-screen py-16">
