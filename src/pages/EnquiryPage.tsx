@@ -23,9 +23,10 @@ const EnquiryPage = () => {
   const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState("");
   const [childAge, setChildAge] = useState("");
+  const [childName, setChildName] = useState("");
+  const [needs, setNeeds] = useState("");
   const [messageFocused, setMessageFocused] = useState(false);
 
-  // ── Auth gate: immediate redirect, no flash ──
   const isParent = isAuthenticated && user?.role === "parent";
   const isProviderOrAdmin = isAuthenticated && (user?.role === "provider" || user?.role === "admin");
 
@@ -46,7 +47,6 @@ const EnquiryPage = () => {
     );
   }
 
-  // Provider or admin trying to send an enquiry
   if (isProviderOrAdmin) {
     return (
       <div className="bg-navy-gradient min-h-screen flex items-center justify-center">
@@ -76,9 +76,11 @@ const EnquiryPage = () => {
       enquiryId: crypto.randomUUID(),
       providerId: provider.id,
       providerName: provider.businessName,
-      parentId: user?.id ?? "mock-parent",
+      parentId: user?.id ?? "parent-test",
       parentName: user?.name ?? "Guest",
       childAge: childAge.trim(),
+      childName: childName.trim(),
+      needs: needs.trim(),
       message: message.trim(),
       reply: null,
       messages: [
@@ -130,6 +132,7 @@ const EnquiryPage = () => {
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Child's Age — required */}
             <div>
               <Label htmlFor="childAge">Child's Age</Label>
               <Input
@@ -139,6 +142,34 @@ const EnquiryPage = () => {
                 placeholder="e.g. 7"
               />
             </div>
+
+            {/* Child's Name — optional */}
+            <div>
+              <Label htmlFor="childName">
+                Child's Name <span className="text-muted-foreground font-normal">(optional)</span>
+              </Label>
+              <Input
+                id="childName"
+                value={childName}
+                onChange={(e) => setChildName(e.target.value)}
+                placeholder="e.g. Oliver"
+              />
+            </div>
+
+            {/* Needs — optional */}
+            <div>
+              <Label htmlFor="needs">
+                Needs / Diagnosis <span className="text-muted-foreground font-normal">(optional)</span>
+              </Label>
+              <Input
+                id="needs"
+                value={needs}
+                onChange={(e) => setNeeds(e.target.value)}
+                placeholder="e.g. ASD, Mobility, Not yet diagnosed"
+              />
+            </div>
+
+            {/* Message */}
             <div>
               <Label htmlFor="message">Your Message</Label>
 
@@ -191,6 +222,7 @@ const EnquiryPage = () => {
                 </span>
               </div>
             </div>
+
             <Button className="w-full bg-teal-500 hover:bg-teal-400" onClick={handleSubmit} disabled={!canSubmit}>
               Send Enquiry
             </Button>
