@@ -15,14 +15,14 @@ export interface EnquiryRecord {
   parentId: string;
   parentName: string;
   childAge: string;
-  message: string; // original opening message (kept for backwards compat)
-  reply: string | null; // first provider reply (kept for backwards compat)
-  messages: ThreadMessage[]; // full ordered thread
+  message: string;
+  reply: string | null;
+  messages: ThreadMessage[];
   statusForParent: "sent" | "replied";
   statusForProvider: "new" | "replied";
   createdAt: string;
   isUnlocked: boolean;
-  messageCount: number; // parent + provider turns (excludes opening message)
+  messageCount: number;
   providerNotes: string;
   customAnswers: { question: string; answer: string }[];
 }
@@ -52,7 +52,7 @@ const seeded: EnquiryRecord[] = enquiries.map((e) => {
     enquiryId: e.id,
     providerId: e.providerId,
     providerName: e.providerName,
-    parentId: "mock-parent",
+    parentId: "parent-test", // ← fixed: matches stable id for test@parent.com
     parentName: e.parentName,
     childAge: e.childAge,
     message: e.message,
@@ -86,7 +86,7 @@ export function replyToEnquiry(enquiryId: string, replyText: string, providerNam
     sentAt: new Date().toISOString().split("T")[0],
   };
   record.messages.push(msg);
-  record.reply = replyText; // keep backwards compat
+  record.reply = replyText;
   record.statusForParent = "replied";
   record.statusForProvider = "replied";
   record.messageCount = (record.messageCount ?? 0) + 1;
@@ -96,7 +96,7 @@ export function replyToEnquiry(enquiryId: string, replyText: string, providerNam
 export function parentReplyToEnquiry(enquiryId: string, text: string, parentName: string) {
   const record = enquiryStore.find((e) => e.enquiryId === enquiryId);
   if (!record) return;
-  if ((record.messageCount ?? 0) >= 4) return; // cap enforced
+  if ((record.messageCount ?? 0) >= 4) return;
   const msg: ThreadMessage = {
     messageId: crypto.randomUUID(),
     senderId: "parent",
@@ -105,7 +105,7 @@ export function parentReplyToEnquiry(enquiryId: string, text: string, parentName
     sentAt: new Date().toISOString().split("T")[0],
   };
   record.messages.push(msg);
-  record.statusForProvider = "new"; // flag as needing provider attention again
+  record.statusForProvider = "new";
   record.messageCount = (record.messageCount ?? 0) + 1;
 }
 
