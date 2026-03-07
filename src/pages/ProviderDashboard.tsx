@@ -434,15 +434,15 @@ const ProviderDashboard = () => {
         {providerEnquiries.map((e) => (
           <div
             key={e.enquiryId}
-            className="flex items-center justify-between rounded-xl border border-border/60 p-4 cursor-pointer hover:bg-muted/10 transition-colors"
+            className="flex items-center justify-between rounded-xl border border-border/60 p-4 cursor-pointer hover:bg-muted/10 transition-colors overflow-hidden"
             onClick={() => {
               setSelectedEnquiryId(e.enquiryId);
               setReplyText("");
             }}
           >
-            <div>
-              <p className="font-medium">{e.parentName}</p>
-              <p className="text-sm text-muted-foreground line-clamp-1">{e.message}</p>
+            <div className="min-w-0 flex-1">
+              <p className="font-medium truncate">{e.parentName}</p>
+              <p className="text-sm text-muted-foreground truncate">{e.message}</p>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant={e.statusForProvider === "new" ? "destructive" : "secondary"}>
