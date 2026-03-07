@@ -12,8 +12,12 @@ const ParentDashboard = () => {
   const { user } = useAuth();
   const parentId = user?.id ?? "mock-parent";
 
-  const parentEnquiries =
-    getEnquiriesForParent(parentId).length > 0 ? getEnquiriesForParent(parentId) : getEnquiriesForParent("mock-parent");
+  // Recompute on every render (forceUpdate triggers re-read from store)
+  const getParentEnquiries = () => [
+    ...getEnquiriesForParent("mock-parent"),
+    ...getEnquiriesForParent(parentId).filter((e) => e.parentId !== "mock-parent"),
+  ];
+  const parentEnquiries = getParentEnquiries();
 
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [selectedEnquiry, setSelectedEnquiry] = useState<string | null>(null);
