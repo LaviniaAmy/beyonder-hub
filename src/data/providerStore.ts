@@ -41,6 +41,10 @@ export interface EditableProvider {
   moderationStatus: "active" | "suspended";
   suspendedMessage: string;
   changeRequest: ChangeRequest | null;
+  // Feature flags (1.1, 1.2, 1.3)
+  isVerified: boolean;
+  isFeatured: boolean;
+  ehcpSupport: boolean;
   // Pass-through (unchanged)
   type: string;
   category_type: string;
@@ -90,6 +94,9 @@ export const providerStore: EditableProvider[] = mockProviders.map((p) => ({
   moderationStatus: "active",
   suspendedMessage: "",
   changeRequest: null,
+  isVerified: false,
+  isFeatured: false,
+  ehcpSupport: false,
   type: p.type,
   category_type: p.category_type,
   typeBadge: p.typeBadge,
@@ -120,5 +127,11 @@ export function getAllProviders(): EditableProvider[] {
 }
 
 export function getActiveProviders(): EditableProvider[] {
-  return providerStore.filter((p) => p.moderationStatus !== "suspended");
+  const active = providerStore.filter((p) => p.moderationStatus !== "suspended");
+  // 1.2 — Featured providers sorted to top
+  return [...active].sort((a, b) => {
+    if (a.isFeatured && !b.isFeatured) return -1;
+    if (!a.isFeatured && b.isFeatured) return 1;
+    return 0;
+  });
 }
