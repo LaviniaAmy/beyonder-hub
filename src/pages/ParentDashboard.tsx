@@ -103,8 +103,8 @@ const ParentDashboard = () => {
                     key={msg.messageId}
                     className={`rounded-xl p-4 ${
                       msg.senderId === "parent"
-                        ? "bg-muted/30 border border-border/40 ml-0 mr-8"
-                        : "bg-teal-500/[0.06] border border-teal-500/20 ml-8 mr-0"
+                        ? "bg-muted/30 border border-border/40 ml-0 mr-8 break-words"
+                        : "bg-teal-500/[0.06] border border-teal-500/20 ml-8 mr-0 break-words"
                     }`}
                   >
                     <p
@@ -118,12 +118,12 @@ const ParentDashboard = () => {
               ) : (
                 // Fallback for seeded data without messages array
                 <>
-                  <div className="rounded-xl bg-muted/30 border border-border/40 p-4 mr-8">
+                  <div className="rounded-xl bg-muted/30 border border-border/40 p-4 mr-8 break-words">
                     <p className="text-xs text-muted-foreground mb-1">You · {selectedRecord.createdAt}</p>
                     <p className="text-sm leading-relaxed">{selectedRecord.message}</p>
                   </div>
                   {selectedRecord.reply && (
-                    <div className="rounded-xl bg-teal-500/[0.06] border border-teal-500/20 p-4 ml-8">
+                    <div className="rounded-xl bg-teal-500/[0.06] border border-teal-500/20 p-4 ml-8 break-words">
                       <p className="text-xs text-teal-500 mb-1">
                         {selectedRecord.providerName} · {selectedRecord.createdAt}
                       </p>
