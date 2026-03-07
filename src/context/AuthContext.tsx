@@ -20,58 +20,77 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
 const STORAGE_KEY = "beyonder_user";
 
-// ── Exact email → role + provider_id map ──────────────────
-const EMAIL_MAP: Record<string, { role: UserRole; provider_id?: string }> = {
-  "admin@beyonder.com": { role: "admin" },
-  "test@admin.com": { role: "admin" },
-  "test@parent.com": { role: "parent" },
+// ── Exact email → role + stable id + provider_id map ──────
+const EMAIL_MAP: Record<string, { role: UserRole; id: string; name: string; provider_id?: string }> = {
+  "admin@beyonder.com": { role: "admin", id: "admin-1", name: "Admin" },
+  "test@admin.com": { role: "admin", id: "admin-2", name: "Admin" },
+  "test@parent.com": { role: "parent", id: "parent-test", name: "Jane Smith" },
   "therapist@beyonder.test": {
     role: "provider",
+    id: "provider-therapist",
+    name: "Bright Minds Speech Therapy",
     provider_id: providers.find((p) => p.category_type === "therapist")?.id,
   },
   "club@beyonder.test": {
     role: "provider",
+    id: "provider-club",
+    name: "Splash Inclusive Swimming",
     provider_id: providers.find((p) => p.category_type === "club")?.id,
   },
   "education@beyonder.test": {
     role: "provider",
+    id: "provider-education",
+    name: "Learning Tree Tutoring",
     provider_id: providers.find((p) => p.category_type === "education")?.id,
   },
   "charity@beyonder.test": {
     role: "provider",
+    id: "provider-charity",
+    name: "SEND Families United",
     provider_id: providers.find((p) => p.category_type === "charity")?.id,
   },
   "product@beyonder.test": {
     role: "provider",
+    id: "provider-product",
+    name: "SensoryPlay Shop",
     provider_id: providers.find((p) => p.category_type === "product")?.id,
   },
 };
 
-function resolveUser(email: string): { role: UserRole; provider_id?: string } {
+function resolveUser(email: string): { role: UserRole; id: string; name: string; provider_id?: string } {
   const lower = email.toLowerCase().trim();
 
   // 1) Exact match in hardcoded map
   if (EMAIL_MAP[lower]) return EMAIL_MAP[lower];
 
-  // 2) Check if this email has an approved claim record
+  // 2) Approved claim record
   const approvedClaim = claimRecords.find((r) => r.claimantEmail.toLowerCase() === lower);
   if (approvedClaim) {
-    return { role: "provider", provider_id: approvedClaim.providerId };
+    return {
+      role: "provider",
+      id: `claim-${approvedClaim.providerId}`,
+      name: lower.split("@")[0],
+      provider_id: approvedClaim.providerId,
+    };
   }
 
-  // 3) Check if this email has a pending claim
+  // 3) Pending claim
   const pendingClaim = pendingClaims.find(
     (p) => p.claimantEmail.toLowerCase() === lower && p.status === "pending_review",
   );
   if (pendingClaim) {
-    return { role: "provider", provider_id: pendingClaim.providerId };
+    return {
+      role: "provider",
+      id: `claim-${pendingClaim.providerId}`,
+      name: lower.split("@")[0],
+      provider_id: pendingClaim.providerId,
+    };
   }
 
-  // 4) Fallback — unknown email logs in as parent
-  return { role: "parent" };
+  // 4) Fallback — stable id derived from email so it persists across logins
+  return { role: "parent", id: `parent-${lower}`, name: lower.split("@")[0] };
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -88,12 +107,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = (email: string, _password: string, forceRole?: UserRole) => {
     const resolved = resolveUser(email);
-    const role: UserRole = forceRole ?? resolved.role;
     const newUser: User = {
-      id: crypto.randomUUID(),
-      name: email.split("@")[0],
+      id: resolved.id,
+      name: resolved.name,
       email,
-      role,
+      role: forceRole ?? resolved.role,
       provider_id: resolved.provider_id,
     };
     setUser(newUser);
