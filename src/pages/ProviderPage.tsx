@@ -13,6 +13,7 @@ import {
   Clock3,
   XCircle,
   ShoppingBag,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,15 +26,7 @@ import type { AvailabilityStatus } from "@/data/providerStore";
 
 const availabilityConfig: Record<
   AvailabilityStatus,
-  {
-    label: string;
-    message: string;
-    icon: React.ReactNode;
-    bg: string;
-    border: string;
-    text: string;
-    iconColor: string;
-  }
+  { label: string; message: string; icon: React.ReactNode; bg: string; border: string; text: string; iconColor: string }
 > = {
   accepting: {
     label: "Accepting New Clients",
@@ -107,12 +100,12 @@ const ProviderPage = () => {
       {/* Hero */}
       <section className="bg-navy-gradient py-12">
         <div className="container animate-fade-in">
-          {isSuspended ? (
+          {isSuspended && (
             <div className="flex items-center gap-3 rounded-xl border border-red-500/25 bg-red-500/08 p-4 mb-6">
               <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />
               <p className="text-sm text-red-400">This listing is currently unavailable.</p>
             </div>
-          ) : null}
+          )}
 
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
@@ -121,6 +114,18 @@ const ProviderPage = () => {
                   {provider.typeBadge}
                 </Badge>
                 <Badge className="bg-teal-500/20 text-teal-400 border-0 capitalize">{provider.plan_type}</Badge>
+                {/* 1.1 — Verified badge */}
+                {provider.isVerified && (
+                  <Badge className="bg-teal-500/20 text-teal-400 border-0 gap-1">
+                    <ShieldCheck className="h-3.5 w-3.5" /> Verified Provider
+                  </Badge>
+                )}
+                {/* 1.3 — EHCP badge (therapists only) */}
+                {isTherapist && provider.ehcpSupport && (
+                  <Badge className="bg-orange-500/15 text-orange-400 border-0 gap-1">
+                    <Heart className="h-3.5 w-3.5" /> EHCP Supported
+                  </Badge>
+                )}
               </div>
 
               <h1 className="text-3xl font-bold text-accent-foreground">{provider.businessName}</h1>
@@ -136,14 +141,12 @@ const ProviderPage = () => {
                 </span>
                 {provider.verified && (
                   <span className="flex items-center gap-1 text-teal-400">
-                    <ShieldCheck className="h-4 w-4" />
-                    Verified
+                    <ShieldCheck className="h-4 w-4" /> Verified
                   </span>
                 )}
                 {provider.foundingProvider && (
                   <span className="flex items-center gap-1 text-orange-300">
-                    <Award className="h-4 w-4" />
-                    Founding Provider
+                    <Award className="h-4 w-4" /> Founding Provider
                   </span>
                 )}
               </div>
@@ -152,10 +155,7 @@ const ProviderPage = () => {
               {isTherapist && !isSuspended && (
                 <div
                   className="mt-5 flex items-center gap-4 rounded-xl px-5 py-4"
-                  style={{
-                    background: availInfo.bg,
-                    border: `1.5px solid ${availInfo.border}`,
-                  }}
+                  style={{ background: availInfo.bg, border: `1.5px solid ${availInfo.border}` }}
                 >
                   <span style={{ color: availInfo.iconColor, flexShrink: 0 }}>{availInfo.icon}</span>
                   <div>
@@ -318,7 +318,6 @@ const ProviderPage = () => {
                     const hasImage = p.image && p.image !== "/placeholder.svg";
                     return (
                       <div key={i} className="rounded-xl border border-border/60 overflow-hidden card-hover-lift">
-                        {/* Product image */}
                         <div className="bg-muted" style={{ aspectRatio: "4/3" }}>
                           {hasImage ? (
                             <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
@@ -328,7 +327,6 @@ const ProviderPage = () => {
                             </div>
                           )}
                         </div>
-                        {/* Product details */}
                         <div className="p-3 text-center space-y-1">
                           <p className="text-sm font-medium leading-snug">{p.name}</p>
                           {p.shortDescription && (
