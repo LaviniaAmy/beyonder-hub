@@ -67,7 +67,17 @@ const LoginPage = () => {
     <div className="bg-navy-gradient flex min-h-[80vh] items-center justify-center py-16">
       <Card className="w-full max-w-sm border-0 shadow-card animate-fade-in">
         <CardHeader className="text-center pb-2">
-          <CardTitle className="text-2xl">Welcome Back</CardTitle>
+          {redirectTo?.startsWith("/enquiry") && (
+            <div className="mb-2 rounded-xl border border-teal-500/30 bg-teal-500/[0.08] px-4 py-3 text-left">
+              <p className="text-base font-bold text-teal-400">Log in or sign up to send your enquiry</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                You'll be taken straight back to the provider after logging in.
+              </p>
+            </div>
+          )}
+          <CardTitle className="text-2xl">
+            {redirectTo?.startsWith("/enquiry") ? "Welcome to Beyonder" : "Welcome Back"}
+          </CardTitle>
           <CardDescription>Log in to your Beyonder account</CardDescription>
         </CardHeader>
         <CardContent>
