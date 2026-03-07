@@ -26,11 +26,12 @@ import { providers } from "@/data/mockData";
 import { hasFeature, categorySections } from "@/lib/featureGating";
 import { getModuleProfile, providerTestimonials } from "@/data/providerModules";
 import { useAuth } from "@/context/AuthContext";
-import { getEnquiriesForProvider, replyToEnquiry, EnquiryRecord } from "@/data/enquiryStore";
+import { getEnquiriesForProvider, replyToEnquiry, updateProviderNotes, EnquiryRecord } from "@/data/enquiryStore";
 import { getClaimForProvider } from "@/data/founderStore";
 import { getProvider, updateProvider, AvailabilityStatus } from "@/data/providerStore";
 
 const MAX_REPLY = 800;
+const MAX_NOTES = 500;
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 const MAX_PRODUCT_IMAGE_SIZE = 1 * 1024 * 1024;
 const MAX_SHORT_DESC = 120;
@@ -103,9 +104,9 @@ const ProviderDashboard = () => {
     needsSupported: storeProfile?.needsSupported ?? fallback?.needsSupported ?? [],
   });
 
-  // ── Inline thread state (replaces modal) ──
   const [selectedEnquiryId, setSelectedEnquiryId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [notesText, setNotesText] = useState("");
   const [, forceUpdate] = useState(0);
 
   const [newCert, setNewCert] = useState("");
@@ -223,12 +224,15 @@ const ProviderDashboard = () => {
     }));
   };
 
-  // ── Send provider reply into the thread ──
   const handleSendReply = () => {
     if (!selectedEnquiryId || !replyText.trim()) return;
     replyToEnquiry(selectedEnquiryId, replyText.trim(), profile.businessName);
     setReplyText("");
     forceUpdate((n) => n + 1);
+  };
+
+  const handleNotesSave = (enquiryId: string, notes: string) => {
+    updateProviderNotes(enquiryId, notes);
   };
 
   const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -324,7 +328,6 @@ const ProviderDashboard = () => {
     showSaved("Availability updated ✓");
   };
 
-  // ── Enquiries with inline thread ──
   const providerEnquiries = getEnquiriesForProvider(providerId);
   const selectedEnquiry = providerEnquiries.find((e) => e.enquiryId === selectedEnquiryId) ?? null;
 
@@ -333,12 +336,16 @@ const ProviderDashboard = () => {
       const atCap = (selectedEnquiry.messageCount ?? 0) >= 4;
       return (
         <div className="space-y-3">
+          {/* Thread header */}
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">{selectedEnquiry.parentName}</p>
-              <p className="text-xs text-muted-foreground">
-                Child age: {selectedEnquiry.childAge} · {selectedEnquiry.createdAt}
-              </p>
+              <div className="flex flex-wrap gap-x-3 text-xs text-muted-foreground mt-0.5">
+                <span>Age: {selectedEnquiry.childAge}</span>
+                {selectedEnquiry.childName && <span>Name: {selectedEnquiry.childName}</span>}
+                {selectedEnquiry.needs && <span>Needs: {selectedEnquiry.needs}</span>}
+                <span>{selectedEnquiry.createdAt}</span>
+              </div>
             </div>
             <Button
               size="sm"
@@ -346,6 +353,7 @@ const ProviderDashboard = () => {
               onClick={() => {
                 setSelectedEnquiryId(null);
                 setReplyText("");
+                setNotesText("");
               }}
             >
               ← Back
@@ -358,11 +366,7 @@ const ProviderDashboard = () => {
               selectedEnquiry.messages.map((msg) => (
                 <div
                   key={msg.messageId}
-                  className={`rounded-xl p-4 ${
-                    msg.senderId === "parent"
-                      ? "bg-muted/30 border border-border/40 mr-8 break-words"
-                      : "bg-teal-500/[0.06] border border-teal-500/20 ml-8 break-words"
-                  }`}
+                  className={`rounded-xl p-4 ${msg.senderId === "parent" ? "bg-muted/30 border border-border/40 mr-8 break-words" : "bg-teal-500/[0.06] border border-teal-500/20 ml-8 break-words"}`}
                 >
                   <p
                     className={`text-xs mb-1 ${msg.senderId === "parent" ? "text-muted-foreground" : "text-teal-500"}`}
@@ -373,7 +377,6 @@ const ProviderDashboard = () => {
                 </div>
               ))
             ) : (
-              // Fallback for seeded records without messages array
               <>
                 <div className="rounded-xl bg-muted/30 border border-border/40 p-4 mr-8 break-words">
                   <p className="text-xs text-muted-foreground mb-1">{selectedEnquiry.parentName}</p>
@@ -389,6 +392,7 @@ const ProviderDashboard = () => {
             )}
           </div>
 
+          {/* Reply input */}
           {atCap ? (
             <div className="rounded-xl border border-border/40 bg-muted/20 p-4 text-center">
               <p className="text-sm text-muted-foreground">This conversation has reached its limit.</p>
@@ -423,6 +427,30 @@ const ProviderDashboard = () => {
               </div>
             </div>
           )}
+
+          {/* ── Referral Notes — private, never parent-facing ── */}
+          <div className="mt-4 rounded-xl border border-border/40 bg-muted/10 p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <FileText className="h-4 w-4 text-muted-foreground" />
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Referral Notes</p>
+              <Badge variant="outline" className="text-xs text-muted-foreground border-border/40 ml-auto">
+                Private — not visible to families
+              </Badge>
+            </div>
+            <Textarea
+              value={notesText || selectedEnquiry.providerNotes}
+              onChange={(e) => {
+                if (e.target.value.length <= MAX_NOTES) setNotesText(e.target.value);
+              }}
+              onBlur={() => handleNotesSave(selectedEnquiry.enquiryId, notesText || selectedEnquiry.providerNotes)}
+              placeholder="Add private notes about this enquiry, referral source, next steps..."
+              rows={3}
+              className="text-sm bg-transparent"
+            />
+            <p className="text-right text-xs text-muted-foreground/50">
+              {(notesText || selectedEnquiry.providerNotes).length}/{MAX_NOTES} · auto-saves on blur
+            </p>
+          </div>
         </div>
       );
     }
@@ -438,11 +466,16 @@ const ProviderDashboard = () => {
             onClick={() => {
               setSelectedEnquiryId(e.enquiryId);
               setReplyText("");
+              setNotesText(e.providerNotes ?? "");
             }}
           >
             <div className="min-w-0 flex-1">
               <p className="font-medium truncate">{e.parentName}</p>
-              <p className="text-sm text-muted-foreground truncate">{e.message}</p>
+              <div className="flex gap-2 text-xs text-muted-foreground mt-0.5">
+                {e.childName && <span>{e.childName}</span>}
+                {e.needs && <span className="truncate max-w-[140px]">{e.needs}</span>}
+                {!e.childName && !e.needs && <span className="truncate">{e.message}</span>}
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant={e.statusForProvider === "new" ? "destructive" : "secondary"}>
