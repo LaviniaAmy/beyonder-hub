@@ -1,6 +1,12 @@
 // ── In-memory enquiry store ─────────────────────────────────
-// Shared singleton so EnquiryPage writes and dashboards read
-// from the same array within a session.
+
+export interface ThreadMessage {
+  messageId: string;
+  senderId: "parent" | "provider";
+  senderName: string;
+  text: string;
+  sentAt: string;
+}
 
 export interface EnquiryRecord {
   enquiryId: string;
@@ -9,38 +15,58 @@ export interface EnquiryRecord {
   parentId: string;
   parentName: string;
   childAge: string;
-  message: string;
-  reply: string | null;
+  message: string; // original opening message (kept for backwards compat)
+  reply: string | null; // first provider reply (kept for backwards compat)
+  messages: ThreadMessage[]; // full ordered thread
   statusForParent: "sent" | "replied";
   statusForProvider: "new" | "replied";
   createdAt: string;
-  // ── Pre-build new fields ──
-  isUnlocked: boolean; // true once parent has paid to view this thread
-  messageCount: number; // increments per parent/provider turn (not auto-response)
-  providerNotes: string; // private provider-only notes, never shown to parent
-  customAnswers: { question: string; answer: string }[]; // custom enquiry form responses
+  isUnlocked: boolean;
+  messageCount: number; // parent + provider turns (excludes opening message)
+  providerNotes: string;
+  customAnswers: { question: string; answer: string }[];
 }
 
 import { enquiries } from "@/data/mockData";
 
-const seeded: EnquiryRecord[] = enquiries.map((e) => ({
-  enquiryId: e.id,
-  providerId: e.providerId,
-  providerName: e.providerName,
-  parentId: "mock-parent",
-  parentName: e.parentName,
-  childAge: e.childAge,
-  message: e.message,
-  reply: e.reply ?? null,
-  statusForParent: e.status === "replied" ? "replied" : "sent",
-  statusForProvider: e.status === "replied" ? "replied" : "new",
-  createdAt: e.date,
-  // defaults for seeded records
-  isUnlocked: false,
-  messageCount: 0,
-  providerNotes: "",
-  customAnswers: [],
-}));
+const seeded: EnquiryRecord[] = enquiries.map((e) => {
+  const messages: ThreadMessage[] = [
+    {
+      messageId: `${e.id}-msg-0`,
+      senderId: "parent",
+      senderName: e.parentName,
+      text: e.message,
+      sentAt: e.date,
+    },
+  ];
+  if (e.reply) {
+    messages.push({
+      messageId: `${e.id}-msg-1`,
+      senderId: "provider",
+      senderName: e.providerName,
+      text: e.reply,
+      sentAt: e.date,
+    });
+  }
+  return {
+    enquiryId: e.id,
+    providerId: e.providerId,
+    providerName: e.providerName,
+    parentId: "mock-parent",
+    parentName: e.parentName,
+    childAge: e.childAge,
+    message: e.message,
+    reply: e.reply ?? null,
+    messages,
+    statusForParent: e.status === "replied" ? "replied" : "sent",
+    statusForProvider: e.status === "replied" ? "replied" : "new",
+    createdAt: e.date,
+    isUnlocked: false,
+    messageCount: e.reply ? 1 : 0,
+    providerNotes: "",
+    customAnswers: [],
+  };
+});
 
 export const enquiryStore: EnquiryRecord[] = [...seeded];
 
@@ -48,30 +74,49 @@ export function addEnquiry(record: EnquiryRecord) {
   enquiryStore.push(record);
 }
 
-export function replyToEnquiry(enquiryId: string, replyText: string) {
+/** Provider sends a reply — adds to thread, updates status */
+export function replyToEnquiry(enquiryId: string, replyText: string, providerName: string) {
   const record = enquiryStore.find((e) => e.enquiryId === enquiryId);
-  if (record) {
-    record.reply = replyText;
-    record.statusForParent = "replied";
-    record.statusForProvider = "replied";
-    record.messageCount = (record.messageCount ?? 0) + 1;
-  }
+  if (!record) return;
+  const msg: ThreadMessage = {
+    messageId: crypto.randomUUID(),
+    senderId: "provider",
+    senderName: providerName,
+    text: replyText,
+    sentAt: new Date().toISOString().split("T")[0],
+  };
+  record.messages.push(msg);
+  record.reply = replyText; // keep backwards compat
+  record.statusForParent = "replied";
+  record.statusForProvider = "replied";
+  record.messageCount = (record.messageCount ?? 0) + 1;
 }
 
-/** Mark an enquiry thread as unlocked (called on payment confirmation). */
+/** Parent sends a follow-up message in an unlocked thread */
+export function parentReplyToEnquiry(enquiryId: string, text: string, parentName: string) {
+  const record = enquiryStore.find((e) => e.enquiryId === enquiryId);
+  if (!record) return;
+  if ((record.messageCount ?? 0) >= 4) return; // cap enforced
+  const msg: ThreadMessage = {
+    messageId: crypto.randomUUID(),
+    senderId: "parent",
+    senderName: parentName,
+    text,
+    sentAt: new Date().toISOString().split("T")[0],
+  };
+  record.messages.push(msg);
+  record.statusForProvider = "new"; // flag as needing provider attention again
+  record.messageCount = (record.messageCount ?? 0) + 1;
+}
+
 export function unlockEnquiry(enquiryId: string) {
   const record = enquiryStore.find((e) => e.enquiryId === enquiryId);
-  if (record) {
-    record.isUnlocked = true;
-  }
+  if (record) record.isUnlocked = true;
 }
 
-/** Update provider's private notes on an enquiry. */
 export function updateProviderNotes(enquiryId: string, notes: string) {
   const record = enquiryStore.find((e) => e.enquiryId === enquiryId);
-  if (record) {
-    record.providerNotes = notes;
-  }
+  if (record) record.providerNotes = notes;
 }
 
 export function getEnquiriesForParent(parentId: string): EnquiryRecord[] {
