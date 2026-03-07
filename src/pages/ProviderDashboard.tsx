@@ -536,20 +536,25 @@ const ProviderDashboard = () => {
           <CardContent>
             {(() => {
               const claim = getClaimForProvider(providerId);
-              const planType = claim?.planType ?? profile.plan_type;
-              const isFounder = planType === "founder";
+              const livePlanType = getProvider(providerId)?.plan_type ?? claim?.planType ?? profile.plan_type;
+              const planLabel =
+                livePlanType === "founder"
+                  ? "Founder Plan"
+                  : livePlanType === "professional"
+                    ? "Professional Plan"
+                    : "Free Plan";
               return (
                 <>
                   <div className="flex items-center gap-3">
-                    <Badge className="bg-teal-500/20 text-teal-400 border-0">
-                      {isFounder ? "Founder Plan" : "Free Plan"}
-                    </Badge>
+                    <Badge className="bg-teal-500/20 text-teal-400 border-0">{planLabel}</Badge>
                     <Badge className="bg-emerald-500/15 text-emerald-400 border-0">Active</Badge>
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                    {isFounder
+                    {livePlanType === "founder"
                       ? "You're a founding provider on Beyonder. Founder benefits stay with you after launch."
-                      : "You're on the free plan. Upgrade anytime for more visibility and tools."}
+                      : livePlanType === "professional"
+                        ? "You're on the Professional plan with full access to all Beyonder features."
+                        : "You're on the free plan. Upgrade anytime for more visibility and tools."}
                   </p>
                 </>
               );
