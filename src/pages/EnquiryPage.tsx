@@ -51,7 +51,7 @@ const EnquiryPage = () => {
       enquiryId: crypto.randomUUID(),
       providerId: provider.id,
       providerName: provider.businessName,
-      parentId: user?.id ?? "guest",
+      parentId: user?.id ?? "mock-parent", // fallback matches dashboard seed parentId
       parentName: user?.name ?? "Guest",
       childAge: childAge.trim(),
       message: message.trim(),
