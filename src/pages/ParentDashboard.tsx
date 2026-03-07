@@ -4,46 +4,43 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { mockParent } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
-import { getEnquiriesForParent, unlockEnquiry } from "@/data/enquiryStore";
+import { getEnquiriesForParent, unlockEnquiry, parentReplyToEnquiry } from "@/data/enquiryStore";
+
+const MAX_MSG = 500;
 
 const ParentDashboard = () => {
   const { user } = useAuth();
   const parentId = user?.id ?? "mock-parent";
 
-  // Recompute on every render (forceUpdate triggers re-read from store)
   const getParentEnquiries = () => [
     ...getEnquiriesForParent("mock-parent"),
     ...getEnquiriesForParent(parentId).filter((e) => e.parentId !== "mock-parent"),
   ];
-  const parentEnquiries = getParentEnquiries();
 
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [selectedEnquiry, setSelectedEnquiry] = useState<string | null>(null);
-  // ── Pre-build fix: track which enquiry the paywall is for ──
   const [paywallEnquiryId, setPaywallEnquiryId] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
   const [, forceUpdate] = useState(0);
+
+  const parentEnquiries = getParentEnquiries();
 
   const handleViewReply = (enquiryId: string, statusForParent: string) => {
     if (statusForParent !== "replied") return;
-
-    // ── Pre-build fix: check isUnlocked on the specific enquiry record ──
     const enquiry = parentEnquiries.find((e) => e.enquiryId === enquiryId);
     if (!enquiry) return;
-
     if (enquiry.isUnlocked) {
-      // Already paid — open directly, no paywall
       setSelectedEnquiry(enquiryId);
     } else {
-      // Not yet unlocked — show paywall
       setPaywallEnquiryId(enquiryId);
       setUpgradeOpen(true);
     }
   };
 
   const handleCheckout = () => {
-    // ── Pre-build fix: unlock the specific enquiry on checkout confirmation ──
     if (paywallEnquiryId) {
       unlockEnquiry(paywallEnquiryId);
       setSelectedEnquiry(paywallEnquiryId);
@@ -53,14 +50,21 @@ const ParentDashboard = () => {
     setUpgradeOpen(false);
   };
 
-  const selectedRecord = parentEnquiries.find((e) => e.enquiryId === selectedEnquiry);
+  const handleSendReply = (enquiryId: string) => {
+    if (!replyText.trim()) return;
+    parentReplyToEnquiry(enquiryId, replyText.trim(), user?.name ?? "Parent");
+    setReplyText("");
+    forceUpdate((n) => n + 1);
+  };
+
+  const selectedRecord = getParentEnquiries().find((e) => e.enquiryId === selectedEnquiry);
+  const atCap = (selectedRecord?.messageCount ?? 0) >= 4;
 
   return (
     <div className="bg-navy-gradient min-h-screen py-10">
       <div className="container max-w-3xl animate-fade-in">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold text-accent-foreground">Your Dashboard</h1>
-          {/* Badge still uses subscriptionTier for display — unchanged per spec */}
           <Badge
             className={
               mockParent.subscriptionTier === "free"
@@ -72,41 +76,101 @@ const ParentDashboard = () => {
           </Badge>
         </div>
 
-        {/* Enquiry thread view */}
+        {/* ── Thread view ── */}
         {selectedRecord ? (
           <Card className="mb-6 border-0 shadow-card">
-            <CardHeader className="flex-row items-center justify-between">
-              <CardTitle className="text-lg">{selectedRecord.providerName}</CardTitle>
-              <Button size="sm" variant="outline" onClick={() => setSelectedEnquiry(null)}>
+            <CardHeader className="flex-row items-center justify-between pb-3">
+              <div>
+                <CardTitle className="text-lg">{selectedRecord.providerName}</CardTitle>
+                <p className="text-xs text-muted-foreground mt-0.5">Started {selectedRecord.createdAt}</p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setSelectedEnquiry(null);
+                  setReplyText("");
+                }}
+              >
                 ← Back
               </Button>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Parent's original message */}
-              <div className="rounded-xl bg-muted/30 border border-border/40 p-4">
-                <p className="text-xs text-muted-foreground mb-1">Your message · {selectedRecord.createdAt}</p>
-                <p className="text-sm leading-relaxed">{selectedRecord.message}</p>
-              </div>
-
-              {/* Provider reply — visible because isUnlocked is true */}
-              {selectedRecord.reply && (
-                <div className="rounded-xl bg-teal-500/[0.06] border border-teal-500/20 p-4">
-                  <p className="text-xs text-teal-500 mb-1">Reply from {selectedRecord.providerName}</p>
-                  <p className="text-sm leading-relaxed">{selectedRecord.reply}</p>
-                </div>
+            <CardContent className="space-y-3">
+              {/* Full message thread */}
+              {(selectedRecord.messages ?? []).length > 0 ? (
+                selectedRecord.messages.map((msg) => (
+                  <div
+                    key={msg.messageId}
+                    className={`rounded-xl p-4 ${
+                      msg.senderId === "parent"
+                        ? "bg-muted/30 border border-border/40 ml-0 mr-8"
+                        : "bg-teal-500/[0.06] border border-teal-500/20 ml-8 mr-0"
+                    }`}
+                  >
+                    <p
+                      className={`text-xs mb-1 ${msg.senderId === "parent" ? "text-muted-foreground" : "text-teal-500"}`}
+                    >
+                      {msg.senderId === "parent" ? "You" : selectedRecord.providerName} · {msg.sentAt}
+                    </p>
+                    <p className="text-sm leading-relaxed">{msg.text}</p>
+                  </div>
+                ))
+              ) : (
+                // Fallback for seeded data without messages array
+                <>
+                  <div className="rounded-xl bg-muted/30 border border-border/40 p-4 mr-8">
+                    <p className="text-xs text-muted-foreground mb-1">You · {selectedRecord.createdAt}</p>
+                    <p className="text-sm leading-relaxed">{selectedRecord.message}</p>
+                  </div>
+                  {selectedRecord.reply && (
+                    <div className="rounded-xl bg-teal-500/[0.06] border border-teal-500/20 p-4 ml-8">
+                      <p className="text-xs text-teal-500 mb-1">
+                        {selectedRecord.providerName} · {selectedRecord.createdAt}
+                      </p>
+                      <p className="text-sm leading-relaxed">{selectedRecord.reply}</p>
+                    </div>
+                  )}
+                </>
               )}
 
               {/* Message cap notice */}
-              {(selectedRecord.messageCount ?? 0) >= 4 && (
+              {atCap ? (
                 <div className="rounded-xl border border-border/40 bg-muted/20 p-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    This conversation has reached its limit. Please contact the provider directly to proceed.
+                    This conversation has reached its limit. Please contact {selectedRecord.providerName} directly to
+                    proceed.
                   </p>
+                </div>
+              ) : (
+                /* Reply input */
+                <div className="pt-2 space-y-2 border-t border-border/30">
+                  <p className="text-xs text-muted-foreground">
+                    {4 - (selectedRecord.messageCount ?? 0)} message
+                    {4 - (selectedRecord.messageCount ?? 0) !== 1 ? "s" : ""} remaining in this thread
+                  </p>
+                  <Textarea
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value.slice(0, MAX_MSG))}
+                    placeholder="Write a follow-up message..."
+                    rows={3}
+                  />
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">{MAX_MSG - replyText.length} remaining</span>
+                    <Button
+                      size="sm"
+                      className="bg-teal-500 hover:bg-teal-400"
+                      disabled={!replyText.trim()}
+                      onClick={() => handleSendReply(selectedRecord.enquiryId)}
+                    >
+                      Send Message
+                    </Button>
+                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
         ) : (
+          /* ── Enquiry list ── */
           <Card className="mb-8 border-0 shadow-card">
             <CardHeader>
               <CardTitle>Your Enquiries</CardTitle>
@@ -143,7 +207,7 @@ const ParentDashboard = () => {
                             variant="outline"
                             onClick={() => handleViewReply(e.enquiryId, e.statusForParent)}
                           >
-                            {e.isUnlocked ? "View Reply" : "Unlock Reply"}
+                            {e.isUnlocked ? "View Thread" : "Unlock Reply"}
                           </Button>
                         ) : (
                           <Button
@@ -209,7 +273,6 @@ const ParentDashboard = () => {
               </CardContent>
             </Card>
           </div>
-          {/* ── Pre-build fix: calls unlockEnquiry on confirmation ── */}
           <Button className="mt-4 w-full bg-teal-500 hover:bg-teal-400" onClick={handleCheckout}>
             Continue to Checkout
           </Button>
