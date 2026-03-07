@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,6 @@ const MAX_CHARS = 800;
 const EnquiryPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const { user, isAuthenticated } = useAuth();
 
   const provider = getProvider(id ?? "");
@@ -26,15 +25,14 @@ const EnquiryPage = () => {
   const [childAge, setChildAge] = useState("");
   const [messageFocused, setMessageFocused] = useState(false);
 
-  // ── Auth gate: redirect non-parents to login, return here after ──
+  // ── Auth gate: immediate redirect, no flash ──
   const isParent = isAuthenticated && user?.role === "parent";
   const isProviderOrAdmin = isAuthenticated && (user?.role === "provider" || user?.role === "admin");
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`, { replace: true });
-    }
-  }, [isAuthenticated, navigate, location.pathname]);
+  if (!isAuthenticated) {
+    navigate(`/login?redirect=${encodeURIComponent(`/enquiry/${id ?? ""}`)}`, { replace: true });
+    return null;
+  }
 
   if (!provider) {
     return (
@@ -120,9 +118,6 @@ const EnquiryPage = () => {
       </div>
     );
   }
-
-  // Not authenticated yet — useEffect will redirect, show nothing while redirecting
-  if (!isAuthenticated) return null;
 
   return (
     <div className="bg-navy-gradient min-h-screen py-16">
