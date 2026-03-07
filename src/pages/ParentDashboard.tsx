@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import { mockParent } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
-import { getEnquiriesForParent, unlockEnquiry, parentReplyToEnquiry } from "@/data/enquiryStore";
+import { enquiryStore, getEnquiriesForParent, unlockEnquiry, parentReplyToEnquiry } from "@/data/enquiryStore";
 
 const MAX_MSG = 500;
 
@@ -57,7 +57,7 @@ const ParentDashboard = () => {
     forceUpdate((n) => n + 1);
   };
 
-  const selectedRecord = getParentEnquiries().find((e) => e.enquiryId === selectedEnquiry);
+  const selectedRecord = enquiryStore.find((e) => e.enquiryId === selectedEnquiry) ?? null;
   const atCap = (selectedRecord?.messageCount ?? 0) >= 4;
 
   return (
