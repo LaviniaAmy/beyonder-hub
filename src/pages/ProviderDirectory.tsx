@@ -1,6 +1,17 @@
 import { useState, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { MapPin, Star, Bookmark, Heart, Users, Layers, X as XIcon, ShoppingBag, ShoppingCart } from "lucide-react";
+import {
+  MapPin,
+  Star,
+  Bookmark,
+  Heart,
+  Users,
+  Layers,
+  X as XIcon,
+  ShoppingBag,
+  ShoppingCart,
+  ShieldCheck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +50,6 @@ const NEED_FILTERS = [
   { value: "Learning Disability", label: "Learning Disability" },
 ];
 
-// ── Helpers ───────────────────────────────────────────────────
 function parsePriceValue(price: string): number {
   const match = price.replace(/[£,]/g, "").match(/[\d.]+/);
   return match ? parseFloat(match[0]) : 0;
@@ -54,7 +64,6 @@ function priceInRange(value: number, range: string): boolean {
   return true;
 }
 
-// ── Static options ────────────────────────────────────────────
 const deliveryOptions = [
   { value: "all", label: "All Delivery Types" },
   { value: "in-person", label: "In-Person" },
@@ -76,7 +85,6 @@ const supportSlugMap: Record<string, string> = {
   speech: "speech",
 };
 
-// ── Component ─────────────────────────────────────────────────
 const ProviderDirectory = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -88,16 +96,14 @@ const ProviderDirectory = () => {
   const isLocalView = searchParams.get("view") === "local";
 
   const [delivery, setDelivery] = useState("all");
+  const [ehcpOnly, setEhcpOnly] = useState(false); // 1.3 EHCP filter
   const [visibleCount, setVisibleCount] = useState(6);
   const [localSearch, setLocalSearch] = useState(searchQuery);
 
-  // Product catalogue filters
   const [productCategory, setProductCategory] = useState("all");
   const [priceRange, setPriceRange] = useState("all");
   const [needFilter, setNeedFilter] = useState("all");
   const [productSearch, setProductSearch] = useState("");
-
-  // Cart — visual only for now
   const [addedToCart, setAddedToCart] = useState<Record<string, boolean>>({});
 
   const isProductView = activeCategory === "products";
@@ -125,7 +131,6 @@ const ProviderDirectory = () => {
     setTimeout(() => setAddedToCart((prev) => ({ ...prev, [key]: false })), 2000);
   };
 
-  // ── Provider filtering ────────────────────────────────────────
   const filteredProviders = useMemo(() => {
     let result = getActiveProviders();
     if (delivery !== "all") {
@@ -185,11 +190,13 @@ const ProviderDirectory = () => {
         return searchable.some((s) => s.includes(q));
       });
     }
+    // 1.3 — EHCP filter
+    if (ehcpOnly) {
+      result = result.filter((p) => p.ehcpSupport === true);
+    }
     return result;
-  }, [activeCategory, delivery, searchQuery, regionParam, supportParam, needsParam, localSearch]);
+  }, [activeCategory, delivery, searchQuery, regionParam, supportParam, needsParam, localSearch, ehcpOnly]);
 
-  // ── Live product catalogue from providerStore ─────────────────
-  // Flatten all products from all active product-type providers
   const allLiveProducts = useMemo(() => {
     const providers = getActiveProviders().filter((p) => p.type === "product");
     return providers.flatMap((provider) =>
@@ -202,7 +209,6 @@ const ProviderDirectory = () => {
         priceValue: parsePriceValue(prod.price),
         image: prod.image || "/placeholder.svg",
         shortDescription: prod.shortDescription || "",
-        // Derive need types from the provider's needsSupported
         needTypes: provider.needsSupported,
       })),
     );
@@ -210,12 +216,8 @@ const ProviderDirectory = () => {
 
   const filteredProducts = useMemo(() => {
     let result = allLiveProducts;
-    if (priceRange !== "all") {
-      result = result.filter((p) => priceInRange(p.priceValue, priceRange));
-    }
-    if (needFilter !== "all") {
-      result = result.filter((p) => p.needTypes.includes(needFilter));
-    }
+    if (priceRange !== "all") result = result.filter((p) => priceInRange(p.priceValue, priceRange));
+    if (needFilter !== "all") result = result.filter((p) => p.needTypes.includes(needFilter));
     if (productSearch.trim()) {
       const q = productSearch.toLowerCase();
       result = result.filter(
@@ -236,7 +238,8 @@ const ProviderDirectory = () => {
     searchQuery ||
     regionParam !== "all" ||
     supportParam ||
-    needsParam;
+    needsParam ||
+    ehcpOnly;
   const hasProductFilters = priceRange !== "all" || needFilter !== "all" || productSearch;
 
   return (
@@ -246,7 +249,7 @@ const ProviderDirectory = () => {
           {isLocalView ? "Find Local Support" : "Provider Directory"}
         </h1>
 
-        {/* Main filters — hidden in product view */}
+        {/* Main filters */}
         {!isProductView && (
           <div className="mb-8 rounded-xl bg-card p-6 shadow-card space-y-4">
             <div className="flex flex-wrap items-center gap-4">
@@ -275,6 +278,21 @@ const ProviderDirectory = () => {
                   ))}
                 </SelectContent>
               </Select>
+
+              {/* 1.3 — EHCP filter toggle */}
+              <button
+                type="button"
+                onClick={() => setEhcpOnly((v) => !v)}
+                className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
+                  ehcpOnly
+                    ? "border-orange-500/60 bg-orange-500/10 text-orange-400"
+                    : "border-border/60 text-muted-foreground hover:border-border"
+                }`}
+              >
+                <Heart className="h-4 w-4" />
+                EHCP Supported
+              </button>
+
               {hasActiveFilters && (
                 <Button
                   variant="ghost"
@@ -284,6 +302,7 @@ const ProviderDirectory = () => {
                     setSearchParams({});
                     setDelivery("all");
                     setLocalSearch("");
+                    setEhcpOnly(false);
                   }}
                 >
                   Clear all filters
@@ -354,7 +373,7 @@ const ProviderDirectory = () => {
           </div>
         )}
 
-        {/* Active filter pills — provider view */}
+        {/* Active filter pills */}
         {!isProductView && hasActiveFilters && (
           <div className="mb-6 flex flex-wrap gap-2">
             {regionParam !== "all" && (
@@ -411,15 +430,20 @@ const ProviderDirectory = () => {
                 </button>
               </Badge>
             )}
+            {ehcpOnly && (
+              <Badge className="gap-1 bg-orange-500/15 text-orange-400 border-0 px-3 py-1">
+                EHCP Supported
+                <button onClick={() => setEhcpOnly(false)} className="ml-1 hover:text-accent-foreground">
+                  <XIcon className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
           </div>
         )}
 
-        {/* ════════════════════════════════════════════════════
-            PRODUCT CATALOGUE VIEW
-        ════════════════════════════════════════════════════ */}
+        {/* PRODUCT VIEW */}
         {isProductView ? (
           <div>
-            {/* Product filters */}
             <div className="mb-8 rounded-xl bg-card p-6 shadow-card space-y-4">
               <div className="flex flex-wrap gap-3">
                 <Select value={priceRange} onValueChange={setPriceRange}>
@@ -461,7 +485,6 @@ const ProviderDirectory = () => {
                   </Button>
                 )}
               </div>
-
               <div className="flex gap-2 max-w-lg">
                 <Input
                   placeholder="Search products..."
@@ -469,7 +492,6 @@ const ProviderDirectory = () => {
                   onChange={(e) => setProductSearch(e.target.value)}
                 />
               </div>
-
               {hasProductFilters && (
                 <div className="flex flex-wrap gap-2 pt-1">
                   {priceRange !== "all" && (
@@ -510,7 +532,7 @@ const ProviderDirectory = () => {
                 <p className="text-lg text-foreground mb-2">No products found.</p>
                 <p className="text-muted-foreground mb-6">
                   {allLiveProducts.length === 0
-                    ? "No products have been added yet. Providers can add products from their dashboard."
+                    ? "No products have been added yet."
                     : "Try adjusting your search or filters."}
                 </p>
                 {hasProductFilters && (
@@ -534,7 +556,6 @@ const ProviderDirectory = () => {
                   return (
                     <Card key={product.key} className="border-0 shadow-card card-hover-lift flex flex-col">
                       <CardContent className="p-0 flex flex-col h-full">
-                        {/* Product image */}
                         <div className="rounded-t-xl overflow-hidden bg-muted" style={{ aspectRatio: "4/3" }}>
                           {hasImage ? (
                             <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
@@ -544,20 +565,14 @@ const ProviderDirectory = () => {
                             </div>
                           )}
                         </div>
-
                         <div className="flex flex-col flex-1 p-4 gap-3">
-                          {/* Name & price */}
                           <div className="flex items-start justify-between gap-2">
                             <h3 className="font-semibold text-sm leading-snug">{product.name}</h3>
                             <span className="text-teal-400 font-bold text-sm shrink-0">{product.price}</span>
                           </div>
-
-                          {/* Short description */}
                           {product.shortDescription && (
                             <p className="text-xs text-muted-foreground leading-relaxed">{product.shortDescription}</p>
                           )}
-
-                          {/* Need tags */}
                           <div className="flex flex-wrap gap-1">
                             {product.needTypes.slice(0, 3).map((n) => (
                               <Badge key={n} variant="outline" className="text-xs border-border/60 px-2 py-0">
@@ -565,8 +580,6 @@ const ProviderDirectory = () => {
                               </Badge>
                             ))}
                           </div>
-
-                          {/* Provider link */}
                           <div className="border-t border-border/30 pt-2">
                             <Link
                               to={`/provider/${product.providerId}`}
@@ -575,15 +588,9 @@ const ProviderDirectory = () => {
                               by {product.providerName} →
                             </Link>
                           </div>
-
-                          {/* Add to Cart */}
                           <Button
                             size="sm"
-                            className={`w-full mt-auto transition-all ${
-                              isAdded
-                                ? "bg-emerald-500 hover:bg-emerald-500 text-white"
-                                : "bg-teal-500 hover:bg-teal-400 text-white"
-                            }`}
+                            className={`w-full mt-auto transition-all ${isAdded ? "bg-emerald-500 hover:bg-emerald-500 text-white" : "bg-teal-500 hover:bg-teal-400 text-white"}`}
                             onClick={() => handleAddToCart(product.key)}
                           >
                             <ShoppingCart className="h-4 w-4 mr-2" />
@@ -598,9 +605,7 @@ const ProviderDirectory = () => {
             )}
           </div>
         ) : (
-          /* ════════════════════════════════════════════════
-             STANDARD PROVIDER GRID VIEW
-          ════════════════════════════════════════════════ */
+          /* STANDARD PROVIDER GRID */
           <>
             {visible.length === 0 ? (
               <div className="py-20 text-center rounded-xl bg-card shadow-card">
@@ -612,6 +617,7 @@ const ProviderDirectory = () => {
                     setSearchParams({});
                     setDelivery("all");
                     setLocalSearch("");
+                    setEhcpOnly(false);
                   }}
                 >
                   Clear all filters
@@ -624,15 +630,29 @@ const ProviderDirectory = () => {
                     <Card className="h-full border-0 shadow-card card-hover-lift">
                       <CardContent className="p-6">
                         <div className="mb-3 flex items-start justify-between">
-                          <div>
-                            <Badge variant="secondary" className="mb-2 text-xs">
-                              {provider.typeBadge}
-                            </Badge>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                              <Badge variant="secondary" className="text-xs">
+                                {provider.typeBadge}
+                              </Badge>
+                              {/* 1.1 — Verified badge */}
+                              {provider.isVerified && (
+                                <Badge className="bg-teal-500/20 text-teal-400 border-0 text-xs gap-1">
+                                  <ShieldCheck className="h-3 w-3" /> Verified
+                                </Badge>
+                              )}
+                              {/* 1.3 — EHCP badge */}
+                              {provider.ehcpSupport && (
+                                <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs gap-1">
+                                  <Heart className="h-3 w-3" /> EHCP
+                                </Badge>
+                              )}
+                            </div>
                             <h3 className="font-semibold">{provider.businessName}</h3>
                           </div>
                           <button
                             onClick={(e) => e.preventDefault()}
-                            className="text-muted-foreground hover:text-teal-500 transition-colors duration-150"
+                            className="text-muted-foreground hover:text-teal-500 transition-colors duration-150 ml-2"
                           >
                             <Bookmark className="h-4 w-4" />
                           </button>
