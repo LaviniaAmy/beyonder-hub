@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -30,8 +30,7 @@ const EnquiryPage = () => {
   const isProviderOrAdmin = isAuthenticated && (user?.role === "provider" || user?.role === "admin");
 
   if (!isAuthenticated) {
-    navigate(`/login?redirect=${encodeURIComponent(`/enquiry/${id ?? ""}`)}`, { replace: true });
-    return null;
+    return <Navigate to={`/login?redirect=${encodeURIComponent(`/enquiry/${id ?? ""}`)}`} replace />;
   }
 
   if (!provider) {
