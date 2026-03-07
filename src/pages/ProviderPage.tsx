@@ -139,11 +139,7 @@ const ProviderPage = () => {
                   <Star className="h-4 w-4 fill-orange-400 text-orange-400" />
                   {provider.rating} ({provider.reviewCount} reviews)
                 </span>
-                {provider.verified && (
-                  <span className="flex items-center gap-1 text-teal-400">
-                    <ShieldCheck className="h-4 w-4" /> Verified
-                  </span>
-                )}
+
                 {provider.foundingProvider && (
                   <span className="flex items-center gap-1 text-orange-300">
                     <Award className="h-4 w-4" /> Founding Provider
