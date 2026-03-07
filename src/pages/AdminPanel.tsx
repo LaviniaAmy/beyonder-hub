@@ -34,7 +34,8 @@ const defaultStrings: Record<string, string> = {
   confirmationMessage: "Your message has been sent. They'll get back to you soon.",
 };
 
-const planTypes: PlanType[] = ["founder", "free", "professional", "growth", "featured"];
+// ── Simplified to 3 plans only ──
+const planTypes: PlanType[] = ["free", "founder", "professional"];
 const planStatuses: PlanStatus[] = ["active", "trial", "expired"];
 const categoryTypes: CategoryType[] = ["therapist", "club", "education", "charity", "product"];
 
@@ -43,12 +44,10 @@ const AdminPanel = () => {
   const [founderLimit, setFounderLimit] = useState(adminSettings.founderLimit);
   const [limitSaved, setLimitSaved] = useState(false);
 
-  // Track moderation status locally so UI re-renders immediately on toggle
   const [moderationState, setModerationState] = useState<Record<string, "active" | "suspended">>(
     Object.fromEntries(getAllProviders().map((p) => [p.id, p.moderationStatus])),
   );
 
-  // Track change request state per provider
   const [changeRequestState, setChangeRequestState] = useState<
     Record<string, { status: "idle" | "composing" | "sent" | "acknowledged"; message: string }>
   >(
@@ -94,7 +93,6 @@ const AdminPanel = () => {
     setTimeout(() => setLimitSaved(false), 2000);
   };
 
-  // Suspend toggle — updates store and local state
   const handleToggleSuspend = (id: string) => {
     const next = moderationState[id] === "suspended" ? "active" : "suspended";
     updateProvider(id, {
@@ -105,7 +103,6 @@ const AdminPanel = () => {
     setModerationState((prev) => ({ ...prev, [id]: next }));
   };
 
-  // Send a change request note to the provider
   const handleSendChangeRequest = (id: string) => {
     const msg = changeRequestState[id]?.message?.trim();
     if (!msg) return;
@@ -113,7 +110,6 @@ const AdminPanel = () => {
     setChangeRequestState((prev) => ({ ...prev, [id]: { status: "sent", message: msg } }));
   };
 
-  // Admin clears the request after reviewing provider's changes
   const handleMarkReviewed = (id: string) => {
     updateProvider(id, { changeRequest: null });
     setChangeRequestState((prev) => ({ ...prev, [id]: { status: "idle", message: "" } }));
@@ -127,7 +123,6 @@ const AdminPanel = () => {
     setSavedRows((prev) => ({ ...prev, [providerId]: false }));
   };
 
-  // Save plan — writes to providerStore so dashboard and public profile update
   const handleSaveProviderPlan = (providerId: string) => {
     const row = providerPlans[providerId];
     updateProvider(providerId, {
@@ -140,7 +135,6 @@ const AdminPanel = () => {
     setTimeout(() => setSavedRows((prev) => ({ ...prev, [providerId]: false })), 2000);
   };
 
-  // Providers with active change requests float to the top
   const sortedProviders = [...getAllProviders()].sort((a, b) => {
     const aActive = ["sent", "acknowledged"].includes(changeRequestState[a.id]?.status);
     const bActive = ["sent", "acknowledged"].includes(changeRequestState[b.id]?.status);
@@ -224,9 +218,7 @@ const AdminPanel = () => {
                     return (
                       <div
                         key={p.id}
-                        className={`rounded-xl border p-4 transition-colors ${
-                          hasActiveRequest ? "border-orange-500/40 bg-orange-500/[0.04]" : "border-border/60"
-                        }`}
+                        className={`rounded-xl border p-4 transition-colors ${hasActiveRequest ? "border-orange-500/40 bg-orange-500/[0.04]" : "border-border/60"}`}
                       >
                         <div className="flex items-center justify-between flex-wrap gap-2">
                           <div>
@@ -247,7 +239,6 @@ const AdminPanel = () => {
                               {p.typeBadge} · {p.location}
                             </p>
                           </div>
-
                           <div className="flex flex-wrap gap-2">
                             <Badge className="bg-navy-600 text-accent-foreground border-0 text-xs">
                               {p.category_type}
@@ -258,8 +249,6 @@ const AdminPanel = () => {
                             ) : (
                               <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">Active</Badge>
                             )}
-
-                            {/* Request Changes — hidden while a request is active */}
                             {!hasActiveRequest && (
                               <Button
                                 size="sm"
@@ -278,8 +267,6 @@ const AdminPanel = () => {
                                 {isComposing ? "Cancel" : "Request Changes"}
                               </Button>
                             )}
-
-                            {/* Mark Reviewed — shown once provider has confirmed */}
                             {isAcknowledged && (
                               <Button
                                 size="sm"
@@ -289,8 +276,6 @@ const AdminPanel = () => {
                                 Mark Reviewed
                               </Button>
                             )}
-
-                            {/* Suspend / Reinstate toggle */}
                             <Button
                               size="sm"
                               variant={isSuspended ? "outline" : "destructive"}
@@ -301,8 +286,6 @@ const AdminPanel = () => {
                             </Button>
                           </div>
                         </div>
-
-                        {/* Compose text box */}
                         {isComposing && (
                           <div className="mt-3 space-y-2">
                             <Textarea
@@ -327,8 +310,6 @@ const AdminPanel = () => {
                             </Button>
                           </div>
                         )}
-
-                        {/* Sent note preview */}
                         {(isSent || isAcknowledged) && (
                           <div className="mt-3 rounded-lg border border-orange-500/20 bg-orange-500/[0.08] px-3 py-2 text-sm text-orange-300">
                             <span className="font-medium text-orange-400">Your note: </span>
