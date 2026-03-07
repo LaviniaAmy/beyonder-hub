@@ -15,6 +15,8 @@ export interface EnquiryRecord {
   parentId: string;
   parentName: string;
   childAge: string;
+  childName: string; // optional, may be empty string
+  needs: string; // optional, may be empty string
   message: string;
   reply: string | null;
   messages: ThreadMessage[];
@@ -52,9 +54,11 @@ const seeded: EnquiryRecord[] = enquiries.map((e) => {
     enquiryId: e.id,
     providerId: e.providerId,
     providerName: e.providerName,
-    parentId: "parent-test", // ← fixed: matches stable id for test@parent.com
+    parentId: "parent-test",
     parentName: e.parentName,
     childAge: e.childAge,
+    childName: "",
+    needs: "",
     message: e.message,
     reply: e.reply ?? null,
     messages,
