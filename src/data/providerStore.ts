@@ -45,6 +45,24 @@ export interface EditableProvider {
   isVerified: boolean;
   isFeatured: boolean;
   ehcpSupport: boolean;
+  // 3.1 Session types (therapist)
+  sessionTypes: { name: string; duration: string; price: string }[];
+  // 3.2 Availability dates (therapist)
+  availabilityDates: string[];
+  // 4.1 Session capacity (club)
+  sessionCapacity: { session: string; capacity: string; spotsLeft: string }[];
+  // 4.2 Term programme (club + education)
+  termProgramme: { term: string; details: string }[];
+  // 5.1 Open days (education)
+  openDays: { title: string; date: string; description: string; rsvpLink: string }[];
+  // 5.2 EHCP & admissions info (education)
+  ehcpAdmissionsInfo: string;
+  // 5.3 Staff profiles (education)
+  staffProfiles: { name: string; role: string; bio: string }[];
+  // 6.1 Events (charity)
+  events: { title: string; date: string; type: "online" | "in-person"; description: string }[];
+  // 6.2 Volunteer info (charity)
+  volunteerInfo: string;
   // Pass-through (unchanged)
   type: string;
   category_type: string;
@@ -97,6 +115,15 @@ export const providerStore: EditableProvider[] = mockProviders.map((p) => ({
   isVerified: false,
   isFeatured: false,
   ehcpSupport: false,
+  sessionTypes: [],
+  availabilityDates: [],
+  sessionCapacity: [],
+  termProgramme: [],
+  openDays: [],
+  ehcpAdmissionsInfo: "",
+  staffProfiles: [],
+  events: [],
+  volunteerInfo: "",
   type: p.type,
   category_type: p.category_type,
   typeBadge: p.typeBadge,
