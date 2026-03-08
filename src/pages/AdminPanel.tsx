@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ShieldCheck, Star, Heart } from "lucide-react";
-import { providers, reviews } from "@/data/mockData";
+import { reviews } from "@/data/mockData";
 import {
   adminSettings,
   getFounderCount,
@@ -75,11 +75,17 @@ const AdminPanel = () => {
     ),
   );
 
+  // ── FIX: seed from providerStore (live in-memory state), not mockData ──
+  // mockData is the seeded snapshot; providerStore holds all runtime changes.
+  // Seeding from mockData caused plan changes to revert when re-entering admin.
   const [providerPlans, setProviderPlans] = useState<
     Record<string, { planType: string; planStatus: string; categoryType: string }>
   >(
     Object.fromEntries(
-      providers.map((p) => [p.id, { planType: p.plan_type, planStatus: p.plan_status, categoryType: p.category_type }]),
+      getAllProviders().map((p) => [
+        p.id,
+        { planType: p.plan_type, planStatus: p.plan_status, categoryType: p.category_type },
+      ]),
     ),
   );
   const [savedRows, setSavedRows] = useState<Record<string, boolean>>({});
@@ -475,13 +481,14 @@ const AdminPanel = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {providers.map((p) => {
+                  {getAllProviders().map((p) => {
                     const row = providerPlans[p.id];
+                    if (!row) return null;
                     return (
                       <div key={p.id} className="rounded-xl border border-border/60 p-5 space-y-3">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-medium">{p.name}</p>
+                            <p className="font-medium">{p.businessName}</p>
                             <p className="text-sm text-muted-foreground">{p.typeBadge}</p>
                           </div>
                           <div className="flex gap-2 flex-wrap justify-end">
