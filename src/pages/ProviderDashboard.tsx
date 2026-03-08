@@ -129,6 +129,29 @@ const ProviderDashboard = () => {
   const [newProductImageError, setNewProductImageError] = useState("");
   const newProductFileRef = useRef<HTMLInputElement | null>(null);
   const existingProductFileRefs = useRef<Record<number, HTMLInputElement | null>>({});
+  // 3.1 Session types
+  const [newSessionType, setNewSessionType] = useState({ name: "", duration: "", price: "" });
+  // 3.2 Availability dates
+  const [newAvailDate, setNewAvailDate] = useState("");
+  // 4.1 Session capacity
+  const [newCapacity, setNewCapacity] = useState({ session: "", capacity: "", spotsLeft: "" });
+  // 4.2 Term programme
+  const [newTerm, setNewTerm] = useState({ term: "", details: "" });
+  // 5.1 Open days
+  const [newOpenDay, setNewOpenDay] = useState({ title: "", date: "", description: "", rsvpLink: "" });
+  // 5.2 EHCP admissions
+  const [ehcpAdmissionsText, setEhcpAdmissionsText] = useState(storeProfile?.ehcpAdmissionsInfo ?? "");
+  // 5.3 Staff profiles
+  const [newStaff, setNewStaff] = useState({ name: "", role: "", bio: "" });
+  // 6.1 Events
+  const [newEvent, setNewEvent] = useState<{
+    title: string;
+    date: string;
+    type: "online" | "in-person";
+    description: string;
+  }>({ title: "", date: "", type: "in-person", description: "" });
+  // 6.2 Volunteer info
+  const [volunteerText, setVolunteerText] = useState(storeProfile?.volunteerInfo ?? "");
 
   const profile =
     storeProfile ??
@@ -616,62 +639,89 @@ const ProviderDashboard = () => {
         </Card>
 
         {/* Category Sections */}
-        {sections.map((section) => {
-          const enabled = isFeatureEnabled(section.featureKey);
-          return (
-            <Card key={section.key} className={`mb-6 border-0 shadow-card ${!enabled ? "opacity-60" : ""}`}>
-              <CardHeader className="flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  {getSectionIcon(section.key)}
-                  {section.label}
-                  {!enabled && <Lock className="h-4 w-4 text-muted-foreground" />}
-                </CardTitle>
-                {!enabled && (
-                  <Badge variant="outline" className="text-muted-foreground">
-                    Upgrade to unlock
-                  </Badge>
-                )}
-              </CardHeader>
-              <CardContent>
-                {enabled ? (
-                  section.key === "enquiries" ? (
-                    renderEnquiriesSection()
+        {sections
+          .filter((section) => section.key !== "referral_notes")
+          .map((section) => {
+            const enabled = isFeatureEnabled(section.featureKey);
+            return (
+              <Card key={section.key} className={`mb-6 border-0 shadow-card ${!enabled ? "opacity-60" : ""}`}>
+                <CardHeader className="flex-row items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    {getSectionIcon(section.key)}
+                    {section.label}
+                    {!enabled && <Lock className="h-4 w-4 text-muted-foreground" />}
+                  </CardTitle>
+                  {!enabled && (
+                    <Badge variant="outline" className="text-muted-foreground">
+                      Upgrade to unlock
+                    </Badge>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  {enabled ? (
+                    section.key === "enquiries" ? (
+                      renderEnquiriesSection()
+                    ) : (
+                      renderSectionContent(
+                        section.key,
+                        profile,
+                        moduleProfile,
+                        testimonials,
+                        handleAvailabilityChange,
+                        {
+                          newCert,
+                          setNewCert,
+                          newTimetable,
+                          setNewTimetable,
+                          spotlightMsg,
+                          setSpotlightMsg,
+                          storeUrl,
+                          setStoreUrl,
+                          newProduct,
+                          setNewProduct,
+                          newCaseStudy,
+                          setNewCaseStudy,
+                          updateProvider,
+                          providerId,
+                          forceUpdate,
+                          showSaved,
+                          handleGalleryUpload,
+                          galleryError,
+                          handleExistingProductImageUpload,
+                          handleExistingProductDescChange,
+                          handleNewProductImageUpload,
+                          productImageErrors,
+                          newProductImageError,
+                          existingProductFileRefs,
+                          newProductFileRef,
+                          newSessionType,
+                          setNewSessionType,
+                          newAvailDate,
+                          setNewAvailDate,
+                          newCapacity,
+                          setNewCapacity,
+                          newTerm,
+                          setNewTerm,
+                          newOpenDay,
+                          setNewOpenDay,
+                          ehcpAdmissionsText,
+                          setEhcpAdmissionsText,
+                          newStaff,
+                          setNewStaff,
+                          newEvent,
+                          setNewEvent,
+                          volunteerText,
+                          setVolunteerText,
+                        },
+                      )
+                    )
                   ) : (
-                    renderSectionContent(section.key, profile, moduleProfile, testimonials, handleAvailabilityChange, {
-                      newCert,
-                      setNewCert,
-                      newTimetable,
-                      setNewTimetable,
-                      spotlightMsg,
-                      setSpotlightMsg,
-                      storeUrl,
-                      setStoreUrl,
-                      newProduct,
-                      setNewProduct,
-                      newCaseStudy,
-                      setNewCaseStudy,
-                      updateProvider,
-                      providerId,
-                      forceUpdate,
-                      showSaved,
-                      handleGalleryUpload,
-                      galleryError,
-                      handleExistingProductImageUpload,
-                      handleExistingProductDescChange,
-                      handleNewProductImageUpload,
-                      productImageErrors,
-                      newProductImageError,
-                      existingProductFileRefs,
-                      newProductFileRef,
-                    })
-                  )
-                ) : (
-                  <p className="text-sm text-muted-foreground">Upgrade to access {section.label.toLowerCase()}.</p>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
+                    <p className="text-sm text-muted-foreground">Upgrade to access {section.label.toLowerCase()}.</p>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
 
         {/* ── EHCP Support Card — therapists only, always visible, gated by plan ── */}
         {isTherapist && (
@@ -933,6 +983,15 @@ function getSectionIcon(key: string) {
     spotlight: <Star className="h-4 w-4 text-orange-400" />,
     store_link: <LinkIcon className="h-4 w-4 text-teal-500" />,
     products: <ShoppingBag className="h-4 w-4 text-teal-500" />,
+    session_types: <FileText className="h-4 w-4 text-teal-500" />,
+    availability_dates: <Clock className="h-4 w-4 text-teal-500" />,
+    session_capacity: <Users className="h-4 w-4 text-teal-500" />,
+    term_programme: <FileText className="h-4 w-4 text-teal-500" />,
+    open_days: <Clock className="h-4 w-4 text-orange-400" />,
+    ehcp_admissions: <ShieldCheck className="h-4 w-4 text-orange-400" />,
+    staff_profiles: <Users className="h-4 w-4 text-teal-500" />,
+    events: <Star className="h-4 w-4 text-orange-400" />,
+    volunteer_info: <CheckCircle className="h-4 w-4 text-teal-500" />,
   };
   return icons[key] ?? null;
 }
@@ -971,6 +1030,24 @@ function renderSectionContent(
     newProductImageError,
     existingProductFileRefs,
     newProductFileRef,
+    newSessionType,
+    setNewSessionType,
+    newAvailDate,
+    setNewAvailDate,
+    newCapacity,
+    setNewCapacity,
+    newTerm,
+    setNewTerm,
+    newOpenDay,
+    setNewOpenDay,
+    ehcpAdmissionsText,
+    setEhcpAdmissionsText,
+    newStaff,
+    setNewStaff,
+    newEvent,
+    setNewEvent,
+    volunteerText,
+    setVolunteerText,
   } = ctx;
 
   switch (key) {
@@ -1439,6 +1516,545 @@ function renderSectionContent(
               Add Product
             </Button>
           </div>
+        </div>
+      );
+
+    case "session_types":
+      return (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            List the session types you offer so families know what to expect.
+          </p>
+          {(profile.sessionTypes ?? []).map((s: any, i: number) => (
+            <div
+              key={i}
+              className="flex items-center justify-between rounded-xl border border-border/60 px-4 py-3 text-sm"
+            >
+              <div className="flex gap-4">
+                <span className="font-medium">{s.name}</span>
+                <span className="text-muted-foreground">{s.duration}</span>
+                <span className="text-teal-500">{s.price}</span>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-red-400 h-6 px-2"
+                onClick={() => {
+                  updateProvider(providerId, {
+                    sessionTypes: profile.sessionTypes.filter((_: any, idx: number) => idx !== i),
+                  });
+                  forceUpdate((n: number) => n + 1);
+                }}
+              >
+                ✕
+              </Button>
+            </div>
+          ))}
+          <div className="grid grid-cols-3 gap-2 mt-2">
+            <Input
+              placeholder="e.g. Initial Assessment"
+              value={newSessionType.name}
+              onChange={(e) => setNewSessionType((s: any) => ({ ...s, name: e.target.value }))}
+            />
+            <Input
+              placeholder="e.g. 50 mins"
+              value={newSessionType.duration}
+              onChange={(e) => setNewSessionType((s: any) => ({ ...s, duration: e.target.value }))}
+            />
+            <Input
+              placeholder="e.g. £75"
+              value={newSessionType.price}
+              onChange={(e) => setNewSessionType((s: any) => ({ ...s, price: e.target.value }))}
+            />
+          </div>
+          <Button
+            size="sm"
+            className="bg-teal-500 hover:bg-teal-400"
+            onClick={() => {
+              if (!newSessionType.name || !newSessionType.duration || !newSessionType.price) return;
+              updateProvider(providerId, { sessionTypes: [...(profile.sessionTypes ?? []), newSessionType] });
+              setNewSessionType({ name: "", duration: "", price: "" });
+              forceUpdate((n: number) => n + 1);
+              showSaved();
+            }}
+          >
+            Add Session Type
+          </Button>
+        </div>
+      );
+
+    case "availability_dates":
+      return (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Add specific dates you have availability so families know when to enquire.
+          </p>
+          {(profile.availabilityDates ?? []).length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {profile.availabilityDates.map((d: string, i: number) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-1 rounded-full border border-teal-500/40 bg-teal-500/10 px-3 py-1 text-xs text-teal-400"
+                >
+                  {new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                  <button
+                    onClick={() => {
+                      updateProvider(providerId, {
+                        availabilityDates: profile.availabilityDates.filter((_: any, idx: number) => idx !== i),
+                      });
+                      forceUpdate((n: number) => n + 1);
+                    }}
+                    className="ml-1 text-muted-foreground hover:text-red-400 transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-2">
+            <Input
+              type="date"
+              value={newAvailDate}
+              onChange={(e) => setNewAvailDate(e.target.value)}
+              className="max-w-[200px]"
+            />
+            <Button
+              size="sm"
+              className="bg-teal-500 hover:bg-teal-400"
+              disabled={!newAvailDate || (profile.availabilityDates ?? []).includes(newAvailDate)}
+              onClick={() => {
+                updateProvider(providerId, {
+                  availabilityDates: [...(profile.availabilityDates ?? []), newAvailDate].sort(),
+                });
+                setNewAvailDate("");
+                forceUpdate((n: number) => n + 1);
+                showSaved();
+              }}
+            >
+              Add Date
+            </Button>
+          </div>
+        </div>
+      );
+
+    case "session_capacity":
+      return (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">Show families how many spaces are available in each session.</p>
+          {(profile.sessionCapacity ?? []).map((s: any, i: number) => (
+            <div
+              key={i}
+              className="flex items-center justify-between rounded-xl border border-border/60 px-4 py-3 text-sm"
+            >
+              <div className="flex gap-4">
+                <span className="font-medium">{s.session}</span>
+                <span className="text-muted-foreground">Capacity: {s.capacity}</span>
+                <span className={parseInt(s.spotsLeft) === 0 ? "text-red-400" : "text-emerald-400"}>
+                  {parseInt(s.spotsLeft) === 0 ? "Full" : `${s.spotsLeft} spots left`}
+                </span>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-red-400 h-6 px-2"
+                onClick={() => {
+                  updateProvider(providerId, {
+                    sessionCapacity: profile.sessionCapacity.filter((_: any, idx: number) => idx !== i),
+                  });
+                  forceUpdate((n: number) => n + 1);
+                }}
+              >
+                ✕
+              </Button>
+            </div>
+          ))}
+          <div className="grid grid-cols-3 gap-2 mt-2">
+            <Input
+              placeholder="Session name"
+              value={newCapacity.session}
+              onChange={(e) => setNewCapacity((c: any) => ({ ...c, session: e.target.value }))}
+            />
+            <Input
+              placeholder="Total capacity"
+              value={newCapacity.capacity}
+              onChange={(e) => setNewCapacity((c: any) => ({ ...c, capacity: e.target.value }))}
+            />
+            <Input
+              placeholder="Spots left"
+              value={newCapacity.spotsLeft}
+              onChange={(e) => setNewCapacity((c: any) => ({ ...c, spotsLeft: e.target.value }))}
+            />
+          </div>
+          <Button
+            size="sm"
+            className="bg-teal-500 hover:bg-teal-400"
+            onClick={() => {
+              if (!newCapacity.session || !newCapacity.capacity || !newCapacity.spotsLeft) return;
+              updateProvider(providerId, { sessionCapacity: [...(profile.sessionCapacity ?? []), newCapacity] });
+              setNewCapacity({ session: "", capacity: "", spotsLeft: "" });
+              forceUpdate((n: number) => n + 1);
+              showSaved();
+            }}
+          >
+            Add Session
+          </Button>
+        </div>
+      );
+
+    case "term_programme":
+      return (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">Share your term-by-term programme so families can plan ahead.</p>
+          {(profile.termProgramme ?? []).map((t: any, i: number) => (
+            <div key={i} className="rounded-xl border border-border/60 p-4 text-sm">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-medium">{t.term}</p>
+                  <p className="text-muted-foreground mt-1 leading-relaxed">{t.details}</p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-red-400 h-6 px-2 shrink-0"
+                  onClick={() => {
+                    updateProvider(providerId, {
+                      termProgramme: profile.termProgramme.filter((_: any, idx: number) => idx !== i),
+                    });
+                    forceUpdate((n: number) => n + 1);
+                  }}
+                >
+                  ✕
+                </Button>
+              </div>
+            </div>
+          ))}
+          <div className="space-y-2 mt-2">
+            <Input
+              placeholder="Term name e.g. Autumn Term 2025"
+              value={newTerm.term}
+              onChange={(e) => setNewTerm((t: any) => ({ ...t, term: e.target.value }))}
+            />
+            <Textarea
+              placeholder="Programme details..."
+              rows={3}
+              value={newTerm.details}
+              onChange={(e) => setNewTerm((t: any) => ({ ...t, details: e.target.value }))}
+            />
+          </div>
+          <Button
+            size="sm"
+            className="bg-teal-500 hover:bg-teal-400"
+            onClick={() => {
+              if (!newTerm.term || !newTerm.details) return;
+              updateProvider(providerId, { termProgramme: [...(profile.termProgramme ?? []), newTerm] });
+              setNewTerm({ term: "", details: "" });
+              forceUpdate((n: number) => n + 1);
+              showSaved();
+            }}
+          >
+            Add Term
+          </Button>
+        </div>
+      );
+
+    case "open_days":
+      return (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">Schedule open days so families can come and visit.</p>
+          {(profile.openDays ?? []).map((o: any, i: number) => (
+            <div key={i} className="rounded-xl border border-border/60 p-4 text-sm space-y-1">
+              <div className="flex items-start justify-between gap-2">
+                <div className="space-y-1">
+                  <p className="font-medium">{o.title}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {o.date
+                      ? new Date(o.date).toLocaleDateString("en-GB", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })
+                      : ""}
+                  </p>
+                  {o.description && <p className="text-muted-foreground leading-relaxed">{o.description}</p>}
+                  {o.rsvpLink && (
+                    <a
+                      href={o.rsvpLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-teal-400 text-xs underline"
+                    >
+                      RSVP Link
+                    </a>
+                  )}
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-red-400 h-6 px-2 shrink-0"
+                  onClick={() => {
+                    updateProvider(providerId, {
+                      openDays: profile.openDays.filter((_: any, idx: number) => idx !== i),
+                    });
+                    forceUpdate((n: number) => n + 1);
+                  }}
+                >
+                  ✕
+                </Button>
+              </div>
+            </div>
+          ))}
+          <div className="space-y-2 mt-2">
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                placeholder="Event title"
+                value={newOpenDay.title}
+                onChange={(e) => setNewOpenDay((o: any) => ({ ...o, title: e.target.value }))}
+              />
+              <Input
+                type="date"
+                value={newOpenDay.date}
+                onChange={(e) => setNewOpenDay((o: any) => ({ ...o, date: e.target.value }))}
+              />
+            </div>
+            <Textarea
+              placeholder="Brief description..."
+              rows={2}
+              value={newOpenDay.description}
+              onChange={(e) => setNewOpenDay((o: any) => ({ ...o, description: e.target.value }))}
+            />
+            <Input
+              placeholder="RSVP link (optional)"
+              value={newOpenDay.rsvpLink}
+              onChange={(e) => setNewOpenDay((o: any) => ({ ...o, rsvpLink: e.target.value }))}
+            />
+          </div>
+          <Button
+            size="sm"
+            className="bg-teal-500 hover:bg-teal-400"
+            onClick={() => {
+              if (!newOpenDay.title || !newOpenDay.date) return;
+              updateProvider(providerId, { openDays: [...(profile.openDays ?? []), newOpenDay] });
+              setNewOpenDay({ title: "", date: "", description: "", rsvpLink: "" });
+              forceUpdate((n: number) => n + 1);
+              showSaved();
+            }}
+          >
+            Add Open Day
+          </Button>
+        </div>
+      );
+
+    case "ehcp_admissions":
+      return (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Share information about your EHCP process and admissions criteria to help families understand how to apply.
+          </p>
+          <Textarea
+            rows={6}
+            placeholder="e.g. We welcome children with EHCPs. Our admissions process begins with an informal visit, followed by a formal application to the Local Authority..."
+            value={ehcpAdmissionsText}
+            onChange={(e) => setEhcpAdmissionsText(e.target.value)}
+          />
+          <Button
+            size="sm"
+            className="bg-teal-500 hover:bg-teal-400"
+            onClick={() => {
+              updateProvider(providerId, { ehcpAdmissionsInfo: ehcpAdmissionsText });
+              forceUpdate((n: number) => n + 1);
+              showSaved();
+            }}
+          >
+            Save
+          </Button>
+        </div>
+      );
+
+    case "staff_profiles":
+      return (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Introduce your team so families can feel confident about who will be supporting their child.
+          </p>
+          {(profile.staffProfiles ?? []).map((s: any, i: number) => (
+            <div key={i} className="rounded-xl border border-border/60 p-4 text-sm">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-medium">{s.name}</p>
+                  <p className="text-xs text-teal-400 mt-0.5">{s.role}</p>
+                  <p className="text-muted-foreground mt-1 leading-relaxed">{s.bio}</p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-red-400 h-6 px-2 shrink-0"
+                  onClick={() => {
+                    updateProvider(providerId, {
+                      staffProfiles: profile.staffProfiles.filter((_: any, idx: number) => idx !== i),
+                    });
+                    forceUpdate((n: number) => n + 1);
+                  }}
+                >
+                  ✕
+                </Button>
+              </div>
+            </div>
+          ))}
+          <div className="space-y-2 mt-2">
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                placeholder="Full name"
+                value={newStaff.name}
+                onChange={(e) => setNewStaff((s: any) => ({ ...s, name: e.target.value }))}
+              />
+              <Input
+                placeholder="Role e.g. SENCO"
+                value={newStaff.role}
+                onChange={(e) => setNewStaff((s: any) => ({ ...s, role: e.target.value }))}
+              />
+            </div>
+            <Textarea
+              placeholder="Short bio..."
+              rows={2}
+              value={newStaff.bio}
+              onChange={(e) => setNewStaff((s: any) => ({ ...s, bio: e.target.value }))}
+            />
+          </div>
+          <Button
+            size="sm"
+            className="bg-teal-500 hover:bg-teal-400"
+            onClick={() => {
+              if (!newStaff.name || !newStaff.role) return;
+              updateProvider(providerId, { staffProfiles: [...(profile.staffProfiles ?? []), newStaff] });
+              setNewStaff({ name: "", role: "", bio: "" });
+              forceUpdate((n: number) => n + 1);
+              showSaved();
+            }}
+          >
+            Add Staff Member
+          </Button>
+        </div>
+      );
+
+    case "events":
+      return (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">List upcoming events so families know how to get involved.</p>
+          {(profile.events ?? []).map((ev: any, i: number) => (
+            <div key={i} className="rounded-xl border border-border/60 p-4 text-sm space-y-1">
+              <div className="flex items-start justify-between gap-2">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">{ev.title}</p>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full border ${ev.type === "online" ? "border-teal-500/40 text-teal-400" : "border-orange-400/40 text-orange-400"}`}
+                    >
+                      {ev.type}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {ev.date
+                      ? new Date(ev.date).toLocaleDateString("en-GB", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })
+                      : ""}
+                  </p>
+                  {ev.description && <p className="text-muted-foreground leading-relaxed">{ev.description}</p>}
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-red-400 h-6 px-2 shrink-0"
+                  onClick={() => {
+                    updateProvider(providerId, { events: profile.events.filter((_: any, idx: number) => idx !== i) });
+                    forceUpdate((n: number) => n + 1);
+                  }}
+                >
+                  ✕
+                </Button>
+              </div>
+            </div>
+          ))}
+          <div className="space-y-2 mt-2">
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                placeholder="Event title"
+                value={newEvent.title}
+                onChange={(e) => setNewEvent((ev: any) => ({ ...ev, title: e.target.value }))}
+              />
+              <Input
+                type="date"
+                value={newEvent.date}
+                onChange={(e) => setNewEvent((ev: any) => ({ ...ev, date: e.target.value }))}
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setNewEvent((ev: any) => ({ ...ev, type: "in-person" }))}
+                className={`rounded-full px-3 py-1 text-xs border transition-colors ${newEvent.type === "in-person" ? "bg-orange-400/15 border-orange-400/50 text-orange-400" : "border-border/60 text-muted-foreground"}`}
+              >
+                In-person
+              </button>
+              <button
+                type="button"
+                onClick={() => setNewEvent((ev: any) => ({ ...ev, type: "online" }))}
+                className={`rounded-full px-3 py-1 text-xs border transition-colors ${newEvent.type === "online" ? "bg-teal-500/15 border-teal-500/50 text-teal-400" : "border-border/60 text-muted-foreground"}`}
+              >
+                Online
+              </button>
+            </div>
+            <Textarea
+              placeholder="Event description..."
+              rows={2}
+              value={newEvent.description}
+              onChange={(e) => setNewEvent((ev: any) => ({ ...ev, description: e.target.value }))}
+            />
+          </div>
+          <Button
+            size="sm"
+            className="bg-teal-500 hover:bg-teal-400"
+            onClick={() => {
+              if (!newEvent.title || !newEvent.date) return;
+              updateProvider(providerId, { events: [...(profile.events ?? []), newEvent] });
+              setNewEvent({ title: "", date: "", type: "in-person", description: "" });
+              forceUpdate((n: number) => n + 1);
+              showSaved();
+            }}
+          >
+            Add Event
+          </Button>
+        </div>
+      );
+
+    case "volunteer_info":
+      return (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Tell families how they or their community can volunteer or get involved with your charity.
+          </p>
+          <Textarea
+            rows={6}
+            placeholder="e.g. We're always looking for volunteers to help at our weekly sessions. No experience needed — just a passion for supporting children with SEND..."
+            value={volunteerText}
+            onChange={(e) => setVolunteerText(e.target.value)}
+          />
+          <Button
+            size="sm"
+            className="bg-teal-500 hover:bg-teal-400"
+            onClick={() => {
+              updateProvider(providerId, { volunteerInfo: volunteerText });
+              forceUpdate((n: number) => n + 1);
+              showSaved();
+            }}
+          >
+            Save
+          </Button>
         </div>
       );
 
