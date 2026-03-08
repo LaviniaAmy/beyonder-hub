@@ -13,6 +13,8 @@ import {
   AlertTriangle,
   ClipboardList,
   Upload,
+  NotebookPen,
+  ShieldCheck,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -153,6 +155,7 @@ const ProviderDashboard = () => {
           moderationStatus: "active" as const,
           suspendedMessage: "",
           changeRequest: null,
+          ehcpSupport: false,
         }
       : null);
 
@@ -195,13 +198,20 @@ const ProviderDashboard = () => {
   const sections = categorySections[profile.category_type as keyof typeof categorySections] ?? [];
   const testimonials = providerTestimonials.filter((t) => t.provider_id === providerId);
 
+  const isTherapist = profile.category_type === "therapist";
+
+  // ── Feature gating helpers ──
+  const planGate = { plan_type: profile.plan_type as any, plan_status: profile.plan_status as any };
+
   const isFeatureEnabled = (featureKey?: string) => {
     if (!featureKey) return true;
-    return hasFeature(
-      { plan_type: profile.plan_type as any, plan_status: profile.plan_status as any },
-      featureKey as any,
-    );
+    return hasFeature(planGate, featureKey as any);
   };
+
+  const isPaidPlan = profile.plan_type === "founder" || profile.plan_type === "professional";
+
+  const hasReferralNotes = isPaidPlan;
+  const hasEhcpToggle = isPaidPlan && isTherapist;
 
   const showSaved = (msg = "Saved ✓") => {
     setSavedMsg(msg);
@@ -233,6 +243,12 @@ const ProviderDashboard = () => {
 
   const handleNotesSave = (enquiryId: string, notes: string) => {
     updateProviderNotes(enquiryId, notes);
+  };
+
+  const handleEhcpToggle = () => {
+    updateProvider(providerId, { ehcpSupport: !profile.ehcpSupport });
+    forceUpdate((n) => n + 1);
+    showSaved(profile.ehcpSupport ? "EHCP support removed ✓" : "EHCP support enabled ✓");
   };
 
   const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -336,7 +352,6 @@ const ProviderDashboard = () => {
       const atCap = (selectedEnquiry.messageCount ?? 0) >= 4;
       return (
         <div className="space-y-3">
-          {/* Thread header */}
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">{selectedEnquiry.parentName}</p>
@@ -360,7 +375,6 @@ const ProviderDashboard = () => {
             </Button>
           </div>
 
-          {/* Full thread */}
           <div className="space-y-2">
             {(selectedEnquiry.messages ?? []).length > 0 ? (
               selectedEnquiry.messages.map((msg) => (
@@ -392,7 +406,6 @@ const ProviderDashboard = () => {
             )}
           </div>
 
-          {/* Reply input */}
           {atCap ? (
             <div className="rounded-xl border border-border/40 bg-muted/20 p-4 text-center">
               <p className="text-sm text-muted-foreground">This conversation has reached its limit.</p>
@@ -428,29 +441,31 @@ const ProviderDashboard = () => {
             </div>
           )}
 
-          {/* ── Referral Notes — private, never parent-facing ── */}
-          <div className="mt-4 rounded-xl border border-border/40 bg-muted/10 p-4 space-y-2">
-            <div className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-muted-foreground" />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Referral Notes</p>
-              <Badge variant="outline" className="text-xs text-muted-foreground border-border/40 ml-auto">
-                Private — not visible to families
-              </Badge>
+          {/* Referral Notes — paid plans only, never parent-facing */}
+          {hasReferralNotes && (
+            <div className="mt-4 rounded-xl border border-border/40 bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center gap-2">
+                <NotebookPen className="h-4 w-4 text-muted-foreground" />
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Referral Notes</p>
+                <Badge variant="outline" className="text-xs text-muted-foreground border-border/40 ml-auto">
+                  Private — not visible to families
+                </Badge>
+              </div>
+              <Textarea
+                value={notesText || selectedEnquiry.providerNotes}
+                onChange={(e) => {
+                  if (e.target.value.length <= MAX_NOTES) setNotesText(e.target.value);
+                }}
+                onBlur={() => handleNotesSave(selectedEnquiry.enquiryId, notesText || selectedEnquiry.providerNotes)}
+                placeholder="Add private notes about this enquiry, referral source, next steps..."
+                rows={3}
+                className="text-sm bg-transparent"
+              />
+              <p className="text-right text-xs text-muted-foreground/50">
+                {(notesText || selectedEnquiry.providerNotes).length}/{MAX_NOTES} · auto-saves on blur
+              </p>
             </div>
-            <Textarea
-              value={notesText || selectedEnquiry.providerNotes}
-              onChange={(e) => {
-                if (e.target.value.length <= MAX_NOTES) setNotesText(e.target.value);
-              }}
-              onBlur={() => handleNotesSave(selectedEnquiry.enquiryId, notesText || selectedEnquiry.providerNotes)}
-              placeholder="Add private notes about this enquiry, referral source, next steps..."
-              rows={3}
-              className="text-sm bg-transparent"
-            />
-            <p className="text-right text-xs text-muted-foreground/50">
-              {(notesText || selectedEnquiry.providerNotes).length}/{MAX_NOTES} · auto-saves on blur
-            </p>
-          </div>
+          )}
         </div>
       );
     }
@@ -546,6 +561,7 @@ const ProviderDashboard = () => {
           </div>
         )}
 
+        {/* Profile Card */}
         <Card className="mb-6 border-0 shadow-card">
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle>Your Profile</CardTitle>
@@ -599,6 +615,7 @@ const ProviderDashboard = () => {
           </CardContent>
         </Card>
 
+        {/* Category Sections */}
         {sections.map((section) => {
           const enabled = isFeatureEnabled(section.featureKey);
           return (
@@ -656,6 +673,105 @@ const ProviderDashboard = () => {
           );
         })}
 
+        {/* ── EHCP Support Card — therapists only, always visible, gated by plan ── */}
+        {isTherapist && (
+          <Card className={`mb-6 border-0 shadow-card ${!isPaidPlan ? "opacity-60" : ""}`}>
+            <CardHeader className="flex-row items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-orange-400" />
+                EHCP Support
+                {!isPaidPlan && <Lock className="h-4 w-4 text-muted-foreground" />}
+              </CardTitle>
+              {!isPaidPlan ? (
+                <Badge variant="outline" className="text-muted-foreground">
+                  Upgrade to unlock
+                </Badge>
+              ) : profile.ehcpSupport ? (
+                <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs">Active</Badge>
+              ) : (
+                <Badge variant="outline" className="text-muted-foreground text-xs">
+                  Inactive
+                </Badge>
+              )}
+            </CardHeader>
+            <CardContent>
+              {isPaidPlan ? (
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Enabling EHCP support adds an orange badge to your profile and listing, helping families with
+                    Education, Health and Care Plans find you more easily.
+                  </p>
+                  <div className="flex items-center justify-between rounded-xl border border-border/60 bg-muted/10 px-4 py-3">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {profile.ehcpSupport ? "EHCP support is enabled" : "EHCP support is disabled"}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {profile.ehcpSupport
+                          ? "Your profile shows the EHCP Supported badge"
+                          : "Toggle on to show the EHCP Supported badge on your profile"}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleEhcpToggle}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
+                        profile.ehcpSupport ? "bg-orange-400" : "bg-muted-foreground/30"
+                      }`}
+                      role="switch"
+                      aria-checked={profile.ehcpSupport}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transform transition-transform duration-200 ${
+                          profile.ehcpSupport ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Upgrade to founder or professional to display the EHCP Supported badge on your profile.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* ── Referral Notes Card — always visible, gated by plan ── */}
+        <Card className={`mb-6 border-0 shadow-card ${!hasReferralNotes ? "opacity-60" : ""}`}>
+          <CardHeader className="flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <NotebookPen className="h-4 w-4 text-teal-500" />
+              Referral Notes
+              {!hasReferralNotes && <Lock className="h-4 w-4 text-muted-foreground" />}
+            </CardTitle>
+            {!hasReferralNotes ? (
+              <Badge variant="outline" className="text-muted-foreground">
+                Upgrade to unlock
+              </Badge>
+            ) : (
+              <Badge className="bg-emerald-500/15 text-emerald-400 border-0 text-xs">Active</Badge>
+            )}
+          </CardHeader>
+          <CardContent>
+            {hasReferralNotes ? (
+              <div className="flex items-start gap-3">
+                <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Referral notes are active within your message threads. Open any enquiry to add private notes — these
+                  are never visible to families.
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Upgrade to founder or professional to add private referral notes to your enquiry threads.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Plan Card */}
         <Card className="border-0 shadow-card">
           <CardHeader>
             <CardTitle>Your Plan</CardTitle>
@@ -1330,5 +1446,16 @@ function renderSectionContent(
       return <p className="text-sm text-muted-foreground">Coming soon.</p>;
   }
 }
+
+// Need to expose AVAILABILITY_OPTIONS outside component scope for renderSectionContent
+const AVAILABILITY_OPTIONS: { value: AvailabilityStatus; label: string; description: string }[] = [
+  { value: "accepting", label: "Accepting Clients", description: "Open to new clients now" },
+  {
+    value: "waitlist",
+    label: "Waitlist Only",
+    description: "Not taking new clients directly, but accepting waitlist enquiries",
+  },
+  { value: "closed", label: "Closed", description: "Not accepting new clients or waitlist enquiries at this time" },
+];
 
 export default ProviderDashboard;
