@@ -1447,15 +1447,4 @@ function renderSectionContent(
   }
 }
 
-// Need to expose AVAILABILITY_OPTIONS outside component scope for renderSectionContent
-const AVAILABILITY_OPTIONS: { value: AvailabilityStatus; label: string; description: string }[] = [
-  { value: "accepting", label: "Accepting Clients", description: "Open to new clients now" },
-  {
-    value: "waitlist",
-    label: "Waitlist Only",
-    description: "Not taking new clients directly, but accepting waitlist enquiries",
-  },
-  { value: "closed", label: "Closed", description: "Not accepting new clients or waitlist enquiries at this time" },
-];
-
 export default ProviderDashboard;
