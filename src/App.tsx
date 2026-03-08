@@ -23,6 +23,7 @@ import GuidesPage from "./pages/GuidesPage";
 import NewsPage from "./pages/NewsPage";
 import CommunityPage from "./pages/CommunityPage";
 import NotFound from "./pages/NotFound";
+import TestGuidePage from "./pages/TestGuidePage";
 
 const queryClient = new QueryClient();
 
