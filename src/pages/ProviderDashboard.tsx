@@ -711,6 +711,7 @@ const ProviderDashboard = () => {
                           showSaved,
                           handleGalleryUpload,
                           galleryError,
+                          savedMsg,
                           handleExistingProductImageUpload,
                           handleExistingProductDescChange,
                           handleNewProductImageUpload,
@@ -1047,6 +1048,7 @@ function renderSectionContent(
     showSaved,
     handleGalleryUpload,
     galleryError,
+    savedMsg,
     handleExistingProductImageUpload,
     handleExistingProductDescChange,
     handleNewProductImageUpload,
@@ -1359,7 +1361,7 @@ function renderSectionContent(
               showSaved();
             }}
           >
-            Save Message
+            {savedMsg ? "Saved ✓" : "Save Message"}
           </Button>
         </div>
       );
@@ -1893,7 +1895,7 @@ function renderSectionContent(
               showSaved();
             }}
           >
-            Save
+            {savedMsg ? "Saved ✓" : "Save"}
           </Button>
         </div>
       );
@@ -2080,7 +2082,7 @@ function renderSectionContent(
               showSaved();
             }}
           >
-            Save
+            {savedMsg ? "Saved ✓" : "Save"}
           </Button>
         </div>
       );
