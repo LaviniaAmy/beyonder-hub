@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   MapPin,
@@ -15,8 +16,9 @@ import {
   ShoppingBag,
   Heart,
   Users,
-  FileText,
   Calendar,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +27,7 @@ import { reviews } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
 import { attemptClaim, isProviderClaimed } from "@/data/founderStore";
 import { getProvider } from "@/data/providerStore";
+import { hasFeature } from "@/lib/featureGating";
 import type { AvailabilityStatus } from "@/data/providerStore";
 
 const availabilityConfig: Record<
@@ -65,6 +68,10 @@ const ProviderPage = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
+  // Track which events are expanded
+  const [expandedEvents, setExpandedEvents] = useState<Record<number, boolean>>({});
+  const toggleEvent = (i: number) => setExpandedEvents((prev) => ({ ...prev, [i]: !prev[i] }));
+
   const provider = getProvider(id ?? "");
   const providerReviews = reviews.filter((r) => r.providerId === id);
 
@@ -87,6 +94,10 @@ const ProviderPage = () => {
   const isCharity = provider.category_type === "charity";
   const availStatus = provider.availabilityStatus ?? "accepting";
   const availInfo = availabilityConfig[availStatus];
+
+  // ── Plan gate — paid features only show publicly when provider is on a paid plan ──
+  const planGate = { plan_type: provider.plan_type as any, plan_status: provider.plan_status as any };
+  const canShow = (featureKey: string) => hasFeature(planGate, featureKey as any);
 
   const handleClaim = () => {
     if (!isAuthenticated || user?.role !== "provider") {
@@ -193,9 +204,9 @@ const ProviderPage = () => {
       </section>
 
       <div className="container mt-10 grid gap-8 lg:grid-cols-3">
-        {/* Main column */}
+        {/* ── Main column ── */}
         <div className="space-y-6 lg:col-span-2">
-          {/* Overview */}
+          {/* Overview — always visible */}
           <Card className="border-0 shadow-card">
             <CardHeader>
               <CardTitle>Overview</CardTitle>
@@ -220,8 +231,8 @@ const ProviderPage = () => {
             </CardContent>
           </Card>
 
-          {/* Spotlight */}
-          {provider.spotlightMessage && (
+          {/* Spotlight — paid */}
+          {canShow("spotlight") && provider.spotlightMessage && (
             <Card className="border-0 shadow-card border-l-4 border-l-teal-500">
               <CardContent className="p-5">
                 <p className="text-sm font-semibold text-teal-500 mb-2">From the team</p>
@@ -230,8 +241,8 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* 3.1 Session Types — therapist */}
-          {isTherapist && provider.sessionTypes && provider.sessionTypes.length > 0 && (
+          {/* 3.1 Session Types — therapist, paid */}
+          {isTherapist && canShow("session_types") && provider.sessionTypes && provider.sessionTypes.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle>Session Types</CardTitle>
@@ -258,27 +269,30 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* 3.2 Availability Dates — therapist */}
-          {isTherapist && provider.availabilityDates && provider.availabilityDates.length > 0 && (
-            <Card className="border-0 shadow-card">
-              <CardHeader>
-                <CardTitle>Available Dates</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {provider.availabilityDates.map((d, i) => (
-                    <Badge key={i} className="bg-teal-500/10 text-teal-400 border border-teal-500/30 gap-1">
-                      <Calendar className="h-3 w-3" />
-                      {new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* 3.2 Availability Dates — therapist, paid */}
+          {isTherapist &&
+            canShow("availability_dates") &&
+            provider.availabilityDates &&
+            provider.availabilityDates.length > 0 && (
+              <Card className="border-0 shadow-card">
+                <CardHeader>
+                  <CardTitle>Available Dates</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {provider.availabilityDates.map((d, i) => (
+                      <Badge key={i} className="bg-teal-500/10 text-teal-400 border border-teal-500/30 gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-          {/* Credentials */}
-          {provider.credentials && provider.credentials.length > 0 && (
+          {/* Credentials — paid */}
+          {canShow("certifications") && provider.credentials && provider.credentials.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle>Credentials & Qualifications</CardTitle>
@@ -296,8 +310,8 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* Timetable */}
-          {provider.timetable && provider.timetable.length > 0 && (
+          {/* Timetable — paid */}
+          {canShow("timetable") && provider.timetable && provider.timetable.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle>Timetable</CardTitle>
@@ -317,8 +331,8 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* 4.1 Session Capacity — club */}
-          {isClub && provider.sessionCapacity && provider.sessionCapacity.length > 0 && (
+          {/* 4.1 Session Capacity — club, paid */}
+          {isClub && canShow("session_capacity") && provider.sessionCapacity && provider.sessionCapacity.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle>Session Availability</CardTitle>
@@ -348,25 +362,28 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* 4.2 / 5.x Term Programme — club + education */}
-          {(isClub || isEducation) && provider.termProgramme && provider.termProgramme.length > 0 && (
-            <Card className="border-0 shadow-card">
-              <CardHeader>
-                <CardTitle>Term Programme</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {provider.termProgramme.map((t, i) => (
-                  <div key={i} className="border-l-2 border-teal-500 pl-4">
-                    <p className="font-medium text-sm">{t.term}</p>
-                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{t.details}</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+          {/* 4.2 / 5.x Term Programme — club + education, paid */}
+          {(isClub || isEducation) &&
+            canShow("term_programme") &&
+            provider.termProgramme &&
+            provider.termProgramme.length > 0 && (
+              <Card className="border-0 shadow-card">
+                <CardHeader>
+                  <CardTitle>Term Programme</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {provider.termProgramme.map((t, i) => (
+                    <div key={i} className="border-l-2 border-teal-500 pl-4">
+                      <p className="font-medium text-sm">{t.term}</p>
+                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{t.details}</p>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
 
-          {/* 5.1 Open Days — education */}
-          {isEducation && provider.openDays && provider.openDays.length > 0 && (
+          {/* 5.1 Open Days — education, paid */}
+          {isEducation && canShow("open_days") && provider.openDays && provider.openDays.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle>Open Days</CardTitle>
@@ -409,8 +426,8 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* 5.2 EHCP & Admissions — education */}
-          {isEducation && provider.ehcpAdmissionsInfo && (
+          {/* 5.2 EHCP & Admissions — education, paid */}
+          {isEducation && canShow("ehcp_admissions") && provider.ehcpAdmissionsInfo && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -425,8 +442,8 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* 5.3 Staff Profiles — education */}
-          {isEducation && provider.staffProfiles && provider.staffProfiles.length > 0 && (
+          {/* 5.3 Staff Profiles — education, paid */}
+          {isEducation && canShow("staff_profiles") && provider.staffProfiles && provider.staffProfiles.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -452,8 +469,8 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* Case Studies */}
-          {provider.caseStudies && provider.caseStudies.length > 0 && (
+          {/* Case Studies — paid */}
+          {canShow("case_studies") && provider.caseStudies && provider.caseStudies.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle>Education Details</CardTitle>
@@ -469,8 +486,8 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* Gallery */}
-          {provider.gallery && provider.gallery.length > 0 && (
+          {/* Gallery — paid */}
+          {canShow("gallery") && provider.gallery && provider.gallery.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle>Gallery</CardTitle>
@@ -487,47 +504,66 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* 6.1 Events — charity */}
-          {isCharity && provider.events && provider.events.length > 0 && (
+          {/* 6.1 Events — charity, paid. Collapsed list, click to expand */}
+          {isCharity && canShow("events") && provider.events && provider.events.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-orange-400" /> Events
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {provider.events.map((ev, i) => (
-                  <div key={i} className="rounded-xl border border-border/60 p-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-medium text-sm">{ev.title}</p>
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full border ${ev.type === "online" ? "border-teal-500/40 text-teal-400" : "border-orange-400/40 text-orange-400"}`}
+              <CardContent className="space-y-2">
+                {provider.events.map((ev, i) => {
+                  const isOpen = !!expandedEvents[i];
+                  return (
+                    <div key={i} className="rounded-xl border border-border/60 overflow-hidden">
+                      {/* Summary row — always visible, click to expand */}
+                      <button
+                        type="button"
+                        className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-muted/10 transition-colors"
+                        onClick={() => toggleEvent(i)}
                       >
-                        {ev.type}
-                      </span>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span
+                            className={`shrink-0 text-xs px-2 py-0.5 rounded-full border ${ev.type === "online" ? "border-teal-500/40 text-teal-400" : "border-orange-400/40 text-orange-400"}`}
+                          >
+                            {ev.type}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="font-medium text-sm truncate">{ev.title}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {ev.date
+                                ? new Date(ev.date).toLocaleDateString("en-GB", {
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                  })
+                                : ""}
+                            </p>
+                          </div>
+                        </div>
+                        {isOpen ? (
+                          <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+                        )}
+                      </button>
+
+                      {/* Expanded detail */}
+                      {isOpen && ev.description && (
+                        <div className="px-4 pb-4 pt-1 border-t border-border/40">
+                          <p className="text-sm text-muted-foreground leading-relaxed">{ev.description}</p>
+                        </div>
+                      )}
                     </div>
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Calendar className="h-3 w-3 shrink-0" />
-                      {ev.date
-                        ? new Date(ev.date).toLocaleDateString("en-GB", {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          })
-                        : ""}
-                    </p>
-                    {ev.description && (
-                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{ev.description}</p>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </CardContent>
             </Card>
           )}
 
-          {/* 6.2 Volunteer Info — charity */}
-          {isCharity && provider.volunteerInfo && (
+          {/* 6.2 Volunteer Info — charity, paid */}
+          {isCharity && canShow("volunteer_info") && provider.volunteerInfo && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -542,8 +578,8 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* Products */}
-          {provider.products && provider.products.length > 0 && (
+          {/* Products — paid */}
+          {canShow("products") && provider.products && provider.products.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle>Products</CardTitle>
@@ -578,7 +614,7 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* Reviews */}
+          {/* Reviews — always visible */}
           <Card className="border-0 shadow-card">
             <CardHeader>
               <CardTitle>Reviews</CardTitle>
@@ -605,7 +641,7 @@ const ProviderPage = () => {
           </Card>
         </div>
 
-        {/* Sidebar */}
+        {/* ── Sidebar ── */}
         <div className="space-y-6">
           <Card className="border-0 shadow-card">
             <CardHeader>
@@ -641,7 +677,7 @@ const ProviderPage = () => {
                   </a>
                 </div>
               )}
-              {provider.storeUrl && (
+              {canShow("store_link") && provider.storeUrl && (
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-teal-500 shrink-0" />
                   <a
@@ -657,8 +693,8 @@ const ProviderPage = () => {
             </CardContent>
           </Card>
 
-          {/* Sidebar: Next open day — education */}
-          {isEducation && provider.openDays && provider.openDays.length > 0 && (
+          {/* Sidebar: Next open day — education, paid */}
+          {isEducation && canShow("open_days") && provider.openDays && provider.openDays.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardContent className="p-4 space-y-1">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Next Open Day</p>
@@ -676,8 +712,8 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* Sidebar: Staff count — education */}
-          {isEducation && provider.staffProfiles && provider.staffProfiles.length > 0 && (
+          {/* Sidebar: Staff count — education, paid */}
+          {isEducation && canShow("staff_profiles") && provider.staffProfiles && provider.staffProfiles.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardContent className="p-4 flex items-center gap-3">
                 <Users className="h-5 w-5 text-teal-500 shrink-0" />
@@ -689,8 +725,8 @@ const ProviderPage = () => {
             </Card>
           )}
 
-          {/* Sidebar: Event count — charity */}
-          {isCharity && provider.events && provider.events.length > 0 && (
+          {/* Sidebar: Event count — charity, paid */}
+          {isCharity && canShow("events") && provider.events && provider.events.length > 0 && (
             <Card className="border-0 shadow-card">
               <CardContent className="p-4 flex items-center gap-3">
                 <Calendar className="h-5 w-5 text-orange-400 shrink-0" />
