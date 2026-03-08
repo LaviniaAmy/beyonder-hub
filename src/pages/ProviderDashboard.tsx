@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   CheckCircle,
@@ -119,6 +119,18 @@ const ProviderDashboard = () => {
   const [storeUrl, setStoreUrl] = useState(storeProfile?.storeUrl ?? "");
   const [ehcpAdmissionsText, setEhcpAdmissionsText] = useState(storeProfile?.ehcpAdmissionsInfo ?? "");
   const [volunteerText, setVolunteerText] = useState(storeProfile?.volunteerInfo ?? "");
+  useEffect(() => {
+    setSpotlightMsg(storeProfile?.spotlightMessage ?? "");
+  }, [storeProfile?.spotlightMessage]);
+  useEffect(() => {
+    setStoreUrl(storeProfile?.storeUrl ?? "");
+  }, [storeProfile?.storeUrl]);
+  useEffect(() => {
+    setEhcpAdmissionsText(storeProfile?.ehcpAdmissionsInfo ?? "");
+  }, [storeProfile?.ehcpAdmissionsInfo]);
+  useEffect(() => {
+    setVolunteerText(storeProfile?.volunteerInfo ?? "");
+  }, [storeProfile?.volunteerInfo]);
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -1335,15 +1347,14 @@ function renderSectionContent(
           <Textarea
             rows={3}
             placeholder="e.g. We currently have free drop-in sessions every Tuesday..."
-            defaultValue={profile.spotlightMessage ?? ""}
-            key={`spotlight-${profile.spotlightMessage}`}
+            value={spotlightMsg}
             onChange={(e) => setSpotlightMsg(e.target.value)}
           />
           <Button
             size="sm"
             className="bg-teal-500 hover:bg-teal-400"
             onClick={() => {
-              updateProvider(providerId, { spotlightMessage: spotlightMsg || profile.spotlightMessage || "" });
+              updateProvider(providerId, { spotlightMessage: spotlightMsg });
               forceUpdate((n: number) => n + 1);
               showSaved();
             }}
@@ -1868,9 +1879,8 @@ function renderSectionContent(
           </p>
           <Textarea
             rows={6}
-            key={`ehcp-${profile.ehcpAdmissionsInfo}`}
             placeholder="e.g. We welcome children with EHCPs. Our admissions process begins with an informal visit, followed by a formal application to the Local Authority..."
-            defaultValue={profile.ehcpAdmissionsInfo ?? ""}
+            value={ehcpAdmissionsText}
             onChange={(e) => setEhcpAdmissionsText(e.target.value)}
           />
           <Button
@@ -2056,9 +2066,8 @@ function renderSectionContent(
           </p>
           <Textarea
             rows={6}
-            key={`volunteer-${profile.volunteerInfo}`}
             placeholder="e.g. We're always looking for volunteers to help at our weekly sessions. No experience needed — just a passion for supporting children with SEND..."
-            defaultValue={profile.volunteerInfo ?? ""}
+            value={volunteerText}
             onChange={(e) => setVolunteerText(e.target.value)}
           />
           <Button
