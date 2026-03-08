@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   CheckCircle,
@@ -113,8 +113,25 @@ const ProviderDashboard = () => {
 
   const [newCert, setNewCert] = useState("");
   const [newTimetable, setNewTimetable] = useState({ day: "", time: "", activity: "" });
+  // Text fields that mirror store values — useState alone only initialises once, so
+  // useEffect re-syncs each field whenever forceUpdate causes storeProfile to change.
   const [spotlightMsg, setSpotlightMsg] = useState(storeProfile?.spotlightMessage ?? "");
   const [storeUrl, setStoreUrl] = useState(storeProfile?.storeUrl ?? "");
+  const [ehcpAdmissionsText, setEhcpAdmissionsText] = useState(storeProfile?.ehcpAdmissionsInfo ?? "");
+  const [volunteerText, setVolunteerText] = useState(storeProfile?.volunteerInfo ?? "");
+  useEffect(() => {
+    setSpotlightMsg(storeProfile?.spotlightMessage ?? "");
+  }, [storeProfile?.spotlightMessage]);
+  useEffect(() => {
+    setStoreUrl(storeProfile?.storeUrl ?? "");
+  }, [storeProfile?.storeUrl]);
+  useEffect(() => {
+    setEhcpAdmissionsText(storeProfile?.ehcpAdmissionsInfo ?? "");
+  }, [storeProfile?.ehcpAdmissionsInfo]);
+  useEffect(() => {
+    setVolunteerText(storeProfile?.volunteerInfo ?? "");
+  }, [storeProfile?.volunteerInfo]);
+
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -139,8 +156,6 @@ const ProviderDashboard = () => {
   const [newTerm, setNewTerm] = useState({ term: "", details: "" });
   // 5.1 Open days
   const [newOpenDay, setNewOpenDay] = useState({ title: "", date: "", description: "", rsvpLink: "" });
-  // 5.2 EHCP admissions
-  const [ehcpAdmissionsText, setEhcpAdmissionsText] = useState(storeProfile?.ehcpAdmissionsInfo ?? "");
   // 5.3 Staff profiles
   const [newStaff, setNewStaff] = useState({ name: "", role: "", bio: "" });
   // 6.1 Events
@@ -150,8 +165,6 @@ const ProviderDashboard = () => {
     type: "online" | "in-person";
     description: string;
   }>({ title: "", date: "", type: "in-person", description: "" });
-  // 6.2 Volunteer info
-  const [volunteerText, setVolunteerText] = useState(storeProfile?.volunteerInfo ?? "");
 
   const profile =
     storeProfile ??
@@ -178,7 +191,18 @@ const ProviderDashboard = () => {
           moderationStatus: "active" as const,
           suspendedMessage: "",
           changeRequest: null,
+          isVerified: false,
+          isFeatured: false,
           ehcpSupport: false,
+          sessionTypes: [],
+          availabilityDates: [],
+          sessionCapacity: [],
+          termProgramme: [],
+          openDays: [],
+          ehcpAdmissionsInfo: "",
+          staffProfiles: [],
+          events: [],
+          volunteerInfo: "",
         }
       : null);
 
