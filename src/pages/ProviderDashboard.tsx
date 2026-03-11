@@ -665,20 +665,32 @@ const ProviderDashboard = () => {
                   style={{ background: "#0e2640", borderColor: "rgba(42,122,106,0.18)" }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                    <span
+                      className="text-xs font-medium uppercase tracking-wide"
+                      style={{ color: "rgba(255,255,255,0.40)" }}
+                    >
                       {stat.label}
                     </span>
-                    <stat.icon className="h-4 w-4 text-muted-foreground/40" />
+                    <stat.icon className="h-4 w-4" style={{ color: "rgba(255,255,255,0.22)" }} />
                   </div>
-                  <p className="text-lg font-bold text-foreground capitalize leading-none">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{stat.sub}</p>
+                  <p className="text-lg font-bold capitalize leading-none" style={{ color: "#ffffff" }}>
+                    {stat.value}
+                  </p>
+                  <p className="text-xs capitalize" style={{ color: "rgba(255,255,255,0.40)" }}>
+                    {stat.sub}
+                  </p>
                 </div>
               ))}
             </div>
 
             {/* Quick actions */}
             <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Quick Actions</p>
+              <p
+                className="text-xs font-semibold uppercase tracking-wide mb-3"
+                style={{ color: "rgba(255,255,255,0.40)" }}
+              >
+                Quick Actions
+              </p>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {[
                   {
@@ -716,16 +728,23 @@ const ProviderDashboard = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold text-foreground">{action.label}</p>
+                        <p className="text-sm font-semibold" style={{ color: "#ffffff" }}>
+                          {action.label}
+                        </p>
                         {action.badge && (
                           <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold">
                             {action.badge}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">{action.sub}</p>
+                      <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.40)" }}>
+                        {action.sub}
+                      </p>
                     </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-teal-500 transition-colors" />
+                    <ChevronRight
+                      className="h-4 w-4 transition-colors group-hover:text-teal-400"
+                      style={{ color: "rgba(255,255,255,0.22)" }}
+                    />
                   </button>
                 ))}
               </div>
@@ -735,12 +754,16 @@ const ProviderDashboard = () => {
             {providerEnquiries.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  <p
+                    className="text-xs font-semibold uppercase tracking-wide"
+                    style={{ color: "rgba(255,255,255,0.40)" }}
+                  >
                     Recent Enquiries
                   </p>
                   <button
                     onClick={() => setActiveTab("enquiries")}
-                    className="text-xs text-teal-400 hover:text-teal-300"
+                    className="text-xs hover:text-teal-300"
+                    style={{ color: "#3a9a88" }}
                   >
                     View all →
                   </button>
@@ -759,8 +782,13 @@ const ProviderDashboard = () => {
                       }}
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">{e.parentName}</p>
-                        <p className="text-xs text-muted-foreground truncate max-w-[160px] sm:max-w-[200px]">
+                        <p className="text-sm font-medium truncate" style={{ color: "#ffffff" }}>
+                          {e.parentName}
+                        </p>
+                        <p
+                          className="text-xs truncate max-w-[160px] sm:max-w-[200px]"
+                          style={{ color: "rgba(255,255,255,0.40)" }}
+                        >
                           {e.message}
                         </p>
                       </div>
@@ -784,8 +812,12 @@ const ProviderDashboard = () => {
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-foreground">{profile.businessName}</h2>
-                <p className="text-sm text-muted-foreground">{profile.typeBadge}</p>
+                <h2 className="text-lg font-semibold" style={{ color: "#ffffff" }}>
+                  {profile.businessName}
+                </h2>
+                <p className="text-sm" style={{ color: "rgba(255,255,255,0.40)" }}>
+                  {profile.typeBadge}
+                </p>
               </div>
               <Button size="sm" onClick={() => setEditOpen(true)} className="bg-teal-500 hover:bg-teal-400 text-white">
                 Edit Profile
@@ -812,11 +844,18 @@ const ProviderDashboard = () => {
                     key={row!.label}
                     className={`flex items-center justify-between px-5 py-3.5 ${i < arr.length - 1 ? "border-b border-border/30" : ""}`}
                   >
-                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide w-28 shrink-0">
+                    <span
+                      className="text-xs font-semibold uppercase tracking-wide w-28 shrink-0"
+                      style={{ color: "rgba(255,255,255,0.40)" }}
+                    >
                       {row!.label}
                     </span>
-                    <span className="text-sm text-foreground text-right">
-                      {row!.value || <span className="text-muted-foreground/40 italic">Not set</span>}
+                    <span className="text-sm text-right" style={{ color: "#ffffff" }}>
+                      {row!.value || (
+                        <span style={{ color: "rgba(255,255,255,0.25)" }} className="italic">
+                          Not set
+                        </span>
+                      )}
                     </span>
                   </div>
                 ))}
@@ -825,7 +864,10 @@ const ProviderDashboard = () => {
             {/* Needs supported */}
             {(profile.needsSupported ?? []).length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                <p
+                  className="text-xs font-semibold uppercase tracking-wide mb-2"
+                  style={{ color: "rgba(255,255,255,0.40)" }}
+                >
                   Needs Supported
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -844,12 +886,19 @@ const ProviderDashboard = () => {
             {/* Description preview */}
             {profile.description && (
               <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Description</p>
+                <p
+                  className="text-xs font-semibold uppercase tracking-wide mb-2"
+                  style={{ color: "rgba(255,255,255,0.40)" }}
+                >
+                  Description
+                </p>
                 <div
                   className="rounded-xl border p-4"
                   style={{ background: "#0e2640", borderColor: "rgba(42,122,106,0.18)" }}
                 >
-                  <p className="text-sm text-muted-foreground leading-relaxed">{profile.description}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>
+                    {profile.description}
+                  </p>
                 </div>
               </div>
             )}
@@ -862,7 +911,7 @@ const ProviderDashboard = () => {
           <div>
             {!selectedEnquiry && (
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm" style={{ color: "rgba(255,255,255,0.40)" }}>
                   {providerEnquiries.length} total · {newEnquiryCount} new
                 </p>
               </div>
@@ -895,7 +944,9 @@ const ProviderDashboard = () => {
                     >
                       <div className="flex items-center gap-2.5">
                         <span className="text-teal-500">{getSectionIcon(section.key)}</span>
-                        <span className="font-semibold text-sm text-foreground">{section.label}</span>
+                        <span className="font-semibold text-sm" style={{ color: "#ffffff" }}>
+                          {section.label}
+                        </span>
                         {!enabled && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
                       </div>
                       {!enabled && (
@@ -1064,7 +1115,7 @@ const ProviderDashboard = () => {
                   <Badge className="bg-teal-500/20 text-teal-400 border-0">{planLabel}</Badge>
                   <Badge className="bg-emerald-500/15 text-emerald-400 border-0">Active</Badge>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed mt-2">
+                <p className="text-sm leading-relaxed mt-2" style={{ color: "rgba(255,255,255,0.50)" }}>
                   {livePlanType === "founder"
                     ? "You're a founding provider on Beyonder. Founder benefits stay with you after launch."
                     : livePlanType === "professional"
@@ -1073,7 +1124,10 @@ const ProviderDashboard = () => {
                 </p>
               </div>
               <div className="px-5 py-4">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                <p
+                  className="text-xs font-semibold uppercase tracking-wide mb-3"
+                  style={{ color: "rgba(255,255,255,0.40)" }}
+                >
                   What's included
                 </p>
                 <div className="space-y-2">
@@ -1105,7 +1159,7 @@ const ProviderDashboard = () => {
                           <Lock className="h-2.5 w-2.5 text-muted-foreground/40" />
                         )}
                       </div>
-                      <span className={`text-sm ${item.included ? "text-foreground" : "text-muted-foreground/50"}`}>
+                      <span className={`text-sm ${item.included ? "" : "opacity-40"}`} style={{ color: "#ffffff" }}>
                         {item.label}
                       </span>
                     </div>
