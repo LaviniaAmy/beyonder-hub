@@ -113,6 +113,8 @@ const ProviderDashboard = () => {
   })();
   const providerId = resolvedUser?.provider_id ?? providers[0]?.id;
 
+  const [tick, forceUpdate] = useState(0);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const storeProfile = useMemo(() => getProvider(providerId), [providerId, tick]);
   const fallback = providers.find((p) => p.id === providerId);
@@ -145,7 +147,6 @@ const ProviderDashboard = () => {
   const [selectedEnquiryId, setSelectedEnquiryId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const [notesText, setNotesText] = useState("");
-  const [tick, forceUpdate] = useState(0);
   const [newCert, setNewCert] = useState("");
   const [newTimetable, setNewTimetable] = useState({ day: "", time: "", activity: "" });
   const [spotlightMsg, setSpotlightMsg] = useState(storeProfile?.spotlightMessage ?? "");
