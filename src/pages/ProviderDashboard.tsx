@@ -15,6 +15,12 @@ import {
   Upload,
   NotebookPen,
   ShieldCheck,
+  ChevronRight,
+  LayoutDashboard,
+  MessageSquare,
+  Settings,
+  CreditCard,
+  Building2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -63,10 +69,39 @@ const AVAILABILITY_OPTIONS: { value: AvailabilityStatus; label: string; descript
   { value: "closed", label: "Closed", description: "Not accepting new clients or waitlist enquiries at this time" },
 ];
 
+// ── Availability colour helper ──────────────────────────────
+const availColour = (status: AvailabilityStatus) => {
+  if (status === "accepting")
+    return { dot: "#4ade80", label: "Accepting Clients", badge: "bg-emerald-500/15 text-emerald-400" };
+  if (status === "waitlist")
+    return { dot: "#fb923c", label: "Waitlist Only", badge: "bg-orange-500/15 text-orange-400" };
+  return { dot: "#f87171", label: "Closed", badge: "bg-red-500/15 text-red-400" };
+};
+
+// ── Tab definitions ─────────────────────────────────────────
+const TABS = [
+  { id: "overview", label: "Overview", icon: LayoutDashboard },
+  { id: "profile", label: "Profile", icon: Building2 },
+  { id: "enquiries", label: "Enquiries", icon: MessageSquare },
+  { id: "features", label: "Features", icon: Settings },
+  { id: "plan", label: "Plan", icon: CreditCard },
+];
+
+const C = {
+  navy: "#061828",
+  navyMid: "#0d2035",
+  teal: "#2a7a6a",
+  tealLight: "#3a9a88",
+  orange: "#e8622a",
+  cream: "#f5f0e8",
+  white: "#ffffff",
+};
+
 const ProviderDashboard = () => {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const claimStatus = searchParams.get("claimStatus");
+  const [activeTab, setActiveTab] = useState("overview");
 
   const resolvedUser = (() => {
     try {
@@ -110,15 +145,13 @@ const ProviderDashboard = () => {
   const [replyText, setReplyText] = useState("");
   const [notesText, setNotesText] = useState("");
   const [, forceUpdate] = useState(0);
-
   const [newCert, setNewCert] = useState("");
   const [newTimetable, setNewTimetable] = useState({ day: "", time: "", activity: "" });
-  // Spotlight, storeUrl, ehcpAdmissionsText, volunteerText — local draft state.
-  // After save the setter is called with the saved value so the textarea stays in sync.
   const [spotlightMsg, setSpotlightMsg] = useState(storeProfile?.spotlightMessage ?? "");
   const [storeUrl, setStoreUrl] = useState(storeProfile?.storeUrl ?? "");
   const [ehcpAdmissionsText, setEhcpAdmissionsText] = useState(storeProfile?.ehcpAdmissionsInfo ?? "");
   const [volunteerText, setVolunteerText] = useState(storeProfile?.volunteerInfo ?? "");
+
   useEffect(() => {
     setSpotlightMsg(storeProfile?.spotlightMessage ?? "");
   }, [storeProfile?.spotlightMessage]);
@@ -146,19 +179,12 @@ const ProviderDashboard = () => {
   const [newProductImageError, setNewProductImageError] = useState("");
   const newProductFileRef = useRef<HTMLInputElement | null>(null);
   const existingProductFileRefs = useRef<Record<number, HTMLInputElement | null>>({});
-  // 3.1 Session types
   const [newSessionType, setNewSessionType] = useState({ name: "", duration: "", price: "" });
-  // 3.2 Availability dates
   const [newAvailDate, setNewAvailDate] = useState("");
-  // 4.1 Session capacity
   const [newCapacity, setNewCapacity] = useState({ session: "", capacity: "", spotsLeft: "" });
-  // 4.2 Term programme
   const [newTerm, setNewTerm] = useState({ term: "", details: "" });
-  // 5.1 Open days
   const [newOpenDay, setNewOpenDay] = useState({ title: "", date: "", description: "", rsvpLink: "" });
-  // 5.3 Staff profiles
   const [newStaff, setNewStaff] = useState({ name: "", role: "", bio: "" });
-  // 6.1 Events
   const [newEvent, setNewEvent] = useState<{
     title: string;
     date: string;
@@ -244,21 +270,17 @@ const ProviderDashboard = () => {
   const moduleProfile = getModuleProfile(providerId, profile.category_type);
   const sections = categorySections[profile.category_type as keyof typeof categorySections] ?? [];
   const testimonials = providerTestimonials.filter((t) => t.provider_id === providerId);
-
   const isTherapist = profile.category_type === "therapist";
-
-  // ── Feature gating helpers ──
   const planGate = { plan_type: profile.plan_type as any, plan_status: profile.plan_status as any };
-
   const isFeatureEnabled = (featureKey?: string) => {
     if (!featureKey) return true;
     return hasFeature(planGate, featureKey as any);
   };
-
   const isPaidPlan = profile.plan_type === "founder" || profile.plan_type === "professional";
-
   const hasReferralNotes = isPaidPlan;
-  const hasEhcpToggle = isPaidPlan && isTherapist;
+  const providerEnquiries = getEnquiriesForProvider(providerId);
+  const newEnquiryCount = providerEnquiries.filter((e) => e.statusForProvider === "new").length;
+  const avail = availColour(profile.availabilityStatus ?? "accepting");
 
   const showSaved = (msg = "Saved ✓") => {
     setSavedMsg(msg);
@@ -391,17 +413,65 @@ const ProviderDashboard = () => {
     showSaved("Availability updated ✓");
   };
 
-  const providerEnquiries = getEnquiriesForProvider(providerId);
   const selectedEnquiry = providerEnquiries.find((e) => e.enquiryId === selectedEnquiryId) ?? null;
 
-  const renderEnquiriesSection = () => {
+  // ── Section content ctx ──────────────────────────────────
+  const ctx = {
+    newCert,
+    setNewCert,
+    newTimetable,
+    setNewTimetable,
+    spotlightMsg,
+    setSpotlightMsg,
+    storeUrl,
+    setStoreUrl,
+    newProduct,
+    setNewProduct,
+    newCaseStudy,
+    setNewCaseStudy,
+    updateProvider,
+    providerId,
+    forceUpdate,
+    showSaved,
+    handleGalleryUpload,
+    galleryError,
+    savedMsg,
+    handleExistingProductImageUpload,
+    handleExistingProductDescChange,
+    handleNewProductImageUpload,
+    productImageErrors,
+    newProductImageError,
+    existingProductFileRefs,
+    newProductFileRef,
+    newSessionType,
+    setNewSessionType,
+    newAvailDate,
+    setNewAvailDate,
+    newCapacity,
+    setNewCapacity,
+    newTerm,
+    setNewTerm,
+    newOpenDay,
+    setNewOpenDay,
+    ehcpAdmissionsText,
+    setEhcpAdmissionsText,
+    newStaff,
+    setNewStaff,
+    newEvent,
+    setNewEvent,
+    volunteerText,
+    setVolunteerText,
+  };
+
+  // ── Enquiries panel ──────────────────────────────────────
+  const renderEnquiriesPanel = () => {
     if (selectedEnquiry) {
       const atCap = (selectedEnquiry.messageCount ?? 0) >= 4;
       return (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">{selectedEnquiry.parentName}</p>
+              <p className="font-semibold text-foreground">{selectedEnquiry.parentName}</p>
               <div className="flex flex-wrap gap-x-3 text-xs text-muted-foreground mt-0.5">
                 <span>Age: {selectedEnquiry.childAge}</span>
                 {selectedEnquiry.childName && <span>Name: {selectedEnquiry.childName}</span>}
@@ -421,7 +491,6 @@ const ProviderDashboard = () => {
               ← Back
             </Button>
           </div>
-
           <div className="space-y-2">
             {(selectedEnquiry.messages ?? []).length > 0 ? (
               selectedEnquiry.messages.map((msg) => (
@@ -452,7 +521,6 @@ const ProviderDashboard = () => {
               </>
             )}
           </div>
-
           {atCap ? (
             <div className="rounded-xl border border-border/40 bg-muted/20 p-4 text-center">
               <p className="text-sm text-muted-foreground">This conversation has reached its limit.</p>
@@ -487,15 +555,13 @@ const ProviderDashboard = () => {
               </div>
             </div>
           )}
-
-          {/* Referral Notes — paid plans only, never parent-facing */}
           {hasReferralNotes && (
             <div className="mt-4 rounded-xl border border-border/40 bg-muted/10 p-4 space-y-2">
               <div className="flex items-center gap-2">
                 <NotebookPen className="h-4 w-4 text-muted-foreground" />
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Referral Notes</p>
                 <Badge variant="outline" className="text-xs text-muted-foreground border-border/40 ml-auto">
-                  Private — not visible to families
+                  Private
                 </Badge>
               </div>
               <Textarea
@@ -504,7 +570,7 @@ const ProviderDashboard = () => {
                   if (e.target.value.length <= MAX_NOTES) setNotesText(e.target.value);
                 }}
                 onBlur={() => handleNotesSave(selectedEnquiry.enquiryId, notesText || selectedEnquiry.providerNotes)}
-                placeholder="Add private notes about this enquiry, referral source, next steps..."
+                placeholder="Add private notes about this enquiry..."
                 rows={3}
                 className="text-sm bg-transparent"
               />
@@ -516,15 +582,18 @@ const ProviderDashboard = () => {
         </div>
       );
     }
-
     return providerEnquiries.length === 0 ? (
-      <p className="text-muted-foreground">No enquiries yet.</p>
+      <div className="py-12 text-center">
+        <MessageSquare className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
+        <p className="text-muted-foreground text-sm">No enquiries yet.</p>
+        <p className="text-xs text-muted-foreground/60 mt-1">When families message you, they'll appear here.</p>
+      </div>
     ) : (
-      <div className="space-y-3">
+      <div className="space-y-2">
         {providerEnquiries.map((e) => (
           <div
             key={e.enquiryId}
-            className="flex items-center justify-between rounded-xl border border-border/60 p-4 cursor-pointer hover:bg-muted/10 transition-colors overflow-hidden"
+            className="flex items-center justify-between rounded-xl border border-border/60 p-4 cursor-pointer hover:bg-muted/10 transition-colors"
             onClick={() => {
               setSelectedEnquiryId(e.enquiryId);
               setReplyText("");
@@ -543,7 +612,7 @@ const ProviderDashboard = () => {
               <Badge variant={e.statusForProvider === "new" ? "destructive" : "secondary"}>
                 {e.statusForProvider === "new" ? "New" : "Replied"}
               </Badge>
-              <span className="text-xs text-muted-foreground">View →</span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground/40" />
             </div>
           </div>
         ))}
@@ -551,335 +620,583 @@ const ProviderDashboard = () => {
     );
   };
 
-  return (
-    <div className="bg-navy-gradient min-h-screen py-10">
-      <div className="container max-w-3xl animate-fade-in">
-        <h1 className="mb-3 text-3xl font-bold text-accent-foreground">Provider Dashboard</h1>
-        <div className="mb-8 flex items-center gap-2 flex-wrap">
-          <Badge className="bg-navy-600 text-accent-foreground border-0">{profile.category_type}</Badge>
-          <Badge className="bg-teal-500/20 text-teal-400 border-0">{profile.plan_type} plan</Badge>
-          <Badge className="bg-emerald-500/15 text-emerald-400 border-0">{profile.plan_status}</Badge>
-          {isSuspended && <Badge className="bg-red-500/20 text-red-400 border-0">Suspended</Badge>}
-        </div>
-
-        {isSuspended && (
-          <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/[0.08] p-4">
-            <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-red-400 text-sm">Your account has been suspended</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                {profile.suspendedMessage || "Your listing has been suspended by Beyonder. Please contact support."}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {changeRequest && (
-          <div className="mb-6 flex items-start gap-3 rounded-xl border border-orange-500/25 bg-orange-500/[0.08] p-4">
-            <ClipboardList className="h-5 w-5 text-orange-400 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              {isAcknowledged ? (
-                <>
-                  <p className="font-semibold text-orange-400 text-sm">Thanks — we'll review your changes shortly</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Our team has been notified and will check your profile soon.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p className="font-semibold text-orange-400 text-sm">Action required: please update your profile</p>
-                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{changeRequest.message}</p>
-                  <Button
-                    size="sm"
-                    className="mt-3 bg-orange-500 hover:bg-orange-400 text-white"
-                    onClick={handleChangesMade}
-                  >
-                    Changes Made
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
-        {savedMsg && (
-          <div className="mb-4 rounded-xl bg-teal-500/10 border border-teal-500/25 px-4 py-2 text-sm text-teal-400">
-            {savedMsg}
-          </div>
-        )}
-
-        {/* Profile Card */}
-        <Card className="mb-6 border-0 shadow-card">
-          <CardHeader className="flex-row items-center justify-between">
-            <CardTitle>Your Profile</CardTitle>
-            <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
-              Edit Profile
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <p>
-              <strong className="text-foreground">Name:</strong>{" "}
-              <span className="text-muted-foreground">{profile.businessName}</span>
-            </p>
-            <p>
-              <strong className="text-foreground">Type:</strong>{" "}
-              <span className="text-muted-foreground">{profile.typeBadge}</span>
-            </p>
-            <p>
-              <strong className="text-foreground">Location:</strong>{" "}
-              <span className="text-muted-foreground">{profile.location}</span>
-            </p>
-            <p>
-              <strong className="text-foreground">Coverage:</strong>{" "}
-              <span className="text-muted-foreground">{profile.coverageArea}</span>
-            </p>
-            <p>
-              <strong className="text-foreground">Age Range:</strong>{" "}
-              <span className="text-muted-foreground">{profile.ageRange}</span>
-            </p>
-            <p>
-              <strong className="text-foreground">Delivery:</strong>{" "}
-              <span className="text-muted-foreground">{profile.deliveryFormat}</span>
-            </p>
-            {profile.email && (
-              <p>
-                <strong className="text-foreground">Email:</strong>{" "}
-                <span className="text-muted-foreground">{profile.email}</span>
-              </p>
-            )}
-            {profile.phone && (
-              <p>
-                <strong className="text-foreground">Phone:</strong>{" "}
-                <span className="text-muted-foreground">{profile.phone}</span>
-              </p>
-            )}
-            {profile.website && (
-              <p>
-                <strong className="text-foreground">Website:</strong>{" "}
-                <span className="text-muted-foreground">{profile.website}</span>
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Category Sections */}
-        {sections
-          .filter((section) => section.key !== "referral_notes")
-          .map((section) => {
-            const enabled = isFeatureEnabled(section.featureKey);
-            return (
-              <Card key={section.key} className={`mb-6 border-0 shadow-card ${!enabled ? "opacity-60" : ""}`}>
-                <CardHeader className="flex-row items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    {getSectionIcon(section.key)}
-                    {section.label}
-                    {!enabled && <Lock className="h-4 w-4 text-muted-foreground" />}
-                  </CardTitle>
-                  {!enabled && (
-                    <Badge variant="outline" className="text-muted-foreground">
-                      Upgrade to unlock
-                    </Badge>
-                  )}
-                </CardHeader>
-                <CardContent>
-                  {enabled ? (
-                    section.key === "enquiries" ? (
-                      renderEnquiriesSection()
-                    ) : (
-                      renderSectionContent(
-                        section.key,
-                        profile,
-                        moduleProfile,
-                        testimonials,
-                        handleAvailabilityChange,
-                        {
-                          newCert,
-                          setNewCert,
-                          newTimetable,
-                          setNewTimetable,
-                          spotlightMsg,
-                          setSpotlightMsg,
-                          storeUrl,
-                          setStoreUrl,
-                          newProduct,
-                          setNewProduct,
-                          newCaseStudy,
-                          setNewCaseStudy,
-                          updateProvider,
-                          providerId,
-                          forceUpdate,
-                          showSaved,
-                          handleGalleryUpload,
-                          galleryError,
-                          savedMsg,
-                          handleExistingProductImageUpload,
-                          handleExistingProductDescChange,
-                          handleNewProductImageUpload,
-                          productImageErrors,
-                          newProductImageError,
-                          existingProductFileRefs,
-                          newProductFileRef,
-                          newSessionType,
-                          setNewSessionType,
-                          newAvailDate,
-                          setNewAvailDate,
-                          newCapacity,
-                          setNewCapacity,
-                          newTerm,
-                          setNewTerm,
-                          newOpenDay,
-                          setNewOpenDay,
-                          ehcpAdmissionsText,
-                          setEhcpAdmissionsText,
-                          newStaff,
-                          setNewStaff,
-                          newEvent,
-                          setNewEvent,
-                          volunteerText,
-                          setVolunteerText,
-                        },
-                      )
-                    )
-                  ) : (
-                    <p className="text-sm text-muted-foreground">Upgrade to access {section.label.toLowerCase()}.</p>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-
-        {/* ── EHCP Support Card — therapists only, always visible, gated by plan ── */}
-        {isTherapist && (
-          <Card className={`mb-6 border-0 shadow-card ${!isPaidPlan ? "opacity-60" : ""}`}>
-            <CardHeader className="flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-orange-400" />
-                EHCP Support
-                {!isPaidPlan && <Lock className="h-4 w-4 text-muted-foreground" />}
-              </CardTitle>
-              {!isPaidPlan ? (
-                <Badge variant="outline" className="text-muted-foreground">
-                  Upgrade to unlock
-                </Badge>
-              ) : profile.ehcpSupport ? (
-                <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs">Active</Badge>
-              ) : (
-                <Badge variant="outline" className="text-muted-foreground text-xs">
-                  Inactive
-                </Badge>
-              )}
-            </CardHeader>
-            <CardContent>
-              {isPaidPlan ? (
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Enabling EHCP support adds an orange badge to your profile and listing, helping families with
-                    Education, Health and Care Plans find you more easily.
-                  </p>
-                  <div className="flex items-center justify-between rounded-xl border border-border/60 bg-muted/10 px-4 py-3">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        {profile.ehcpSupport ? "EHCP support is enabled" : "EHCP support is disabled"}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {profile.ehcpSupport
-                          ? "Your profile shows the EHCP Supported badge"
-                          : "Toggle on to show the EHCP Supported badge on your profile"}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleEhcpToggle}
-                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-                        profile.ehcpSupport ? "bg-orange-400" : "bg-muted-foreground/30"
-                      }`}
-                      role="switch"
-                      aria-checked={profile.ehcpSupport}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transform transition-transform duration-200 ${
-                          profile.ehcpSupport ? "translate-x-5" : "translate-x-0"
-                        }`}
-                      />
-                    </button>
+  // ── Tab content renderer ────────────────────────────────
+  const renderTab = () => {
+    switch (activeTab) {
+      // ── OVERVIEW ──
+      case "overview":
+        return (
+          <div className="space-y-5">
+            {/* Stats row */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {[
+                {
+                  label: "Enquiries",
+                  value: providerEnquiries.length,
+                  sub: `${newEnquiryCount} new`,
+                  icon: MessageSquare,
+                  accent: C.teal,
+                },
+                {
+                  label: "Plan",
+                  value: profile.plan_type,
+                  sub: profile.plan_status,
+                  icon: CreditCard,
+                  accent: C.tealLight,
+                },
+                {
+                  label: "Availability",
+                  value: avail.label.split(" ")[0],
+                  sub: avail.label.split(" ").slice(1).join(" "),
+                  icon: Clock,
+                  accent: avail.dot,
+                },
+                {
+                  label: "Category",
+                  value: profile.category_type,
+                  sub: profile.typeBadge,
+                  icon: Building2,
+                  accent: C.orange,
+                },
+              ].map((stat) => (
+                <div key={stat.label} className="rounded-xl border border-border/40 bg-card p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                      {stat.label}
+                    </span>
+                    <stat.icon className="h-4 w-4 text-muted-foreground/40" />
                   </div>
+                  <p className="text-lg font-bold text-foreground capitalize leading-none">{stat.value}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{stat.sub}</p>
                 </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  Upgrade to founder or professional to display the EHCP Supported badge on your profile.
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        )}
+              ))}
+            </div>
 
-        {/* ── Referral Notes Card — always visible, gated by plan ── */}
-        <Card className={`mb-6 border-0 shadow-card ${!hasReferralNotes ? "opacity-60" : ""}`}>
-          <CardHeader className="flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <NotebookPen className="h-4 w-4 text-teal-500" />
-              Referral Notes
-              {!hasReferralNotes && <Lock className="h-4 w-4 text-muted-foreground" />}
-            </CardTitle>
-            {!hasReferralNotes ? (
-              <Badge variant="outline" className="text-muted-foreground">
-                Upgrade to unlock
-              </Badge>
-            ) : (
-              <Badge className="bg-emerald-500/15 text-emerald-400 border-0 text-xs">Active</Badge>
+            {/* Quick actions */}
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Quick Actions</p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {[
+                  {
+                    label: "Edit your profile",
+                    sub: "Update name, description, contact details",
+                    tab: "profile",
+                    icon: Building2,
+                  },
+                  {
+                    label: "View enquiries",
+                    sub:
+                      newEnquiryCount > 0
+                        ? `${newEnquiryCount} new message${newEnquiryCount !== 1 ? "s" : ""} waiting`
+                        : "Manage your messages",
+                    tab: "enquiries",
+                    icon: MessageSquare,
+                    badge: newEnquiryCount > 0 ? newEnquiryCount : null,
+                  },
+                  {
+                    label: "Manage features",
+                    sub: "Availability, sessions, gallery and more",
+                    tab: "features",
+                    icon: Settings,
+                  },
+                  { label: "Your plan", sub: `Currently on ${profile.plan_type} plan`, tab: "plan", icon: CreditCard },
+                ].map((action) => (
+                  <button
+                    key={action.tab}
+                    onClick={() => setActiveTab(action.tab)}
+                    className="flex items-center gap-4 rounded-xl border border-border/40 bg-card p-4 text-left hover:border-teal-500/40 hover:bg-teal-500/[0.03] transition-all group"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shrink-0">
+                      <action.icon className="h-4 w-4 text-teal-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold text-foreground">{action.label}</p>
+                        {action.badge && (
+                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold">
+                            {action.badge}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5">{action.sub}</p>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-teal-500 transition-colors" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Recent enquiries preview */}
+            {providerEnquiries.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                    Recent Enquiries
+                  </p>
+                  <button
+                    onClick={() => setActiveTab("enquiries")}
+                    className="text-xs text-teal-400 hover:text-teal-300"
+                  >
+                    View all →
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {providerEnquiries.slice(0, 3).map((e) => (
+                    <div
+                      key={e.enquiryId}
+                      className="flex items-center justify-between rounded-xl border border-border/40 bg-card px-4 py-3 cursor-pointer hover:bg-muted/10 transition-colors"
+                      onClick={() => {
+                        setActiveTab("enquiries");
+                        setSelectedEnquiryId(e.enquiryId);
+                        setReplyText("");
+                        setNotesText(e.providerNotes ?? "");
+                      }}
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{e.parentName}</p>
+                        <p className="text-xs text-muted-foreground truncate max-w-[200px]">{e.message}</p>
+                      </div>
+                      <Badge
+                        variant={e.statusForProvider === "new" ? "destructive" : "secondary"}
+                        className="shrink-0 ml-2"
+                      >
+                        {e.statusForProvider === "new" ? "New" : "Replied"}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
-          </CardHeader>
-          <CardContent>
-            {hasReferralNotes ? (
-              <div className="flex items-start gap-3">
-                <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Referral notes are active within your message threads. Open any enquiry to add private notes — these
-                  are never visible to families.
+          </div>
+        );
+
+      // ── PROFILE ──
+      case "profile":
+        return (
+          <div className="space-y-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">{profile.businessName}</h2>
+                <p className="text-sm text-muted-foreground">{profile.typeBadge}</p>
+              </div>
+              <Button size="sm" onClick={() => setEditOpen(true)} className="bg-teal-500 hover:bg-teal-400 text-white">
+                Edit Profile
+              </Button>
+            </div>
+
+            {/* Profile info grid */}
+            <div className="rounded-xl border border-border/40 bg-card overflow-hidden">
+              {[
+                { label: "Location", value: profile.location },
+                { label: "Coverage Area", value: profile.coverageArea },
+                { label: "Age Range", value: profile.ageRange },
+                { label: "Delivery", value: profile.deliveryFormat },
+                profile.email ? { label: "Email", value: profile.email } : null,
+                profile.phone ? { label: "Phone", value: profile.phone } : null,
+                profile.website ? { label: "Website", value: profile.website } : null,
+              ]
+                .filter(Boolean)
+                .map((row, i, arr) => (
+                  <div
+                    key={row!.label}
+                    className={`flex items-center justify-between px-5 py-3.5 ${i < arr.length - 1 ? "border-b border-border/30" : ""}`}
+                  >
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide w-28 shrink-0">
+                      {row!.label}
+                    </span>
+                    <span className="text-sm text-foreground text-right">
+                      {row!.value || <span className="text-muted-foreground/40 italic">Not set</span>}
+                    </span>
+                  </div>
+                ))}
+            </div>
+
+            {/* Needs supported */}
+            {(profile.needsSupported ?? []).length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                  Needs Supported
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {profile.needsSupported.map((n: string) => (
+                    <span
+                      key={n}
+                      className="rounded-full border border-teal-500/30 bg-teal-500/10 px-3 py-1 text-xs text-teal-400"
+                    >
+                      {n}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Description preview */}
+            {profile.description && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Description</p>
+                <div className="rounded-xl border border-border/40 bg-card p-4">
+                  <p className="text-sm text-muted-foreground leading-relaxed">{profile.description}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+
+      // ── ENQUIRIES ──
+      case "enquiries":
+        return (
+          <div>
+            {!selectedEnquiry && (
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm text-muted-foreground">
+                  {providerEnquiries.length} total · {newEnquiryCount} new
                 </p>
               </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                Upgrade to founder or professional to add private referral notes to your enquiry threads.
-              </p>
             )}
-          </CardContent>
-        </Card>
+            {renderEnquiriesPanel()}
+          </div>
+        );
 
-        {/* Plan Card */}
-        <Card className="border-0 shadow-card">
-          <CardHeader>
-            <CardTitle>Your Plan</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {(() => {
-              const claim = getClaimForProvider(providerId);
-              const livePlanType = getProvider(providerId)?.plan_type ?? claim?.planType ?? profile.plan_type;
-              const planLabel =
-                livePlanType === "founder"
-                  ? "Founder Plan"
-                  : livePlanType === "professional"
-                    ? "Professional Plan"
-                    : "Free Plan";
-              return (
-                <>
-                  <div className="flex items-center gap-3">
-                    <Badge className="bg-teal-500/20 text-teal-400 border-0">{planLabel}</Badge>
-                    <Badge className="bg-emerald-500/15 text-emerald-400 border-0">Active</Badge>
+      // ── FEATURES ──
+      case "features":
+        return (
+          <div className="space-y-4">
+            {sections
+              .filter((s) => s.key !== "referral_notes")
+              .map((section) => {
+                const enabled = isFeatureEnabled(section.featureKey);
+                return (
+                  <div
+                    key={section.key}
+                    className={`rounded-xl border bg-card overflow-hidden transition-opacity ${!enabled ? "opacity-60" : ""}`}
+                    style={{ borderColor: enabled ? "rgba(42,122,106,0.20)" : "rgba(255,255,255,0.06)" }}
+                  >
+                    {/* Section header */}
+                    <div
+                      className="flex items-center justify-between px-5 py-4 border-b border-border/30"
+                      style={{ borderLeft: `3px solid ${enabled ? C.teal : "rgba(255,255,255,0.08)"}` }}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-teal-500">{getSectionIcon(section.key)}</span>
+                        <span className="font-semibold text-sm text-foreground">{section.label}</span>
+                        {!enabled && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
+                      </div>
+                      {!enabled && (
+                        <Badge variant="outline" className="text-xs text-muted-foreground/60 border-border/40">
+                          Upgrade to unlock
+                        </Badge>
+                      )}
+                    </div>
+                    {/* Section body */}
+                    <div className="px-5 py-4">
+                      {enabled ? (
+                        section.key === "enquiries" ? (
+                          renderEnquiriesPanel()
+                        ) : (
+                          renderSectionContent(
+                            section.key,
+                            profile,
+                            moduleProfile,
+                            testimonials,
+                            handleAvailabilityChange,
+                            ctx,
+                          )
+                        )
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          Upgrade to access {section.label.toLowerCase()}.
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                    {livePlanType === "founder"
-                      ? "You're a founding provider on Beyonder. Founder benefits stay with you after launch."
-                      : livePlanType === "professional"
-                        ? "You're on the Professional plan with full access to all Beyonder features."
-                        : "You're on the free plan. Upgrade anytime for more visibility and tools."}
+                );
+              })}
+
+            {/* EHCP Support — therapists only */}
+            {isTherapist && (
+              <div
+                className={`rounded-xl border bg-card overflow-hidden ${!isPaidPlan ? "opacity-60" : ""}`}
+                style={{ borderColor: isPaidPlan ? "rgba(232,98,42,0.20)" : "rgba(255,255,255,0.06)" }}
+              >
+                <div
+                  className="flex items-center justify-between px-5 py-4 border-b border-border/30"
+                  style={{ borderLeft: `3px solid ${isPaidPlan ? C.orange : "rgba(255,255,255,0.08)"}` }}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <ShieldCheck className="h-4 w-4 text-orange-400" />
+                    <span className="font-semibold text-sm text-foreground">EHCP Support</span>
+                    {!isPaidPlan && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
+                  </div>
+                  {!isPaidPlan ? (
+                    <Badge variant="outline" className="text-xs text-muted-foreground/60 border-border/40">
+                      Upgrade to unlock
+                    </Badge>
+                  ) : profile.ehcpSupport ? (
+                    <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs">Active</Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-muted-foreground text-xs">
+                      Inactive
+                    </Badge>
+                  )}
+                </div>
+                <div className="px-5 py-4">
+                  {isPaidPlan ? (
+                    <div className="space-y-4">
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Enabling EHCP support adds an orange badge to your profile, helping families with Education,
+                        Health and Care Plans find you more easily.
+                      </p>
+                      <div className="flex items-center justify-between rounded-xl border border-border/60 bg-muted/10 px-4 py-3">
+                        <div>
+                          <p className="text-sm font-medium text-foreground">
+                            {profile.ehcpSupport ? "EHCP support is enabled" : "EHCP support is disabled"}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {profile.ehcpSupport
+                              ? "Your profile shows the EHCP Supported badge"
+                              : "Toggle on to show the EHCP Supported badge"}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleEhcpToggle}
+                          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${profile.ehcpSupport ? "bg-orange-400" : "bg-muted-foreground/30"}`}
+                          role="switch"
+                          aria-checked={profile.ehcpSupport}
+                        >
+                          <span
+                            className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transform transition-transform duration-200 ${profile.ehcpSupport ? "translate-x-5" : "translate-x-0"}`}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Upgrade to founder or professional to display the EHCP Supported badge.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Referral Notes */}
+            <div
+              className={`rounded-xl border bg-card overflow-hidden ${!hasReferralNotes ? "opacity-60" : ""}`}
+              style={{ borderColor: hasReferralNotes ? "rgba(42,122,106,0.20)" : "rgba(255,255,255,0.06)" }}
+            >
+              <div
+                className="flex items-center justify-between px-5 py-4 border-b border-border/30"
+                style={{ borderLeft: `3px solid ${hasReferralNotes ? C.teal : "rgba(255,255,255,0.08)"}` }}
+              >
+                <div className="flex items-center gap-2.5">
+                  <NotebookPen className="h-4 w-4 text-teal-500" />
+                  <span className="font-semibold text-sm text-foreground">Referral Notes</span>
+                  {!hasReferralNotes && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
+                </div>
+                {!hasReferralNotes ? (
+                  <Badge variant="outline" className="text-xs text-muted-foreground/60 border-border/40">
+                    Upgrade to unlock
+                  </Badge>
+                ) : (
+                  <Badge className="bg-emerald-500/15 text-emerald-400 border-0 text-xs">Active</Badge>
+                )}
+              </div>
+              <div className="px-5 py-4">
+                {hasReferralNotes ? (
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Referral notes are active within your message threads. Open any enquiry to add private notes —
+                      these are never visible to families.
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Upgrade to founder or professional to add private referral notes to your enquiry threads.
                   </p>
-                </>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+
+      // ── PLAN ──
+      case "plan":
+        const claim = getClaimForProvider(providerId);
+        const livePlanType = getProvider(providerId)?.plan_type ?? claim?.planType ?? profile.plan_type;
+        const planLabel =
+          livePlanType === "founder"
+            ? "Founder Plan"
+            : livePlanType === "professional"
+              ? "Professional Plan"
+              : "Free Plan";
+        return (
+          <div className="space-y-5">
+            <div className="rounded-xl border bg-card overflow-hidden" style={{ borderColor: "rgba(42,122,106,0.20)" }}>
+              <div className="px-5 py-5 border-b border-border/30" style={{ borderLeft: `3px solid ${C.teal}` }}>
+                <div className="flex items-center gap-3 mb-1">
+                  <Badge className="bg-teal-500/20 text-teal-400 border-0">{planLabel}</Badge>
+                  <Badge className="bg-emerald-500/15 text-emerald-400 border-0">Active</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed mt-2">
+                  {livePlanType === "founder"
+                    ? "You're a founding provider on Beyonder. Founder benefits stay with you after launch."
+                    : livePlanType === "professional"
+                      ? "You're on the Professional plan with full access to all Beyonder features."
+                      : "You're on the free plan. Upgrade anytime for more visibility and tools."}
+                </p>
+              </div>
+              <div className="px-5 py-4">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                  What's included
+                </p>
+                <div className="space-y-2">
+                  {(livePlanType === "free"
+                    ? [
+                        { label: "Public profile listing", included: true },
+                        { label: "Receive enquiries", included: true },
+                        { label: "Availability status", included: true },
+                        { label: "Spotlight message", included: false },
+                        { label: "Gallery & case studies", included: false },
+                        { label: "Referral notes", included: false },
+                      ]
+                    : [
+                        { label: "Public profile listing", included: true },
+                        { label: "Receive enquiries", included: true },
+                        { label: "Availability status", included: true },
+                        { label: "Spotlight message", included: true },
+                        { label: "Gallery & case studies", included: true },
+                        { label: "Referral notes", included: true },
+                      ]
+                  ).map((item) => (
+                    <div key={item.label} className="flex items-center gap-3">
+                      <div
+                        className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${item.included ? "bg-emerald-500/15" : "bg-muted/30"}`}
+                      >
+                        {item.included ? (
+                          <CheckCircle className="h-3 w-3 text-emerald-400" />
+                        ) : (
+                          <Lock className="h-2.5 w-2.5 text-muted-foreground/40" />
+                        )}
+                      </div>
+                      <span className={`text-sm ${item.included ? "text-foreground" : "text-muted-foreground/50"}`}>
+                        {item.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="bg-navy-gradient min-h-screen">
+      {/* ── Dashboard header ── */}
+      <div style={{ background: C.navy, borderBottom: "1px solid rgba(42,122,106,0.15)" }}>
+        <div className="container max-w-3xl py-6">
+          {/* Alerts */}
+          {isSuspended && (
+            <div className="mb-4 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/[0.08] p-4">
+              <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-red-400 text-sm">Your account has been suspended</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {profile.suspendedMessage || "Your listing has been suspended. Please contact support."}
+                </p>
+              </div>
+            </div>
+          )}
+          {changeRequest && (
+            <div className="mb-4 flex items-start gap-3 rounded-xl border border-orange-500/25 bg-orange-500/[0.08] p-4">
+              <ClipboardList className="h-5 w-5 text-orange-400 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                {isAcknowledged ? (
+                  <>
+                    <p className="font-semibold text-orange-400 text-sm">Thanks — we'll review your changes shortly</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Our team has been notified and will check your profile soon.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-semibold text-orange-400 text-sm">Action required: please update your profile</p>
+                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{changeRequest.message}</p>
+                    <Button
+                      size="sm"
+                      className="mt-3 bg-orange-500 hover:bg-orange-400 text-white"
+                      onClick={handleChangesMade}
+                    >
+                      Changes Made
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+          {savedMsg && (
+            <div className="mb-4 rounded-xl bg-teal-500/10 border border-teal-500/25 px-4 py-2 text-sm text-teal-400">
+              {savedMsg}
+            </div>
+          )}
+
+          {/* Provider identity */}
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-2 h-2 rounded-full" style={{ background: avail.dot }} />
+                <span className="text-xs text-muted-foreground">{avail.label}</span>
+              </div>
+              <h1 className="text-2xl font-bold text-white leading-tight">{profile.businessName}</h1>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {profile.typeBadge} · {profile.location}
+              </p>
+            </div>
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              <Badge className="bg-teal-500/20 text-teal-400 border-0 capitalize">{profile.plan_type} plan</Badge>
+              {profile.isVerified && (
+                <Badge className="bg-teal-500/20 text-teal-400 border-0 text-xs gap-1">
+                  <ShieldCheck className="h-3 w-3" /> Verified
+                </Badge>
+              )}
+            </div>
+          </div>
+
+          {/* Tab bar */}
+          <div className="mt-5 flex gap-0 overflow-x-auto scrollbar-hide -mb-px">
+            {TABS.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors relative"
+                  style={{
+                    borderBottomColor: isActive ? C.teal : "transparent",
+                    color: isActive ? C.tealLight : "rgba(255,255,255,0.35)",
+                  }}
+                >
+                  <tab.icon className="h-3.5 w-3.5" />
+                  {tab.label}
+                  {tab.id === "enquiries" && newEnquiryCount > 0 && (
+                    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-red-500 text-white text-xs font-bold leading-none">
+                      {newEnquiryCount}
+                    </span>
+                  )}
+                </button>
               );
-            })()}
-          </CardContent>
-        </Card>
+            })}
+          </div>
+        </div>
       </div>
+
+      {/* ── Tab content ── */}
+      <div className="container max-w-3xl py-6 animate-fade-in">{renderTab()}</div>
 
       {/* Edit Profile Modal */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
@@ -998,25 +1315,25 @@ const ProviderDashboard = () => {
 
 function getSectionIcon(key: string) {
   const icons: Record<string, React.ReactNode> = {
-    availability: <Clock className="h-4 w-4 text-teal-500" />,
-    enquiries: <Users className="h-4 w-4 text-teal-500" />,
-    certifications: <FileText className="h-4 w-4 text-teal-500" />,
-    testimonials: <Star className="h-4 w-4 text-orange-400" />,
-    timetable: <Clock className="h-4 w-4 text-teal-500" />,
-    gallery: <Image className="h-4 w-4 text-teal-500" />,
-    case_studies: <FileText className="h-4 w-4 text-teal-500" />,
-    spotlight: <Star className="h-4 w-4 text-orange-400" />,
-    store_link: <LinkIcon className="h-4 w-4 text-teal-500" />,
-    products: <ShoppingBag className="h-4 w-4 text-teal-500" />,
-    session_types: <FileText className="h-4 w-4 text-teal-500" />,
-    availability_dates: <Clock className="h-4 w-4 text-teal-500" />,
-    session_capacity: <Users className="h-4 w-4 text-teal-500" />,
-    term_programme: <FileText className="h-4 w-4 text-teal-500" />,
-    open_days: <Clock className="h-4 w-4 text-orange-400" />,
-    ehcp_admissions: <ShieldCheck className="h-4 w-4 text-orange-400" />,
-    staff_profiles: <Users className="h-4 w-4 text-teal-500" />,
-    events: <Star className="h-4 w-4 text-orange-400" />,
-    volunteer_info: <CheckCircle className="h-4 w-4 text-teal-500" />,
+    availability: <Clock className="h-4 w-4" />,
+    enquiries: <Users className="h-4 w-4" />,
+    certifications: <FileText className="h-4 w-4" />,
+    testimonials: <Star className="h-4 w-4" />,
+    timetable: <Clock className="h-4 w-4" />,
+    gallery: <Image className="h-4 w-4" />,
+    case_studies: <FileText className="h-4 w-4" />,
+    spotlight: <Star className="h-4 w-4" />,
+    store_link: <LinkIcon className="h-4 w-4" />,
+    products: <ShoppingBag className="h-4 w-4" />,
+    session_types: <FileText className="h-4 w-4" />,
+    availability_dates: <Clock className="h-4 w-4" />,
+    session_capacity: <Users className="h-4 w-4" />,
+    term_programme: <FileText className="h-4 w-4" />,
+    open_days: <Clock className="h-4 w-4" />,
+    ehcp_admissions: <ShieldCheck className="h-4 w-4" />,
+    staff_profiles: <Users className="h-4 w-4" />,
+    events: <Star className="h-4 w-4" />,
+    volunteer_info: <CheckCircle className="h-4 w-4" />,
   };
   return icons[key] ?? null;
 }
@@ -1881,7 +2198,7 @@ function renderSectionContent(
           </p>
           <Textarea
             rows={6}
-            placeholder="e.g. We welcome children with EHCPs. Our admissions process begins with an informal visit, followed by a formal application to the Local Authority..."
+            placeholder="e.g. We welcome children with EHCPs. Our admissions process begins with an informal visit..."
             value={ehcpAdmissionsText}
             onChange={(e) => setEhcpAdmissionsText(e.target.value)}
           />
@@ -1890,7 +2207,6 @@ function renderSectionContent(
             className="bg-teal-500 hover:bg-teal-400"
             onClick={() => {
               updateProvider(providerId, { ehcpAdmissionsInfo: ehcpAdmissionsText });
-              setEhcpAdmissionsText(ehcpAdmissionsText);
               forceUpdate((n: number) => n + 1);
               showSaved();
             }}
@@ -2068,7 +2384,7 @@ function renderSectionContent(
           </p>
           <Textarea
             rows={6}
-            placeholder="e.g. We're always looking for volunteers to help at our weekly sessions. No experience needed — just a passion for supporting children with SEND..."
+            placeholder="e.g. We're always looking for volunteers to help at our weekly sessions..."
             value={volunteerText}
             onChange={(e) => setVolunteerText(e.target.value)}
           />
@@ -2077,7 +2393,6 @@ function renderSectionContent(
             className="bg-teal-500 hover:bg-teal-400"
             onClick={() => {
               updateProvider(providerId, { volunteerInfo: volunteerText });
-              setVolunteerText(volunteerText);
               forceUpdate((n: number) => n + 1);
               showSaved();
             }}
