@@ -350,7 +350,7 @@ const ProviderDirectory = () => {
               className={
                 activeCategory === "all"
                   ? "bg-teal-500 hover:bg-teal-400"
-                  : "border-navy-600 text-navy-900 hover:bg-navy-700"
+                  : "border-navy-600 text-navy-900 font-semibold hover:bg-navy-700"
               }
             >
               All
@@ -364,7 +364,7 @@ const ProviderDirectory = () => {
                 className={
                   activeCategory === cat.id
                     ? "bg-teal-500 hover:bg-teal-400"
-                    : "border-navy-600 text-navy-900 hover:bg-navy-700"
+                    : "border-navy-600 text-navy-900 font-semibold hover:bg-navy-700"
                 }
               >
                 {cat.name}
