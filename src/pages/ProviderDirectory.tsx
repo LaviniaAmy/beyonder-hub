@@ -350,7 +350,7 @@ const ProviderDirectory = () => {
               className={
                 activeCategory === "all"
                   ? "bg-teal-500 hover:bg-teal-400"
-                  : "border-navy-600 text-accent-foreground/80 hover:bg-navy-700"
+                  : "border-navy-600 text-navy-900 hover:bg-navy-700"
               }
             >
               All
