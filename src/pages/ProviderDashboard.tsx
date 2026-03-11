@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   CheckCircle,
@@ -113,7 +113,8 @@ const ProviderDashboard = () => {
   })();
   const providerId = resolvedUser?.provider_id ?? providers[0]?.id;
 
-  const storeProfile = getProvider(providerId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const storeProfile = useMemo(() => getProvider(providerId), [providerId, tick]);
   const fallback = providers.find((p) => p.id === providerId);
 
   const [editOpen, setEditOpen] = useState(false);
@@ -144,7 +145,7 @@ const ProviderDashboard = () => {
   const [selectedEnquiryId, setSelectedEnquiryId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const [notesText, setNotesText] = useState("");
-  const [, forceUpdate] = useState(0);
+  const [tick, forceUpdate] = useState(0);
   const [newCert, setNewCert] = useState("");
   const [newTimetable, setNewTimetable] = useState({ day: "", time: "", activity: "" });
   const [spotlightMsg, setSpotlightMsg] = useState(storeProfile?.spotlightMessage ?? "");
@@ -293,6 +294,24 @@ const ProviderDashboard = () => {
     showSaved("Profile saved ✓");
     forceUpdate((n) => n + 1);
   };
+
+  // Keep editFields in sync whenever storeProfile changes (e.g. after save)
+  useEffect(() => {
+    if (!storeProfile) return;
+    setEditFields({
+      businessName: storeProfile.businessName ?? "",
+      description: storeProfile.description ?? "",
+      location: storeProfile.location ?? "",
+      email: storeProfile.email ?? "",
+      phone: storeProfile.phone ?? "",
+      website: storeProfile.website ?? "",
+      coverageArea: storeProfile.coverageArea ?? "",
+      ageRange: storeProfile.ageRange ?? "",
+      deliveryFormat: storeProfile.deliveryFormat ?? "in-person",
+      needsSupported: storeProfile.needsSupported ?? [],
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tick]);
 
   const toggleNeed = (need: string) => {
     setEditFields((f) => ({
