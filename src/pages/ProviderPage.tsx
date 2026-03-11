@@ -25,7 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reviews } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
-import { attemptClaim, isProviderClaimed } from "@/data/founderStore";
+import { isProviderClaimed } from "@/data/founderStore";
 import { getProvider } from "@/data/providerStore";
 import { hasFeature } from "@/lib/featureGating";
 import type { AvailabilityStatus } from "@/data/providerStore";
@@ -72,6 +72,9 @@ const ProviderPage = () => {
   const [expandedEvents, setExpandedEvents] = useState<Record<number, boolean>>({});
   const toggleEvent = (i: number) => setExpandedEvents((prev) => ({ ...prev, [i]: !prev[i] }));
 
+  // Shown when a logged-in user tries to claim
+  const [claimBlocked, setClaimBlocked] = useState(false);
+
   const provider = getProvider(id ?? "");
   const providerReviews = reviews.filter((r) => r.providerId === id);
 
@@ -80,7 +83,7 @@ const ProviderPage = () => {
       <div className="container py-20 text-center">
         <h1 className="text-2xl font-bold">Provider not found</h1>
         <Button asChild className="mt-4">
-          <Link to="/providers">Back to Directory</Link>
+          <Link to="/explore">Back to Directory</Link>
         </Button>
       </div>
     );
@@ -100,16 +103,13 @@ const ProviderPage = () => {
   const canShow = (featureKey: string) => hasFeature(planGate, featureKey as any);
 
   const handleClaim = () => {
-    if (!isAuthenticated || user?.role !== "provider") {
-      navigate(`/for-providers?claimProviderId=${provider.id}`);
+    // Any logged-in user — block with inline message, do not redirect
+    if (isAuthenticated) {
+      setClaimBlocked(true);
       return;
     }
-    const result = attemptClaim(user.id, user.email, provider.id, provider.businessName, provider.websiteDomain);
-    if (result.outcome === "approved") {
-      navigate("/provider-dashboard");
-    } else if (result.outcome === "pending_review") {
-      navigate("/provider-dashboard?claimStatus=pending_review");
-    }
+    // Logged-out user — send to the existing for-providers signup/claim flow
+    navigate(`/for-providers?claimProviderId=${provider.id}`);
   };
 
   return (
@@ -179,17 +179,30 @@ const ProviderPage = () => {
                 </div>
               )}
 
+              {/* Claim this profile — hidden once claimed or suspended */}
               {!alreadyClaimed && !isSuspended && (
-                <div className="mt-4 flex items-center gap-3">
-                  <span className="text-sm text-accent-foreground/40">Own this profile?</span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-teal-500/40 text-teal-400 hover:bg-teal-500/10"
-                    onClick={handleClaim}
-                  >
-                    Claim this profile
-                  </Button>
+                <div className="mt-4">
+                  {claimBlocked ? (
+                    <div className="rounded-xl border border-orange-500/25 bg-orange-500/[0.08] px-4 py-3 max-w-sm">
+                      <p className="text-sm font-semibold text-orange-400">Account already exists</p>
+                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                        You're currently logged in to an existing account. To claim a profile, please sign up with a new
+                        provider account linked to your organisation's email address.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-accent-foreground/40">Own this profile?</span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-teal-500/40 text-teal-400 hover:bg-teal-500/10"
+                        onClick={handleClaim}
+                      >
+                        Claim this profile
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -517,7 +530,6 @@ const ProviderPage = () => {
                   const isOpen = !!expandedEvents[i];
                   return (
                     <div key={i} className="rounded-xl border border-border/60 overflow-hidden">
-                      {/* Summary row — always visible, click to expand */}
                       <button
                         type="button"
                         className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-muted/10 transition-colors"
@@ -548,8 +560,6 @@ const ProviderPage = () => {
                           <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
                         )}
                       </button>
-
-                      {/* Expanded detail */}
                       {isOpen && ev.description && (
                         <div className="px-4 pb-4 pt-1 border-t border-border/40">
                           <p className="text-sm text-muted-foreground leading-relaxed">{ev.description}</p>
