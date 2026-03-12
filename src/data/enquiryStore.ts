@@ -133,10 +133,6 @@ export function getEnquiriesForProvider(providerId: string): EnquiryRecord[] {
 
 // ── Shared display helpers (used by both dashboards) ─────────
 
-export function messagesRemaining(record: EnquiryRecord): number {
-  return Math.max(0, MESSAGE_CAP - record.messages.length);
-}
-
 export function isAtCap(record: EnquiryRecord): boolean {
   return record.messages.length >= MESSAGE_CAP;
 }
