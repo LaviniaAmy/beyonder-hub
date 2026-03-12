@@ -138,8 +138,7 @@ const ParentDashboard = () => {
               {atCap ? (
                 <div className="rounded-xl border border-border/40 bg-muted/20 p-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    This conversation has reached its 6-message limit. Please contact {selectedRecord.providerName}{" "}
-                    directly to continue.
+                    This conversation has reached its 6-message limit.
                   </p>
                 </div>
               ) : !selectedRecord.isUnlocked && selectedRecord.statusForParent === "sent" ? (
