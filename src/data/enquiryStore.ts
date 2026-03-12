@@ -28,7 +28,7 @@ export interface EnquiryRecord {
   customAnswers: { question: string; answer: string }[];
 }
 
-// ── Cap: 6 total messages (3 each way) ──────────────────────
+// ── Cap: 6 total (parent 3, provider 3 — opener is message 1) ──
 export const MESSAGE_CAP = 6;
 
 import { enquiries } from "@/data/mockData";
@@ -68,7 +68,6 @@ const seeded: EnquiryRecord[] = enquiries.map((e) => {
     statusForProvider: e.status === "replied" ? "replied" : "new",
     createdAt: e.date,
     isUnlocked: false,
-    // messageCount always equals messages.length — single source of truth
     messageCount: messages.length,
     providerNotes: "",
     customAnswers: [],
@@ -78,43 +77,38 @@ const seeded: EnquiryRecord[] = enquiries.map((e) => {
 export const enquiryStore: EnquiryRecord[] = [...seeded];
 
 export function addEnquiry(record: EnquiryRecord) {
-  // Ensure messageCount is always consistent on insert
   record.messageCount = record.messages.length;
   enquiryStore.push(record);
 }
 
-/** Provider sends a reply */
 export function replyToEnquiry(enquiryId: string, replyText: string, providerName: string) {
   const record = enquiryStore.find((e) => e.enquiryId === enquiryId);
-  if (!record) return;
-  if (record.messages.length >= MESSAGE_CAP) return;
-  const msg: ThreadMessage = {
+  if (!record || record.messages.length >= MESSAGE_CAP) return;
+  if (!isProviderTurn(record)) return;
+  record.messages.push({
     messageId: crypto.randomUUID(),
     senderId: "provider",
     senderName: providerName,
     text: replyText,
     sentAt: new Date().toISOString().split("T")[0],
-  };
-  record.messages.push(msg);
+  });
   record.reply = replyText;
   record.statusForParent = "replied";
   record.statusForProvider = "replied";
   record.messageCount = record.messages.length;
 }
 
-/** Parent sends a follow-up message */
 export function parentReplyToEnquiry(enquiryId: string, text: string, parentName: string) {
   const record = enquiryStore.find((e) => e.enquiryId === enquiryId);
-  if (!record) return;
-  if (record.messages.length >= MESSAGE_CAP) return;
-  const msg: ThreadMessage = {
+  if (!record || record.messages.length >= MESSAGE_CAP) return;
+  if (!isParentTurn(record)) return;
+  record.messages.push({
     messageId: crypto.randomUUID(),
     senderId: "parent",
     senderName: parentName,
     text,
     sentAt: new Date().toISOString().split("T")[0],
-  };
-  record.messages.push(msg);
+  });
   record.statusForProvider = "new";
   record.messageCount = record.messages.length;
 }
@@ -137,14 +131,24 @@ export function getEnquiriesForProvider(providerId: string): EnquiryRecord[] {
   return enquiryStore.filter((e) => e.providerId === providerId);
 }
 
-/**
- * Shared helper — both dashboards use this for consistent display.
- * Always based on messages.length, never messageCount alone.
- */
+// ── Shared display helpers (used by both dashboards) ─────────
+
 export function messagesRemaining(record: EnquiryRecord): number {
   return Math.max(0, MESSAGE_CAP - record.messages.length);
 }
 
 export function isAtCap(record: EnquiryRecord): boolean {
   return record.messages.length >= MESSAGE_CAP;
+}
+
+/** Provider's turn = last message was sent by parent */
+export function isProviderTurn(record: EnquiryRecord): boolean {
+  if (!record.messages.length) return false;
+  return record.messages[record.messages.length - 1].senderId === "parent";
+}
+
+/** Parent's turn = last message was sent by provider */
+export function isParentTurn(record: EnquiryRecord): boolean {
+  if (!record.messages.length) return false;
+  return record.messages[record.messages.length - 1].senderId === "provider";
 }
