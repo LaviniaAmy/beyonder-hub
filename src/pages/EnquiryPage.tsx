@@ -96,7 +96,7 @@ const EnquiryPage = () => {
       statusForProvider: "new",
       createdAt: new Date().toISOString().split("T")[0],
       isUnlocked: false,
-      messageCount: 0,
+      messageCount: 1,
       providerNotes: "",
       customAnswers: [],
     });
