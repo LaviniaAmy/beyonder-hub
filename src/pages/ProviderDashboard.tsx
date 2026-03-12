@@ -34,7 +34,15 @@ import { providers } from "@/data/mockData";
 import { hasFeature, categorySections } from "@/lib/featureGating";
 import { getModuleProfile, providerTestimonials } from "@/data/providerModules";
 import { useAuth } from "@/context/AuthContext";
-import { getEnquiriesForProvider, replyToEnquiry, updateProviderNotes, EnquiryRecord } from "@/data/enquiryStore";
+import {
+  getEnquiriesForProvider,
+  replyToEnquiry,
+  updateProviderNotes,
+  EnquiryRecord,
+  messagesRemaining,
+  isAtCap,
+  isProviderTurn,
+} from "@/data/enquiryStore";
 import { getClaimForProvider } from "@/data/founderStore";
 import { getProvider, updateProvider, AvailabilityStatus } from "@/data/providerStore";
 
@@ -69,7 +77,6 @@ const AVAILABILITY_OPTIONS: { value: AvailabilityStatus; label: string; descript
   { value: "closed", label: "Closed", description: "Not accepting new clients or waitlist enquiries at this time" },
 ];
 
-// ── Availability colour helper ──────────────────────────────
 const availColour = (status: AvailabilityStatus) => {
   if (status === "accepting")
     return { dot: "#4ade80", label: "Accepting Clients", badge: "bg-emerald-500/15 text-emerald-400" };
@@ -78,7 +85,6 @@ const availColour = (status: AvailabilityStatus) => {
   return { dot: "#f87171", label: "Closed", badge: "bg-red-500/15 text-red-400" };
 };
 
-// ── Tab definitions ─────────────────────────────────────────
 const TABS = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "profile", label: "Profile", icon: Building2 },
@@ -114,7 +120,6 @@ const ProviderDashboard = () => {
   const providerId = resolvedUser?.provider_id ?? providers[0]?.id;
 
   const [tick, forceUpdate] = useState(0);
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const storeProfile = useMemo(() => getProvider(providerId), [providerId, tick]);
   const fallback = providers.find((p) => p.id === providerId);
@@ -296,7 +301,6 @@ const ProviderDashboard = () => {
     forceUpdate((n) => n + 1);
   };
 
-  // Keep editFields in sync whenever storeProfile changes (e.g. after save)
   useEffect(() => {
     if (!storeProfile) return;
     setEditFields({
@@ -435,7 +439,6 @@ const ProviderDashboard = () => {
 
   const selectedEnquiry = providerEnquiries.find((e) => e.enquiryId === selectedEnquiryId) ?? null;
 
-  // ── Section content ctx ──────────────────────────────────
   const ctx = {
     newCert,
     setNewCert,
@@ -486,7 +489,11 @@ const ProviderDashboard = () => {
   // ── Enquiries panel ──────────────────────────────────────
   const renderEnquiriesPanel = () => {
     if (selectedEnquiry) {
-      const atCap = (selectedEnquiry.messageCount ?? 0) >= 4;
+      const atCap = isAtCap(selectedEnquiry);
+      // FIX: provider can only reply when it's their turn (last message was from parent)
+      const canProviderReply = !atCap && isProviderTurn(selectedEnquiry);
+      const remaining = messagesRemaining(selectedEnquiry);
+
       return (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -511,45 +518,42 @@ const ProviderDashboard = () => {
               ← Back
             </Button>
           </div>
+
+          {/* Thread messages */}
           <div className="space-y-2">
-            {(selectedEnquiry.messages ?? []).length > 0 ? (
-              selectedEnquiry.messages.map((msg) => (
-                <div
-                  key={msg.messageId}
-                  className={`rounded-xl p-4 ${msg.senderId === "parent" ? "bg-muted/30 border border-border/40 mr-8 break-words" : "bg-teal-500/[0.06] border border-teal-500/20 ml-8 break-words"}`}
-                >
-                  <p
-                    className={`text-xs mb-1 ${msg.senderId === "parent" ? "text-muted-foreground" : "text-teal-500"}`}
-                  >
-                    {msg.senderId === "parent" ? selectedEnquiry.parentName : "You"} · {msg.sentAt}
-                  </p>
-                  <p className="text-sm leading-relaxed">{msg.text}</p>
-                </div>
-              ))
-            ) : (
-              <>
-                <div className="rounded-xl bg-muted/30 border border-border/40 p-4 mr-8 break-words">
-                  <p className="text-xs text-muted-foreground mb-1">{selectedEnquiry.parentName}</p>
-                  <p className="text-sm leading-relaxed">{selectedEnquiry.message}</p>
-                </div>
-                {selectedEnquiry.reply && (
-                  <div className="rounded-xl bg-teal-500/[0.06] border border-teal-500/20 p-4 ml-8 break-words">
-                    <p className="text-xs text-teal-500 mb-1">You</p>
-                    <p className="text-sm leading-relaxed">{selectedEnquiry.reply}</p>
-                  </div>
-                )}
-              </>
-            )}
+            {selectedEnquiry.messages.map((msg) => (
+              <div
+                key={msg.messageId}
+                className={`rounded-xl p-4 ${msg.senderId === "parent" ? "bg-muted/30 border border-border/40 mr-8 break-words" : "bg-teal-500/[0.06] border border-teal-500/20 ml-8 break-words"}`}
+              >
+                <p className={`text-xs mb-1 ${msg.senderId === "parent" ? "text-muted-foreground" : "text-teal-500"}`}>
+                  {msg.senderId === "parent" ? selectedEnquiry.parentName : "You"} · {msg.sentAt}
+                </p>
+                <p className="text-sm leading-relaxed">{msg.text}</p>
+              </div>
+            ))}
           </div>
+
+          {/* Status / reply — mutually exclusive, no stacking */}
           {atCap ? (
             <div className="rounded-xl border border-border/40 bg-muted/20 p-4 text-center">
-              <p className="text-sm text-muted-foreground">This conversation has reached its limit.</p>
+              <p className="text-sm text-muted-foreground">
+                This conversation has reached its 6-message limit. Please continue outside of Beyonder.
+              </p>
+            </div>
+          ) : !canProviderReply ? (
+            // Not provider's turn — waiting for parent
+            <div className="rounded-xl border border-border/40 bg-muted/20 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Awaiting a reply from the parent.</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {remaining} message{remaining !== 1 ? "s" : ""} remaining in this thread
+              </p>
             </div>
           ) : (
+            // Provider's turn — show reply box once
             <div className="pt-2 space-y-2 border-t border-border/30">
               <p className="text-xs text-muted-foreground">
-                {4 - (selectedEnquiry.messageCount ?? 0)} message
-                {4 - (selectedEnquiry.messageCount ?? 0) !== 1 ? "s" : ""} remaining
+                {remaining} message{remaining !== 1 ? "s" : ""} remaining in this thread
               </p>
               <Textarea
                 value={replyText}
@@ -575,6 +579,8 @@ const ProviderDashboard = () => {
               </div>
             </div>
           )}
+
+          {/* Referral notes — paid only */}
           {hasReferralNotes && (
             <div className="mt-4 rounded-xl border border-border/40 bg-muted/10 p-4 space-y-2">
               <div className="flex items-center gap-2">
@@ -602,6 +608,7 @@ const ProviderDashboard = () => {
         </div>
       );
     }
+
     return providerEnquiries.length === 0 ? (
       <div className="py-12 text-center">
         <MessageSquare className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
@@ -643,11 +650,9 @@ const ProviderDashboard = () => {
   // ── Tab content renderer ────────────────────────────────
   const renderTab = () => {
     switch (activeTab) {
-      // ── OVERVIEW ──
       case "overview":
         return (
           <div className="space-y-5">
-            {/* Stats row */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {[
                 {
@@ -702,8 +707,6 @@ const ProviderDashboard = () => {
                 </div>
               ))}
             </div>
-
-            {/* Quick actions */}
             <div>
               <p
                 className="text-xs font-semibold uppercase tracking-wide mb-3"
@@ -769,8 +772,6 @@ const ProviderDashboard = () => {
                 ))}
               </div>
             </div>
-
-            {/* Recent enquiries preview */}
             {providerEnquiries.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-3">
@@ -826,7 +827,6 @@ const ProviderDashboard = () => {
           </div>
         );
 
-      // ── PROFILE ──
       case "profile":
         return (
           <div className="space-y-5">
@@ -843,8 +843,6 @@ const ProviderDashboard = () => {
                 Edit Profile
               </Button>
             </div>
-
-            {/* Profile info grid */}
             <div
               className="rounded-xl border overflow-hidden"
               style={{ background: "#0e2640", borderColor: "rgba(42,122,106,0.18)" }}
@@ -880,8 +878,6 @@ const ProviderDashboard = () => {
                   </div>
                 ))}
             </div>
-
-            {/* Needs supported */}
             {(profile.needsSupported ?? []).length > 0 && (
               <div>
                 <p
@@ -902,8 +898,6 @@ const ProviderDashboard = () => {
                 </div>
               </div>
             )}
-
-            {/* Description preview */}
             {profile.description && (
               <div>
                 <p
@@ -925,7 +919,6 @@ const ProviderDashboard = () => {
           </div>
         );
 
-      // ── ENQUIRIES ──
       case "enquiries":
         return (
           <div>
@@ -940,7 +933,6 @@ const ProviderDashboard = () => {
           </div>
         );
 
-      // ── FEATURES ──
       case "features":
         return (
           <div className="space-y-4">
@@ -957,7 +949,6 @@ const ProviderDashboard = () => {
                       borderColor: enabled ? "rgba(42,122,106,0.20)" : "rgba(255,255,255,0.06)",
                     }}
                   >
-                    {/* Section header */}
                     <div
                       className="flex items-center justify-between px-5 py-4 border-b border-border/30"
                       style={{ borderLeft: `3px solid ${enabled ? C.teal : "rgba(255,255,255,0.08)"}` }}
@@ -975,7 +966,6 @@ const ProviderDashboard = () => {
                         </Badge>
                       )}
                     </div>
-                    {/* Section body */}
                     <div className="px-5 py-4">
                       {enabled ? (
                         section.key === "enquiries" ? (
@@ -1000,7 +990,6 @@ const ProviderDashboard = () => {
                 );
               })}
 
-            {/* EHCP Support — therapists only */}
             {isTherapist && (
               <div
                 className={`rounded-xl border overflow-hidden ${!isPaidPlan ? "opacity-60" : ""}`}
@@ -1070,7 +1059,6 @@ const ProviderDashboard = () => {
               </div>
             )}
 
-            {/* Referral Notes */}
             <div
               className={`rounded-xl border overflow-hidden ${!hasReferralNotes ? "opacity-60" : ""}`}
               style={{
@@ -1114,8 +1102,7 @@ const ProviderDashboard = () => {
           </div>
         );
 
-      // ── PLAN ──
-      case "plan":
+      case "plan": {
         const claim = getClaimForProvider(providerId);
         const livePlanType = getProvider(providerId)?.plan_type ?? claim?.planType ?? profile.plan_type;
         const planLabel =
@@ -1189,6 +1176,7 @@ const ProviderDashboard = () => {
             </div>
           </div>
         );
+      }
 
       default:
         return null;
@@ -1197,10 +1185,8 @@ const ProviderDashboard = () => {
 
   return (
     <div className="bg-navy-gradient min-h-screen">
-      {/* ── Dashboard header ── */}
       <div style={{ background: C.navy, borderBottom: "1px solid rgba(42,122,106,0.15)" }}>
         <div className="container max-w-3xl px-4 sm:px-6 py-5 sm:py-6">
-          {/* Alerts */}
           {isSuspended && (
             <div className="mb-4 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/[0.08] p-4">
               <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
@@ -1244,8 +1230,6 @@ const ProviderDashboard = () => {
               {savedMsg}
             </div>
           )}
-
-          {/* Provider identity */}
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -1266,8 +1250,6 @@ const ProviderDashboard = () => {
               )}
             </div>
           </div>
-
-          {/* Tab bar */}
           <div className="mt-5 flex gap-0 overflow-x-auto scrollbar-hide -mb-px">
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id;
@@ -1294,11 +1276,8 @@ const ProviderDashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* ── Tab content ── */}
       <div className="container max-w-3xl px-4 sm:px-6 py-5 sm:py-6 animate-fade-in">{renderTab()}</div>
 
-      {/* Edit Profile Modal */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -1494,7 +1473,7 @@ function renderSectionContent(
   } = ctx;
 
   switch (key) {
-    case "availability":
+    case "availability": {
       const current: AvailabilityStatus = profile.availabilityStatus ?? "accepting";
       return (
         <div className="space-y-3">
@@ -1539,6 +1518,7 @@ function renderSectionContent(
           </div>
         </div>
       );
+    }
 
     case "certifications":
       return (
@@ -1792,7 +1772,6 @@ function renderSectionContent(
             className="bg-teal-500 hover:bg-teal-400"
             onClick={() => {
               updateProvider(providerId, { storeUrl });
-              setStoreUrl(storeUrl);
               forceUpdate((n: number) => n + 1);
               showSaved();
             }}
