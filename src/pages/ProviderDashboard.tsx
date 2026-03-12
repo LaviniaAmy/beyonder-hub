@@ -39,7 +39,7 @@ import {
   replyToEnquiry,
   updateProviderNotes,
   EnquiryRecord,
-  messagesRemaining,
+  messagesRemainingForProvider,
   isAtCap,
   isProviderTurn,
 } from "@/data/enquiryStore";
@@ -492,7 +492,7 @@ const ProviderDashboard = () => {
       const atCap = isAtCap(selectedEnquiry);
       // FIX: provider can only reply when it's their turn (last message was from parent)
       const canProviderReply = !atCap && isProviderTurn(selectedEnquiry);
-      const remaining = messagesRemaining(selectedEnquiry);
+      const remaining = messagesRemainingForProvider(selectedEnquiry);
 
       return (
         <div className="space-y-4">
@@ -529,7 +529,7 @@ const ProviderDashboard = () => {
                 <p className={`text-xs mb-1 ${msg.senderId === "parent" ? "text-muted-foreground" : "text-teal-500"}`}>
                   {msg.senderId === "parent" ? selectedEnquiry.parentName : "You"} · {msg.sentAt}
                 </p>
-                <p className="text-sm leading-relaxed">{msg.text}</p>
+                <p className="text-sm leading-relaxed text-gray-300">{msg.text}</p>
               </div>
             ))}
           </div>

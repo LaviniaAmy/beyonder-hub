@@ -12,7 +12,7 @@ import {
   getEnquiriesForParent,
   unlockEnquiry,
   parentReplyToEnquiry,
-  messagesRemaining,
+  messagesRemainingForParent,
   isAtCap,
   isParentTurn,
 } from "@/data/enquiryStore";
@@ -80,7 +80,7 @@ const ParentDashboard = () => {
   };
 
   const atCap = selectedRecord ? isAtCap(selectedRecord) : false;
-  const remaining = selectedRecord ? messagesRemaining(selectedRecord) : 0;
+  const remaining = selectedRecord ? messagesRemainingForParent(selectedRecord) : 0;
   // Show reply box only when: thread unlocked AND it's parent's turn AND not at cap
   const showReplyBox = selectedRecord?.isUnlocked && !atCap && isParentTurn(selectedRecord);
 
@@ -130,7 +130,7 @@ const ParentDashboard = () => {
                   >
                     {msg.senderId === "parent" ? "You" : selectedRecord.providerName} · {msg.sentAt}
                   </p>
-                  <p className="text-sm leading-relaxed break-words">{msg.text}</p>
+                  <p className="text-sm leading-relaxed break-words text-gray-300">{msg.text}</p>
                 </div>
               ))}
 

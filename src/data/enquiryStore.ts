@@ -152,3 +152,15 @@ export function isParentTurn(record: EnquiryRecord): boolean {
   if (!record.messages.length) return false;
   return record.messages[record.messages.length - 1].senderId === "provider";
 }
+
+/** Messages remaining for parent (3 max per side) */
+export function messagesRemainingForParent(record: EnquiryRecord): number {
+  const parentCount = record.messages.filter((m) => m.senderId === "parent").length;
+  return Math.max(0, 3 - parentCount);
+}
+
+/** Messages remaining for provider (3 max per side) */
+export function messagesRemainingForProvider(record: EnquiryRecord): number {
+  const providerCount = record.messages.filter((m) => m.senderId === "provider").length;
+  return Math.max(0, 3 - providerCount);
+}
