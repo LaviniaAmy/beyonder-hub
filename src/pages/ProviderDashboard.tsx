@@ -886,7 +886,7 @@ const ProviderDashboard = () => {
         return (
           <div className="space-y-4">
             {sections
-              .filter((s) => s.key !== "referral_notes")
+              .filter((s) => s.key !== "referral_notes" && s.key !== "enquiries")
               .map((section) => {
                 const enabled = isFeatureEnabled(section.featureKey);
                 return (
