@@ -7,71 +7,89 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import { mockParent } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
-import { enquiryStore, getEnquiriesForParent, unlockEnquiry, parentReplyToEnquiry } from "@/data/enquiryStore";
+import {
+  enquiryStore,
+  getEnquiriesForParent,
+  unlockEnquiry,
+  parentReplyToEnquiry,
+  messagesRemaining,
+  isAtCap,
+  isParentTurn,
+} from "@/data/enquiryStore";
 
-const MAX_MSG = 500;
+const MAX_CHARS = 500;
 
 const ParentDashboard = () => {
   const { user } = useAuth();
   const parentId = user?.id ?? "mock-parent";
 
-  const getParentEnquiries = () => [
-    ...getEnquiriesForParent("mock-parent"),
-    ...getEnquiriesForParent(parentId).filter((e) => e.parentId !== "mock-parent"),
-  ];
+  // Only show enquiries for the logged-in parent.
+  // Test parent merges both seeded IDs so demo data is visible.
+  const getParentEnquiries = () => {
+    const isTestParent = parentId === "mock-parent" || parentId === "parent-test";
+    if (isTestParent) {
+      const seen = new Set<string>();
+      return [...getEnquiriesForParent("mock-parent"), ...getEnquiriesForParent("parent-test")].filter((e) => {
+        if (seen.has(e.enquiryId)) return false;
+        seen.add(e.enquiryId);
+        return true;
+      });
+    }
+    return getEnquiriesForParent(parentId);
+  };
 
   const [upgradeOpen, setUpgradeOpen] = useState(false);
-  const [selectedEnquiry, setSelectedEnquiry] = useState<string | null>(null);
   const [paywallEnquiryId, setPaywallEnquiryId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const [, forceUpdate] = useState(0);
 
   const parentEnquiries = getParentEnquiries();
+  const selectedRecord = selectedId ? (enquiryStore.find((e) => e.enquiryId === selectedId) ?? null) : null;
 
-  const handleViewReply = (enquiryId: string, statusForParent: string) => {
-    if (statusForParent !== "replied") return;
-    const enquiry = parentEnquiries.find((e) => e.enquiryId === enquiryId);
-    if (!enquiry) return;
-    if (enquiry.isUnlocked) {
-      setSelectedEnquiry(enquiryId);
-    } else {
+  const handleViewThread = (enquiryId: string) => {
+    const record = parentEnquiries.find((e) => e.enquiryId === enquiryId);
+    if (!record) return;
+
+    // Provider has replied but not yet unlocked — show paywall
+    if (record.statusForParent === "replied" && !record.isUnlocked) {
       setPaywallEnquiryId(enquiryId);
       setUpgradeOpen(true);
+      return;
     }
+
+    // Otherwise open thread (read-only if no reply yet, or not parent's turn)
+    setSelectedId(enquiryId);
   };
 
   const handleCheckout = () => {
     if (paywallEnquiryId) {
       unlockEnquiry(paywallEnquiryId);
-      setSelectedEnquiry(paywallEnquiryId);
+      setSelectedId(paywallEnquiryId);
       setPaywallEnquiryId(null);
       forceUpdate((n) => n + 1);
     }
     setUpgradeOpen(false);
   };
 
-  const handleSendReply = (enquiryId: string) => {
-    if (!replyText.trim()) return;
-    parentReplyToEnquiry(enquiryId, replyText.trim(), user?.name ?? "Parent");
+  const handleSendReply = () => {
+    if (!selectedRecord || !replyText.trim()) return;
+    parentReplyToEnquiry(selectedRecord.enquiryId, replyText.trim(), user?.name ?? "Parent");
     setReplyText("");
     forceUpdate((n) => n + 1);
   };
 
-  const selectedRecord = enquiryStore.find((e) => e.enquiryId === selectedEnquiry) ?? null;
-  const atCap = (selectedRecord?.messageCount ?? 0) >= 4;
+  const atCap = selectedRecord ? isAtCap(selectedRecord) : false;
+  const remaining = selectedRecord ? messagesRemaining(selectedRecord) : 0;
+  // Show reply box only when: thread unlocked AND it's parent's turn AND not at cap
+  const showReplyBox = selectedRecord?.isUnlocked && !atCap && isParentTurn(selectedRecord);
 
   return (
     <div className="bg-navy-gradient min-h-screen py-10">
       <div className="container max-w-3xl animate-fade-in">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold text-accent-foreground">Your Dashboard</h1>
-          <Badge
-            className={
-              mockParent.subscriptionTier === "free"
-                ? "bg-navy-600 text-accent-foreground border-0"
-                : "bg-teal-500/20 text-teal-400 border-0"
-            }
-          >
+          <Badge className="bg-navy-600 text-accent-foreground border-0">
             {mockParent.subscriptionTier === "free" ? "Free Tier" : "Subscribed"}
           </Badge>
         </div>
@@ -88,85 +106,85 @@ const ParentDashboard = () => {
                 size="sm"
                 variant="outline"
                 onClick={() => {
-                  setSelectedEnquiry(null);
+                  setSelectedId(null);
                   setReplyText("");
                 }}
               >
                 ← Back
               </Button>
             </CardHeader>
-            <CardContent className="space-y-3">
-              {/* Full message thread */}
-              {(selectedRecord.messages ?? []).length > 0 ? (
-                selectedRecord.messages.map((msg) => (
-                  <div
-                    key={msg.messageId}
-                    className={`rounded-xl p-4 ${
-                      msg.senderId === "parent"
-                        ? "bg-muted/30 border border-border/40 ml-0 mr-8 break-words"
-                        : "bg-teal-500/[0.06] border border-teal-500/20 ml-8 mr-0 break-words"
-                    }`}
-                  >
-                    <p
-                      className={`text-xs mb-1 ${msg.senderId === "parent" ? "text-muted-foreground" : "text-teal-500"}`}
-                    >
-                      {msg.senderId === "parent" ? "You" : selectedRecord.providerName} · {msg.sentAt}
-                    </p>
-                    <p className="text-sm leading-relaxed">{msg.text}</p>
-                  </div>
-                ))
-              ) : (
-                // Fallback for seeded data without messages array
-                <>
-                  <div className="rounded-xl bg-muted/30 border border-border/40 p-4 mr-8 break-words">
-                    <p className="text-xs text-muted-foreground mb-1">You · {selectedRecord.createdAt}</p>
-                    <p className="text-sm leading-relaxed">{selectedRecord.message}</p>
-                  </div>
-                  {selectedRecord.reply && (
-                    <div className="rounded-xl bg-teal-500/[0.06] border border-teal-500/20 p-4 ml-8 break-words">
-                      <p className="text-xs text-teal-500 mb-1">
-                        {selectedRecord.providerName} · {selectedRecord.createdAt}
-                      </p>
-                      <p className="text-sm leading-relaxed">{selectedRecord.reply}</p>
-                    </div>
-                  )}
-                </>
-              )}
 
-              {/* Message cap notice */}
+            <CardContent className="space-y-3">
+              {/* Message thread */}
+              {selectedRecord.messages.map((msg) => (
+                <div
+                  key={msg.messageId}
+                  className={`rounded-xl p-4 ${
+                    msg.senderId === "parent"
+                      ? "bg-muted/30 border border-border/40 mr-8"
+                      : "bg-teal-500/[0.06] border border-teal-500/20 ml-8"
+                  }`}
+                >
+                  <p
+                    className={`text-xs mb-1 ${msg.senderId === "parent" ? "text-muted-foreground" : "text-teal-500"}`}
+                  >
+                    {msg.senderId === "parent" ? "You" : selectedRecord.providerName} · {msg.sentAt}
+                  </p>
+                  <p className="text-sm leading-relaxed break-words">{msg.text}</p>
+                </div>
+              ))}
+
+              {/* Status notices — mutually exclusive, no stacking */}
               {atCap ? (
                 <div className="rounded-xl border border-border/40 bg-muted/20 p-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    This conversation has reached its limit. Please contact {selectedRecord.providerName} directly to
-                    proceed.
+                    This conversation has reached its 6-message limit. Please contact {selectedRecord.providerName}{" "}
+                    directly to continue.
                   </p>
                 </div>
-              ) : (
-                /* Reply input */
+              ) : !selectedRecord.isUnlocked && selectedRecord.statusForParent === "sent" ? (
+                // No reply yet — read-only, show remaining info
+                <div className="rounded-xl border border-border/40 bg-muted/20 p-4 text-center">
+                  <p className="text-sm text-muted-foreground">Awaiting a reply from {selectedRecord.providerName}.</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {remaining} message{remaining !== 1 ? "s" : ""} remaining in this thread
+                  </p>
+                </div>
+              ) : !selectedRecord.isUnlocked ? null : !isParentTurn(selectedRecord) ? (
+                // Unlocked but waiting for provider to reply
+                <div className="rounded-xl border border-border/40 bg-muted/20 p-4 text-center">
+                  <p className="text-sm text-muted-foreground">Awaiting a reply from {selectedRecord.providerName}.</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {remaining} message{remaining !== 1 ? "s" : ""} remaining in this thread
+                  </p>
+                </div>
+              ) : showReplyBox ? (
+                // It's parent's turn — show reply input ONCE only
                 <div className="pt-2 space-y-2 border-t border-border/30">
                   <p className="text-xs text-muted-foreground">
-                    {4 - (selectedRecord.messageCount ?? 0)} message
-                    {4 - (selectedRecord.messageCount ?? 0) !== 1 ? "s" : ""} remaining in this thread
+                    {remaining} message{remaining !== 1 ? "s" : ""} remaining in this thread
                   </p>
                   <Textarea
                     value={replyText}
-                    onChange={(e) => setReplyText(e.target.value.slice(0, MAX_MSG))}
+                    onChange={(e) => setReplyText(e.target.value.slice(0, MAX_CHARS))}
                     placeholder="Write a follow-up message..."
                     rows={3}
                   />
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">{MAX_MSG - replyText.length} remaining</span>
+                    <span className="text-xs text-muted-foreground">
+                      {MAX_CHARS - replyText.length} characters remaining
+                    </span>
                     <Button
                       size="sm"
                       className="bg-teal-500 hover:bg-teal-400"
                       disabled={!replyText.trim()}
-                      onClick={() => handleSendReply(selectedRecord.enquiryId)}
+                      onClick={handleSendReply}
                     >
                       Send Message
                     </Button>
                   </div>
                 </div>
-              )}
+              ) : null}
             </CardContent>
           </Card>
         ) : (
@@ -201,24 +219,13 @@ const ParentDashboard = () => {
                         >
                           {e.statusForParent === "replied" ? "Reply Received" : "Sent"}
                         </Badge>
-                        {e.statusForParent === "replied" ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleViewReply(e.enquiryId, e.statusForParent)}
-                          >
-                            {e.isUnlocked ? "View Thread" : "Unlock Reply"}
-                          </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            disabled
-                            className="text-muted-foreground cursor-not-allowed"
-                          >
-                            Waiting for reply
-                          </Button>
-                        )}
+                        <Button size="sm" variant="outline" onClick={() => handleViewThread(e.enquiryId)}>
+                          {e.statusForParent === "replied"
+                            ? e.isUnlocked
+                              ? "View Thread"
+                              : "Unlock Reply"
+                            : "View Sent"}
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -228,6 +235,7 @@ const ParentDashboard = () => {
           </Card>
         )}
 
+        {/* Profile */}
         <Card className="border-0 shadow-card">
           <CardHeader>
             <CardTitle>Profile Settings</CardTitle>
@@ -245,15 +253,14 @@ const ParentDashboard = () => {
         </Card>
       </div>
 
-      {/* Upgrade / Unlock Modal */}
+      {/* Unlock / Upgrade Modal */}
       <Dialog open={upgradeOpen} onOpenChange={setUpgradeOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Unlock Provider Responses</DialogTitle>
+            <DialogTitle>Unlock Provider Response</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground mb-4">
-            To read responses from providers, choose a plan that works for you. No pressure — pick what suits your
-            family.
+            To read the provider's reply and continue the conversation, choose a plan below.
           </p>
           <div className="grid gap-4 sm:grid-cols-2">
             <Card className="border-2 border-border/60 cursor-pointer card-hover-lift hover:ring-2 hover:ring-teal-500">
