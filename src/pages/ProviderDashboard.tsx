@@ -94,13 +94,9 @@ const TABS = [
 ];
 
 const C = {
-  navy: "#061828",
-  navyMid: "#0d2035",
   teal: "#2a7a6a",
   tealLight: "#3a9a88",
   orange: "#e8622a",
-  cream: "#f5f0e8",
-  white: "#ffffff",
 };
 
 const ProviderDashboard = () => {
@@ -252,8 +248,7 @@ const ProviderDashboard = () => {
         <div className="container max-w-xl animate-fade-in">
           <h1 className="mb-6 text-3xl font-bold text-accent-foreground">Provider Dashboard</h1>
           <div
-            className="rounded-xl border p-6 text-center space-y-4"
-            style={{ background: "rgba(232,98,42,0.08)", border: "1px solid rgba(232,98,42,0.25)" }}
+            className="rounded-xl border border-orange-500/25 bg-orange-500/[0.08] p-6 text-center space-y-4"
           >
             <div className="flex justify-center">
               <Clock className="h-10 w-10 text-orange-400" />
@@ -562,8 +557,7 @@ const ProviderDashboard = () => {
               />
               <div className="flex items-center justify-between">
                 <span
-                  className="text-xs text-muted-foreground"
-                  style={{ color: MAX_REPLY - replyText.length < 100 ? "#f07840" : undefined }}
+                  className={`text-xs ${MAX_REPLY - replyText.length < 100 ? "text-orange-400" : "text-muted-foreground"}`}
                 >
                   {MAX_REPLY - replyText.length} remaining
                 </span>
@@ -654,8 +648,7 @@ const ProviderDashboard = () => {
         return (
           <div className="space-y-5">
             <div
-              className="flex flex-wrap gap-x-6 gap-y-2 rounded-xl px-5 py-4"
-              style={{ background: "#0e2640", borderBottom: "1px solid rgba(42,122,106,0.12)" }}
+              className="flex flex-wrap gap-x-6 gap-y-2 rounded-xl px-5 py-4 bg-navy-800 border-b border-teal-500/10"
             >
               {[
                 {
@@ -684,23 +677,17 @@ const ProviderDashboard = () => {
                     className="h-2 w-2 rounded-full flex-shrink-0"
                     style={{ background: stat.accent }}
                   />
-                  <span
-                    className="text-xs font-medium uppercase tracking-wide"
-                    style={{ color: "rgba(255,255,255,0.40)" }}
-                  >
+                  <span className="text-xs font-medium uppercase tracking-wide text-white/40">
                     {stat.label}:
                   </span>
-                  <span className="text-sm capitalize" style={{ color: "rgba(255,255,255,0.85)" }}>
+                  <span className="text-sm capitalize text-white/85">
                     {stat.value}
                   </span>
                 </div>
               ))}
             </div>
             <div>
-              <p
-                className="text-xs font-semibold uppercase tracking-wide mb-3"
-                style={{ color: "rgba(255,255,255,0.40)" }}
-              >
+              <p className="text-xs font-semibold uppercase tracking-wide mb-3 text-white/40">
                 Quick Actions
               </p>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -732,15 +719,14 @@ const ProviderDashboard = () => {
                   <button
                     key={action.tab}
                     onClick={() => setActiveTab(action.tab)}
-                    className="flex items-center gap-4 rounded-xl border p-4 text-left hover:border-teal-500/40 transition-all group"
-                    style={{ background: "#0e2640", borderColor: "rgba(42,122,106,0.18)" }}
+                    className="flex items-center gap-4 rounded-xl border border-teal-500/20 bg-navy-800 p-4 text-left hover:border-teal-500/40 transition-all group"
                   >
                     <div className="w-9 h-9 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shrink-0">
                       <action.icon className="h-4 w-4 text-teal-500" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold" style={{ color: "#ffffff" }}>
+                        <p className="text-sm font-semibold text-white">
                           {action.label}
                         </p>
                         {action.badge && (
@@ -749,14 +735,11 @@ const ProviderDashboard = () => {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.40)" }}>
+                      <p className="text-xs mt-0.5 text-white/40">
                         {action.sub}
                       </p>
                     </div>
-                    <ChevronRight
-                      className="h-4 w-4 transition-colors group-hover:text-teal-400"
-                      style={{ color: "rgba(255,255,255,0.22)" }}
-                    />
+                    <ChevronRight className="h-4 w-4 transition-colors group-hover:text-teal-400 text-white/20" />
                   </button>
                 ))}
               </div>
@@ -764,16 +747,12 @@ const ProviderDashboard = () => {
             {providerEnquiries.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <p
-                    className="text-xs font-semibold uppercase tracking-wide"
-                    style={{ color: "rgba(255,255,255,0.40)" }}
-                  >
+                  <p className="text-xs font-semibold uppercase tracking-wide text-white/40">
                     Recent Enquiries
                   </p>
                   <button
                     onClick={() => setActiveTab("enquiries")}
-                    className="text-xs hover:text-teal-300"
-                    style={{ color: "#3a9a88" }}
+                    className="text-xs hover:text-teal-300 text-teal-500"
                   >
                     View all →
                   </button>
@@ -782,8 +761,7 @@ const ProviderDashboard = () => {
                   {providerEnquiries.slice(0, 3).map((e) => (
                     <div
                       key={e.enquiryId}
-                      className="flex items-center justify-between rounded-xl border px-4 py-3 cursor-pointer hover:border-teal-500/30 transition-colors"
-                      style={{ background: "#0e2640", borderColor: "rgba(42,122,106,0.18)" }}
+                      className="flex items-center justify-between rounded-xl border border-teal-500/20 bg-navy-800 px-4 py-3 cursor-pointer hover:border-teal-500/30 transition-colors"
                       onClick={() => {
                         setActiveTab("enquiries");
                         setSelectedEnquiryId(e.enquiryId);
@@ -792,13 +770,10 @@ const ProviderDashboard = () => {
                       }}
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-medium truncate" style={{ color: "#ffffff" }}>
+                        <p className="text-sm font-medium truncate text-white">
                           {e.parentName}
                         </p>
-                        <p
-                          className="text-xs truncate max-w-[160px] sm:max-w-[200px]"
-                          style={{ color: "rgba(255,255,255,0.40)" }}
-                        >
+                        <p className="text-xs truncate max-w-[160px] sm:max-w-[200px] text-white/40">
                           {e.message}
                         </p>
                       </div>
@@ -821,10 +796,10 @@ const ProviderDashboard = () => {
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold" style={{ color: "#ffffff" }}>
+                <h2 className="text-lg font-semibold text-white">
                   {profile.businessName}
                 </h2>
-                <p className="text-sm" style={{ color: "rgba(255,255,255,0.40)" }}>
+                <p className="text-sm text-white/40">
                   {profile.typeBadge}
                 </p>
               </div>
@@ -832,10 +807,7 @@ const ProviderDashboard = () => {
                 Edit Profile
               </Button>
             </div>
-            <div
-              className="rounded-xl border overflow-hidden"
-              style={{ background: "#0e2640", borderColor: "rgba(42,122,106,0.18)" }}
-            >
+            <div className="rounded-xl border border-teal-500/20 bg-navy-800 overflow-hidden">
               {[
                 { label: "Location", value: profile.location },
                 { label: "Coverage Area", value: profile.coverageArea },
@@ -851,15 +823,12 @@ const ProviderDashboard = () => {
                     key={row!.label}
                     className={`flex items-center justify-between px-5 py-3.5 ${i < arr.length - 1 ? "border-b border-border/30" : ""}`}
                   >
-                    <span
-                      className="text-xs font-semibold uppercase tracking-wide w-28 shrink-0"
-                      style={{ color: "rgba(255,255,255,0.40)" }}
-                    >
+                    <span className="text-xs font-semibold uppercase tracking-wide w-28 shrink-0 text-white/40">
                       {row!.label}
                     </span>
-                    <span className="text-sm text-right" style={{ color: "#ffffff" }}>
+                    <span className="text-sm text-right text-white">
                       {row!.value || (
-                        <span style={{ color: "rgba(255,255,255,0.25)" }} className="italic">
+                        <span className="italic text-white/25">
                           Not set
                         </span>
                       )}
@@ -869,10 +838,7 @@ const ProviderDashboard = () => {
             </div>
             {(profile.needsSupported ?? []).length > 0 && (
               <div>
-                <p
-                  className="text-xs font-semibold uppercase tracking-wide mb-2"
-                  style={{ color: "rgba(255,255,255,0.40)" }}
-                >
+                <p className="text-xs font-semibold uppercase tracking-wide mb-2 text-white/40">
                   Needs Supported
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -889,17 +855,11 @@ const ProviderDashboard = () => {
             )}
             {profile.description && (
               <div>
-                <p
-                  className="text-xs font-semibold uppercase tracking-wide mb-2"
-                  style={{ color: "rgba(255,255,255,0.40)" }}
-                >
+                <p className="text-xs font-semibold uppercase tracking-wide mb-2 text-white/40">
                   Description
                 </p>
-                <div
-                  className="rounded-xl border p-4"
-                  style={{ background: "#0e2640", borderColor: "rgba(42,122,106,0.18)" }}
-                >
-                  <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>
+                <div className="rounded-xl border border-teal-500/20 bg-navy-800 p-4">
+                  <p className="text-sm leading-relaxed text-white/70">
                     {profile.description}
                   </p>
                 </div>
@@ -913,7 +873,7 @@ const ProviderDashboard = () => {
           <div>
             {!selectedEnquiry && (
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm" style={{ color: "rgba(255,255,255,0.40)" }}>
+                <p className="text-sm text-white/40">
                   {providerEnquiries.length} total · {newEnquiryCount} new
                 </p>
               </div>
@@ -932,19 +892,14 @@ const ProviderDashboard = () => {
                 return (
                   <div
                     key={section.key}
-                    className={`rounded-xl border overflow-hidden transition-opacity ${!enabled ? "opacity-60" : ""}`}
-                    style={{
-                      background: "#0e2640",
-                      borderColor: enabled ? "rgba(42,122,106,0.20)" : "rgba(255,255,255,0.06)",
-                    }}
+                    className={`rounded-xl border overflow-hidden transition-opacity bg-navy-800 ${!enabled ? "opacity-60 border-white/[0.06]" : "border-teal-500/20"}`}
                   >
                     <div
-                      className="flex items-center justify-between px-5 py-4 border-b border-border/30"
-                      style={{ borderLeft: `3px solid ${enabled ? C.teal : "rgba(255,255,255,0.08)"}` }}
+                      className={`flex items-center justify-between px-5 py-4 border-b border-border/30 ${enabled ? "border-l-[3px] border-l-teal-600" : "border-l-[3px] border-l-white/[0.08]"}`}
                     >
                       <div className="flex items-center gap-2.5">
                         <span className="text-teal-500">{getSectionIcon(section.key)}</span>
-                        <span className="font-semibold text-sm" style={{ color: "#ffffff" }}>
+                        <span className="font-semibold text-sm text-white">
                           {section.label}
                         </span>
                         {!enabled && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
@@ -981,15 +936,10 @@ const ProviderDashboard = () => {
 
             {isTherapist && (
               <div
-                className={`rounded-xl border overflow-hidden ${!isPaidPlan ? "opacity-60" : ""}`}
-                style={{
-                  background: "#0e2640",
-                  borderColor: isPaidPlan ? "rgba(232,98,42,0.20)" : "rgba(255,255,255,0.06)",
-                }}
+                className={`rounded-xl border overflow-hidden bg-navy-800 ${!isPaidPlan ? "opacity-60 border-white/[0.06]" : "border-orange-500/20"}`}
               >
                 <div
-                  className="flex items-center justify-between px-5 py-4 border-b border-border/30"
-                  style={{ borderLeft: `3px solid ${isPaidPlan ? C.orange : "rgba(255,255,255,0.08)"}` }}
+                  className={`flex items-center justify-between px-5 py-4 border-b border-border/30 ${isPaidPlan ? "border-l-[3px] border-l-orange-500" : "border-l-[3px] border-l-white/[0.08]"}`}
                 >
                   <div className="flex items-center gap-2.5">
                     <ShieldCheck className="h-4 w-4 text-orange-400" />
@@ -1049,15 +999,10 @@ const ProviderDashboard = () => {
             )}
 
             <div
-              className={`rounded-xl border overflow-hidden ${!hasReferralNotes ? "opacity-60" : ""}`}
-              style={{
-                background: "#0e2640",
-                borderColor: hasReferralNotes ? "rgba(42,122,106,0.20)" : "rgba(255,255,255,0.06)",
-              }}
+              className={`rounded-xl border overflow-hidden bg-navy-800 ${!hasReferralNotes ? "opacity-60 border-white/[0.06]" : "border-teal-500/20"}`}
             >
               <div
-                className="flex items-center justify-between px-5 py-4 border-b border-border/30"
-                style={{ borderLeft: `3px solid ${hasReferralNotes ? C.teal : "rgba(255,255,255,0.08)"}` }}
+                className={`flex items-center justify-between px-5 py-4 border-b border-border/30 ${hasReferralNotes ? "border-l-[3px] border-l-teal-600" : "border-l-[3px] border-l-white/[0.08]"}`}
               >
                 <div className="flex items-center gap-2.5">
                   <NotebookPen className="h-4 w-4 text-teal-500" />
@@ -1102,16 +1047,13 @@ const ProviderDashboard = () => {
               : "Free Plan";
         return (
           <div className="space-y-5">
-            <div
-              className="rounded-xl border overflow-hidden"
-              style={{ background: "#0e2640", borderColor: "rgba(42,122,106,0.20)" }}
-            >
-              <div className="px-5 py-5 border-b border-border/30" style={{ borderLeft: `3px solid ${C.teal}` }}>
+            <div className="rounded-xl border border-teal-500/20 bg-navy-800 overflow-hidden">
+              <div className="px-5 py-5 border-b border-border/30 border-l-[3px] border-l-teal-600">
                 <div className="flex items-center gap-3 mb-1">
                   <Badge className="bg-teal-500/20 text-teal-400 border-0">{planLabel}</Badge>
                   <Badge className="bg-emerald-500/15 text-emerald-400 border-0">Active</Badge>
                 </div>
-                <p className="text-sm leading-relaxed mt-2" style={{ color: "rgba(255,255,255,0.50)" }}>
+                <p className="text-sm leading-relaxed mt-2 text-white/50">
                   {livePlanType === "founder"
                     ? "You're a founding provider on Beyonder. Founder benefits stay with you after launch."
                     : livePlanType === "professional"
@@ -1120,10 +1062,7 @@ const ProviderDashboard = () => {
                 </p>
               </div>
               <div className="px-5 py-4">
-                <p
-                  className="text-xs font-semibold uppercase tracking-wide mb-3"
-                  style={{ color: "rgba(255,255,255,0.40)" }}
-                >
+                <p className="text-xs font-semibold uppercase tracking-wide mb-3 text-white/40">
                   What's included
                 </p>
                 <div className="space-y-2">
@@ -1155,7 +1094,7 @@ const ProviderDashboard = () => {
                           <Lock className="h-2.5 w-2.5 text-muted-foreground/40" />
                         )}
                       </div>
-                      <span className={`text-sm ${item.included ? "" : "opacity-40"}`} style={{ color: "#ffffff" }}>
+                      <span className={`text-sm text-white ${item.included ? "" : "opacity-40"}`}>
                         {item.label}
                       </span>
                     </div>
@@ -1174,7 +1113,7 @@ const ProviderDashboard = () => {
 
   return (
     <div className="bg-navy-gradient min-h-screen">
-      <div style={{ background: C.navy, borderBottom: "1px solid rgba(42,122,106,0.15)" }}>
+      <div className="bg-navy-900 border-b border-teal-500/15">
         <div className="container max-w-3xl px-4 sm:px-6 py-5 sm:py-6">
           {isSuspended && (
             <div className="mb-4 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/[0.08] p-4">
@@ -1246,11 +1185,7 @@ const ProviderDashboard = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className="flex items-center gap-2 px-3 sm:px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors relative"
-                  style={{
-                    borderBottomColor: isActive ? C.teal : "transparent",
-                    color: isActive ? C.tealLight : "rgba(255,255,255,0.35)",
-                  }}
+                  className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors relative ${isActive ? "border-b-teal-600 text-teal-500" : "border-b-transparent text-white/35"}`}
                 >
                   <tab.icon className="h-4 w-4 sm:h-3.5 sm:w-3.5 shrink-0" />
                   <span className="hidden sm:inline">{tab.label}</span>
