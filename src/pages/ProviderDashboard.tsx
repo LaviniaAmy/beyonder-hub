@@ -495,10 +495,10 @@ const ProviderDashboard = () => {
       const remaining = messagesRemainingForProvider(selectedEnquiry);
 
       return (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
+        <Card className="mb-6 border-0 shadow-card">
+          <CardHeader className="flex-row items-center justify-between pb-3">
             <div>
-              <p className="font-semibold text-foreground">{selectedEnquiry.parentName}</p>
+              <CardTitle className="text-lg">{selectedEnquiry.parentName}</CardTitle>
               <div className="flex flex-wrap gap-x-3 text-xs text-muted-foreground mt-0.5">
                 <span>Age: {selectedEnquiry.childAge}</span>
                 {selectedEnquiry.childName && <span>Name: {selectedEnquiry.childName}</span>}
@@ -517,10 +517,10 @@ const ProviderDashboard = () => {
             >
               ← Back
             </Button>
-          </div>
+          </CardHeader>
 
-          {/* Thread messages */}
-          <div className="space-y-2">
+          <CardContent className="space-y-3">
+            {/* Thread messages */}
             {selectedEnquiry.messages.map((msg) => (
               <div
                 key={msg.messageId}
@@ -532,13 +532,12 @@ const ProviderDashboard = () => {
                 <p className="text-sm leading-relaxed text-gray-300">{msg.text}</p>
               </div>
             ))}
-          </div>
 
           {/* Status / reply — mutually exclusive, no stacking */}
           {atCap ? (
             <div className="rounded-xl border border-border/40 bg-muted/20 p-4 text-center">
               <p className="text-sm text-muted-foreground">
-                This conversation has reached its 6-message limit. Please continue outside of Beyonder.
+                This conversation has reached its 6-message limit.
               </p>
             </div>
           ) : !canProviderReply ? (
@@ -605,7 +604,8 @@ const ProviderDashboard = () => {
               </p>
             </div>
           )}
-        </div>
+          </CardContent>
+        </Card>
       );
     }
 
@@ -653,57 +653,46 @@ const ProviderDashboard = () => {
       case "overview":
         return (
           <div className="space-y-5">
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div
+              className="flex flex-wrap gap-x-6 gap-y-2 rounded-xl px-5 py-4"
+              style={{ background: "#0e2640", borderBottom: "1px solid rgba(42,122,106,0.12)" }}
+            >
               {[
                 {
                   label: "Enquiries",
-                  value: providerEnquiries.length,
-                  sub: `${newEnquiryCount} new`,
-                  icon: MessageSquare,
+                  value: `${providerEnquiries.length} total · ${newEnquiryCount} new`,
                   accent: C.teal,
                 },
                 {
                   label: "Plan",
-                  value: profile.plan_type,
-                  sub: profile.plan_status,
-                  icon: CreditCard,
+                  value: `${profile.plan_type} · ${profile.plan_status}`,
                   accent: C.tealLight,
                 },
                 {
                   label: "Availability",
-                  value: avail.label.split(" ")[0],
-                  sub: avail.label.split(" ").slice(1).join(" "),
-                  icon: Clock,
+                  value: avail.label,
                   accent: avail.dot,
                 },
                 {
                   label: "Category",
-                  value: profile.category_type,
-                  sub: profile.typeBadge,
-                  icon: Building2,
+                  value: `${profile.category_type}${profile.typeBadge ? ` · ${profile.typeBadge}` : ""}`,
                   accent: C.orange,
                 },
               ].map((stat) => (
-                <div
-                  key={stat.label}
-                  className="rounded-xl border p-4 space-y-2"
-                  style={{ background: "#0e2640", borderColor: "rgba(42,122,106,0.18)" }}
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className="text-xs font-medium uppercase tracking-wide"
-                      style={{ color: "rgba(255,255,255,0.40)" }}
-                    >
-                      {stat.label}
-                    </span>
-                    <stat.icon className="h-4 w-4" style={{ color: "rgba(255,255,255,0.22)" }} />
-                  </div>
-                  <p className="text-lg font-bold capitalize leading-none" style={{ color: "#ffffff" }}>
+                <div key={stat.label} className="flex items-center gap-2 py-1">
+                  <span
+                    className="h-2 w-2 rounded-full flex-shrink-0"
+                    style={{ background: stat.accent }}
+                  />
+                  <span
+                    className="text-xs font-medium uppercase tracking-wide"
+                    style={{ color: "rgba(255,255,255,0.40)" }}
+                  >
+                    {stat.label}:
+                  </span>
+                  <span className="text-sm capitalize" style={{ color: "rgba(255,255,255,0.85)" }}>
                     {stat.value}
-                  </p>
-                  <p className="text-xs capitalize" style={{ color: "rgba(255,255,255,0.40)" }}>
-                    {stat.sub}
-                  </p>
+                  </span>
                 </div>
               ))}
             </div>
