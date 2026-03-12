@@ -6,6 +6,7 @@ export interface ThreadMessage {
   text: string;
   sentAt: string;
 }
+
 export interface EnquiryRecord {
   enquiryId: string;
   providerId: string;
@@ -26,6 +27,9 @@ export interface EnquiryRecord {
   providerNotes: string;
   customAnswers: { question: string; answer: string }[];
 }
+
+// ── Cap: 6 total messages (3 each way) ──────────────────────
+export const MESSAGE_CAP = 6;
 
 import { enquiries } from "@/data/mockData";
 
@@ -64,7 +68,7 @@ const seeded: EnquiryRecord[] = enquiries.map((e) => {
     statusForProvider: e.status === "replied" ? "replied" : "new",
     createdAt: e.date,
     isUnlocked: false,
-    // FIX #3: count all messages already in the thread (parent + optional reply)
+    // messageCount always equals messages.length — single source of truth
     messageCount: messages.length,
     providerNotes: "",
     customAnswers: [],
@@ -74,13 +78,16 @@ const seeded: EnquiryRecord[] = enquiries.map((e) => {
 export const enquiryStore: EnquiryRecord[] = [...seeded];
 
 export function addEnquiry(record: EnquiryRecord) {
+  // Ensure messageCount is always consistent on insert
+  record.messageCount = record.messages.length;
   enquiryStore.push(record);
 }
 
-/** Provider sends a reply — adds to thread, updates status */
+/** Provider sends a reply */
 export function replyToEnquiry(enquiryId: string, replyText: string, providerName: string) {
   const record = enquiryStore.find((e) => e.enquiryId === enquiryId);
   if (!record) return;
+  if (record.messages.length >= MESSAGE_CAP) return;
   const msg: ThreadMessage = {
     messageId: crypto.randomUUID(),
     senderId: "provider",
@@ -92,16 +99,14 @@ export function replyToEnquiry(enquiryId: string, replyText: string, providerNam
   record.reply = replyText;
   record.statusForParent = "replied";
   record.statusForProvider = "replied";
-  // FIX #3: increment based on actual messages array length
   record.messageCount = record.messages.length;
 }
 
-/** Parent sends a follow-up message in an unlocked thread */
+/** Parent sends a follow-up message */
 export function parentReplyToEnquiry(enquiryId: string, text: string, parentName: string) {
   const record = enquiryStore.find((e) => e.enquiryId === enquiryId);
   if (!record) return;
-  // FIX #3: cap check against messages.length (source of truth)
-  if (record.messages.length >= 4) return;
+  if (record.messages.length >= MESSAGE_CAP) return;
   const msg: ThreadMessage = {
     messageId: crypto.randomUUID(),
     senderId: "parent",
@@ -130,4 +135,16 @@ export function getEnquiriesForParent(parentId: string): EnquiryRecord[] {
 
 export function getEnquiriesForProvider(providerId: string): EnquiryRecord[] {
   return enquiryStore.filter((e) => e.providerId === providerId);
+}
+
+/**
+ * Shared helper — both dashboards use this for consistent display.
+ * Always based on messages.length, never messageCount alone.
+ */
+export function messagesRemaining(record: EnquiryRecord): number {
+  return Math.max(0, MESSAGE_CAP - record.messages.length);
+}
+
+export function isAtCap(record: EnquiryRecord): boolean {
+  return record.messages.length >= MESSAGE_CAP;
 }
