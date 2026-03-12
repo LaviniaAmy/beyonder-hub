@@ -1,5 +1,4 @@
 // ── In-memory enquiry store ─────────────────────────────────
-
 export interface ThreadMessage {
   messageId: string;
   senderId: "parent" | "provider";
@@ -7,7 +6,6 @@ export interface ThreadMessage {
   text: string;
   sentAt: string;
 }
-
 export interface EnquiryRecord {
   enquiryId: string;
   providerId: string;
@@ -15,8 +13,8 @@ export interface EnquiryRecord {
   parentId: string;
   parentName: string;
   childAge: string;
-  childName: string; // optional, may be empty string
-  needs: string; // optional, may be empty string
+  childName: string;
+  needs: string;
   message: string;
   reply: string | null;
   messages: ThreadMessage[];
@@ -66,7 +64,8 @@ const seeded: EnquiryRecord[] = enquiries.map((e) => {
     statusForProvider: e.status === "replied" ? "replied" : "new",
     createdAt: e.date,
     isUnlocked: false,
-    messageCount: e.reply ? 1 : 0,
+    // FIX #3: count all messages already in the thread (parent + optional reply)
+    messageCount: messages.length,
     providerNotes: "",
     customAnswers: [],
   };
@@ -93,14 +92,16 @@ export function replyToEnquiry(enquiryId: string, replyText: string, providerNam
   record.reply = replyText;
   record.statusForParent = "replied";
   record.statusForProvider = "replied";
-  record.messageCount = (record.messageCount ?? 0) + 1;
+  // FIX #3: increment based on actual messages array length
+  record.messageCount = record.messages.length;
 }
 
 /** Parent sends a follow-up message in an unlocked thread */
 export function parentReplyToEnquiry(enquiryId: string, text: string, parentName: string) {
   const record = enquiryStore.find((e) => e.enquiryId === enquiryId);
   if (!record) return;
-  if ((record.messageCount ?? 0) >= 4) return;
+  // FIX #3: cap check against messages.length (source of truth)
+  if (record.messages.length >= 4) return;
   const msg: ThreadMessage = {
     messageId: crypto.randomUUID(),
     senderId: "parent",
@@ -110,7 +111,7 @@ export function parentReplyToEnquiry(enquiryId: string, text: string, parentName
   };
   record.messages.push(msg);
   record.statusForProvider = "new";
-  record.messageCount = (record.messageCount ?? 0) + 1;
+  record.messageCount = record.messages.length;
 }
 
 export function unlockEnquiry(enquiryId: string) {
