@@ -117,25 +117,11 @@ const Index = () => {
   const [regionOpen, setRegionOpen] = useState(false);
   const navigate = useNavigate();
 
-  const layerLogoRef = useRef<HTMLDivElement>(null);
-  const layerSearchRef = useRef<HTMLDivElement>(null);
-  const layerHowRef = useRef<HTMLDivElement>(null);
   const regionRef = useRef<HTMLDivElement>(null);
 
   // Mobile region dropdown ref
   const mobileRegionRef = useRef<HTMLDivElement>(null);
   const [mobileRegionOpen, setMobileRegionOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (layerLogoRef.current) layerLogoRef.current.style.transform = `translateY(${-y * 0.12}px)`;
-      if (layerSearchRef.current) layerSearchRef.current.style.transform = `translateY(${-y * 0.22}px)`;
-      if (layerHowRef.current) layerHowRef.current.style.transform = `translateY(${-y * 0.35}px)`;
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   // Close desktop dropdown on outside click
   useEffect(() => {
@@ -1113,7 +1099,6 @@ const Index = () => {
           />
 
           <div
-            ref={layerLogoRef}
             style={{
               position: "relative",
               zIndex: 3,
@@ -1121,7 +1106,6 @@ const Index = () => {
               flexDirection: "column",
               alignItems: "center",
               width: "100%",
-              willChange: "transform",
             }}
           >
             <div style={{ marginBottom: 14 }}>
@@ -1141,7 +1125,6 @@ const Index = () => {
           </div>
 
           <div
-            ref={layerSearchRef}
             style={{
               position: "relative",
               zIndex: 999,
@@ -1150,7 +1133,6 @@ const Index = () => {
               alignItems: "center",
               width: "100%",
               marginTop: 26,
-              willChange: "transform",
             }}
           >
             <form
@@ -1362,7 +1344,6 @@ const Index = () => {
           </div>
 
           <div
-            ref={layerHowRef}
             style={{
               position: "relative",
               zIndex: 3,
@@ -1371,7 +1352,6 @@ const Index = () => {
               alignItems: "center",
               width: "100%",
               marginTop: 18,
-              willChange: "transform",
             }}
           >
             <div
