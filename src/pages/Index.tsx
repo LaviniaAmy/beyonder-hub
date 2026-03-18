@@ -1127,7 +1127,7 @@ const Index = () => {
           <div
             style={{
               position: "relative",
-              zIndex: 999,
+              zIndex: 3,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -1147,7 +1147,7 @@ const Index = () => {
                 boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
                 marginBottom: 10,
                 position: "relative",
-                zIndex: 999,
+                zIndex: 3,
               }}
             >
               <div
