@@ -129,19 +129,201 @@
 @layer utilities {
   .bg-navy-gradient {
     background: linear-gradient(180deg, hsl(214 72% 8%) 0%, hsl(214 55% 13%) 50%, hsl(214 50% 17%) 100%);
-    position: relative;
-    isolation: isolate;
   }
-  .bg-navy-gradient::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.04;
-    background-image: url("/noise.png");
-    background-repeat: repeat;
-    background-size: 64px 64px;
+  .bg-navy-900 {
+    background-color: hsl(214 72% 8%);
+  }
+  .bg-navy-800 {
+    background-color: hsl(214 55% 13%);
+  }
+  .bg-cream {
+    background-color: hsl(37 50% 92%);
+  }
+  .bg-sage {
+    background-color: hsl(158 38% 93%);
+  }
+  .text-beyonder-teal {
+    color: hsl(166 49% 30%);
+  }
+  .section-label {
+    @apply text-xs font-semibold tracking-[2px] uppercase;
+    color: hsl(166 49% 30%);
+  }
+}
+
+/* ── Hero animations ── */
+@keyframes hero-load-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hero-load-1 {
+  animation: hero-load-in 0.6s ease-out 0.2s both;
+}
+.hero-load-2 {
+  animation: hero-load-in 0.6s ease-out 0.35s both;
+}
+.hero-load-3 {
+  animation: hero-load-in 0.6s ease-out 0.5s both;
+}
+.hero-load-4 {
+  animation: hero-load-in 0.6s ease-out 0.65s both;
+}
+.hero-load-5 {
+  animation: hero-load-in 0.6s ease-out 0.8s both;
+}
+.hero-bg {
+  animation: hero-load-in 0.8s ease-out 0s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg,
+  .hero-load-1,
+  .hero-load-2,
+  .hero-load-3,
+  .hero-load-4,
+  .hero-load-5 {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Jost:wght@400;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --beyonder-navy: 214 72% 8%;
+    --beyonder-navy-mid: 214 55% 13%;
+    --beyonder-teal: 166 49% 30%;
+    --beyonder-teal-light: 166 46% 40%;
+    --beyonder-cream: 37 50% 92%;
+    --beyonder-cream-dark: 36 40% 87%;
+    --beyonder-sage: 158 38% 93%;
+    --beyonder-orange: 18 80% 57%;
+    --beyonder-orange-light: 22 87% 65%;
+
+    --navy-900: 214 72% 8%;
+    --navy-800: 214 55% 13%;
+    --navy-700: 214 50% 17%;
+    --navy-600: 214 45% 22%;
+    --navy-500: 214 40% 30%;
+
+    --teal-600: 166 49% 24%;
+    --teal-500: 166 49% 30%;
+    --teal-400: 166 46% 40%;
+    --teal-300: 166 40% 55%;
+    --teal-100: 166 38% 93%;
+
+    --orange-500: 18 80% 57%;
+    --orange-400: 22 87% 65%;
+    --orange-300: 26 90% 72%;
+
+    --background: 37 50% 92%;
+    --foreground: 214 72% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 214 72% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 214 72% 8%;
+    --primary: 166 49% 30%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 72% 8%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 158 38% 93%;
+    --muted-foreground: 214 25% 45%;
+    --accent: 166 49% 30%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 36 40% 87%;
+    --input: 36 40% 87%;
+    --ring: 166 49% 30%;
+    --radius: 0.75rem;
+
+    --sidebar-background: 214 72% 8%;
+    --sidebar-foreground: 37 50% 92%;
+    --sidebar-primary: 166 49% 30%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 214 55% 13%;
+    --sidebar-accent-foreground: 37 50% 92%;
+    --sidebar-border: 214 45% 22%;
+    --sidebar-ring: 166 49% 30%;
+  }
+
+  .dark {
+    --background: 214 72% 6%;
+    --foreground: 37 50% 92%;
+    --card: 214 55% 10%;
+    --card-foreground: 37 50% 92%;
+    --popover: 214 55% 10%;
+    --popover-foreground: 37 50% 92%;
+    --primary: 166 46% 40%;
+    --primary-foreground: 214 72% 8%;
+    --secondary: 214 40% 18%;
+    --secondary-foreground: 37 50% 92%;
+    --muted: 214 35% 18%;
+    --muted-foreground: 214 15% 60%;
+    --accent: 214 40% 18%;
+    --accent-foreground: 37 50% 92%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 37 50% 92%;
+    --border: 214 35% 20%;
+    --input: 214 35% 20%;
+    --ring: 166 46% 40%;
+    --sidebar-background: 214 72% 6%;
+    --sidebar-foreground: 37 50% 92%;
+    --sidebar-primary: 166 46% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 214 40% 14%;
+    --sidebar-accent-foreground: 37 50% 92%;
+    --sidebar-border: 214 35% 16%;
+    --sidebar-ring: 166 46% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-family:
+      "Outfit",
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    line-height: 1.6;
+  }
+
+  h1 {
+    @apply tracking-tight font-bold;
+    line-height: 1.15;
+  }
+  h2 {
+    @apply tracking-tight font-semibold;
+    line-height: 1.25;
+  }
+  h3 {
+    @apply font-medium;
+    line-height: 1.35;
+  }
+}
+
+@layer utilities {
+  .bg-navy-gradient {
+    background: linear-gradient(180deg, hsl(214 72% 8%) 0%, hsl(214 55% 13%) 50%, hsl(214 50% 17%) 100%);
   }
   .bg-navy-900 {
     background-color: hsl(214 72% 8%);
