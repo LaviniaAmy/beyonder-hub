@@ -1068,33 +1068,7 @@ const Index = () => {
               inset: 0,
               zIndex: 1,
               background:
-                "linear-gradient(158deg, rgba(18,12,28,0.50) 0%, rgba(20,14,30,0.40) 42%, rgba(14,10,24,0.55) 72%, rgba(10,8,18,0.65) 100%)",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              left: -100,
-              top: -100,
-              width: 480,
-              height: 480,
-              borderRadius: "50%",
-              border: "50px solid rgba(42,122,106,0.08)",
-              pointerEvents: "none",
-              zIndex: 2,
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              left: -55,
-              top: -55,
-              width: 300,
-              height: 300,
-              borderRadius: "50%",
-              border: "20px solid rgba(42,122,106,0.055)",
-              pointerEvents: "none",
-              zIndex: 2,
+                "linear-gradient(180deg, rgba(18,12,28,0.15) 0%, rgba(14,10,24,0.10) 50%, rgba(10,8,18,0.20) 100%)",
             }}
           />
 
