@@ -1068,7 +1068,7 @@ const Index = () => {
               inset: 0,
               zIndex: 1,
               background:
-                "linear-gradient(158deg, rgba(6,24,40,0.55) 0%, rgba(10,32,56,0.45) 42%, rgba(6,20,32,0.60) 72%, rgba(3,12,20,0.70) 100%)",
+                "linear-gradient(158deg, rgba(18,12,28,0.50) 0%, rgba(20,14,30,0.40) 42%, rgba(14,10,24,0.55) 72%, rgba(10,8,18,0.65) 100%)",
             }}
           />
           <div
