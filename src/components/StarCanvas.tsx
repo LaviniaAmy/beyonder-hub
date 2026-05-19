@@ -77,40 +77,39 @@ function initStars(count: number): Star[] {
 }
 
 function paintBackground(ctx: CanvasRenderingContext2D, W: number, H: number) {
-  const grad = ctx.createLinearGradient(0, 0, W * 0.3, H);
-  grad.addColorStop(0, "rgb(22, 14, 42)");
-  grad.addColorStop(0.3, "rgb(28, 16, 52)");
-  grad.addColorStop(0.6, "rgb(24, 18, 48)");
-  grad.addColorStop(1, "rgb(18, 20, 40)");
+  // Base gradient: dark plum top → warm amber-peach bottom, evenly split
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, "rgb(28, 16, 48)");
+  grad.addColorStop(0.25, "rgb(52, 24, 58)");
+  grad.addColorStop(0.45, "rgb(120, 55, 50)");
+  grad.addColorStop(0.65, "rgb(185, 100, 65)");
+  grad.addColorStop(0.82, "rgb(210, 140, 90)");
+  grad.addColorStop(1, "rgb(220, 165, 110)");
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  const warmGlow1 = ctx.createRadialGradient(W * 0.15, H * 0.75, 0, W * 0.15, H * 0.75, W * 0.55);
-  warmGlow1.addColorStop(0, "rgba(140, 60, 30, 0.35)");
-  warmGlow1.addColorStop(0.4, "rgba(100, 40, 20, 0.18)");
+  // Warm glow bottom-left
+  const warmGlow1 = ctx.createRadialGradient(W * 0.2, H * 0.8, 0, W * 0.2, H * 0.8, W * 0.5);
+  warmGlow1.addColorStop(0, "rgba(210, 140, 70, 0.25)");
+  warmGlow1.addColorStop(0.5, "rgba(180, 100, 50, 0.12)");
   warmGlow1.addColorStop(1, "rgba(0, 0, 0, 0)");
   ctx.fillStyle = warmGlow1;
   ctx.fillRect(0, 0, W, H);
 
-  const warmGlow2 = ctx.createRadialGradient(W * 0.85, H * 0.85, 0, W * 0.85, H * 0.85, W * 0.5);
-  warmGlow2.addColorStop(0, "rgba(150, 70, 20, 0.3)");
-  warmGlow2.addColorStop(0.4, "rgba(80, 35, 12, 0.14)");
+  // Warm glow bottom-right
+  const warmGlow2 = ctx.createRadialGradient(W * 0.8, H * 0.85, 0, W * 0.8, H * 0.85, W * 0.45);
+  warmGlow2.addColorStop(0, "rgba(200, 120, 60, 0.2)");
+  warmGlow2.addColorStop(0.5, "rgba(160, 80, 40, 0.1)");
   warmGlow2.addColorStop(1, "rgba(0, 0, 0, 0)");
   ctx.fillStyle = warmGlow2;
   ctx.fillRect(0, 0, W, H);
 
-  const plumGlow = ctx.createRadialGradient(W * 0.5, H * 0.25, 0, W * 0.5, H * 0.25, W * 0.65);
-  plumGlow.addColorStop(0, "rgba(75, 30, 90, 0.35)");
-  plumGlow.addColorStop(0.4, "rgba(55, 20, 70, 0.18)");
+  // Plum glow upper area
+  const plumGlow = ctx.createRadialGradient(W * 0.5, H * 0.15, 0, W * 0.5, H * 0.15, W * 0.55);
+  plumGlow.addColorStop(0, "rgba(60, 25, 75, 0.3)");
+  plumGlow.addColorStop(0.5, "rgba(45, 18, 60, 0.15)");
   plumGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
   ctx.fillStyle = plumGlow;
-  ctx.fillRect(0, 0, W, H);
-
-  const tealGlow = ctx.createRadialGradient(W * 0.65, H * 0.5, 0, W * 0.65, H * 0.5, W * 0.4);
-  tealGlow.addColorStop(0, "rgba(42, 122, 106, 0.12)");
-  tealGlow.addColorStop(0.5, "rgba(42, 122, 106, 0.05)");
-  tealGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
-  ctx.fillStyle = tealGlow;
   ctx.fillRect(0, 0, W, H);
 }
 
