@@ -490,7 +490,7 @@ const Index = () => {
         {/* ── 1. HERO ── */}
         <section style={{ position: "relative", overflow: "hidden", display: "flex",
           flexDirection: "column", alignItems: "center", justifyContent: "center",
-          minHeight: 420, maxHeight: 520, height: "calc(100vh - 120px)", padding: "0 40px 0", justifyContent: "flex-start", paddingTop: 60 }}>
+          minHeight: 420, maxHeight: 520, height: "calc(100vh - 120px)", padding: "0 40px 0" }}>
 
           {/* Bird canvas background */}
           <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
@@ -503,10 +503,10 @@ const Index = () => {
 
           {/* Logo + tagline */}
           <div style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column",
-            alignItems: "center", width: "100%", marginBottom: 26 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
+            alignItems: "center", width: "100%", marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 8 }}>
               <div style={{ width: 18, height: 18, borderRadius: "50%", background: C.terra }} />
-              <span style={{ fontSize: "clamp(3.6rem, 9vw, 5.8rem)", fontWeight: 400, color: C.amber,
+              <span style={{ fontSize: "clamp(3.6rem, 9vw, 5.8rem)", fontWeight: 300, color: "#ffffff",
                 letterSpacing: "2px", fontFamily: "'Josefin Sans', sans-serif" }}>Beyonder</span>
             </div>
             <p style={{ fontSize: "1rem", color: "rgba(255,245,238,0.50)", fontWeight: 300, margin: 0, textAlign: "center" }}>
