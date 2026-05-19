@@ -180,27 +180,27 @@ const EnquiryPage = () => {
                     marginTop: 8,
                     padding: "12px 16px",
                     borderRadius: 10,
-                    background: "rgba(42,122,106,0.08)",
-                    border: "1px solid rgba(42,122,106,0.22)",
+                    background: "rgba(200,112,96,0.08)",
+                    border: "1px solid rgba(200,112,96,0.22)",
                     animation: "fadeIn 0.2s ease",
                   }}
                 >
-                  <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#2a7a6a", marginBottom: 4 }}>
+                  <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#c87060", marginBottom: 4 }}>
                     A quick note before you send
                   </p>
-                  <p style={{ fontSize: "0.74rem", color: "#556677", lineHeight: 1.65, margin: 0 }}>
+                  <p style={{ fontSize: "0.74rem", color: "#5a4a6a", lineHeight: 1.65, margin: 0 }}>
                     This is an enquiry to start a conversation — not a booking or consultation. It's simply the first
                     step in finding the right support for your child.
                   </p>
-                  <p style={{ fontSize: "0.74rem", color: "#556677", lineHeight: 1.65, margin: "6px 0 0" }}>
+                  <p style={{ fontSize: "0.74rem", color: "#5a4a6a", lineHeight: 1.65, margin: "6px 0 0" }}>
                     To keep things simple and respectful for everyone, we ask that exchanges stay focused — typically a
                     message or two each way is all it takes to find out if there's a good fit.
                   </p>
-                  <p style={{ fontSize: "0.74rem", color: "#556677", lineHeight: 1.65, margin: "6px 0 0" }}>
+                  <p style={{ fontSize: "0.74rem", color: "#5a4a6a", lineHeight: 1.65, margin: "6px 0 0" }}>
                     We're a community built on trust. Any misuse of messaging may result in access being removed — but
                     we know that's not you.
                   </p>
-                  <p style={{ fontSize: "0.76rem", fontWeight: 600, color: "#2a7a6a", marginTop: 8 }}>
+                  <p style={{ fontSize: "0.76rem", fontWeight: 600, color: "#c87060", marginTop: 8 }}>
                     You've got this. Hit send. 💙
                   </p>
                 </div>
@@ -217,7 +217,7 @@ const EnquiryPage = () => {
               />
               <div className="mt-1 flex justify-between text-xs text-muted-foreground">
                 <span>{tooShort && message.length > 0 ? `At least ${MIN_CHARS} characters required` : ""}</span>
-                <span style={{ color: tooLong ? "#e8622a" : remaining < 100 ? "#f07840" : undefined }}>
+                <span style={{ color: tooLong ? "#c87060" : remaining < 100 ? "#d4805a" : undefined }}>
                   {remaining} remaining
                 </span>
               </div>

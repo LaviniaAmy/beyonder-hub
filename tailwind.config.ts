@@ -13,8 +13,8 @@ export default {
     extend: {
       /* ── Typography ─────────────────────────────────── */
       fontFamily: {
-        sans: ["'Outfit'", "system-ui", "-apple-system", "sans-serif"],
-        display: ["'Jost'", "system-ui", "-apple-system", "sans-serif"],
+        sans: ["'Lexend'", "system-ui", "-apple-system", "sans-serif"],
+        display: ["'Lexend'", "system-ui", "-apple-system", "sans-serif"],
       },
 
       /* ── Colour tokens (all map to CSS vars in index.css) */
