@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 const SKY_COLORS = ["#080c18", "#0e1a38", "#1a3868", "#2a6090", "#60a8c8"];
-const SKY_STOPS  = [0, 0.28, 0.55, 0.75, 1.0];
+const SKY_STOPS  = [0, 0.10, 0.30, 0.55, 0.76];
 
 const BIRD_PATH_D =
   "M26.28,117.8c25.58,8.49,56.17,16.47,91.11,21.44,58.55,8.33,109.28,5.37,147.38,0-2.98-15.96-.87-27.27,1.79-34.84,2.13-6.06,5.07-11,4.91-18.76-.17-8.16-3.67-14.79-6.7-19.2,6.4,4.61,12.8,9.23,19.2,13.84,3.87-.3,10.52-.23,17.42,3.13,8.96,4.37,13.42,11.9,16.08,16.52,6.7,11.67,4.46,18.31,12.95,31.71,1.73,2.73,3.35,4.86,4.47,6.25,33.62.14,77.36-2.93,126.84-15.18,59.24-14.68,105.75-37.33,138-56.27-.13,13.98-2.12,35.95-12.95,59.4-15.34,33.2-40.66,50.28-90.66,83.07-65.12,42.71-92.35,42.87-102.27,42.43-17.73-.79-31.99-5.81-41.09-9.83-.3,6.7-.6,13.4-.89,20.1,16.52,12.8,33.05,25.61,49.57,38.41.03,5.69-.7,13.78-4.47,22.33-14.88,33.78-61.55,39.07-68.78,39.75-53.26,5.03-91.07-38.82-95.57-44.21,14.59-15.48,29.18-30.97,43.77-46.45-1.34-8.19-2.68-16.38-4.02-24.56-2.74,3.55-7.48,8.69-14.74,12.06-14.99,6.96-30.8,1.75-39.75-1.34-52.74-18.2-79.12-27.3-97.36-39.3-49.38-32.49-78.61-73.76-94.23-100.49Z";
@@ -138,22 +138,21 @@ const BirdCanvas = () => {
       SKY_COLORS.forEach((col, i) => grad.addColorStop(SKY_STOPS[i], col));
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
-      const hy = H * 0.68;
-      const sg = ctx.createRadialGradient(W * 0.5, hy, 0, W * 0.5, hy, W * 0.55);
-      sg.addColorStop(0,    "rgba(80,160,220,0.18)");
-      sg.addColorStop(0.3,  "rgba(40,100,160,0.08)");
+      const hy = H * 0.58;
+      const sg = ctx.createRadialGradient(W * 0.5, hy, 0, W * 0.5, hy, W * 0.60);
+      sg.addColorStop(0,    "rgba(80,160,220,0.22)");
+      sg.addColorStop(0.3,  "rgba(40,100,160,0.10)");
       sg.addColorStop(1,    "rgba(20,60,120,0)");
       ctx.fillStyle = sg;
       ctx.fillRect(0, 0, W, H);
-      /* faint warm peach glow near horizon for emotional warmth */
+      /* warm peach glow near horizon */
       ctx.save();
-      ctx.globalAlpha = 0.15;
-      const hl = ctx.createLinearGradient(0, 0, W, 0);
-      hl.addColorStop(0,   "rgba(217,138,106,0)");
-      hl.addColorStop(0.5, "rgba(217,138,106,1)");
-      hl.addColorStop(1,   "rgba(217,138,106,0)");
-      ctx.fillStyle = hl;
-      ctx.fillRect(0, hy - 1, W, 2);
+      const pg = ctx.createLinearGradient(0, hy - 18, 0, hy + 18);
+      pg.addColorStop(0,   "rgba(217,138,106,0)");
+      pg.addColorStop(0.5, "rgba(217,138,106,0.28)");
+      pg.addColorStop(1,   "rgba(217,138,106,0)");
+      ctx.fillStyle = pg;
+      ctx.fillRect(0, hy - 18, W, 36);
       ctx.restore();
     }
 

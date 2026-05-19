@@ -490,7 +490,7 @@ const Index = () => {
         {/* ── 1. HERO ── */}
         <section style={{ position: "relative", overflow: "hidden", display: "flex",
           flexDirection: "column", alignItems: "center", justifyContent: "center",
-          minHeight: 420, maxHeight: 520, height: "calc(100vh - 120px)", padding: "0 40px 0" }}>
+          minHeight: 360, maxHeight: 440, height: "calc(100vh - 200px)", padding: "0 40px 0" }}>
 
           {/* Bird canvas background */}
           <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
