@@ -88,8 +88,8 @@ const ParentDashboard = () => {
     <div className="bg-background min-h-screen py-10">
       <div className="container max-w-3xl animate-fade-in">
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-accent-foreground">Your Dashboard</h1>
-          <Badge className="bg-muted text-accent-foreground border-0">
+          <h1 className="text-3xl font-bold text-foreground">Your Dashboard</h1>
+          <Badge className="bg-muted text-foreground border-0">
             {mockParent.subscriptionTier === "free" ? "Free Tier" : "Subscribed"}
           </Badge>
         </div>

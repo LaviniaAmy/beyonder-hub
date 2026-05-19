@@ -687,7 +687,7 @@ const ProviderDirectory = () => {
               <div className="mt-10 text-center">
                 <Button
                   variant="outline"
-                  className="border-white/30 text-white/70 hover:bg-white/10"
+                  className="border-border text-foreground/70 hover:bg-muted"
                   onClick={() => setVisibleCount((c) => c + 6)}
                 >
                   Load More

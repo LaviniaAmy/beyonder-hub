@@ -490,7 +490,7 @@ const Index = () => {
         {/* ── 1. HERO ── */}
         <section style={{ position: "relative", overflow: "hidden", display: "flex",
           flexDirection: "column", alignItems: "center", justifyContent: "center",
-          minHeight: 420, maxHeight: 520, height: "calc(100vh - 120px)", padding: "0 40px 0" }}>
+          minHeight: 420, maxHeight: 520, height: "calc(100vh - 120px)", padding: "0 40px 0", justifyContent: "flex-start", paddingTop: 60 }}>
 
           {/* Bird canvas background */}
           <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
@@ -505,8 +505,8 @@ const Index = () => {
           <div style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column",
             alignItems: "center", width: "100%", marginBottom: 26 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
-              <div style={{ width: 12, height: 12, borderRadius: "50%", background: C.terra }} />
-              <span style={{ fontSize: "clamp(2.4rem, 6vw, 3.9rem)", fontWeight: 400, color: C.amber,
+              <div style={{ width: 18, height: 18, borderRadius: "50%", background: C.terra }} />
+              <span style={{ fontSize: "clamp(3.6rem, 9vw, 5.8rem)", fontWeight: 400, color: C.amber,
                 letterSpacing: "2px", fontFamily: "'Josefin Sans', sans-serif" }}>Beyonder</span>
             </div>
             <p style={{ fontSize: "1rem", color: "rgba(255,245,238,0.50)", fontWeight: 300, margin: 0, textAlign: "center" }}>
