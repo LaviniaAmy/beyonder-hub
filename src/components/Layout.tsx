@@ -5,59 +5,59 @@ import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
 
 const C = {
-  deep:       "#1c1428",
-  purple:     "#2a1440",
-  terra:      "#c87060",
-  sienna:     "#d4805a",
-  amber:      "#f0c090",
-  warmWhite:  "#fff5ee",
+  navy:       "#111827",
+  indigo:     "#1E1B3A",
+  peach:      "#D98A6A",
+  peachLight: "#E8A080",
+  ice:        "#E8F4FF",
+  warmWhite:  "#F0F4FF",
 } as const;
 
 const ghostBtn: React.CSSProperties = {
   display: "inline-block",
   padding: "7px 18px",
-  border: "1px solid rgba(255,245,238,0.22)",
+  border: "1px solid rgba(232,244,255,0.22)",
   borderRadius: 20,
-  color: "rgba(255,245,238,0.70)",
+  color: "rgba(232,244,255,0.70)",
   fontSize: "0.82rem",
-  fontFamily: "'Lexend', sans-serif",
+  fontFamily: "'Nunito Sans', sans-serif",
   textDecoration: "none",
   background: "transparent",
   transition: "none",
 };
 const ghostBtnHoverIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
-  e.currentTarget.style.borderColor = "rgba(200,112,96,0.60)";
+  e.currentTarget.style.borderColor = "rgba(217,138,106,0.60)";
   e.currentTarget.style.color       = C.warmWhite;
-  e.currentTarget.style.background  = "rgba(200,112,96,0.10)";
+  e.currentTarget.style.background  = "rgba(217,138,106,0.10)";
 };
 const ghostBtnHoverOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
-  e.currentTarget.style.borderColor = "rgba(255,245,238,0.22)";
-  e.currentTarget.style.color       = "rgba(255,245,238,0.70)";
+  e.currentTarget.style.borderColor = "rgba(232,244,255,0.22)";
+  e.currentTarget.style.color       = "rgba(232,244,255,0.70)";
   e.currentTarget.style.background  = "transparent";
 };
 
 const terraBtn: React.CSSProperties = {
   display: "inline-block",
   padding: "8px 22px",
-  background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`,
+  background: `linear-gradient(135deg, ${C.peachLight}, ${C.peach})`,
   borderRadius: 20,
-  color: C.warmWhite,
+  color: "#ffffff",
   fontSize: "0.85rem",
   fontWeight: 600,
-  fontFamily: "'Lexend', sans-serif",
+  fontFamily: "'Nunito Sans', sans-serif",
   textDecoration: "none",
   border: "none",
   cursor: "pointer",
-  boxShadow: "0 3px 12px rgba(200,112,96,0.28)",
+  boxShadow: "0 3px 12px rgba(217,138,106,0.28)",
   transition: "none",
 };
 const terraBtnIn  = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.transform  = "translateY(-2px) scale(1.02)";
-  e.currentTarget.style.boxShadow  = "0 8px 26px rgba(200,112,96,0.52)";
+  e.currentTarget.style.boxShadow  = "0 8px 26px rgba(217,138,106,0.52)";
 };
 const terraBtnOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.transform  = "none";
-  e.currentTarget.style.boxShadow  = "0 3px 12px rgba(200,112,96,0.28)";
+  e.currentTarget.style.boxShadow  = "0 3px 12px rgba(217,138,106,0.28)";
 };
 
 const navLinks = [
@@ -95,13 +95,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           right:             0,
           zIndex:            100,
           height:            58,
-          background:        "rgba(28,20,40,0.96)",
-          borderBottom:      "1px solid rgba(200,112,96,0.18)",
-          backdropFilter:    "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
+          background:        "rgba(8,12,24,0.95)",
+          borderBottom:      "1px solid rgba(43,76,126,0.30)",
+          backdropFilter:    "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
           display:           "flex",
           alignItems:        "center",
-          fontFamily:        "'Lexend', sans-serif",
+          fontFamily:        "'Nunito Sans', sans-serif",
         }}
       >
         <div
@@ -115,17 +115,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 width:        8,
                 height:       8,
                 borderRadius: "50%",
-                background:   C.terra,
+                background:   C.peach,
                 flexShrink:   0,
               }}
             />
             <span
               style={{
                 fontSize:      "1.15rem",
-                fontWeight:    700,
-                color:         C.amber,
-                letterSpacing: "-0.5px",
-                fontFamily:    "'Lexend', sans-serif",
+                fontWeight:    400,
+                color:         C.ice,
+                letterSpacing: "0px",
+                fontFamily:    "'Josefin Sans', sans-serif",
               }}
             >
               Beyonder
@@ -141,10 +141,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 style={{
                   color:
                     link.label === "For Providers"
-                      ? "rgba(240,192,144,0.85)"
+                      ? "rgba(217,138,106,0.90)"
                       : location.pathname === link.to
-                        ? C.amber
-                        : "rgba(255,245,238,0.60)",
+                        ? C.ice
+                        : "rgba(232,244,255,0.60)",
                   textDecoration: "none",
                   fontSize:       "0.85rem",
                   fontWeight:     400,
@@ -152,14 +152,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   paddingLeft:    link.label === "For Providers" ? 30 : 0,
                   transition:     "none",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = C.amber)}
+                onMouseEnter={(e) => (e.currentTarget.style.color = C.ice)}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.color =
                     link.label === "For Providers"
-                      ? "rgba(240,192,144,0.85)"
+                      ? "rgba(217,138,106,0.90)"
                       : location.pathname === link.to
-                        ? C.amber
-                        : "rgba(255,245,238,0.60)";
+                        ? C.ice
+                        : "rgba(232,244,255,0.60)";
                 }}
               >
                 {link.label}
@@ -174,7 +174,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 <Link to={dashboardLink} style={ghostBtn} onMouseEnter={ghostBtnHoverIn} onMouseLeave={ghostBtnHoverOut}>
                   Dashboard
                 </Link>
-                <span style={{ fontSize: "0.82rem", color: "rgba(255,245,238,0.35)" }}>{user?.name}</span>
+                <span style={{ fontSize: "0.82rem", color: "rgba(232,244,255,0.40)" }}>{user?.name}</span>
                 <button
                   onClick={handleLogout}
                   aria-label="Log out"
@@ -182,7 +182,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     background:    "transparent",
                     border:        "none",
                     cursor:        "pointer",
-                    color:         "rgba(255,245,238,0.40)",
+                    color:         "rgba(232,244,255,0.40)",
                     display:       "flex",
                     alignItems:    "center",
                     padding:       4,
@@ -208,7 +208,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             className="md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
-            style={{ background: "transparent", border: "none", cursor: "pointer", color: "rgba(255,245,238,0.70)", padding: 4 }}
+            style={{ background: "transparent", border: "none", cursor: "pointer", color: "rgba(232,244,255,0.70)", padding: 4 }}
           >
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -223,8 +223,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               top:         58,
               left:        0,
               right:       0,
-              background:  "rgba(28,20,40,0.98)",
-              borderTop:   "1px solid rgba(200,112,96,0.15)",
+              background:  "rgba(8,12,24,0.98)",
+              borderTop:   "1px solid rgba(43,76,126,0.25)",
               padding:     16,
               zIndex:      200,
             }}
@@ -239,7 +239,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     padding:        "10px 12px",
                     borderRadius:   8,
                     fontSize:       "0.88rem",
-                    color:          location.pathname === link.to ? C.amber : "rgba(255,245,238,0.65)",
+                    color:          location.pathname === link.to ? C.ice : "rgba(232,244,255,0.65)",
                     textDecoration: "none",
                   }}
                 >
@@ -256,9 +256,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         padding:        "10px 12px",
                         borderRadius:   8,
                         fontSize:       "0.88rem",
-                        color:          "rgba(255,245,238,0.65)",
+                        color:          "rgba(232,244,255,0.65)",
                         textDecoration: "none",
-                        border:         "1px solid rgba(255,245,238,0.15)",
+                        border:         "1px solid rgba(232,244,255,0.15)",
                         textAlign:      "center",
                       }}
                     >
@@ -274,7 +274,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         background:  "transparent",
                         border:      "1px solid rgba(255,245,238,0.15)",
                         cursor:      "pointer",
-                        fontFamily:  "'Lexend', sans-serif",
+                        fontFamily:  "'Nunito Sans', sans-serif",
                         display:     "flex",
                         alignItems:  "center",
                         justifyContent: "center",
@@ -293,9 +293,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         padding:        "10px 12px",
                         borderRadius:   8,
                         fontSize:       "0.88rem",
-                        color:          "rgba(255,245,238,0.65)",
+                        color:          "rgba(232,244,255,0.65)",
                         textDecoration: "none",
-                        border:         "1px solid rgba(255,245,238,0.15)",
+                        border:         "1px solid rgba(232,244,255,0.15)",
                         textAlign:      "center",
                       }}
                     >
@@ -311,7 +311,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         fontWeight:     600,
                         color:          C.warmWhite,
                         textDecoration: "none",
-                        background:     `linear-gradient(135deg, ${C.sienna}, ${C.terra})`,
+                        background:     `linear-gradient(135deg, ${C.peachLight}, ${C.peach})`,
                         textAlign:      "center",
                       }}
                     >

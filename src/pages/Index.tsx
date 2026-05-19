@@ -10,48 +10,48 @@ import ClubsIcon      from "@/assets/icons/Clubs_Icon.svg";
 import NewsIcon       from "@/assets/icons/News_Icon.svg";
 
 const C = {
-  deep:        "#1c1428",
-  purple:      "#2a1440",
-  purpleMid:   "#3a2850",
-  rose:        "#7a4060",
-  terra:       "#c87060",
-  sienna:      "#d4805a",
-  amber:       "#f0c090",
-  cream:       "#f5f0ea",
-  creamDark:   "#e8e0d5",
-  warmWhite:   "#fff5ee",
-  textDark:    "#2a1440",
-  textMid:     "#5a4a6a",
-  textLight:   "#7a5a8a",
-  white:       "#ffffff",
+  deep:        "#111827",
+  purple:      "#1E1B3A",
+  purpleMid:   "#2B4C7E",
+  rose:        "#4E6E8E",
+  terra:       "#D98A6A",
+  sienna:      "#E8A080",
+  amber:       "#E8F4FF",
+  cream:       "#F6F3EE",
+  creamDark:   "#EAE6DF",
+  warmWhite:   "#F0F4FF",
+  textDark:    "#1B1A35",
+  textMid:     "#4B5563",
+  textLight:   "#7C7C8A",
+  white:       "#FFFFFF",
 } as const;
 
 // ── Hover helpers ────────────────────────────────────────────
 
 const terraIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.transform  = "translateY(-2px)";
-  e.currentTarget.style.boxShadow  = "0 8px 28px rgba(200,112,96,0.52), 0 0 0 4px rgba(200,112,96,0.10)";
+  e.currentTarget.style.boxShadow  = "0 8px 28px rgba(217,138,106,0.52), 0 0 0 4px rgba(217,138,106,0.10)";
 };
-const terraOut = (e: React.MouseEvent<HTMLAnchorElement>, shadow = "0 4px 16px rgba(200,112,96,0.28)") => {
+const terraOut = (e: React.MouseEvent<HTMLAnchorElement>, shadow = "0 4px 16px rgba(217,138,106,0.28)") => {
   e.currentTarget.style.transform  = "none";
   e.currentTarget.style.boxShadow  = shadow;
 };
 
 const ghostIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
-  e.currentTarget.style.background   = "rgba(200,112,96,0.10)";
-  e.currentTarget.style.borderColor  = "rgba(212,128,90,0.60)";
+  e.currentTarget.style.background   = "rgba(217,138,106,0.10)";
+  e.currentTarget.style.borderColor  = "rgba(232,160,128,0.60)";
   e.currentTarget.style.color        = C.sienna;
 };
 const ghostOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.background   = "transparent";
-  e.currentTarget.style.borderColor  = "rgba(200,112,96,0.30)";
+  e.currentTarget.style.borderColor  = "rgba(217,138,106,0.30)";
   e.currentTarget.style.color        = C.terra;
 };
 
 const cardIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.transform    = "translateY(-3px)";
-  e.currentTarget.style.boxShadow    = "0 8px 24px rgba(42,20,64,0.09)";
-  e.currentTarget.style.borderColor  = "rgba(200,112,96,0.28)";
+  e.currentTarget.style.boxShadow    = "0 8px 24px rgba(27,26,53,0.10)";
+  e.currentTarget.style.borderColor  = "rgba(217,138,106,0.28)";
 };
 const cardOut = (e: React.MouseEvent<HTMLAnchorElement>, borderColor = C.creamDark) => {
   e.currentTarget.style.transform    = "none";
@@ -60,15 +60,15 @@ const cardOut = (e: React.MouseEvent<HTMLAnchorElement>, borderColor = C.creamDa
 };
 
 const pillarIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
-  e.currentTarget.style.background = "rgba(200,112,96,0.10)";
+  e.currentTarget.style.background = "rgba(217,138,106,0.10)";
 };
 const pillarOut = (e: React.MouseEvent<HTMLAnchorElement>, hi: boolean) => {
-  e.currentTarget.style.background = hi ? "rgba(200,112,96,0.06)" : "transparent";
+  e.currentTarget.style.background = hi ? "rgba(217,138,106,0.06)" : "transparent";
 };
 
 const newsIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.transform    = "translateY(-2px)";
-  e.currentTarget.style.boxShadow    = "0 6px 20px rgba(42,20,64,0.08)";
+  e.currentTarget.style.boxShadow    = "0 6px 20px rgba(27,26,53,0.08)";
 };
 const newsOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.transform    = "none";
@@ -77,7 +77,7 @@ const newsOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
 
 const commIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.transform    = "translateY(-2px)";
-  e.currentTarget.style.boxShadow    = "0 6px 20px rgba(42,20,64,0.07)";
+  e.currentTarget.style.boxShadow    = "0 6px 20px rgba(27,26,53,0.08)";
 };
 const commOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.transform    = "none";
@@ -85,15 +85,15 @@ const commOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
 };
 
 const chipIn = (e: React.MouseEvent<HTMLButtonElement>) => {
-  e.currentTarget.style.borderColor  = "rgba(212,128,90,0.80)";
-  e.currentTarget.style.background   = "rgba(200,112,96,0.16)";
+  e.currentTarget.style.borderColor  = "rgba(217,138,106,0.80)";
+  e.currentTarget.style.background   = "rgba(217,138,106,0.16)";
   e.currentTarget.style.color        = C.warmWhite;
   e.currentTarget.style.transform    = "scale(1.04)";
 };
 const chipOut = (e: React.MouseEvent<HTMLButtonElement>) => {
-  e.currentTarget.style.borderColor  = "rgba(200,112,96,0.32)";
-  e.currentTarget.style.background   = "rgba(200,112,96,0.06)";
-  e.currentTarget.style.color        = "rgba(255,245,238,0.45)";
+  e.currentTarget.style.borderColor  = "rgba(217,138,106,0.32)";
+  e.currentTarget.style.background   = "rgba(217,138,106,0.06)";
+  e.currentTarget.style.color        = "rgba(232,244,255,0.45)";
   e.currentTarget.style.transform    = "none";
 };
 
@@ -147,7 +147,7 @@ const Index = () => {
   ];
 
   return (
-    <div style={{ fontFamily: "'Lexend', sans-serif" }}>
+    <div style={{ fontFamily: "'Nunito Sans', sans-serif" }}>
 
       {/* ══════════════════════════════════════════
           MOBILE LAYOUT
@@ -155,19 +155,19 @@ const Index = () => {
       <div className="md:hidden" style={{ background: C.cream, minHeight: "100vh", paddingBottom: 72 }}>
 
         {/* ── Mobile Hero ── */}
-        <div style={{ background: "linear-gradient(180deg, #1c1428 0%, #3a2850 22%, #7a4060 46%, #c87060 68%, #f0c090 90%)", padding: "14px 20px 0", position: "relative", overflow: "hidden" }}>
+        <div style={{ background: "linear-gradient(180deg, #080c18 0%, #0e1a38 28%, #1a3868 55%, #2a6090 75%, #60a8c8 100%)", padding: "14px 20px 0", position: "relative", overflow: "hidden" }}>
           {/* Gradient glows */}
           <div style={{ position: "absolute", top: -30, right: -30, width: 150, height: 150, borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(200,112,96,0.22) 0%, transparent 70%)", pointerEvents: "none" }} />
+            background: "radial-gradient(circle, rgba(43,76,126,0.35) 0%, transparent 70%)", pointerEvents: "none" }} />
           <div style={{ position: "absolute", bottom: 0, left: -40, width: 140, height: 140, borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(122,64,96,0.18) 0%, transparent 70%)", pointerEvents: "none" }} />
+            background: "radial-gradient(circle, rgba(43,76,126,0.25) 0%, transparent 70%)", pointerEvents: "none" }} />
           {/* Stars */}
           <div style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: `
-            radial-gradient(1px 1px at 18% 25%, rgba(240,192,144,0.45) 0%, transparent 100%),
-            radial-gradient(1px 1px at 78% 12%, rgba(240,192,144,0.30) 0%, transparent 100%),
-            radial-gradient(1.5px 1.5px at 52% 55%, rgba(255,245,238,0.35) 0%, transparent 100%),
-            radial-gradient(1px 1px at 33% 78%, rgba(240,192,144,0.20) 0%, transparent 100%),
-            radial-gradient(1px 1px at 88% 68%, rgba(255,245,238,0.18) 0%, transparent 100%)
+            radial-gradient(1px 1px at 18% 25%, rgba(232,244,255,0.45) 0%, transparent 100%),
+            radial-gradient(1px 1px at 78% 12%, rgba(232,244,255,0.30) 0%, transparent 100%),
+            radial-gradient(1.5px 1.5px at 52% 55%, rgba(232,244,255,0.35) 0%, transparent 100%),
+            radial-gradient(1px 1px at 33% 78%, rgba(232,244,255,0.20) 0%, transparent 100%),
+            radial-gradient(1px 1px at 88% 68%, rgba(232,244,255,0.18) 0%, transparent 100%)
           ` }} />
 
           {/* Nav bar */}
@@ -177,9 +177,9 @@ const Index = () => {
               <div style={{ width: 7, height: 7, borderRadius: "50%", background: C.terra }} />
               <span style={{ fontSize: "1rem", fontWeight: 700, color: C.amber, letterSpacing: "-0.3px" }}>Beyonder</span>
             </div>
-            <Link to="/login" style={{ fontSize: "0.70rem", fontWeight: 600, color: "rgba(255,245,238,0.55)",
-              padding: "6px 14px", borderRadius: 8, border: "1px solid rgba(255,245,238,0.12)",
-              background: "rgba(255,245,238,0.05)", textDecoration: "none" }}>
+            <Link to="/login" style={{ fontSize: "0.70rem", fontWeight: 600, color: "rgba(232,244,255,0.55)",
+              padding: "6px 14px", borderRadius: 8, border: "1px solid rgba(232,244,255,0.12)",
+              background: "rgba(232,244,255,0.05)", textDecoration: "none" }}>
               Sign in
             </Link>
           </div>
@@ -198,7 +198,7 @@ const Index = () => {
 
           {/* Search bar */}
           <div style={{ position: "relative", zIndex: 2, marginBottom: 20 }}>
-            <div style={{ background: "rgba(255,245,238,0.07)", border: "1px solid rgba(255,245,238,0.11)",
+            <div style={{ background: "rgba(232,244,255,0.07)", border: "1px solid rgba(232,244,255,0.11)",
               borderRadius: 11, padding: "10px 14px", display: "flex", alignItems: "center", gap: 9 }}>
               <span style={{ fontSize: 13, opacity: 0.28 }}>🔍</span>
               <input
@@ -208,17 +208,17 @@ const Index = () => {
                 onKeyDown={(e) => e.key === "Enter" && handleMobileSearch()}
                 placeholder="OT, Speech therapy, Clubs..."
                 style={{ flex: 1, background: "transparent", border: "none", outline: "none",
-                  fontSize: "0.73rem", color: C.warmWhite, fontFamily: "'Lexend', sans-serif", fontWeight: 300 }}
+                  fontSize: "0.73rem", color: C.warmWhite, fontFamily: "'Nunito Sans', sans-serif", fontWeight: 300 }}
               />
               {/* Region pill */}
               <div ref={mobileRegionRef} style={{ position: "relative" }}>
                 <button
                   onClick={() => setMobileRegionOpen((o) => !o)}
                   style={{ fontSize: "0.6rem", color: C.amber,
-                    background: mobileRegionOpen ? C.deep : "rgba(200,112,96,0.16)",
-                    border: `1px solid ${mobileRegionOpen ? C.amber : "rgba(200,112,96,0.25)"}`,
+                    background: mobileRegionOpen ? C.deep : "rgba(217,138,106,0.16)",
+                    border: `1px solid ${mobileRegionOpen ? C.amber : "rgba(217,138,106,0.25)"}`,
                     borderRadius: 6, padding: "4px 10px", fontWeight: 600, cursor: "pointer",
-                    fontFamily: "'Lexend', sans-serif", whiteSpace: "nowrap" }}>
+                    fontFamily: "'Nunito Sans', sans-serif", whiteSpace: "nowrap" }}>
                   {region || "📍 Region"}
                 </button>
                 {mobileRegionOpen && (
@@ -226,9 +226,9 @@ const Index = () => {
                     background: C.purple, border: `1px solid ${C.rose}`, borderRadius: 10,
                     boxShadow: "0 12px 32px rgba(0,0,0,0.45)", zIndex: 9999, overflow: "hidden" }}>
                     <div onMouseDown={(e) => { e.preventDefault(); setRegion(""); setMobileRegionOpen(false); }}
-                      style={{ padding: "10px 16px", fontSize: "0.72rem", color: "rgba(240,192,144,0.45)",
-                        fontWeight: 400, cursor: "pointer", borderBottom: "1px solid rgba(200,112,96,0.15)" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(200,112,96,0.10)")}
+                      style={{ padding: "10px 16px", fontSize: "0.72rem", color: "rgba(232,244,255,0.45)",
+                        fontWeight: 400, cursor: "pointer", borderBottom: "1px solid rgba(217,138,106,0.15)" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(217,138,106,0.10)")}
                       onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
                       All regions
                     </div>
@@ -237,10 +237,10 @@ const Index = () => {
                         onMouseDown={(e) => { e.preventDefault(); setRegion(r); setMobileRegionOpen(false); }}
                         style={{ padding: "10px 16px", fontSize: "0.75rem", color: C.amber,
                           fontWeight: r === region ? 700 : 400, cursor: "pointer",
-                          borderTop: i > 0 ? "1px solid rgba(200,112,96,0.10)" : "none",
-                          background: r === region ? "rgba(200,112,96,0.15)" : "transparent" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(200,112,96,0.12)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = r === region ? "rgba(200,112,96,0.15)" : "transparent")}>
+                          borderTop: i > 0 ? "1px solid rgba(217,138,106,0.10)" : "none",
+                          background: r === region ? "rgba(217,138,106,0.15)" : "transparent" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(217,138,106,0.12)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = r === region ? "rgba(217,138,106,0.15)" : "transparent")}>
                         {r}
                       </div>
                     ))}
@@ -258,12 +258,12 @@ const Index = () => {
           </div>
 
           {/* Category shortcuts */}
-          <div style={{ borderTop: "1px solid rgba(255,245,238,0.06)", paddingTop: 10, position: "relative", zIndex: 2 }}>
-            <div style={{ fontSize: "0.5rem", color: "rgba(255,245,238,0.22)", fontWeight: 600,
+          <div style={{ borderTop: "1px solid rgba(232,244,255,0.06)", paddingTop: 10, position: "relative", zIndex: 2 }}>
+            <div style={{ fontSize: "0.5rem", color: "rgba(232,244,255,0.22)", fontWeight: 600,
               letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: 0,
               display: "flex", alignItems: "center", gap: 6 }}>
               Browse by category
-              <span style={{ flex: 1, height: 1, background: "rgba(255,245,238,0.07)", display: "block" }} />
+              <span style={{ flex: 1, height: 1, background: "rgba(232,244,255,0.07)", display: "block" }} />
             </div>
             <div style={{ display: "flex" }}>
               {[
@@ -274,7 +274,7 @@ const Index = () => {
                 { label: "Charities",  to: "/providers?category=charities" },
               ].map((cat) => (
                 <Link key={cat.label} to={cat.to} style={{ flex: 1, textAlign: "center", padding: "11px 4px",
-                  fontSize: "0.62rem", fontWeight: 600, color: "rgba(255,245,238,0.38)", textDecoration: "none" }}>
+                  fontSize: "0.62rem", fontWeight: 600, color: "rgba(232,244,255,0.38)", textDecoration: "none" }}>
                   {cat.label}
                 </Link>
               ))}
@@ -286,7 +286,7 @@ const Index = () => {
         <div style={{ padding: "22px 18px 16px" }}>
           {/* Intro */}
           <p style={{ fontSize: "0.73rem", color: C.textMid, fontWeight: 300, lineHeight: 1.7,
-            marginBottom: 22, paddingBottom: 18, borderBottom: "1px solid rgba(42,20,64,0.07)" }}>
+            marginBottom: 22, paddingBottom: 18, borderBottom: "1px solid rgba(27,26,53,0.07)" }}>
             Beyonder is <strong style={{ color: C.textDark, fontWeight: 600 }}>free for every family</strong> — a single
             place to find support, connect with others who understand, and stay informed about everything SEND.
           </p>
@@ -296,8 +296,8 @@ const Index = () => {
             {/* All Support */}
             <Link to="/providers" style={{ textDecoration: "none" }}>
               <div style={{ background: C.white, borderRadius: 18, overflow: "hidden", position: "relative",
-                border: "1px solid rgba(200,112,96,0.12)",
-                boxShadow: "0 2px 12px rgba(200,112,96,0.08), 0 1px 3px rgba(0,0,0,0.05)",
+                border: "1px solid rgba(217,138,106,0.12)",
+                boxShadow: "0 2px 12px rgba(217,138,106,0.08), 0 1px 3px rgba(0,0,0,0.05)",
                 display: "flex", alignItems: "stretch", minHeight: 88 }}>
                 <div style={{ width: 5, flexShrink: 0, background: `linear-gradient(180deg, ${C.sienna}, ${C.terra})` }} />
                 <div style={{ flex: 1, padding: "16px 16px 16px 18px", display: "flex", flexDirection: "column",
@@ -311,11 +311,11 @@ const Index = () => {
                   <div style={{ fontSize: "0.62rem", fontWeight: 700, color: C.terra, marginTop: 6 }}>Browse providers →</div>
                 </div>
                 <div style={{ width: 44, height: 44, borderRadius: 13, flexShrink: 0, margin: "16px 16px 16px 0",
-                  alignSelf: "center", background: "linear-gradient(135deg, rgba(200,112,96,0.12), rgba(200,112,96,0.06))",
-                  border: "1px solid rgba(200,112,96,0.15)", display: "flex", alignItems: "center",
+                  alignSelf: "center", background: "linear-gradient(135deg, rgba(217,138,106,0.12), rgba(217,138,106,0.06))",
+                  border: "1px solid rgba(217,138,106,0.15)", display: "flex", alignItems: "center",
                   justifyContent: "center", fontSize: 20 }}>🔍</div>
-                <div style={{ position: "absolute", top: 14, right: 70, background: "rgba(200,112,96,0.08)",
-                  border: "1px solid rgba(200,112,96,0.15)", borderRadius: 20, padding: "3px 9px",
+                <div style={{ position: "absolute", top: 14, right: 70, background: "rgba(217,138,106,0.08)",
+                  border: "1px solid rgba(217,138,106,0.15)", borderRadius: 20, padding: "3px 9px",
                   fontSize: "0.55rem", fontWeight: 700, color: C.terra }}>
                   New providers listed weekly
                 </div>
@@ -325,8 +325,8 @@ const Index = () => {
             {/* Parent Hub */}
             <Link to="/community" style={{ textDecoration: "none" }}>
               <div style={{ background: "#fdfcff", borderRadius: 18, overflow: "hidden", position: "relative",
-                border: "1px solid rgba(122,64,96,0.12)",
-                boxShadow: "0 2px 12px rgba(122,64,96,0.08), 0 1px 3px rgba(0,0,0,0.04)",
+                border: "1px solid rgba(43,76,126,0.12)",
+                boxShadow: "0 2px 12px rgba(43,76,126,0.08), 0 1px 3px rgba(0,0,0,0.04)",
                 display: "flex", alignItems: "stretch", minHeight: 88 }}>
                 <div style={{ width: 5, flexShrink: 0, background: `linear-gradient(180deg, ${C.rose}, ${C.purple})` }} />
                 <div style={{ flex: 1, padding: "16px 16px 16px 18px", display: "flex", flexDirection: "column",
@@ -340,8 +340,8 @@ const Index = () => {
                   <div style={{ fontSize: "0.62rem", fontWeight: 700, color: C.rose, marginTop: 6 }}>Join the community →</div>
                 </div>
                 <div style={{ width: 44, height: 44, borderRadius: 13, flexShrink: 0, margin: "16px 16px 16px 0",
-                  alignSelf: "center", background: "linear-gradient(135deg, rgba(122,64,96,0.10), rgba(122,64,96,0.04))",
-                  border: "1px solid rgba(122,64,96,0.14)", display: "flex", alignItems: "center",
+                  alignSelf: "center", background: "linear-gradient(135deg, rgba(43,76,126,0.10), rgba(43,76,126,0.04))",
+                  border: "1px solid rgba(43,76,126,0.14)", display: "flex", alignItems: "center",
                   justifyContent: "center", fontSize: 20 }}>💬</div>
                 <div style={{ position: "absolute", top: 14, right: 70, display: "flex", alignItems: "center", gap: 5 }}>
                   <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80",
@@ -354,8 +354,8 @@ const Index = () => {
             {/* SEND News */}
             <Link to="/news" style={{ textDecoration: "none" }}>
               <div style={{ background: "#fffcfa", borderRadius: 18, overflow: "hidden", position: "relative",
-                border: "1px solid rgba(200,112,96,0.12)",
-                boxShadow: "0 2px 12px rgba(200,112,96,0.08), 0 1px 3px rgba(0,0,0,0.04)",
+                border: "1px solid rgba(217,138,106,0.12)",
+                boxShadow: "0 2px 12px rgba(217,138,106,0.08), 0 1px 3px rgba(0,0,0,0.04)",
                 display: "flex", alignItems: "stretch", minHeight: 88 }}>
                 <div style={{ width: 5, flexShrink: 0, background: `linear-gradient(180deg, ${C.amber}, ${C.sienna})` }} />
                 <div style={{ flex: 1, padding: "16px 16px 16px 18px", display: "flex", flexDirection: "column",
@@ -369,7 +369,7 @@ const Index = () => {
                   <div style={{ fontSize: "0.62rem", fontWeight: 700, color: C.sienna, marginTop: 6 }}>Read latest →</div>
                 </div>
                 <div style={{ width: 44, height: 44, borderRadius: 13, flexShrink: 0, margin: "16px 16px 16px 0",
-                  alignSelf: "center", background: "linear-gradient(135deg, rgba(240,192,144,0.10), rgba(212,128,90,0.04))",
+                  alignSelf: "center", background: "linear-gradient(135deg, rgba(232,244,255,0.10), rgba(212,128,90,0.04))",
                   border: "1px solid rgba(212,128,90,0.14)", display: "flex", alignItems: "center",
                   justifyContent: "center", fontSize: 20 }}>📰</div>
                 <div style={{ position: "absolute", top: 14, right: 70, background: "rgba(212,128,90,0.08)",
@@ -383,7 +383,7 @@ const Index = () => {
             {/* Join Beyonder */}
             <Link to="/for-providers" style={{ textDecoration: "none" }}>
               <div style={{ background: C.deep, borderRadius: 18, overflow: "hidden", position: "relative",
-                border: "1px solid rgba(255,245,238,0.05)",
+                border: "1px solid rgba(232,244,255,0.05)",
                 boxShadow: "0 4px 20px rgba(28,20,40,0.25), 0 1px 3px rgba(0,0,0,0.15)",
                 display: "flex", alignItems: "stretch", minHeight: 88 }}>
                 <div style={{ width: 5, flexShrink: 0, background: `linear-gradient(180deg, ${C.amber}, ${C.terra})`,
@@ -393,7 +393,7 @@ const Index = () => {
                   <div style={{ fontSize: "0.5rem", fontWeight: 700, letterSpacing: "1.8px",
                     textTransform: "uppercase", color: C.amber }}>For Providers</div>
                   <div style={{ fontSize: "0.9rem", fontWeight: 700, color: C.warmWhite, letterSpacing: "-0.2px" }}>Join Beyonder</div>
-                  <div style={{ fontSize: "0.65rem", fontWeight: 300, color: "rgba(255,245,238,0.40)", lineHeight: 1.55 }}>
+                  <div style={{ fontSize: "0.65rem", fontWeight: 300, color: "rgba(232,244,255,0.40)", lineHeight: 1.55 }}>
                     Thousands of families are searching right now. Your profile goes live the moment you create it.
                   </div>
                   <div style={{ fontSize: "0.62rem", fontWeight: 700, color: C.amber, marginTop: 6 }}>
@@ -401,12 +401,12 @@ const Index = () => {
                   </div>
                 </div>
                 <div style={{ width: 44, height: 44, borderRadius: 13, flexShrink: 0, margin: "16px 16px 16px 0",
-                  alignSelf: "center", background: "rgba(200,112,96,0.15)",
-                  border: "1px solid rgba(200,112,96,0.25)", display: "flex", alignItems: "center",
+                  alignSelf: "center", background: "rgba(217,138,106,0.15)",
+                  border: "1px solid rgba(217,138,106,0.25)", display: "flex", alignItems: "center",
                   justifyContent: "center", fontSize: 20, position: "relative", zIndex: 1 }}>🏢</div>
                 <div style={{ position: "absolute", top: 14, right: 70,
-                  background: "linear-gradient(135deg, rgba(200,112,96,0.20), rgba(200,112,96,0.10))",
-                  border: "1px solid rgba(200,112,96,0.25)", borderRadius: 20, padding: "3px 9px",
+                  background: "linear-gradient(135deg, rgba(217,138,106,0.20), rgba(217,138,106,0.10))",
+                  border: "1px solid rgba(217,138,106,0.25)", borderRadius: 20, padding: "3px 9px",
                   fontSize: "0.52rem", fontWeight: 700, color: C.amber, zIndex: 1, letterSpacing: "0.5px" }}>
                   Free to list
                 </div>
@@ -416,7 +416,7 @@ const Index = () => {
 
           {/* Quote */}
           <div style={{ background: C.white, borderRadius: 16, padding: "18px 18px 16px",
-            border: "1px solid rgba(42,20,64,0.06)", boxShadow: "0 2px 10px rgba(42,20,64,0.04)",
+            border: "1px solid rgba(27,26,53,0.06)", boxShadow: "0 2px 10px rgba(27,26,53,0.04)",
             marginBottom: 16, position: "relative" }}>
             <div style={{ fontSize: "3rem", lineHeight: 1, color: C.terra, opacity: 0.12,
               position: "absolute", top: 8, left: 14, fontFamily: "Georgia, serif", pointerEvents: "none" }}>"</div>
@@ -441,15 +441,15 @@ const Index = () => {
 
           {/* Stats */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", background: C.white,
-            borderRadius: 16, border: "1px solid rgba(42,20,64,0.06)",
-            boxShadow: "0 2px 10px rgba(42,20,64,0.04)", overflow: "hidden" }}>
+            borderRadius: 16, border: "1px solid rgba(27,26,53,0.06)",
+            boxShadow: "0 2px 10px rgba(27,26,53,0.04)", overflow: "hidden" }}>
             {[
               { num: "85%",   label: "say a platform like this is vital" },
               { num: "Free",  label: "for all families, always" },
               { num: "1 in 5", label: "UK children have SEND" },
             ].map((s, i) => (
               <div key={s.num} style={{ padding: "14px 10px", textAlign: "center",
-                borderRight: i < 2 ? "1px solid rgba(42,20,64,0.06)" : "none" }}>
+                borderRight: i < 2 ? "1px solid rgba(27,26,53,0.06)" : "none" }}>
                 <div style={{ fontSize: "1.15rem", fontWeight: 800, color: C.terra, lineHeight: 1, marginBottom: 4 }}>
                   {s.num}
                 </div>
@@ -461,8 +461,8 @@ const Index = () => {
 
         {/* ── Mobile Bottom Nav ── */}
         <div style={{ position: "fixed", bottom: 0, left: 0, right: 0,
-          background: "rgba(245,240,234,0.97)", backdropFilter: "blur(12px)",
-          borderTop: "1px solid rgba(42,20,64,0.07)", display: "flex",
+          background: "rgba(246,243,238,0.97)", backdropFilter: "blur(12px)",
+          borderTop: "1px solid rgba(27,26,53,0.07)", display: "flex",
           padding: "8px 0 10px", zIndex: 100 }}>
           {[
             { icon: "🏠", label: "Home",      to: "/",             active: true },
@@ -499,7 +499,7 @@ const Index = () => {
 
           {/* Subtle overlay for text legibility */}
           <div style={{ position: "absolute", inset: 0, zIndex: 1,
-            background: "linear-gradient(180deg, rgba(28,20,40,0.10) 0%, rgba(28,20,40,0.05) 50%, rgba(28,20,40,0.20) 100%)" }} />
+            background: "linear-gradient(180deg, rgba(8,12,24,0.10) 0%, rgba(8,12,24,0.04) 50%, rgba(8,12,24,0.18) 100%)" }} />
 
           {/* Logo + tagline */}
           <div style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column",
@@ -509,7 +509,7 @@ const Index = () => {
               <span style={{ fontSize: "clamp(3.6rem, 9vw, 5.8rem)", fontWeight: 300, color: "#ffffff",
                 letterSpacing: "2px", fontFamily: "'Josefin Sans', sans-serif" }}>Beyonder</span>
             </div>
-            <p style={{ fontSize: "1rem", color: "rgba(255,245,238,0.50)", fontWeight: 300, margin: 0, textAlign: "center" }}>
+            <p style={{ fontSize: "1rem", color: "rgba(232,244,255,0.50)", fontWeight: 300, margin: 0, textAlign: "center" }}>
               One place for everything SEND
             </p>
           </div>
@@ -518,12 +518,12 @@ const Index = () => {
           <div style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column",
             alignItems: "center", width: "100%" }}>
             <form onSubmit={handleSearch} style={{ display: "flex", width: "min(580px, 92vw)", height: 52,
-              background: "rgba(255,245,238,0.97)", borderRadius: 12, overflow: "visible",
+              background: "rgba(232,244,255,0.97)", borderRadius: 12, overflow: "visible",
               boxShadow: "0 8px 32px rgba(0,0,0,0.45)", marginBottom: 10, position: "relative", zIndex: 3 }}>
 
               {/* Region field */}
               <div ref={regionRef} style={{ flex: 1, display: "flex", flexDirection: "column",
-                justifyContent: "center", padding: "7px 16px", borderRight: "1px solid #e8ddd5",
+                justifyContent: "center", padding: "7px 16px", borderRight: "1px solid #DDD8D0",
                 position: "relative", cursor: "pointer" }}
                 onClick={() => setRegionOpen((o) => !o)}>
                 <span style={{ fontSize: "0.56rem", fontWeight: 600, color: C.terra,
@@ -534,23 +534,23 @@ const Index = () => {
                     placeholder="Select a region"
                     onClick={(e) => { e.stopPropagation(); setRegionOpen(true); }}
                     style={{ fontSize: "0.8rem", color: C.textDark, fontWeight: 300, background: "transparent",
-                      border: "none", outline: "none", fontFamily: "'Lexend', sans-serif", flex: 1, minWidth: 0, cursor: "pointer" }} />
+                      border: "none", outline: "none", fontFamily: "'Nunito Sans', sans-serif", flex: 1, minWidth: 0, cursor: "pointer" }} />
                   <svg width="10" height="10" viewBox="0 0 10 10" style={{ flexShrink: 0, opacity: 0.25, marginRight: 2 }}>
-                    <path d="M2 3.5 L5 6.5 L8 3.5" stroke="#2a1440" strokeWidth="1.5" fill="none"
+                    <path d="M2 3.5 L5 6.5 L8 3.5" stroke="#1B1A35" strokeWidth="1.5" fill="none"
                       strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 {regionOpen && filteredRegions.length > 0 && (
                   <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "100%",
-                    background: "rgba(255,245,238,0.99)", borderRadius: 10, boxShadow: "0 8px 24px rgba(42,20,64,0.18)",
+                    background: "rgba(232,244,255,0.99)", borderRadius: 10, boxShadow: "0 8px 24px rgba(27,26,53,0.18)",
                     zIndex: 9999, overflowY: "auto", overflowX: "hidden", maxHeight: "234px",
-                    border: "1px solid #e8ddd5" }}>
+                    border: "1px solid #DDD8D0" }}>
                     {filteredRegions.map((r, i) => (
                       <div key={r} style={{ padding: "9px 16px", fontSize: "0.80rem",
                         color: r === region ? C.terra : C.textDark,
-                        fontWeight: r === region ? 600 : 300, fontFamily: "'Lexend', sans-serif",
-                        cursor: "pointer", borderTop: i > 0 ? "1px solid #f0e8e0" : "none", background: "transparent" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(200,112,96,0.06)")}
+                        fontWeight: r === region ? 600 : 300, fontFamily: "'Nunito Sans', sans-serif",
+                        cursor: "pointer", borderTop: i > 0 ? "1px solid #E8E3DC" : "none", background: "transparent" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(217,138,106,0.06)")}
                         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                         onMouseDown={(e) => { e.preventDefault(); setRegion(r); setRegionOpen(false); }}>
                         {r}
@@ -568,14 +568,14 @@ const Index = () => {
                 <input type="text" value={support} onChange={(e) => setSupport(e.target.value)}
                   placeholder="e.g. OT, Speech therapy, Clubs"
                   style={{ fontSize: "0.8rem", color: C.textDark, fontWeight: 300, background: "transparent",
-                    border: "none", outline: "none", fontFamily: "'Lexend', sans-serif" }} />
+                    border: "none", outline: "none", fontFamily: "'Nunito Sans', sans-serif" }} />
               </div>
 
               {/* Submit */}
               <button type="submit" style={{ width: 110, flexShrink: 0,
                 background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`,
                 border: "none", color: C.warmWhite, fontSize: "0.85rem", fontWeight: 600,
-                fontFamily: "'Lexend', sans-serif", cursor: "pointer", borderRadius: "0 12px 12px 0" }}
+                fontFamily: "'Nunito Sans', sans-serif", cursor: "pointer", borderRadius: "0 12px 12px 0" }}
                 onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
                 onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}>
                 Find Support
@@ -584,12 +584,12 @@ const Index = () => {
 
             {/* Hint chips */}
             <div style={{ display: "flex", gap: 7, justifyContent: "center", flexWrap: "wrap" }}>
-              <span style={{ fontSize: "0.65rem", color: "rgba(255,245,238,0.25)", alignSelf: "center" }}>Try:</span>
+              <span style={{ fontSize: "0.65rem", color: "rgba(232,244,255,0.25)", alignSelf: "center" }}>Try:</span>
               {hints.map((h) => (
                 <button key={h.label} style={{ padding: "4px 11px", borderRadius: 14,
-                  border: "1px solid rgba(200,112,96,0.32)", fontSize: "0.68rem",
-                  color: "rgba(255,245,238,0.45)", background: "rgba(200,112,96,0.06)", cursor: "pointer",
-                  fontFamily: "'Lexend', sans-serif" }}
+                  border: "1px solid rgba(217,138,106,0.32)", fontSize: "0.68rem",
+                  color: "rgba(232,244,255,0.45)", background: "rgba(217,138,106,0.06)", cursor: "pointer",
+                  fontFamily: "'Nunito Sans', sans-serif" }}
                   onMouseEnter={chipIn} onMouseLeave={chipOut}
                   onClick={() => navigate(h.to)}>
                   {h.label}
@@ -601,14 +601,14 @@ const Index = () => {
           {/* ── Cream 3-step strip at hero base ── */}
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 6,
             display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
-            background: "#faf6f2", borderTop: "1px solid rgba(42,20,64,0.08)" }}>
+            background: "#F6F3EE", borderTop: "1px solid rgba(27,26,53,0.08)" }}>
             {[
               { n: "1", t: "Enter your postcode",  s: "See what's near you" },
               { n: "2", t: "Choose your support",  s: "Browse by type" },
               { n: "3", t: "Connect directly",     s: "Enquire through Beyonder" },
             ].map((step, i) => (
               <div key={step.n} style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 28px",
-                borderRight: i < 2 ? "1px solid rgba(42,20,64,0.07)" : "none" }}>
+                borderRight: i < 2 ? "1px solid rgba(27,26,53,0.07)" : "none" }}>
                 <div style={{ width: 30, height: 30, borderRadius: "50%",
                   border: `1.5px solid ${C.rose}`, display: "flex", alignItems: "center",
                   justifyContent: "center", flexShrink: 0 }}>
@@ -649,7 +649,7 @@ const Index = () => {
                 Where would you like to start?
               </h3>
               <Link to="/providers" style={{ fontSize: "0.78rem", color: C.terra, fontWeight: 500,
-                borderBottom: `1px solid rgba(200,112,96,0.30)`, textDecoration: "none" }}>
+                borderBottom: `1px solid rgba(217,138,106,0.30)`, textDecoration: "none" }}>
                 View all providers →
               </Link>
             </div>
@@ -667,7 +667,7 @@ const Index = () => {
                   alignItems: "center", gap: 10, textAlign: "center" }}
                   onMouseEnter={cardIn} onMouseLeave={(e) => cardOut(e, C.creamDark)}>
                   <div style={{ width: 50, height: 50, borderRadius: 13,
-                    background: "rgba(200,112,96,0.10)", border: "1px solid rgba(200,112,96,0.20)",
+                    background: "rgba(217,138,106,0.10)", border: "1px solid rgba(217,138,106,0.20)",
                     display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <img src={c.icon} alt="" style={{ width: 26, height: 26, objectFit: "contain" }} />
                   </div>
@@ -680,8 +680,8 @@ const Index = () => {
         </section>
 
         {/* ── 3. PILLARS STRIP (moved below categories) ── */}
-        <section style={{ background: C.purple, borderTop: "1px solid rgba(200,112,96,0.12)",
-          borderBottom: "1px solid rgba(200,112,96,0.12)" }}>
+        <section style={{ background: C.purple, borderTop: "1px solid rgba(217,138,106,0.12)",
+          borderBottom: "1px solid rgba(217,138,106,0.12)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", maxWidth: 1280, margin: "0 auto" }}>
             {([
               { label: "Find Local Support",   sub: "Therapists, clubs & specialists", to: "/explore",       hi: false },
@@ -690,26 +690,26 @@ const Index = () => {
               { label: "For Providers",        sub: "Create your free profile today",  to: "/for-providers", hi: true  },
             ] as const).map((p) => (
               <Link key={p.label} to={p.to} style={{ padding: "20px 28px",
-                borderRight: "1px solid rgba(200,112,96,0.10)",
-                background: p.hi ? "rgba(200,112,96,0.06)" : "transparent",
+                borderRight: "1px solid rgba(217,138,106,0.10)",
+                background: p.hi ? "rgba(217,138,106,0.06)" : "transparent",
                 textDecoration: "none", display: "flex", alignItems: "center", gap: 14 }}
                 onMouseEnter={(e) => pillarIn(e)}
                 onMouseLeave={(e) => pillarOut(e, p.hi)}>
                 <div style={{ width: 40, height: 40, flexShrink: 0, borderRadius: 10,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  background: p.hi ? "rgba(200,112,96,0.18)" : "rgba(200,112,96,0.10)",
-                  border: `1px solid ${p.hi ? "rgba(240,192,144,0.40)" : "rgba(200,112,96,0.20)"}` }}>
+                  background: p.hi ? "rgba(217,138,106,0.18)" : "rgba(217,138,106,0.10)",
+                  border: `1px solid ${p.hi ? "rgba(232,244,255,0.40)" : "rgba(217,138,106,0.20)"}` }}>
                   <span style={{ color: C.amber, fontSize: 14, fontWeight: 600 }}>→</span>
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: p.hi ? C.amber : C.warmWhite, lineHeight: 1.3 }}>
                     {p.label}
                   </div>
-                  <div style={{ fontSize: 12, color: "rgba(255,245,238,0.30)", fontWeight: 300, marginTop: 2 }}>
+                  <div style={{ fontSize: 12, color: "rgba(232,244,255,0.30)", fontWeight: 300, marginTop: 2 }}>
                     {p.sub}
                   </div>
                 </div>
-                <span style={{ color: "rgba(200,112,96,0.45)", fontSize: 14 }}>→</span>
+                <span style={{ color: "rgba(217,138,106,0.45)", fontSize: 14 }}>→</span>
               </Link>
             ))}
           </div>
@@ -732,7 +732,7 @@ const Index = () => {
               maxWidth: 860, margin: "0 auto", position: "relative" }}>
               {/* Connector line */}
               <div style={{ position: "absolute", top: 33, left: "18%", right: "18%",
-                height: 1, background: "rgba(42,20,64,0.10)", zIndex: 0 }} />
+                height: 1, background: "rgba(27,26,53,0.10)", zIndex: 0 }} />
 
               {[
                 {
@@ -754,7 +754,7 @@ const Index = () => {
                 <div key={step.n} style={{ display: "flex", flexDirection: "column", alignItems: "center",
                   padding: "0 32px", position: "relative", zIndex: 1 }}>
                   <div style={{ width: 66, height: 66, borderRadius: "50%",
-                    border: `1px solid rgba(42,20,64,0.15)`,
+                    border: `1px solid rgba(27,26,53,0.15)`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     marginBottom: 24, background: C.cream, flexShrink: 0 }}>
                     <span style={{ fontSize: "1.4rem", fontWeight: 700, color: C.textDark }}>{step.n}</span>
@@ -772,7 +772,7 @@ const Index = () => {
         </section>
 
         {/* ── 5. PARENT VOICE ── */}
-        <section style={{ background: C.cream, padding: "52px 60px", borderTop: `1px solid rgba(42,20,64,0.08)` }}>
+        <section style={{ background: C.cream, padding: "52px 60px", borderTop: `1px solid rgba(27,26,53,0.08)` }}>
           <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid",
             gridTemplateColumns: "1fr 1fr", gap: "3.5rem", alignItems: "center" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -785,7 +785,7 @@ const Index = () => {
               </h2>
               <blockquote style={{ background: C.white, borderLeft: `3px solid ${C.terra}`,
                 padding: "18px 20px", borderRadius: "0 10px 10px 0",
-                boxShadow: "0 2px 10px rgba(42,20,64,0.04)", margin: 0 }}>
+                boxShadow: "0 2px 10px rgba(27,26,53,0.04)", margin: 0 }}>
                 <p style={{ fontSize: "0.92rem", fontStyle: "italic", color: C.textDark,
                   lineHeight: 1.7, fontWeight: 300, margin: 0 }}>
                   "I spent nearly a year searching for the right OT for my son. Information was scattered across
@@ -817,17 +817,17 @@ const Index = () => {
 
         {/* ── 6. PROVIDER BAND ── */}
         <section style={{ background: C.deep, padding: "36px 60px",
-          borderTop: "1px solid rgba(200,112,96,0.15)", borderBottom: "1px solid rgba(200,112,96,0.15)",
+          borderTop: "1px solid rgba(43,76,126,0.30)", borderBottom: "1px solid rgba(43,76,126,0.30)",
           position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", inset: 0, pointerEvents: "none",
-            background: "radial-gradient(ellipse 60% 100% at 100% 50%, rgba(200,112,96,0.07) 0%, transparent 65%)" }} />
+            background: "radial-gradient(ellipse 60% 100% at 100% 50%, rgba(217,138,106,0.07) 0%, transparent 65%)" }} />
           <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid",
             gridTemplateColumns: "1fr 1fr", gap: "3.5rem", alignItems: "center", position: "relative", zIndex: 1 }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <span style={{ fontSize: "1rem", fontWeight: 700, color: C.amber }}>For Providers</span>
-                <div style={{ width: 32, height: 1.5, background: "rgba(240,192,144,0.40)" }} />
-                <span style={{ fontSize: "0.75rem", color: "rgba(255,245,238,0.30)", fontWeight: 300 }}>
+                <div style={{ width: 32, height: 1.5, background: "rgba(232,244,255,0.25)" }} />
+                <span style={{ fontSize: "0.75rem", color: "rgba(232,244,255,0.30)", fontWeight: 300 }}>
                   Therapists, clubs, specialists &amp; organisations
                 </span>
               </div>
@@ -836,7 +836,7 @@ const Index = () => {
                 fontFamily: "'Josefin Sans', sans-serif" }}>
                 Reach the families already searching for you.
               </h2>
-              <p style={{ fontSize: "0.80rem", color: "rgba(255,245,238,0.40)", fontWeight: 300,
+              <p style={{ fontSize: "0.80rem", color: "rgba(232,244,255,0.40)", fontWeight: 300,
                 lineHeight: 1.7, maxWidth: 380, margin: 0 }}>
                 Beyonder connects SEND families with local support at the moment they need it most. Your profile goes
                 live immediately — no approval wait, no upfront cost.
@@ -848,9 +848,9 @@ const Index = () => {
                   "Full control of your profile and availability",
                 ].map((pt) => (
                   <div key={pt} style={{ display: "flex", alignItems: "center", gap: 9,
-                    fontSize: "0.76rem", color: "rgba(255,245,238,0.50)", fontWeight: 300 }}>
+                    fontSize: "0.76rem", color: "rgba(232,244,255,0.50)", fontWeight: 300 }}>
                     <div style={{ width: 16, height: 16, borderRadius: "50%", flexShrink: 0,
-                      background: "rgba(200,112,96,0.20)", border: "1px solid rgba(200,112,96,0.35)",
+                      background: "rgba(217,138,106,0.20)", border: "1px solid rgba(217,138,106,0.35)",
                       display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <span style={{ color: C.amber, fontSize: 9, fontWeight: 700 }}>✓</span>
                     </div>
@@ -861,23 +861,23 @@ const Index = () => {
               <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 4 }}>
                 <Link to="/for-providers" style={{ display: "inline-block", padding: "11px 24px", borderRadius: 8,
                   background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`,
-                  boxShadow: "0 4px 16px rgba(200,112,96,0.28)", color: C.warmWhite,
+                  boxShadow: "0 4px 16px rgba(217,138,106,0.28)", color: C.warmWhite,
                   fontSize: "0.84rem", fontWeight: 600, textDecoration: "none" }}
                   onMouseEnter={terraIn} onMouseLeave={(e) => terraOut(e)}>
                   Create your free profile
                 </Link>
                 <Link to="/for-providers" style={{ fontSize: "0.76rem", padding: "10px 16px", borderRadius: 8,
                   textDecoration: "none", background: "transparent",
-                  border: "1px solid rgba(255,245,238,0.18)", color: "rgba(255,245,238,0.50)" }}
+                  border: "1px solid rgba(232,244,255,0.18)", color: "rgba(232,244,255,0.50)" }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background   = "rgba(200,112,96,0.12)";
-                    e.currentTarget.style.borderColor  = "rgba(240,192,144,0.55)";
+                    e.currentTarget.style.background   = "rgba(217,138,106,0.12)";
+                    e.currentTarget.style.borderColor  = "rgba(232,244,255,0.55)";
                     e.currentTarget.style.color        = C.warmWhite;
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background   = "transparent";
-                    e.currentTarget.style.borderColor  = "rgba(255,245,238,0.18)";
-                    e.currentTarget.style.color        = "rgba(255,245,238,0.50)";
+                    e.currentTarget.style.borderColor  = "rgba(232,244,255,0.18)";
+                    e.currentTarget.style.color        = "rgba(232,244,255,0.50)";
                   }}>
                   See how it works →
                 </Link>
@@ -892,24 +892,24 @@ const Index = () => {
                   { num: "Free",   label: "To list. Upgrade only if you want more." },
                   { num: "Live",   label: "Profile goes live instantly on sign-up" },
                 ].map((s) => (
-                  <div key={s.num} style={{ background: "rgba(255,245,238,0.03)",
-                    border: "1px solid rgba(200,112,96,0.10)", borderRadius: 10,
+                  <div key={s.num} style={{ background: "rgba(232,244,255,0.03)",
+                    border: "1px solid rgba(217,138,106,0.10)", borderRadius: 10,
                     padding: "12px 14px", display: "flex", flexDirection: "column", gap: 2 }}>
                     <span style={{ fontSize: "1.4rem", fontWeight: 700, color: C.amber, lineHeight: 1 }}>{s.num}</span>
-                    <span style={{ fontSize: "0.66rem", color: "rgba(255,245,238,0.28)", fontWeight: 300, lineHeight: 1.4 }}>
+                    <span style={{ fontSize: "0.66rem", color: "rgba(232,244,255,0.28)", fontWeight: 300, lineHeight: 1.4 }}>
                       {s.label}
                     </span>
                   </div>
                 ))}
               </div>
-              <blockquote style={{ background: "rgba(200,112,96,0.07)", border: "1px solid rgba(200,112,96,0.14)",
+              <blockquote style={{ background: "rgba(217,138,106,0.07)", border: "1px solid rgba(217,138,106,0.14)",
                 borderRadius: 8, padding: "12px 14px", margin: 0 }}>
-                <p style={{ fontSize: "0.74rem", fontStyle: "italic", color: "rgba(255,245,238,0.38)",
+                <p style={{ fontSize: "0.74rem", fontStyle: "italic", color: "rgba(232,244,255,0.38)",
                   lineHeight: 1.6, fontWeight: 300, margin: 0 }}>
                   "Within two weeks I had three enquiries from families I'd never have reached otherwise."
                 </p>
                 <cite style={{ display: "block", marginTop: 5, fontSize: "0.62rem",
-                  color: "rgba(255,245,238,0.20)", fontStyle: "normal" }}>
+                  color: "rgba(232,244,255,0.20)", fontStyle: "normal" }}>
                   — Paediatric OT, Hampshire · Founding Provider
                 </cite>
               </blockquote>
@@ -918,7 +918,7 @@ const Index = () => {
         </section>
 
         {/* ── 7. COMMUNITY ── */}
-        <section style={{ background: C.cream, padding: "52px 60px", borderTop: `1px solid rgba(42,20,64,0.08)` }}>
+        <section style={{ background: C.cream, padding: "52px 60px", borderTop: `1px solid rgba(27,26,53,0.08)` }}>
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 32 }}>
               <span style={{ fontSize: "0.62rem", fontWeight: 600, letterSpacing: 2,
@@ -955,9 +955,9 @@ const Index = () => {
                       <div style={{ width: 46, height: 50, flexShrink: 0, borderRadius: 10,
                         background: C.terra, display: "flex", flexDirection: "column",
                         alignItems: "center", justifyContent: "center",
-                        boxShadow: "0 3px 10px rgba(200,112,96,0.20)" }}>
+                        boxShadow: "0 3px 10px rgba(217,138,106,0.20)" }}>
                         <span style={{ fontSize: "1.25rem", fontWeight: 700, color: C.warmWhite, lineHeight: 1 }}>{m.day}</span>
-                        <span style={{ fontSize: "0.52rem", color: "rgba(255,245,238,0.75)",
+                        <span style={{ fontSize: "0.52rem", color: "rgba(232,244,255,0.75)",
                           textTransform: "uppercase", letterSpacing: "0.5px", marginTop: 1 }}>{m.mon}</span>
                       </div>
                       <div>
@@ -965,7 +965,7 @@ const Index = () => {
                           lineHeight: 1.3, marginBottom: 3 }}>{m.title}</div>
                         <div style={{ fontSize: "0.70rem", color: C.textMid, fontWeight: 300, lineHeight: 1.5 }}>{m.meta}</div>
                         <span style={{ display: "inline-block", marginTop: 5, padding: "2px 9px", borderRadius: 20,
-                          background: "rgba(200,112,96,0.08)", border: "1px solid rgba(200,112,96,0.18)",
+                          background: "rgba(217,138,106,0.08)", border: "1px solid rgba(217,138,106,0.18)",
                           fontSize: "0.60rem", color: C.terra, fontWeight: 500 }}>{m.chip}</span>
                       </div>
                     </Link>
@@ -1016,12 +1016,12 @@ const Index = () => {
               <Link to="/community" style={{ padding: "11px 28px", borderRadius: 8,
                 background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`,
                 color: C.warmWhite, fontSize: "0.84rem", fontWeight: 600, textDecoration: "none",
-                boxShadow: "0 4px 16px rgba(200,112,96,0.28)" }}
+                boxShadow: "0 4px 16px rgba(217,138,106,0.28)" }}
                 onMouseEnter={terraIn} onMouseLeave={(e) => terraOut(e)}>
                 Join the Community
               </Link>
               <Link to="/community" style={{ padding: "10px 20px", borderRadius: 8, background: "transparent",
-                border: `1.5px solid rgba(200,112,96,0.30)`, color: C.terra, fontSize: "0.82rem", textDecoration: "none" }}
+                border: `1.5px solid rgba(217,138,106,0.30)`, color: C.terra, fontSize: "0.82rem", textDecoration: "none" }}
                 onMouseEnter={(e) => ghostIn(e)} onMouseLeave={(e) => ghostOut(e)}>
                 Browse all forums
               </Link>
@@ -1041,24 +1041,24 @@ const Index = () => {
                 Stay ahead of what matters.
               </h2>
               <Link to="/news" style={{ fontSize: "0.78rem", color: C.terra, fontWeight: 500,
-                borderBottom: `1px solid rgba(200,112,96,0.30)`, textDecoration: "none" }}>
+                borderBottom: `1px solid rgba(217,138,106,0.30)`, textDecoration: "none" }}>
                 All news →
               </Link>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr", gap: 14 }}>
               {[
                 { featured: true,  chip: "Research",
-                  bg: "linear-gradient(135deg,#1c1428,#3a2050)",
+                  bg: "linear-gradient(135deg,#111827,#1A2848)",
                   title: "Early SaLT intervention reduces communication difficulties by up to 60% at age 7",
                   excerpt: "A landmark UK study tracking 2,400 children over five years confirms what many SEND parents have long argued for.",
                   date: "3 April 2026 · Research" },
                 { featured: false, chip: "Legislation",
-                  bg: "linear-gradient(135deg,#2a1440,#3a1c50)",
+                  bg: "linear-gradient(135deg,#1E1B3A,#162040)",
                   title: "SEND Code of Practice 2026: what changes for families",
                   excerpt: "Key updates to EHCP timelines and local authority obligations.",
                   date: "28 March 2026 · Legislation" },
                 { featured: false, chip: "Therapy",
-                  bg: "linear-gradient(135deg,#1e1430,#3a2850)",
+                  bg: "linear-gradient(135deg,#1A2848,#2B3A5A)",
                   title: "Sensory integration therapy: the evidence and what parents should know",
                   excerpt: "A balanced look at research on sensory approaches for autism.",
                   date: "22 March 2026 · Therapy" },
@@ -1069,7 +1069,7 @@ const Index = () => {
                   onMouseEnter={newsIn} onMouseLeave={newsOut}>
                   <div style={{ height: n.featured ? 120 : 90, background: n.bg,
                     display: "flex", alignItems: "flex-end", padding: 10 }}>
-                    <span style={{ background: "rgba(200,112,96,0.80)", color: C.warmWhite,
+                    <span style={{ background: "rgba(217,138,106,0.80)", color: C.warmWhite,
                       fontSize: "0.56rem", fontWeight: 600, padding: "2px 7px", borderRadius: 3,
                       letterSpacing: "0.5px", textTransform: "uppercase" }}>{n.chip}</span>
                   </div>

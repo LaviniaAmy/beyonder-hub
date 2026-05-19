@@ -13,7 +13,7 @@ export default {
     extend: {
       /* ── Typography ─────────────────────────────────── */
       fontFamily: {
-        sans:    ["'Lexend'",      "system-ui", "-apple-system", "sans-serif"],
+        sans:    ["'Nunito Sans'", "system-ui", "-apple-system", "sans-serif"],
         display: ["'Josefin Sans'","system-ui", "-apple-system", "sans-serif"],
       },
 
