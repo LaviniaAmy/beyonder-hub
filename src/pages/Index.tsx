@@ -603,21 +603,69 @@ const Index = () => {
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 6,
             display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
             background: "#F6F3EE", borderTop: "1px solid rgba(27,26,53,0.08)" }}>
-            {[
-              { n: "1", t: "Enter your postcode",  s: "See what's near you" },
-              { n: "2", t: "Choose your support",  s: "Browse by type" },
-              { n: "3", t: "Connect directly",     s: "Enquire through Beyonder" },
-            ].map((step, i) => (
-              <div key={step.n} style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 28px",
+            {([
+              {
+                icon: (
+                  <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="30" cy="30" r="27.5" stroke="#1B3A5C" strokeWidth="1"/>
+                    <path d="M3 44 Q10 33 18 39 Q24 29 30 35 Q36 27 44 33 Q50 29 57 40 L57 57 L3 57 Z" fill="#B8CDD8"/>
+                    <path d="M3 49 Q13 38 21 44 Q29 35 37 42 Q45 36 57 47 L57 57 L3 57 Z" fill="#8AAFC5"/>
+                    <path d="M12 55 Q20 47 28 52 Q36 47 46 55" stroke="#6B9BB8" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+                    <circle cx="30" cy="21" r="4.5" fill="#1B3A5C"/>
+                    <path d="M25.5 21 Q25.5 29.5 30 34.5 Q34.5 29.5 34.5 21" fill="#1B3A5C"/>
+                    <path d="M38 13 Q39.5 11.5 41 13" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+                    <path d="M41 11 Q42.5 9.5 44 11" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+                  </svg>
+                ),
+                t: "Find local support",
+                s: "Tell us your area — see what's nearby",
+              },
+              {
+                icon: (
+                  <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="30" cy="30" r="27.5" stroke="#1B3A5C" strokeWidth="1"/>
+                    <circle cx="18" cy="15" r="5" stroke="#1B3A5C" strokeWidth="1"/>
+                    <circle cx="16.5" cy="14" r="1" fill="#1B3A5C"/><circle cx="18.5" cy="14" r="1" fill="#1B3A5C"/><circle cx="20.5" cy="14" r="1" fill="#1B3A5C"/>
+                    <circle cx="16.5" cy="16.5" r="1" fill="#1B3A5C"/><circle cx="18.5" cy="16.5" r="1" fill="#1B3A5C"/><circle cx="20.5" cy="16.5" r="1" fill="#1B3A5C"/>
+                    <circle cx="30" cy="12" r="5" stroke="#1B3A5C" strokeWidth="1"/>
+                    <circle cx="30" cy="12" r="2" fill="#1B3A5C"/>
+                    <circle cx="42" cy="15" r="5" stroke="#1B3A5C" strokeWidth="1"/>
+                    <circle cx="39.5" cy="14" r="1" fill="#1B3A5C"/><circle cx="42" cy="14" r="1" fill="#1B3A5C"/>
+                    <circle cx="39.5" cy="16.5" r="1" fill="#1B3A5C"/><circle cx="42" cy="16.5" r="1" fill="#1B3A5C"/>
+                    <path d="M27 28 C27 25 24 23 22 25 C20 27 22 31 27 35 C32 31 34 27 32 25 C30 23 27 25 27 28 Z" fill="#D98A6A"/>
+                    <path d="M11 52 C11 45 13 38 15 33 C16 30 19 31 19 34 C20 31 21 29 23 30 C24 27 26 28 26 31 L26 44" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M49 52 C49 45 47 38 45 33 C44 30 41 31 41 34 C40 31 39 29 37 30 C36 27 34 28 34 31 L34 44" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M11 52 Q20.5 57 30 57 Q39.5 57 49 52" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+                  </svg>
+                ),
+                t: "Choose your support",
+                s: "Browse by type, from therapy to clubs",
+              },
+              {
+                icon: (
+                  <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="30" cy="30" r="27.5" stroke="#1B3A5C" strokeWidth="1"/>
+                    <path d="M3 50 L15 34 L23 44 L31 28 L39 40 L47 31 L57 50 Z" fill="#B8CDD8"/>
+                    <path d="M3 54 L15 42 L23 50 L57 54 Z" fill="#8AAFC5"/>
+                    <path d="M16 18 L46 13 L35 37 L28 29 Z" stroke="#1B3A5C" strokeWidth="1.2" fill="white" fillOpacity="0.75" strokeLinejoin="round"/>
+                    <path d="M28 29 L46 13" stroke="#1B3A5C" strokeWidth="1.2"/>
+                    <path d="M28 29 L35 37" stroke="#1B3A5C" strokeWidth="1.2"/>
+                    <path d="M16 18 Q9 26 12 35" stroke="#1B3A5C" strokeWidth="1" strokeDasharray="2 3" fill="none" strokeLinecap="round"/>
+                    <path d="M42 23 Q43.5 21.5 45 23" stroke="#1B3A5C" strokeWidth="1" fill="none" strokeLinecap="round"/>
+                    <path d="M44 21 Q45.5 19.5 47 21" stroke="#1B3A5C" strokeWidth="1" fill="none" strokeLinecap="round"/>
+                  </svg>
+                ),
+                t: "Reach out directly",
+                s: "Enquire safely through Beyonder",
+              },
+            ] as { icon: React.ReactNode; t: string; s: string }[]).map((step, i) => (
+              <div key={step.t} style={{ display: "flex", flexDirection: "column", alignItems: "center",
+                gap: 7, padding: "14px 20px 16px", textAlign: "center",
                 borderRight: i < 2 ? "1px solid rgba(27,26,53,0.07)" : "none" }}>
-                <div style={{ width: 30, height: 30, borderRadius: "50%",
-                  border: `1.5px solid ${C.rose}`, display: "flex", alignItems: "center",
-                  justifyContent: "center", flexShrink: 0 }}>
-                  <span style={{ fontSize: "0.85rem", fontWeight: 600, color: C.rose }}>{step.n}</span>
-                </div>
+                <div style={{ width: 52, height: 52, flexShrink: 0 }}>{step.icon}</div>
                 <div>
-                  <div style={{ fontSize: "0.82rem", fontWeight: 600, color: C.textDark, marginBottom: 2 }}>{step.t}</div>
-                  <div style={{ fontSize: "0.68rem", color: C.textLight, fontWeight: 300 }}>{step.s}</div>
+                  <div style={{ fontSize: "0.78rem", fontWeight: 600, color: C.textDark, marginBottom: 2 }}>{step.t}</div>
+                  <div style={{ fontSize: "0.63rem", color: C.textLight, fontWeight: 300, lineHeight: 1.5 }}>{step.s}</div>
                 </div>
               </div>
             ))}
