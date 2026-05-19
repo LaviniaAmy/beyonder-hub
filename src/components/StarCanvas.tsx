@@ -77,37 +77,29 @@ function initStars(count: number): Star[] {
 }
 
 function paintBackground(ctx: CanvasRenderingContext2D, W: number, H: number) {
-  // Base gradient: dark plum top → warm amber-peach bottom, evenly split
   const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, "rgb(28, 16, 48)");
-  grad.addColorStop(0.25, "rgb(52, 24, 58)");
-  grad.addColorStop(0.45, "rgb(120, 55, 50)");
-  grad.addColorStop(0.65, "rgb(185, 100, 65)");
-  grad.addColorStop(0.82, "rgb(210, 140, 90)");
-  grad.addColorStop(1, "rgb(220, 165, 110)");
+  grad.addColorStop(0, "rgb(32, 18, 52)");
+  grad.addColorStop(0.15, "rgb(65, 30, 55)");
+  grad.addColorStop(0.3, "rgb(130, 60, 50)");
+  grad.addColorStop(0.48, "rgb(190, 105, 65)");
+  grad.addColorStop(0.65, "rgb(215, 145, 90)");
+  grad.addColorStop(0.82, "rgb(225, 170, 115)");
+  grad.addColorStop(1, "rgb(230, 185, 130)");
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  // Warm glow bottom-left
-  const warmGlow1 = ctx.createRadialGradient(W * 0.2, H * 0.8, 0, W * 0.2, H * 0.8, W * 0.5);
-  warmGlow1.addColorStop(0, "rgba(210, 140, 70, 0.25)");
-  warmGlow1.addColorStop(0.5, "rgba(180, 100, 50, 0.12)");
+  // Warm glow centre-bottom
+  const warmGlow1 = ctx.createRadialGradient(W * 0.5, H * 0.9, 0, W * 0.5, H * 0.9, W * 0.6);
+  warmGlow1.addColorStop(0, "rgba(230, 170, 100, 0.3)");
+  warmGlow1.addColorStop(0.5, "rgba(200, 130, 70, 0.15)");
   warmGlow1.addColorStop(1, "rgba(0, 0, 0, 0)");
   ctx.fillStyle = warmGlow1;
   ctx.fillRect(0, 0, W, H);
 
-  // Warm glow bottom-right
-  const warmGlow2 = ctx.createRadialGradient(W * 0.8, H * 0.85, 0, W * 0.8, H * 0.85, W * 0.45);
-  warmGlow2.addColorStop(0, "rgba(200, 120, 60, 0.2)");
-  warmGlow2.addColorStop(0.5, "rgba(160, 80, 40, 0.1)");
-  warmGlow2.addColorStop(1, "rgba(0, 0, 0, 0)");
-  ctx.fillStyle = warmGlow2;
-  ctx.fillRect(0, 0, W, H);
-
   // Plum glow upper area
-  const plumGlow = ctx.createRadialGradient(W * 0.5, H * 0.15, 0, W * 0.5, H * 0.15, W * 0.55);
-  plumGlow.addColorStop(0, "rgba(60, 25, 75, 0.3)");
-  plumGlow.addColorStop(0.5, "rgba(45, 18, 60, 0.15)");
+  const plumGlow = ctx.createRadialGradient(W * 0.5, H * 0.08, 0, W * 0.5, H * 0.08, W * 0.5);
+  plumGlow.addColorStop(0, "rgba(55, 22, 70, 0.3)");
+  plumGlow.addColorStop(0.5, "rgba(40, 15, 55, 0.15)");
   plumGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
   ctx.fillStyle = plumGlow;
   ctx.fillRect(0, 0, W, H);
