@@ -1,50 +1,87 @@
 import { Link } from "react-router-dom";
 
 const Footer = () => (
-  <footer
-    className="text-white"
-    style={{
-      background: "linear-gradient(180deg, hsl(207, 30%, 35%) 0%, hsl(207, 72%, 15%) 30%, hsl(207, 72%, 15%) 100%)",
-    }}
-  >
+  <footer style={{ background: "linear-gradient(180deg, #2a1440 0%, #1c1428 100%)" }}>
     <div className="mx-auto max-w-[1100px] py-10 px-8">
       <div className="grid gap-8 sm:grid-cols-2">
         {/* Column 1 */}
         <div>
-          <h3 className="mb-1.5 text-base font-semibold" style={{ color: "hsl(176, 100%, 37%)" }}>
-            Beyonder
-          </h3>
-          <p className="text-sm text-white/70 leading-relaxed mb-5">
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+            <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#c87060", flexShrink: 0 }} />
+            <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#f0c090", fontFamily: "'Lexend', sans-serif", margin: 0 }}>
+              Beyonder
+            </h3>
+          </div>
+          <p style={{ fontSize: "0.85rem", color: "rgba(255,245,238,0.60)", lineHeight: 1.65, marginBottom: 20, fontWeight: 300 }}>
             Connecting SEND families with trusted services and support.
           </p>
 
-          <h4 className="mb-1.5 font-semibold text-white/90 text-sm">Explore</h4>
-          <ul className="space-y-0.5 text-sm text-white/60 mb-4">
-            <li><Link to="/explore" className="transition-colors hover:text-white">Find Services</Link></li>
-            <li><Link to="/providers" className="transition-colors hover:text-white">Provider Directory</Link></li>
-            <li><Link to="/community" className="transition-colors hover:text-white">Community</Link></li>
+          <h4 style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(255,245,238,0.85)", marginBottom: 8 }}>Explore</h4>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 18px", display: "flex", flexDirection: "column", gap: 6 }}>
+            <li><Link to="/explore" style={{ fontSize: "0.82rem", color: "rgba(255,245,238,0.50)", textDecoration: "none" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f0c090")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,245,238,0.50)")}>
+              Find Services
+            </Link></li>
+            <li><Link to="/providers" style={{ fontSize: "0.82rem", color: "rgba(255,245,238,0.50)", textDecoration: "none" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f0c090")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,245,238,0.50)")}>
+              Provider Directory
+            </Link></li>
+            <li><Link to="/community" style={{ fontSize: "0.82rem", color: "rgba(255,245,238,0.50)", textDecoration: "none" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f0c090")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,245,238,0.50)")}>
+              Community
+            </Link></li>
           </ul>
 
-          <h4 className="mb-1.5 font-semibold text-white/90 text-sm">Learn</h4>
+          <h4 style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(255,245,238,0.85)", marginBottom: 8 }}>Learn</h4>
         </div>
 
         {/* Column 2 */}
         <div>
-          <ul className="space-y-0.5 text-sm text-white/60 mb-4">
-            <li><Link to="/guides" className="transition-colors hover:text-white">Guides & Understanding</Link></li>
-            <li><Link to="/news" className="transition-colors hover:text-white">News & Updates</Link></li>
-            <li><Link to="/about" className="transition-colors hover:text-white">About Us</Link></li>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 18px", display: "flex", flexDirection: "column", gap: 6 }}>
+            <li><Link to="/guides" style={{ fontSize: "0.82rem", color: "rgba(255,245,238,0.50)", textDecoration: "none" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f0c090")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,245,238,0.50)")}>
+              Guides & Understanding
+            </Link></li>
+            <li><Link to="/news" style={{ fontSize: "0.82rem", color: "rgba(255,245,238,0.50)", textDecoration: "none" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f0c090")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,245,238,0.50)")}>
+              News & Updates
+            </Link></li>
+            <li><Link to="/about" style={{ fontSize: "0.82rem", color: "rgba(255,245,238,0.50)", textDecoration: "none" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f0c090")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,245,238,0.50)")}>
+              About Us
+            </Link></li>
           </ul>
 
-          <h4 className="mb-1.5 font-semibold text-white/90 text-sm">Support</h4>
-          <ul className="space-y-0.5 text-sm text-white/60">
-            <li><Link to="/help" className="transition-colors hover:text-white">Help Centre</Link></li>
-            <li><Link to="/for-providers" className="transition-colors hover:text-white">For Providers</Link></li>
+          <h4 style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(255,245,238,0.85)", marginBottom: 8 }}>Support</h4>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+            <li><Link to="/help" style={{ fontSize: "0.82rem", color: "rgba(255,245,238,0.50)", textDecoration: "none" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f0c090")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,245,238,0.50)")}>
+              Help Centre
+            </Link></li>
+            <li><Link to="/for-providers" style={{ fontSize: "0.82rem", color: "rgba(255,245,238,0.50)", textDecoration: "none" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f0c090")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,245,238,0.50)")}>
+              For Providers
+            </Link></li>
           </ul>
         </div>
       </div>
 
-      <div className="mt-8 border-t border-white/10 pt-5 text-center text-xs text-white/40">
+      <div style={{
+        marginTop: 32,
+        borderTop: "1px solid rgba(255,245,238,0.08)",
+        paddingTop: 20,
+        textAlign: "center",
+        fontSize: "0.72rem",
+        color: "rgba(255,245,238,0.28)",
+      }}>
         © {new Date().getFullYear()} Beyonder. All rights reserved.
       </div>
     </div>

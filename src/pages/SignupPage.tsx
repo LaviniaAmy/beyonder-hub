@@ -85,10 +85,10 @@ const SignupPage = () => {
                   marginBottom: 16,
                   padding: "10px 14px",
                   borderRadius: 8,
-                  background: "rgba(42,122,106,0.10)",
-                  border: "1px solid rgba(42,122,106,0.22)",
+                  background: "rgba(200,112,96,0.10)",
+                  border: "1px solid rgba(200,112,96,0.22)",
                   fontSize: "0.78rem",
-                  color: "#3a9a88",
+                  color: "#c87060",
                 }}
               >
                 You're creating a provider account to claim and manage this listing on Beyonder.

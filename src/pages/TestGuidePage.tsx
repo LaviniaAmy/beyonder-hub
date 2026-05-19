@@ -1,7 +1,7 @@
 const TestGuidePage = () => (
   <div
     style={{
-      fontFamily: "'Outfit', 'Segoe UI', sans-serif",
+      fontFamily: "'Lexend', 'Segoe UI', sans-serif",
       maxWidth: 900,
       margin: "0 auto",
       padding: "40px 32px 80px",

@@ -94,9 +94,9 @@ const TABS = [
 ];
 
 const C = {
-  teal: "#2a7a6a",
-  tealLight: "#3a9a88",
-  orange: "#e8622a",
+  teal: "#c87060",
+  tealLight: "#d4805a",
+  orange: "#f0c090",
 };
 
 const ProviderDashboard = () => {
