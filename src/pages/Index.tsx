@@ -507,7 +507,7 @@ const Index = () => {
             <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
               <div style={{ width: 12, height: 12, borderRadius: "50%", background: C.terra }} />
               <span style={{ fontSize: "clamp(2.4rem, 6vw, 3.9rem)", fontWeight: 700, color: C.amber,
-                letterSpacing: "2px", fontFamily: "'Josefin Sans', sans-serif", textTransform: "uppercase" }}>Beyonder</span>
+                letterSpacing: "2px", fontFamily: "'Josefin Sans', sans-serif" }}>Beyonder</span>
             </div>
             <p style={{ fontSize: "1rem", color: "rgba(255,245,238,0.50)", fontWeight: 300, margin: 0, textAlign: "center" }}>
               One place for everything SEND
