@@ -605,61 +605,17 @@ const Index = () => {
             background: "#F6F3EE", borderTop: "1px solid rgba(27,26,53,0.08)" }}>
             {([
               {
-                icon: (
-                  <svg width="100%" height="100%" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="30" cy="30" r="27.5" stroke="#1B3A5C" strokeWidth="1"/>
-                    <path d="M3 44 Q10 33 18 39 Q24 29 30 35 Q36 27 44 33 Q50 29 57 40 L57 57 L3 57 Z" fill="#B8CDD8"/>
-                    <path d="M3 49 Q13 38 21 44 Q29 35 37 42 Q45 36 57 47 L57 57 L3 57 Z" fill="#8AAFC5"/>
-                    <path d="M12 55 Q20 47 28 52 Q36 47 46 55" stroke="#6B9BB8" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
-                    <circle cx="30" cy="21" r="4.5" fill="#1B3A5C"/>
-                    <path d="M25.5 21 Q25.5 29.5 30 34.5 Q34.5 29.5 34.5 21" fill="#1B3A5C"/>
-                    <path d="M38 13 Q39.5 11.5 41 13" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
-                    <path d="M41 11 Q42.5 9.5 44 11" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
-                  </svg>
-                ),
+                icon: <img src={LocalIcon} alt="Find local support" style={{ width: "100%", height: "100%", objectFit: "contain" }} />,
                 t: "Find local support",
                 s: "Tell us your area — see what's nearby",
               },
               {
-                icon: (
-                  <svg width="100%" height="100%" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="30" cy="30" r="27.5" stroke="#1B3A5C" strokeWidth="1"/>
-                    {/* Floating support items */}
-                    <circle cx="18" cy="15" r="5" stroke="#1B3A5C" strokeWidth="1"/>
-                    <circle cx="16.5" cy="14" r="1" fill="#1B3A5C"/><circle cx="18.5" cy="14" r="1" fill="#1B3A5C"/><circle cx="20.5" cy="14" r="1" fill="#1B3A5C"/>
-                    <circle cx="16.5" cy="16.5" r="1" fill="#1B3A5C"/><circle cx="18.5" cy="16.5" r="1" fill="#1B3A5C"/><circle cx="20.5" cy="16.5" r="1" fill="#1B3A5C"/>
-                    <circle cx="30" cy="12" r="5" stroke="#1B3A5C" strokeWidth="1"/>
-                    <circle cx="30" cy="12" r="2" fill="#1B3A5C"/>
-                    <circle cx="42" cy="15" r="5" stroke="#1B3A5C" strokeWidth="1"/>
-                    <circle cx="39.5" cy="14" r="1" fill="#1B3A5C"/><circle cx="42" cy="14" r="1" fill="#1B3A5C"/>
-                    <circle cx="39.5" cy="16.5" r="1" fill="#1B3A5C"/><circle cx="42" cy="16.5" r="1" fill="#1B3A5C"/>
-                    {/* Heart */}
-                    <path d="M27 29 C27 26 24 24 22 26 C20 28 22 32 27 36 C32 32 34 28 32 26 C30 24 27 26 27 29 Z" fill="#D98A6A"/>
-                    {/* Left hand — simplified open-palm shape */}
-                    <path d="M14 50 C14 44 15 38 17 33 C18 30 21 31 21 34 C22 31 23 29 25 30 C26 27 28 28 28 32 L28 43 C22 45 17 48 14 50 Z" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                    {/* Right hand */}
-                    <path d="M46 50 C46 44 45 38 43 33 C42 30 39 31 39 34 C38 31 37 29 35 30 C34 27 32 28 32 32 L32 43 C38 45 43 48 46 50 Z" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                    {/* Joined palms arc */}
-                    <path d="M14 50 Q22 55 30 55 Q38 55 46 50" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
-                  </svg>
-                ),
+                icon: <img src={TherapistsIcon} alt="Choose your support" style={{ width: "100%", height: "100%", objectFit: "contain" }} />,
                 t: "Choose your support",
                 s: "Browse by type, from therapy to clubs",
               },
               {
-                icon: (
-                  <svg width="100%" height="100%" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="30" cy="30" r="27.5" stroke="#1B3A5C" strokeWidth="1"/>
-                    <path d="M3 50 L15 34 L23 44 L31 28 L39 40 L47 31 L57 50 Z" fill="#B8CDD8"/>
-                    <path d="M3 54 L15 42 L23 50 L57 54 Z" fill="#8AAFC5"/>
-                    <path d="M16 18 L46 13 L35 37 L28 29 Z" stroke="#1B3A5C" strokeWidth="1.2" fill="white" fillOpacity="0.75" strokeLinejoin="round"/>
-                    <path d="M28 29 L46 13" stroke="#1B3A5C" strokeWidth="1.2"/>
-                    <path d="M28 29 L35 37" stroke="#1B3A5C" strokeWidth="1.2"/>
-                    <path d="M16 18 Q9 26 12 35" stroke="#1B3A5C" strokeWidth="1" strokeDasharray="2 3" fill="none" strokeLinecap="round"/>
-                    <path d="M42 23 Q43.5 21.5 45 23" stroke="#1B3A5C" strokeWidth="1" fill="none" strokeLinecap="round"/>
-                    <path d="M44 21 Q45.5 19.5 47 21" stroke="#1B3A5C" strokeWidth="1" fill="none" strokeLinecap="round"/>
-                  </svg>
-                ),
+                icon: <img src={WorkIcon} alt="Reach out directly" style={{ width: "100%", height: "100%", objectFit: "contain" }} />,
                 t: "Reach out directly",
                 s: "Enquire safely through Beyonder",
               },
