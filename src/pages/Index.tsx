@@ -155,7 +155,7 @@ const Index = () => {
       <div className="md:hidden" style={{ background: C.cream, minHeight: "100vh", paddingBottom: 72 }}>
 
         {/* ── Mobile Hero ── */}
-        <div style={{ background: "linear-gradient(180deg, #1c1428 0%, #3a2850 22%, #7a4060 46%, #c87060 68%, #f0c090 90%)", padding: "14px 20px 0", position: "relative", overflow: "hidden" }}>
+        <div style={{ background: "linear-gradient(180deg, #1c1428 0%, #3a2850 10%, #7a4060 28%, #c87060 50%, #f0c090 78%)", padding: "14px 20px 0", position: "relative", overflow: "hidden" }}>
           {/* Gradient glows */}
           <div style={{ position: "absolute", top: -30, right: -30, width: 150, height: 150, borderRadius: "50%",
             background: "radial-gradient(circle, rgba(200,112,96,0.22) 0%, transparent 70%)", pointerEvents: "none" }} />
