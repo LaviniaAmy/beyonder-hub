@@ -600,7 +600,7 @@ const AdminPanel = () => {
                       value={Math.max(0, founderLimit - founderCount)}
                       readOnly
                       className="bg-muted cursor-not-allowed"
-                      style={{ color: slotsLeft === 0 ? "#e8622a" : undefined }}
+                      style={{ color: slotsLeft === 0 ? "#c87060" : undefined }}
                     />
                     <p className="mt-1 text-xs text-muted-foreground">Available for new claims</p>
                   </div>
