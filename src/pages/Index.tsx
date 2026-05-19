@@ -489,8 +489,9 @@ const Index = () => {
 
         {/* ── 1. HERO ── */}
         <section style={{ position: "relative", overflow: "hidden", display: "flex",
-          flexDirection: "column", alignItems: "center", justifyContent: "center",
-          minHeight: 360, maxHeight: 440, height: "calc(100vh - 200px)", padding: "0 40px 0" }}>
+          flexDirection: "column", alignItems: "center", justifyContent: "flex-start",
+          minHeight: 360, maxHeight: 440, height: "calc(100vh - 200px)",
+          padding: "clamp(32px, 5.5vh, 52px) 40px 0" }}>
 
           {/* Bird canvas background */}
           <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
@@ -503,7 +504,7 @@ const Index = () => {
 
           {/* Logo + tagline */}
           <div style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column",
-            alignItems: "center", width: "100%", marginBottom: 10 }}>
+            alignItems: "center", width: "100%", marginBottom: 22 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 8 }}>
               <div style={{ width: 18, height: 18, borderRadius: "50%", background: C.terra }} />
               <span style={{ fontSize: "clamp(3.6rem, 9vw, 5.8rem)", fontWeight: 300, color: "#ffffff",
