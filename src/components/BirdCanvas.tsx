@@ -75,10 +75,20 @@ function initBirds(dpr: number): Bird[] {
   });
 }
 
+const CONVERGE_CX = 0.50, CONVERGE_CY = 0.40;
+const CONVERGE_FREQ = 1.8e-5;
+
 function groupPos(g: Group, t: number, W: number, H: number) {
+  const rawX = g.bx + g.ax1 * Math.sin(t * g.wx1 * TAU + g.px1) + g.ax2 * Math.sin(t * g.wx2 * TAU + g.px2);
+  const rawY = g.by + g.ay1 * Math.sin(t * g.wy1 * TAU + g.py1) + g.ay2 * Math.sin(t * g.wy2 * TAU + g.py2);
+
+  const wave = Math.sin(t * CONVERGE_FREQ * TAU);
+  const pull = 0.5 + 0.5 * wave;
+  const strength = pull * pull * 0.75;
+
   return {
-    x: (g.bx + g.ax1 * Math.sin(t * g.wx1 * TAU + g.px1) + g.ax2 * Math.sin(t * g.wx2 * TAU + g.px2)) * W,
-    y: (g.by + g.ay1 * Math.sin(t * g.wy1 * TAU + g.py1) + g.ay2 * Math.sin(t * g.wy2 * TAU + g.py2)) * H,
+    x: (rawX + (CONVERGE_CX - rawX) * strength) * W,
+    y: (rawY + (CONVERGE_CY - rawY) * strength) * H,
   };
 }
 
