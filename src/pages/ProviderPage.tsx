@@ -115,7 +115,7 @@ const ProviderPage = () => {
   return (
     <div className="pb-24">
       {/* Hero */}
-      <section className="bg-navy-gradient py-12">
+      <section className="bg-background py-12">
         <div className="container animate-fade-in">
           {isSuspended && (
             <div className="flex items-center gap-3 rounded-xl border border-red-500/25 bg-red-500/08 p-4 mb-6">

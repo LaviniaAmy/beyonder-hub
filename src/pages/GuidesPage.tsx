@@ -8,7 +8,7 @@ const guides = [
 ];
 
 const GuidesPage = () => (
-  <div className="bg-navy-gradient min-h-screen py-16">
+  <div className="bg-background min-h-screen py-16">
     <div className="container max-w-2xl animate-fade-in">
       <h1 className="mb-4 text-3xl font-bold text-accent-foreground">Guides & Understanding</h1>
       <p className="mb-10 text-accent-foreground/70 leading-relaxed">Clear, jargon-free guides to help you navigate the SEND landscape.</p>

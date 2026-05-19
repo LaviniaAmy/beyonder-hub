@@ -244,7 +244,7 @@ const ProviderDashboard = () => {
 
   if (claimStatus === "pending_review") {
     return (
-      <div className="bg-navy-gradient min-h-screen py-10">
+      <div className="bg-background min-h-screen py-10">
         <div className="container max-w-xl animate-fade-in">
           <h1 className="mb-6 text-3xl font-bold text-accent-foreground">Provider Dashboard</h1>
           <div
@@ -648,7 +648,7 @@ const ProviderDashboard = () => {
         return (
           <div className="space-y-5">
             <div
-              className="flex flex-wrap gap-x-6 gap-y-2 rounded-xl px-5 py-4 bg-navy-800 border-b border-teal-500/10"
+              className="flex flex-wrap gap-x-6 gap-y-2 rounded-xl px-5 py-4 bg-card border-b border-teal-500/10"
             >
               {[
                 {
@@ -719,7 +719,7 @@ const ProviderDashboard = () => {
                   <button
                     key={action.tab}
                     onClick={() => setActiveTab(action.tab)}
-                    className="flex items-center gap-4 rounded-xl border border-teal-500/20 bg-navy-800 p-4 text-left hover:border-teal-500/40 transition-all group"
+                    className="flex items-center gap-4 rounded-xl border border-teal-500/20 bg-card p-4 text-left hover:border-teal-500/40 transition-all group"
                   >
                     <div className="w-9 h-9 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shrink-0">
                       <action.icon className="h-4 w-4 text-teal-500" />
@@ -761,7 +761,7 @@ const ProviderDashboard = () => {
                   {providerEnquiries.slice(0, 3).map((e) => (
                     <div
                       key={e.enquiryId}
-                      className="flex items-center justify-between rounded-xl border border-teal-500/20 bg-navy-800 px-4 py-3 cursor-pointer hover:border-teal-500/30 transition-colors"
+                      className="flex items-center justify-between rounded-xl border border-teal-500/20 bg-card px-4 py-3 cursor-pointer hover:border-teal-500/30 transition-colors"
                       onClick={() => {
                         setActiveTab("enquiries");
                         setSelectedEnquiryId(e.enquiryId);
@@ -807,7 +807,7 @@ const ProviderDashboard = () => {
                 Edit Profile
               </Button>
             </div>
-            <div className="rounded-xl border border-teal-500/20 bg-navy-800 overflow-hidden">
+            <div className="rounded-xl border border-teal-500/20 bg-card overflow-hidden">
               {[
                 { label: "Location", value: profile.location },
                 { label: "Coverage Area", value: profile.coverageArea },
@@ -858,7 +858,7 @@ const ProviderDashboard = () => {
                 <p className="text-xs font-semibold uppercase tracking-wide mb-2 text-white/40">
                   Description
                 </p>
-                <div className="rounded-xl border border-teal-500/20 bg-navy-800 p-4">
+                <div className="rounded-xl border border-teal-500/20 bg-card p-4">
                   <p className="text-sm leading-relaxed text-white/70">
                     {profile.description}
                   </p>
@@ -892,7 +892,7 @@ const ProviderDashboard = () => {
                 return (
                   <div
                     key={section.key}
-                    className={`rounded-xl border overflow-hidden transition-opacity bg-navy-800 ${!enabled ? "opacity-60 border-white/[0.06]" : "border-teal-500/20"}`}
+                    className={`rounded-xl border overflow-hidden transition-opacity bg-card ${!enabled ? "opacity-60 border-border" : "border-teal-500/20"}`}
                   >
                     <div
                       className={`flex items-center justify-between px-5 py-4 border-b border-border/30 ${enabled ? "border-l-[3px] border-l-teal-600" : "border-l-[3px] border-l-white/[0.08]"}`}
@@ -936,7 +936,7 @@ const ProviderDashboard = () => {
 
             {isTherapist && (
               <div
-                className={`rounded-xl border overflow-hidden bg-navy-800 ${!isPaidPlan ? "opacity-60 border-white/[0.06]" : "border-orange-500/20"}`}
+                className={`rounded-xl border overflow-hidden bg-card ${!isPaidPlan ? "opacity-60 border-border" : "border-orange-500/20"}`}
               >
                 <div
                   className={`flex items-center justify-between px-5 py-4 border-b border-border/30 ${isPaidPlan ? "border-l-[3px] border-l-orange-500" : "border-l-[3px] border-l-white/[0.08]"}`}
@@ -999,7 +999,7 @@ const ProviderDashboard = () => {
             )}
 
             <div
-              className={`rounded-xl border overflow-hidden bg-navy-800 ${!hasReferralNotes ? "opacity-60 border-white/[0.06]" : "border-teal-500/20"}`}
+              className={`rounded-xl border overflow-hidden bg-card ${!hasReferralNotes ? "opacity-60 border-border" : "border-teal-500/20"}`}
             >
               <div
                 className={`flex items-center justify-between px-5 py-4 border-b border-border/30 ${hasReferralNotes ? "border-l-[3px] border-l-teal-600" : "border-l-[3px] border-l-white/[0.08]"}`}
@@ -1047,7 +1047,7 @@ const ProviderDashboard = () => {
               : "Free Plan";
         return (
           <div className="space-y-5">
-            <div className="rounded-xl border border-teal-500/20 bg-navy-800 overflow-hidden">
+            <div className="rounded-xl border border-teal-500/20 bg-card overflow-hidden">
               <div className="px-5 py-5 border-b border-border/30 border-l-[3px] border-l-teal-600">
                 <div className="flex items-center gap-3 mb-1">
                   <Badge className="bg-teal-500/20 text-teal-400 border-0">{planLabel}</Badge>
@@ -1112,8 +1112,8 @@ const ProviderDashboard = () => {
   };
 
   return (
-    <div className="bg-navy-gradient min-h-screen">
-      <div className="bg-navy-900 border-b border-teal-500/15">
+    <div className="bg-background min-h-screen">
+      <div className="bg-card border-b border-teal-500/15">
         <div className="container max-w-3xl px-4 sm:px-6 py-5 sm:py-6">
           {isSuspended && (
             <div className="mb-4 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/[0.08] p-4">
