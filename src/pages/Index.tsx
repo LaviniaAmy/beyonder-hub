@@ -606,7 +606,7 @@ const Index = () => {
             {([
               {
                 icon: (
-                  <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="100%" height="100%" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="30" cy="30" r="27.5" stroke="#1B3A5C" strokeWidth="1"/>
                     <path d="M3 44 Q10 33 18 39 Q24 29 30 35 Q36 27 44 33 Q50 29 57 40 L57 57 L3 57 Z" fill="#B8CDD8"/>
                     <path d="M3 49 Q13 38 21 44 Q29 35 37 42 Q45 36 57 47 L57 57 L3 57 Z" fill="#8AAFC5"/>
@@ -622,8 +622,9 @@ const Index = () => {
               },
               {
                 icon: (
-                  <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="100%" height="100%" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="30" cy="30" r="27.5" stroke="#1B3A5C" strokeWidth="1"/>
+                    {/* Floating support items */}
                     <circle cx="18" cy="15" r="5" stroke="#1B3A5C" strokeWidth="1"/>
                     <circle cx="16.5" cy="14" r="1" fill="#1B3A5C"/><circle cx="18.5" cy="14" r="1" fill="#1B3A5C"/><circle cx="20.5" cy="14" r="1" fill="#1B3A5C"/>
                     <circle cx="16.5" cy="16.5" r="1" fill="#1B3A5C"/><circle cx="18.5" cy="16.5" r="1" fill="#1B3A5C"/><circle cx="20.5" cy="16.5" r="1" fill="#1B3A5C"/>
@@ -632,10 +633,14 @@ const Index = () => {
                     <circle cx="42" cy="15" r="5" stroke="#1B3A5C" strokeWidth="1"/>
                     <circle cx="39.5" cy="14" r="1" fill="#1B3A5C"/><circle cx="42" cy="14" r="1" fill="#1B3A5C"/>
                     <circle cx="39.5" cy="16.5" r="1" fill="#1B3A5C"/><circle cx="42" cy="16.5" r="1" fill="#1B3A5C"/>
-                    <path d="M27 28 C27 25 24 23 22 25 C20 27 22 31 27 35 C32 31 34 27 32 25 C30 23 27 25 27 28 Z" fill="#D98A6A"/>
-                    <path d="M11 52 C11 45 13 38 15 33 C16 30 19 31 19 34 C20 31 21 29 23 30 C24 27 26 28 26 31 L26 44" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M49 52 C49 45 47 38 45 33 C44 30 41 31 41 34 C40 31 39 29 37 30 C36 27 34 28 34 31 L34 44" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M11 52 Q20.5 57 30 57 Q39.5 57 49 52" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+                    {/* Heart */}
+                    <path d="M27 29 C27 26 24 24 22 26 C20 28 22 32 27 36 C32 32 34 28 32 26 C30 24 27 26 27 29 Z" fill="#D98A6A"/>
+                    {/* Left hand — simplified open-palm shape */}
+                    <path d="M14 50 C14 44 15 38 17 33 C18 30 21 31 21 34 C22 31 23 29 25 30 C26 27 28 28 28 32 L28 43 C22 45 17 48 14 50 Z" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                    {/* Right hand */}
+                    <path d="M46 50 C46 44 45 38 43 33 C42 30 39 31 39 34 C38 31 37 29 35 30 C34 27 32 28 32 32 L32 43 C38 45 43 48 46 50 Z" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                    {/* Joined palms arc */}
+                    <path d="M14 50 Q22 55 30 55 Q38 55 46 50" stroke="#1B3A5C" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
                   </svg>
                 ),
                 t: "Choose your support",
@@ -643,7 +648,7 @@ const Index = () => {
               },
               {
                 icon: (
-                  <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="100%" height="100%" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="30" cy="30" r="27.5" stroke="#1B3A5C" strokeWidth="1"/>
                     <path d="M3 50 L15 34 L23 44 L31 28 L39 40 L47 31 L57 50 Z" fill="#B8CDD8"/>
                     <path d="M3 54 L15 42 L23 50 L57 54 Z" fill="#8AAFC5"/>
