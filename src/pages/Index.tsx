@@ -505,7 +505,7 @@ const Index = () => {
           {/* Logo + tagline */}
           <div style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column",
             alignItems: "center", width: "100%", marginBottom: 22 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 3 }}>
               <div style={{ width: 18, height: 18, borderRadius: "50%", background: C.terra }} />
               <span style={{ fontSize: "clamp(3.6rem, 9vw, 5.8rem)", fontWeight: 300, color: "#ffffff",
                 letterSpacing: "2px", fontFamily: "'Josefin Sans', sans-serif" }}>Beyonder</span>
