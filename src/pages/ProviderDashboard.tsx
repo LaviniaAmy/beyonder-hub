@@ -246,7 +246,7 @@ const ProviderDashboard = () => {
     return (
       <div className="bg-background min-h-screen py-10">
         <div className="container max-w-xl animate-fade-in">
-          <h1 className="mb-6 text-3xl font-bold text-accent-foreground">Provider Dashboard</h1>
+          <h1 className="mb-6 text-3xl font-bold text-foreground">Provider Dashboard</h1>
           <div
             className="rounded-xl border border-orange-500/25 bg-orange-500/[0.08] p-6 text-center space-y-4"
           >
@@ -677,17 +677,17 @@ const ProviderDashboard = () => {
                     className="h-2 w-2 rounded-full flex-shrink-0"
                     style={{ background: stat.accent }}
                   />
-                  <span className="text-xs font-medium uppercase tracking-wide text-white/40">
+                  <span className="text-xs font-medium uppercase tracking-wide text-foreground/50">
                     {stat.label}:
                   </span>
-                  <span className="text-sm capitalize text-white/85">
+                  <span className="text-sm capitalize text-foreground">
                     {stat.value}
                   </span>
                 </div>
               ))}
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide mb-3 text-white/40">
+              <p className="text-xs font-semibold uppercase tracking-wide mb-3 text-foreground/50">
                 Quick Actions
               </p>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -726,7 +726,7 @@ const ProviderDashboard = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold text-white">
+                        <p className="text-sm font-semibold text-foreground">
                           {action.label}
                         </p>
                         {action.badge && (
@@ -735,11 +735,11 @@ const ProviderDashboard = () => {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs mt-0.5 text-white/40">
+                      <p className="text-xs mt-0.5 text-foreground/50">
                         {action.sub}
                       </p>
                     </div>
-                    <ChevronRight className="h-4 w-4 transition-colors group-hover:text-teal-400 text-white/20" />
+                    <ChevronRight className="h-4 w-4 transition-colors group-hover:text-teal-400 text-foreground/30" />
                   </button>
                 ))}
               </div>
@@ -747,7 +747,7 @@ const ProviderDashboard = () => {
             {providerEnquiries.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-white/40">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-foreground/50">
                     Recent Enquiries
                   </p>
                   <button
@@ -770,10 +770,10 @@ const ProviderDashboard = () => {
                       }}
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-medium truncate text-white">
+                        <p className="text-sm font-medium truncate text-foreground">
                           {e.parentName}
                         </p>
-                        <p className="text-xs truncate max-w-[160px] sm:max-w-[200px] text-white/40">
+                        <p className="text-xs truncate max-w-[160px] sm:max-w-[200px] text-foreground/50">
                           {e.message}
                         </p>
                       </div>
@@ -796,10 +796,10 @@ const ProviderDashboard = () => {
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-white">
+                <h2 className="text-lg font-semibold text-foreground">
                   {profile.businessName}
                 </h2>
-                <p className="text-sm text-white/40">
+                <p className="text-sm text-foreground/50">
                   {profile.typeBadge}
                 </p>
               </div>
@@ -823,12 +823,12 @@ const ProviderDashboard = () => {
                     key={row!.label}
                     className={`flex items-center justify-between px-5 py-3.5 ${i < arr.length - 1 ? "border-b border-border/30" : ""}`}
                   >
-                    <span className="text-xs font-semibold uppercase tracking-wide w-28 shrink-0 text-white/40">
+                    <span className="text-xs font-semibold uppercase tracking-wide w-28 shrink-0 text-foreground/50">
                       {row!.label}
                     </span>
-                    <span className="text-sm text-right text-white">
+                    <span className="text-sm text-right text-foreground">
                       {row!.value || (
-                        <span className="italic text-white/25">
+                        <span className="italic text-foreground/30">
                           Not set
                         </span>
                       )}
@@ -838,7 +838,7 @@ const ProviderDashboard = () => {
             </div>
             {(profile.needsSupported ?? []).length > 0 && (
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide mb-2 text-white/40">
+                <p className="text-xs font-semibold uppercase tracking-wide mb-2 text-foreground/50">
                   Needs Supported
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -855,11 +855,11 @@ const ProviderDashboard = () => {
             )}
             {profile.description && (
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide mb-2 text-white/40">
+                <p className="text-xs font-semibold uppercase tracking-wide mb-2 text-foreground/50">
                   Description
                 </p>
                 <div className="rounded-xl border border-teal-500/20 bg-card p-4">
-                  <p className="text-sm leading-relaxed text-white/70">
+                  <p className="text-sm leading-relaxed text-foreground/80">
                     {profile.description}
                   </p>
                 </div>
@@ -873,7 +873,7 @@ const ProviderDashboard = () => {
           <div>
             {!selectedEnquiry && (
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm text-white/40">
+                <p className="text-sm text-foreground/50">
                   {providerEnquiries.length} total · {newEnquiryCount} new
                 </p>
               </div>
@@ -899,7 +899,7 @@ const ProviderDashboard = () => {
                     >
                       <div className="flex items-center gap-2.5">
                         <span className="text-teal-500">{getSectionIcon(section.key)}</span>
-                        <span className="font-semibold text-sm text-white">
+                        <span className="font-semibold text-sm text-foreground">
                           {section.label}
                         </span>
                         {!enabled && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
@@ -1053,7 +1053,7 @@ const ProviderDashboard = () => {
                   <Badge className="bg-teal-500/20 text-teal-400 border-0">{planLabel}</Badge>
                   <Badge className="bg-emerald-500/15 text-emerald-400 border-0">Active</Badge>
                 </div>
-                <p className="text-sm leading-relaxed mt-2 text-white/50">
+                <p className="text-sm leading-relaxed mt-2 text-foreground/60">
                   {livePlanType === "founder"
                     ? "You're a founding provider on Beyonder. Founder benefits stay with you after launch."
                     : livePlanType === "professional"
@@ -1062,7 +1062,7 @@ const ProviderDashboard = () => {
                 </p>
               </div>
               <div className="px-5 py-4">
-                <p className="text-xs font-semibold uppercase tracking-wide mb-3 text-white/40">
+                <p className="text-xs font-semibold uppercase tracking-wide mb-3 text-foreground/50">
                   What's included
                 </p>
                 <div className="space-y-2">
@@ -1094,7 +1094,7 @@ const ProviderDashboard = () => {
                           <Lock className="h-2.5 w-2.5 text-muted-foreground/40" />
                         )}
                       </div>
-                      <span className={`text-sm text-white ${item.included ? "" : "opacity-40"}`}>
+                      <span className={`text-sm text-foreground ${item.included ? "" : "opacity-40"}`}>
                         {item.label}
                       </span>
                     </div>
@@ -1164,7 +1164,7 @@ const ProviderDashboard = () => {
                 <div className="w-2 h-2 rounded-full" style={{ background: avail.dot }} />
                 <span className="text-xs text-muted-foreground">{avail.label}</span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight">{profile.businessName}</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground leading-tight">{profile.businessName}</h1>
               <p className="text-sm text-muted-foreground mt-0.5">
                 {profile.typeBadge} · {profile.location}
               </p>
@@ -1185,7 +1185,7 @@ const ProviderDashboard = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors relative ${isActive ? "border-b-teal-600 text-teal-500" : "border-b-transparent text-white/35"}`}
+                  className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors relative ${isActive ? "border-b-teal-600 text-teal-500" : "border-b-transparent text-foreground/40"}`}
                 >
                   <tab.icon className="h-4 w-4 sm:h-3.5 sm:w-3.5 shrink-0" />
                   <span className="hidden sm:inline">{tab.label}</span>
