@@ -190,7 +190,7 @@ const Index = () => {
               textTransform: "uppercase", marginBottom: 8 }}>
               SEND Support Platform
             </div>
-            <h1 style={{ fontSize: "2.25rem", fontWeight: 700, color: C.warmWhite, lineHeight: 1.14,
+            <h1 style={{ fontSize: "2.25rem", fontWeight: 400, color: C.warmWhite, lineHeight: 1.14,
               letterSpacing: "-0.5px", margin: "0 0 18px", fontFamily: "'Josefin Sans', sans-serif" }}>
               Find the right<br />support for <span style={{ color: C.amber }}>your</span><br />child.
             </h1>
@@ -506,7 +506,7 @@ const Index = () => {
             alignItems: "center", width: "100%", marginBottom: 26 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
               <div style={{ width: 12, height: 12, borderRadius: "50%", background: C.terra }} />
-              <span style={{ fontSize: "clamp(2.4rem, 6vw, 3.9rem)", fontWeight: 700, color: C.amber,
+              <span style={{ fontSize: "clamp(2.4rem, 6vw, 3.9rem)", fontWeight: 400, color: C.amber,
                 letterSpacing: "2px", fontFamily: "'Josefin Sans', sans-serif" }}>Beyonder</span>
             </div>
             <p style={{ fontSize: "1rem", color: "rgba(255,245,238,0.50)", fontWeight: 300, margin: 0, textAlign: "center" }}>
@@ -632,7 +632,7 @@ const Index = () => {
                 textTransform: "uppercase", color: C.terra, marginBottom: 10 }}>
                 The Beyonder Ecosystem
               </p>
-              <h2 style={{ fontSize: "1.9rem", fontWeight: 700, color: C.textDark, letterSpacing: "-0.4px",
+              <h2 style={{ fontSize: "1.9rem", fontWeight: 400, color: C.textDark, letterSpacing: "-0.4px",
                 margin: "0 0 14px", fontFamily: "'Josefin Sans', sans-serif" }}>
                 Everything your family needs, together
               </h2>
@@ -723,7 +723,7 @@ const Index = () => {
               textTransform: "uppercase", color: C.terra, marginBottom: 10 }}>
               How it works
             </p>
-            <h2 style={{ fontSize: "1.7rem", fontWeight: 700, color: C.textDark, letterSpacing: "-0.3px",
+            <h2 style={{ fontSize: "1.7rem", fontWeight: 400, color: C.textDark, letterSpacing: "-0.3px",
               margin: "0 0 48px", fontFamily: "'Josefin Sans', sans-serif" }}>
               Three steps to finding your support
             </h2>
@@ -778,7 +778,7 @@ const Index = () => {
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <span style={{ fontSize: "0.62rem", fontWeight: 600, letterSpacing: 2,
                 textTransform: "uppercase", color: C.terra }}>Why Beyonder exists</span>
-              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: C.textDark,
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 400, color: C.textDark,
                 lineHeight: 1.25, letterSpacing: "-0.3px", margin: 0,
                 fontFamily: "'Josefin Sans', sans-serif" }}>
                 Built because we couldn't find what we needed either.
@@ -831,7 +831,7 @@ const Index = () => {
                   Therapists, clubs, specialists &amp; organisations
                 </span>
               </div>
-              <h2 style={{ fontSize: "1.35rem", fontWeight: 700, color: C.warmWhite,
+              <h2 style={{ fontSize: "1.35rem", fontWeight: 400, color: C.warmWhite,
                 lineHeight: 1.25, letterSpacing: "-0.3px", margin: 0,
                 fontFamily: "'Josefin Sans', sans-serif" }}>
                 Reach the families already searching for you.
@@ -925,7 +925,7 @@ const Index = () => {
                 textTransform: "uppercase", color: C.terra, display: "block", marginBottom: 8 }}>
                 Community
               </span>
-              <h2 style={{ fontSize: "1.55rem", fontWeight: 700, color: C.textDark,
+              <h2 style={{ fontSize: "1.55rem", fontWeight: 400, color: C.textDark,
                 letterSpacing: "-0.3px", margin: "0 0 6px",
                 fontFamily: "'Josefin Sans', sans-serif" }}>
                 A place where people really get it.
@@ -1036,7 +1036,7 @@ const Index = () => {
         <section style={{ background: C.white, padding: "40px 60px", borderTop: `1px solid ${C.creamDark}` }}>
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 22 }}>
-              <h2 style={{ fontSize: "1.55rem", fontWeight: 700, color: C.textDark, letterSpacing: "-0.3px", margin: 0,
+              <h2 style={{ fontSize: "1.55rem", fontWeight: 400, color: C.textDark, letterSpacing: "-0.3px", margin: 0,
                 fontFamily: "'Josefin Sans', sans-serif" }}>
                 Stay ahead of what matters.
               </h2>

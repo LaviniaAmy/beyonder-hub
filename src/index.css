@@ -114,12 +114,12 @@
   }
 
   h1 {
-    @apply tracking-tight font-bold;
+    @apply tracking-tight font-normal;
     line-height: 1.15;
     font-family: "Josefin Sans", system-ui, sans-serif;
   }
   h2 {
-    @apply tracking-tight font-semibold;
+    @apply tracking-tight font-normal;
     line-height: 1.25;
     font-family: "Josefin Sans", system-ui, sans-serif;
   }
