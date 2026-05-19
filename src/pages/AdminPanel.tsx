@@ -182,12 +182,12 @@ const AdminPanel = () => {
   });
 
   return (
-    <div className="bg-navy-gradient min-h-screen py-10">
+    <div className="bg-background min-h-screen py-10">
       <div className="container animate-fade-in">
         <h1 className="mb-6 text-3xl font-bold text-accent-foreground">Admin Panel</h1>
 
         <Tabs defaultValue="providers">
-          <TabsList className="bg-navy-700 border-0">
+          <TabsList className="bg-muted border-0">
             <TabsTrigger
               value="providers"
               className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
@@ -294,7 +294,7 @@ const AdminPanel = () => {
                             </p>
                           </div>
                           <div className="flex flex-wrap gap-2">
-                            <Badge className="bg-navy-600 text-accent-foreground border-0 text-xs">
+                            <Badge className="bg-muted text-accent-foreground border-0 text-xs">
                               {p.category_type}
                             </Badge>
                             <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">{p.plan_type}</Badge>
@@ -492,7 +492,7 @@ const AdminPanel = () => {
                             <p className="text-sm text-muted-foreground">{p.typeBadge}</p>
                           </div>
                           <div className="flex gap-2 flex-wrap justify-end">
-                            <Badge className="bg-navy-600 text-accent-foreground border-0 text-xs">
+                            <Badge className="bg-muted text-accent-foreground border-0 text-xs">
                               {row.categoryType}
                             </Badge>
                             <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">{row.planType}</Badge>

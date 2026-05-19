@@ -67,7 +67,7 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="bg-navy-gradient flex min-h-[80vh] items-center justify-center py-16">
+    <div className="bg-background flex min-h-[80vh] items-center justify-center py-16">
       <Card className="w-full max-w-md border-0 shadow-card animate-fade-in">
         <CardHeader className="text-center pb-2">
           <CardTitle className="text-2xl">Join Beyonder</CardTitle>

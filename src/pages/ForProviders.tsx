@@ -53,7 +53,7 @@ const ForProviders = () => {
       )}
 
       {/* Hero */}
-      <section className="bg-navy-gradient py-20">
+      <section className="bg-background py-20">
         <div className="container animate-fade-in text-center max-w-3xl mx-auto">
           <Badge className="mb-4 bg-teal-500/20 text-teal-400 border-0">For Service Providers</Badge>
           <h1 className="text-4xl font-bold text-accent-foreground mb-4">Reach SEND families who need you most</h1>
@@ -208,7 +208,7 @@ const ForProviders = () => {
       </section>
 
       {/* Bottom CTA */}
-      <section className="py-16 bg-navy-gradient text-center">
+      <section className="py-16 bg-background text-center">
         <div className="container max-w-xl">
           <h2 className="text-2xl font-bold text-accent-foreground mb-3">Ready to reach more SEND families?</h2>
           <p className="text-accent-foreground/70 mb-6">

@@ -36,7 +36,7 @@ const EnquiryPage = () => {
 
   if (!provider) {
     return (
-      <div className="bg-navy-gradient min-h-screen flex items-center justify-center">
+      <div className="bg-background min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-accent-foreground">Provider not found</h1>
           <Button asChild className="mt-4 bg-teal-500 hover:bg-teal-400">
@@ -49,7 +49,7 @@ const EnquiryPage = () => {
 
   if (isProviderOrAdmin) {
     return (
-      <div className="bg-navy-gradient min-h-screen flex items-center justify-center">
+      <div className="bg-background min-h-screen flex items-center justify-center">
         <div className="text-center animate-fade-in max-w-sm">
           <Lock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <h1 className="mb-2 text-xl font-bold text-accent-foreground">Enquiries are for families</h1>
@@ -105,7 +105,7 @@ const EnquiryPage = () => {
 
   if (submitted) {
     return (
-      <div className="bg-navy-gradient min-h-screen flex items-center justify-center">
+      <div className="bg-background min-h-screen flex items-center justify-center">
         <div className="text-center animate-fade-in">
           <CheckCircle className="mx-auto mb-4 h-16 w-16 text-teal-500" />
           <h1 className="mb-2 text-2xl font-bold text-accent-foreground">Enquiry Sent!</h1>
@@ -121,7 +121,7 @@ const EnquiryPage = () => {
   }
 
   return (
-    <div className="bg-navy-gradient min-h-screen py-16">
+    <div className="bg-background min-h-screen py-16">
       <div className="container max-w-lg animate-fade-in">
         <h1 className="mb-6 text-2xl font-bold text-accent-foreground">Send Enquiry</h1>
         <Card className="border-0 shadow-card">

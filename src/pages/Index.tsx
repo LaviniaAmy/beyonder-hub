@@ -1056,7 +1056,7 @@ const Index = () => {
             minHeight: 380,
             maxHeight: 480,
             height: "calc(100vh - 160px)",
-            padding: "0 40px 40px",
+            padding: "0 40px 20px",
           }}
         >
           <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
@@ -1083,7 +1083,7 @@ const Index = () => {
             }}
           >
             <div style={{ marginBottom: 14 }}>
-              <img src={LogoPrimary} alt="Beyonder" style={{ height: "clamp(44px, 8vw, 72px)", width: "auto" }} />
+              <img src={LogoPrimary} alt="Beyonder" style={{ height: "clamp(66px, 12vw, 108px)", width: "auto" }} />
             </div>
             <p
               style={{

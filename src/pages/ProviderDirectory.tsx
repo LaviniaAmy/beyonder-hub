@@ -243,7 +243,7 @@ const ProviderDirectory = () => {
   const hasProductFilters = priceRange !== "all" || needFilter !== "all" || productSearch;
 
   return (
-    <div className="bg-navy-gradient min-h-screen py-10">
+    <div className="bg-background min-h-screen py-10">
       <div className="container">
         <h1 className="mb-8 text-3xl font-bold text-accent-foreground animate-fade-in">
           {isLocalView ? "Find Local Support" : "Provider Directory"}
@@ -350,7 +350,7 @@ const ProviderDirectory = () => {
               className={
                 activeCategory === "all"
                   ? "bg-teal-500 hover:bg-teal-400"
-                  : "border-navy-600 text-navy-900 font-semibold hover:bg-navy-700"
+                  : "border-navy-600 text-foreground font-semibold hover:bg-muted"
               }
             >
               All
@@ -364,7 +364,7 @@ const ProviderDirectory = () => {
                 className={
                   activeCategory === cat.id
                     ? "bg-teal-500 hover:bg-teal-400"
-                    : "border-navy-600 text-navy-900 font-semibold hover:bg-navy-700"
+                    : "border-navy-600 text-foreground font-semibold hover:bg-muted"
                 }
               >
                 {cat.name}

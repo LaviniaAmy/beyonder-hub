@@ -13,7 +13,7 @@ const ExploreServices = () => {
   const [region, setRegion] = useState("all");
 
   return (
-    <div className="bg-navy-gradient min-h-screen py-16">
+    <div className="bg-background min-h-screen py-16">
       <div className="container animate-fade-in">
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-3xl font-bold text-accent-foreground">How can Beyonder help today?</h1>
