@@ -9,6 +9,10 @@ import TherapistsIcon from "@/assets/icons/Therapists_Icon.svg";
 import ClubsIcon      from "@/assets/icons/Clubs_Icon.svg";
 import NewsIcon       from "@/assets/icons/News_Icon.svg";
 
+import StepLocationIcon  from "@/assets/icons/Step_Location.svg";
+import StepSupportIcon   from "@/assets/icons/Step_Support.svg";
+import StepMessagingIcon from "@/assets/icons/Step_Messaging.svg";
+
 const C = {
   deep:        "#111827",
   purple:      "#1E1B3A",
@@ -605,17 +609,17 @@ const Index = () => {
             background: "#F6F3EE", borderTop: "1px solid rgba(27,26,53,0.08)" }}>
             {([
               {
-                icon: <img src={LocalIcon} alt="Find local support" style={{ width: "100%", height: "100%", objectFit: "contain" }} />,
+                icon: <img src={StepLocationIcon} alt="Find local support" style={{ width: "100%", height: "100%", objectFit: "contain" }} />,
                 t: "Find local support",
                 s: "Tell us your area — see what's nearby",
               },
               {
-                icon: <img src={TherapistsIcon} alt="Choose your support" style={{ width: "100%", height: "100%", objectFit: "contain" }} />,
+                icon: <img src={StepSupportIcon} alt="Choose your support" style={{ width: "100%", height: "100%", objectFit: "contain" }} />,
                 t: "Choose your support",
                 s: "Browse by type, from therapy to clubs",
               },
               {
-                icon: <img src={WorkIcon} alt="Reach out directly" style={{ width: "100%", height: "100%", objectFit: "contain" }} />,
+                icon: <img src={StepMessagingIcon} alt="Reach out directly" style={{ width: "100%", height: "100%", objectFit: "contain" }} />,
                 t: "Reach out directly",
                 s: "Enquire safely through Beyonder",
               },
@@ -623,7 +627,7 @@ const Index = () => {
               <div key={step.t} style={{ display: "flex", flexDirection: "column", alignItems: "center",
                 gap: 7, padding: "14px 20px 16px", textAlign: "center",
                 borderRight: i < 2 ? "1px solid rgba(27,26,53,0.07)" : "none" }}>
-                <div style={{ width: 52, height: 52, flexShrink: 0 }}>{step.icon}</div>
+                <div style={{ width: 64, height: 64, flexShrink: 0 }}>{step.icon}</div>
                 <div>
                   <div style={{ fontSize: "0.78rem", fontWeight: 600, color: C.textDark, marginBottom: 2 }}>{step.t}</div>
                   <div style={{ fontSize: "0.63rem", color: C.textLight, fontWeight: 300, lineHeight: 1.5 }}>{step.s}</div>
