@@ -223,8 +223,9 @@ const Index = () => {
                     background: mobileRegionOpen ? C.deep : "rgba(217,138,106,0.16)",
                     border: `1px solid ${mobileRegionOpen ? C.amber : "rgba(217,138,106,0.25)"}`,
                     borderRadius: 6, padding: "4px 10px", fontWeight: 600, cursor: "pointer",
-                    fontFamily: "'Nunito Sans', sans-serif", whiteSpace: "nowrap" }}>
-                  {region || "📍 Region"}
+                    fontFamily: "'Nunito Sans', sans-serif", whiteSpace: "nowrap",
+                    display: "inline-flex", alignItems: "center", gap: 4 }}>
+                  {region ? region : (<><MapPin size={11} color={C.terra} strokeWidth={2.5} /> Region</>)}
                 </button>
                 {mobileRegionOpen && (
                   <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: 220,
