@@ -641,10 +641,11 @@ const Index = () => {
         </section>
 
         {/* ── 2. INTRO + CATEGORIES ── */}
-        <section style={{ background: C.cream, padding: "40px 60px 36px" }}>
+        <section style={{ background: C.cream, padding: "20px 60px 36px" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             {/* "Everything your family needs, together" intro */}
-            <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <div style={{ textAlign: "center", marginBottom: 32 }}>
+
               <p style={{ fontSize: "0.62rem", fontWeight: 600, letterSpacing: "3px",
                 textTransform: "uppercase", color: C.terra, marginBottom: 10 }}>
                 The Beyonder Ecosystem
