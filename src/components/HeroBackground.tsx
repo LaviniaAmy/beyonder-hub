@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 /**
  * HeroBackground — SVG-based scenic illustration matching the Beyonder homepage design.
