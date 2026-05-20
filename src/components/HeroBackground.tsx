@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 /**
  * HeroBackground — SVG-based scenic illustration matching the Beyonder homepage design.
@@ -28,21 +28,7 @@ const PARTICLES = Array.from({ length: 8 }, (_, i) => ({
 const HeroBackground = () => {
   const bgRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!bgRef.current) return;
-      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-      if (mq.matches) return;
-      const scrollY = window.scrollY;
-      const layers = bgRef.current.querySelectorAll<SVGGElement>("[data-parallax]");
-      layers.forEach((layer) => {
-        const speed = parseFloat(layer.dataset.parallax || "0");
-        layer.style.transform = `translateY(${scrollY * speed}px)`;
-      });
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Parallax removed per design — keep static layers.
 
   return (
     <div ref={bgRef} className="hero-bg absolute inset-0 overflow-hidden" aria-hidden="true">
