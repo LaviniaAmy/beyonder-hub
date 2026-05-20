@@ -76,7 +76,7 @@ function initBirds(dpr: number): Bird[] {
   });
 }
 
-const CONVERGE_CX = 0.50, CONVERGE_CY = 0.40;
+const CONVERGE_CX = 0.50, CONVERGE_CY = 0.20;
 const CONVERGE_FREQ = 1.8e-5;
 
 function groupPos(g: Group, t: number, W: number, H: number) {
@@ -139,7 +139,7 @@ const BirdCanvas = () => {
       SKY_COLORS.forEach((col, i) => grad.addColorStop(SKY_STOPS[i], col));
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
-      const hy = H * 0.56;
+      const hy = H * 0.34;
       const sg = ctx.createRadialGradient(W * 0.5, hy, 0, W * 0.5, hy, W * 0.55);
       sg.addColorStop(0,    "rgba(80,160,220,0.18)");
       sg.addColorStop(0.3,  "rgba(40,100,160,0.08)");

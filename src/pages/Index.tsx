@@ -496,7 +496,7 @@ const Index = () => {
         {/* ── 1. HERO ── */}
         <section style={{ position: "relative", overflow: "hidden", display: "flex",
           flexDirection: "column", alignItems: "center", justifyContent: "flex-start",
-          minHeight: 360, maxHeight: 440, height: "calc(100vh - 200px)",
+          minHeight: 360, maxHeight: 460, height: "calc(100vh - 200px)",
           padding: "clamp(32px, 5.5vh, 52px) 40px 0" }}>
 
           {/* Bird canvas background */}
@@ -640,7 +640,7 @@ const Index = () => {
         </section>
 
         {/* ── 2. INTRO + CATEGORIES ── */}
-        <section style={{ background: C.cream, padding: "52px 60px 36px" }}>
+        <section style={{ background: C.cream, padding: "20px 60px 36px" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             {/* "Everything your family needs, together" intro */}
             <div style={{ textAlign: "center", marginBottom: 40 }}>
