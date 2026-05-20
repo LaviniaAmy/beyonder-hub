@@ -146,16 +146,6 @@ const BirdCanvas = () => {
       sg.addColorStop(1,    "rgba(20,60,120,0)");
       ctx.fillStyle = sg;
       ctx.fillRect(0, 0, W, H);
-      /* subtle ice-blue horizon line */
-      ctx.save();
-      ctx.globalAlpha = 0.15;
-      const hl = ctx.createLinearGradient(0, 0, W, 0);
-      hl.addColorStop(0,   "rgba(120,200,255,0)");
-      hl.addColorStop(0.5, "rgba(120,200,255,1)");
-      hl.addColorStop(1,   "rgba(120,200,255,0)");
-      ctx.fillStyle = hl;
-      ctx.fillRect(0, hy - 1, W, 2);
-      ctx.restore();
     }
 
     function drawBird(

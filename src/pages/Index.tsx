@@ -495,9 +495,9 @@ const Index = () => {
 
         {/* ── 1. HERO ── */}
         <section style={{ position: "relative", overflow: "hidden", display: "flex",
-          flexDirection: "column", alignItems: "center", justifyContent: "space-between",
+          flexDirection: "column", alignItems: "center", justifyContent: "flex-start",
           minHeight: 420, maxHeight: 500, height: "calc(100vh - 140px)",
-          padding: "clamp(56px, 9vh, 86px) 40px 168px" }}>
+          padding: "clamp(32px, 5.5vh, 52px) 40px 0" }}>
 
           {/* Bird canvas background */}
           <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
@@ -508,26 +508,30 @@ const Index = () => {
           <div style={{ position: "absolute", inset: 0, zIndex: 1,
             background: "linear-gradient(180deg, rgba(8,12,24,0.10) 0%, rgba(8,12,24,0.04) 50%, rgba(8,12,24,0.18) 100%)" }} />
 
-          {/* Logo (top) */}
+          {/* Logo + tagline */}
           <div style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column",
-            alignItems: "center", width: "100%" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            alignItems: "center", width: "100%", marginBottom: 22 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 3 }}>
               <div style={{ width: 18, height: 18, borderRadius: "50%", background: C.terra }} />
               <span style={{ fontSize: "clamp(3.6rem, 9vw, 5.8rem)", fontWeight: 300, color: "#ffffff",
                 letterSpacing: "2px", fontFamily: "'Josefin Sans', sans-serif", lineHeight: 1 }}>Beyonder</span>
             </div>
-          </div>
-
-          {/* Tagline + Search bar (anchored near bottom, just above cream steps) */}
-          <div style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column",
-            alignItems: "center", width: "100%" }}>
-            <p style={{ fontSize: "1rem", color: "rgba(232,244,255,0.50)", fontWeight: 300, margin: "0 0 14px", textAlign: "center" }}>
+            <p style={{ fontSize: "1rem", color: "rgba(232,244,255,0.50)", fontWeight: 300, margin: "0 0 8px", textAlign: "center" }}>
               One place for everything SEND
             </p>
+            {/* Horizon line — CSS-positioned so it always sits directly below the tagline */}
+            <div style={{
+              width: "min(480px, 80vw)", height: 1,
+              background: "linear-gradient(to right, transparent, rgba(120,200,255,0.22), transparent)",
+            }} />
+          </div>
+
+          {/* Search bar — Region + Type of support (functionally identical) */}
+          <div style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column",
+            alignItems: "center", width: "100%" }}>
             <form onSubmit={handleSearch} style={{ display: "flex", width: "min(580px, 92vw)", height: 52,
               background: "rgba(232,244,255,0.97)", borderRadius: 12, overflow: "visible",
               boxShadow: "0 8px 32px rgba(0,0,0,0.45)", marginBottom: 10, position: "relative", zIndex: 3 }}>
-
 
               {/* Region field */}
               <div ref={regionRef} style={{ flex: 1, display: "flex", flexDirection: "column",
@@ -641,11 +645,10 @@ const Index = () => {
         </section>
 
         {/* ── 2. INTRO + CATEGORIES ── */}
-        <section style={{ background: C.cream, padding: "20px 60px 36px" }}>
+        <section style={{ background: C.cream, padding: "40px 60px 36px" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             {/* "Everything your family needs, together" intro */}
-            <div style={{ textAlign: "center", marginBottom: 32 }}>
-
+            <div style={{ textAlign: "center", marginBottom: 40 }}>
               <p style={{ fontSize: "0.62rem", fontWeight: 600, letterSpacing: "3px",
                 textTransform: "uppercase", color: C.terra, marginBottom: 10 }}>
                 The Beyonder Ecosystem
