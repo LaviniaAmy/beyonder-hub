@@ -496,7 +496,7 @@ const Index = () => {
         {/* ── 1. HERO ── */}
         <section style={{ position: "relative", overflow: "hidden", display: "flex",
           flexDirection: "column", alignItems: "center", justifyContent: "flex-start",
-          minHeight: 360, maxHeight: 460, height: "calc(100vh - 200px)",
+          minHeight: 420, maxHeight: 500, height: "calc(100vh - 140px)",
           padding: "clamp(32px, 5.5vh, 52px) 40px 0" }}>
 
           {/* Bird canvas background */}
@@ -514,7 +514,7 @@ const Index = () => {
             <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 3 }}>
               <div style={{ width: 18, height: 18, borderRadius: "50%", background: C.terra }} />
               <span style={{ fontSize: "clamp(3.6rem, 9vw, 5.8rem)", fontWeight: 300, color: "#ffffff",
-                letterSpacing: "2px", fontFamily: "'Josefin Sans', sans-serif" }}>Beyonder</span>
+                letterSpacing: "2px", fontFamily: "'Josefin Sans', sans-serif", lineHeight: 1 }}>Beyonder</span>
             </div>
             <p style={{ fontSize: "1rem", color: "rgba(232,244,255,0.50)", fontWeight: 300, margin: 0, textAlign: "center" }}>
               One place for everything SEND
@@ -640,7 +640,7 @@ const Index = () => {
         </section>
 
         {/* ── 2. INTRO + CATEGORIES ── */}
-        <section style={{ background: C.cream, padding: "20px 60px 36px" }}>
+        <section style={{ background: C.cream, padding: "40px 60px 36px" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             {/* "Everything your family needs, together" intro */}
             <div style={{ textAlign: "center", marginBottom: 40 }}>

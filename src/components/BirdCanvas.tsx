@@ -31,11 +31,11 @@ interface Bird {
 
 function initGroups(): Group[] {
   return [
-    { bx: 0.28, by: 0.42 },
-    { bx: 0.72, by: 0.38 },
+    { bx: 0.28, by: 0.22 },
+    { bx: 0.72, by: 0.18 },
+    { bx: 0.50, by: 0.14 },
     { bx: 0.50, by: 0.26 },
-    { bx: 0.50, by: 0.54 },
-    { bx: 0.50, by: 0.42 },
+    { bx: 0.50, by: 0.20 },
   ].map(({ bx, by }) => ({
     bx, by,
     wx1: 4e-5 + Math.random() * 3e-5,
@@ -139,7 +139,7 @@ const BirdCanvas = () => {
       SKY_COLORS.forEach((col, i) => grad.addColorStop(SKY_STOPS[i], col));
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
-      const hy = H * 0.34;
+      const hy = H * 0.38;
       const sg = ctx.createRadialGradient(W * 0.5, hy, 0, W * 0.5, hy, W * 0.55);
       sg.addColorStop(0,    "rgba(80,160,220,0.18)");
       sg.addColorStop(0.3,  "rgba(40,100,160,0.08)");
