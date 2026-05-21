@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-const SKY_COLORS = ["#141f3d", "#192d62", "#254f93", "#357ab6", "#85bdd5"];
+const SKY_COLORS = ["#121b36", "#162a5a", "#234b8b", "#3374ae", "#7eb9d3"];
 const SKY_STOPS  = [0, 0.10, 0.28, 0.50, 0.70];
 
 const BIRD_PATH_D =
