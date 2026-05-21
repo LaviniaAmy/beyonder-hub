@@ -675,18 +675,20 @@ const Index = () => {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 14 }}>
               {[
-                { label: "Therapists & Specialists",    sub: "OTs, SaLTs, psychologists",      to: "/providers?category=therapists", icon: TherapistsIcon,  iconH: 80 },
-                { label: "Inclusive Clubs & Activities", sub: "Sport, arts, sensory play",      to: "/providers?category=activities", icon: ClubsIcon,        iconH: 80 },
-                { label: "Products & Equipment",        sub: "Sensory, adaptive, learning",    to: "/providers?category=products",   icon: NewsIcon,         iconH: 80 },
-                { label: "Education & Learning Support", sub: "Tutors, EHCP, SEN specialists", to: "/providers?category=education",  icon: EducationIcon,   iconH: 130 },
-                { label: "Charities & Organisations",   sub: "Support groups, advocacy",       to: "/providers?category=charities",  icon: LocalIcon,        iconH: 80 },
+                { label: "Therapists & Specialists",     sub: "OTs, SaLTs, psychologists",      to: "/providers?category=therapists", icon: TherapistsIcon },
+                { label: "Inclusive Clubs & Activities", sub: "Sport, arts, sensory play",      to: "/providers?category=activities", icon: ClubsIcon      },
+                { label: "Products & Equipment",         sub: "Sensory, adaptive, learning",    to: "/providers?category=products",   icon: NewsIcon       },
+                { label: "Education & Learning Support", sub: "Tutors, EHCP, SEN specialists",  to: "/providers?category=education",  icon: EducationIcon  },
+                { label: "Charities & Organisations",    sub: "Support groups, advocacy",       to: "/providers?category=charities",  icon: LocalIcon      },
               ].map((c) => (
                 <Link key={c.label} to={c.to} style={{ background: C.white, borderRadius: 14,
-                  padding: "24px 16px 20px", border: `1.5px solid ${C.creamDark}`,
+                  padding: "12px 16px 12px", border: `1.5px solid ${C.creamDark}`,
                   textDecoration: "none", display: "flex", flexDirection: "column",
-                  alignItems: "center", gap: 10, textAlign: "center" }}
+                  alignItems: "center", gap: 6, textAlign: "center" }}
                   onMouseEnter={cardIn} onMouseLeave={(e) => cardOut(e, C.creamDark)}>
-                  <img src={c.icon} alt="" style={{ height: c.iconH, width: "auto", maxWidth: "100%", objectFit: "contain" }} />
+                  <div style={{ width: "100%", height: 130, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <img src={c.icon} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                  </div>
                   <span style={{ fontSize: "0.82rem", fontWeight: 600, color: C.textDark, lineHeight: 1.3 }}>{c.label}</span>
                   <span style={{ fontSize: "0.70rem", color: C.textLight, fontWeight: 300 }}>{c.sub}</span>
                 </Link>
