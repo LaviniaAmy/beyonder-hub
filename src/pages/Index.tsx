@@ -61,7 +61,7 @@ const cardIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
 };
 const cardOut = (e: React.MouseEvent<HTMLAnchorElement>, borderColor = C.creamDark) => {
   e.currentTarget.style.transform    = "none";
-  e.currentTarget.style.boxShadow    = "none";
+  e.currentTarget.style.boxShadow    = "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)";
   e.currentTarget.style.borderColor  = borderColor;
 };
 
@@ -683,6 +683,7 @@ const Index = () => {
               ].map((c) => (
                 <Link key={c.label} to={c.to} style={{ background: C.white, borderRadius: 14,
                   padding: "12px 16px 12px", border: `1.5px solid ${C.creamDark}`,
+                  boxShadow: "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)",
                   textDecoration: "none", display: "flex", flexDirection: "column",
                   alignItems: "center", gap: 6, textAlign: "center" }}
                   onMouseEnter={cardIn} onMouseLeave={(e) => cardOut(e, C.creamDark)}>
