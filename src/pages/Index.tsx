@@ -699,8 +699,8 @@ const Index = () => {
         </section>
 
         {/* ── 3. PILLARS STRIP (moved below categories) ── */}
-        <section style={{ background: "linear-gradient(180deg, rgba(217,138,106,0.13) 0%, rgba(217,138,106,0.04) 100%)",
-          borderTop: "1px solid rgba(217,138,106,0.18)", borderBottom: "1px solid rgba(217,138,106,0.10)" }}>
+        <section style={{ background: "linear-gradient(180deg, rgba(217,138,106,0.32) 0%, rgba(232,160,128,0.16) 100%)",
+          borderTop: "1px solid rgba(217,138,106,0.35)", borderBottom: "1px solid rgba(232,160,128,0.20)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", maxWidth: 1280, margin: "0 auto" }}>
             {([
               { label: "Find Local Support",   sub: "Therapists, clubs & specialists", to: "/explore",       hi: false },
@@ -714,9 +714,9 @@ const Index = () => {
                 textDecoration: "none", display: "flex", alignItems: "center", gap: 14 }}
                 onMouseEnter={(e) => pillarIn(e)}
                 onMouseLeave={(e) => pillarOut(e, p.hi)}>
-                <div style={{ width: 10, height: 10, flexShrink: 0, borderRadius: "50%",
-                  background: C.terra,
-                  boxShadow: "0 2px 6px rgba(217,138,106,0.45), 0 1px 2px rgba(217,138,106,0.25)" }} />
+                <div style={{ width: 14, height: 14, flexShrink: 0, borderRadius: "50%",
+                  background: C.sienna,
+                  boxShadow: "0 3px 8px rgba(217,138,106,0.65), 0 1px 3px rgba(217,138,106,0.40)" }} />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: p.hi ? C.terra : C.textDark, lineHeight: 1.3 }}>
                     {p.label}
