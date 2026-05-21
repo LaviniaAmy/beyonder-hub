@@ -160,7 +160,7 @@ const Index = () => {
       <div className="md:hidden" style={{ background: C.cream, minHeight: "100vh", paddingBottom: 72 }}>
 
         {/* ── Mobile Hero ── */}
-        <div style={{ background: "linear-gradient(180deg, #080c18 0%, #0e1a38 28%, #1a3868 55%, #2a6090 75%, #60a8c8 100%)", padding: "14px 20px 0", position: "relative", overflow: "hidden" }}>
+        <div style={{ background: "linear-gradient(180deg, #1b2850 0%, #1e3776 12%, #2a5aa7 32%, #3d87c7 55%, #98c8dc 78%)", padding: "14px 20px 0", position: "relative", overflow: "hidden" }}>
           {/* Gradient glows */}
           <div style={{ position: "absolute", top: -30, right: -30, width: 150, height: 150, borderRadius: "50%",
             background: "radial-gradient(circle, rgba(43,76,126,0.35) 0%, transparent 70%)", pointerEvents: "none" }} />
