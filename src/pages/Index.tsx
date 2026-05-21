@@ -686,10 +686,8 @@ const Index = () => {
                   textDecoration: "none", display: "flex", flexDirection: "column",
                   alignItems: "center", gap: 10, textAlign: "center" }}
                   onMouseEnter={cardIn} onMouseLeave={(e) => cardOut(e, C.creamDark)}>
-                  <div style={{ width: 50, height: 50, borderRadius: 13,
-                    background: "rgba(217,138,106,0.10)", border: "1px solid rgba(217,138,106,0.20)",
-                    display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <img src={c.icon} alt="" style={{ width: 26, height: 26, objectFit: "contain" }} />
+                  <div style={{ width: "100%", height: 130, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <img src={c.icon} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                   </div>
                   <span style={{ fontSize: "0.82rem", fontWeight: 600, color: C.textDark, lineHeight: 1.3 }}>{c.label}</span>
                   <span style={{ fontSize: "0.70rem", color: C.textLight, fontWeight: 300 }}>{c.sub}</span>
