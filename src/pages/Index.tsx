@@ -718,12 +718,10 @@ const Index = () => {
                   background: C.white,
                   boxShadow: "0 2px 6px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.10)" }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: C.white, lineHeight: 1.3,
-                    textShadow: "0 1px 4px rgba(0,0,0,0.18)" }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: C.white, lineHeight: 1.3 }}>
                     {p.label}
                   </div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", fontWeight: 300, marginTop: 2,
-                    textShadow: "0 1px 3px rgba(0,0,0,0.15)" }}>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", fontWeight: 300, marginTop: 2 }}>
                     {p.sub}
                   </div>
                 </div>
