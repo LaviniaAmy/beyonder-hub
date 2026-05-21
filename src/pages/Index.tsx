@@ -731,63 +731,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── 4. HOW IT WORKS (full expanded version) ── */}
-        <section style={{ background: C.white, padding: "72px 60px", textAlign: "center",
-          borderBottom: `1px solid ${C.creamDark}` }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-            <p style={{ fontSize: "0.62rem", fontWeight: 600, letterSpacing: "3px",
-              textTransform: "uppercase", color: C.terra, marginBottom: 10 }}>
-              How it works
-            </p>
-            <h2 style={{ fontSize: "1.7rem", fontWeight: 400, color: C.textDark, letterSpacing: "-0.3px",
-              margin: "0 0 48px", fontFamily: "'Josefin Sans', sans-serif" }}>
-              Three steps to finding your support
-            </h2>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 0,
-              maxWidth: 860, margin: "0 auto", position: "relative" }}>
-              {/* Connector line */}
-              <div style={{ position: "absolute", top: 33, left: "18%", right: "18%",
-                height: 1, background: "rgba(27,26,53,0.10)", zIndex: 0 }} />
-
-              {[
-                {
-                  n: "1",
-                  title: "Tell us where you are",
-                  body: "Enter your postcode or town. We'll show you what's available in your area — therapists, clubs, charities and educational providers within reach.",
-                },
-                {
-                  n: "2",
-                  title: "Choose your support",
-                  body: "Browse by need type, age, specialism or condition. Every listing is real and built to give you the detail you actually need to make a decision.",
-                },
-                {
-                  n: "3",
-                  title: "Connect directly",
-                  body: "Enquire through Beyonder and speak directly to providers — no referral maze, no waiting list guesswork. Just a clear path to the people who can help.",
-                },
-              ].map((step) => (
-                <div key={step.n} style={{ display: "flex", flexDirection: "column", alignItems: "center",
-                  padding: "0 32px", position: "relative", zIndex: 1 }}>
-                  <div style={{ width: 66, height: 66, borderRadius: "50%",
-                    border: `1px solid rgba(27,26,53,0.15)`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    marginBottom: 24, background: C.cream, flexShrink: 0 }}>
-                    <span style={{ fontSize: "1.4rem", fontWeight: 700, color: C.textDark }}>{step.n}</span>
-                  </div>
-                  <div style={{ fontSize: "1.05rem", fontWeight: 600, color: C.textDark, marginBottom: 10 }}>
-                    {step.title}
-                  </div>
-                  <div style={{ fontSize: "0.82rem", fontWeight: 300, color: C.textMid, lineHeight: 1.7, textAlign: "center" }}>
-                    {step.body}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── 5. PARENT VOICE ── */}
+        {/* ── 4. PARENT VOICE ── */}
         <section style={{ background: C.cream, padding: "52px 60px", borderTop: `1px solid rgba(27,26,53,0.08)` }}>
           <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid",
             gridTemplateColumns: "1fr 1fr", gap: "3.5rem", alignItems: "center" }}>
