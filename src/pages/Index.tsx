@@ -69,7 +69,7 @@ const pillarIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.background = "rgba(217,138,106,0.10)";
 };
 const pillarOut = (e: React.MouseEvent<HTMLAnchorElement>, hi: boolean) => {
-  e.currentTarget.style.background = hi ? "rgba(217,138,106,0.06)" : "transparent";
+  e.currentTarget.style.background = hi ? "rgba(217,138,106,0.08)" : "transparent";
 };
 
 const newsIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -699,8 +699,8 @@ const Index = () => {
         </section>
 
         {/* ── 3. PILLARS STRIP (moved below categories) ── */}
-        <section style={{ background: C.purple, borderTop: "1px solid rgba(217,138,106,0.12)",
-          borderBottom: "1px solid rgba(217,138,106,0.12)" }}>
+        <section style={{ background: "linear-gradient(180deg, rgba(217,138,106,0.13) 0%, rgba(217,138,106,0.04) 100%)",
+          borderTop: "1px solid rgba(217,138,106,0.18)", borderBottom: "1px solid rgba(217,138,106,0.10)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", maxWidth: 1280, margin: "0 auto" }}>
             {([
               { label: "Find Local Support",   sub: "Therapists, clubs & specialists", to: "/explore",       hi: false },
@@ -709,26 +709,23 @@ const Index = () => {
               { label: "For Providers",        sub: "Create your free profile today",  to: "/for-providers", hi: true  },
             ] as const).map((p) => (
               <Link key={p.label} to={p.to} style={{ padding: "20px 28px",
-                borderRight: "1px solid rgba(217,138,106,0.10)",
-                background: p.hi ? "rgba(217,138,106,0.06)" : "transparent",
+                borderRight: "1px solid rgba(217,138,106,0.12)",
+                background: p.hi ? "rgba(217,138,106,0.08)" : "transparent",
                 textDecoration: "none", display: "flex", alignItems: "center", gap: 14 }}
                 onMouseEnter={(e) => pillarIn(e)}
                 onMouseLeave={(e) => pillarOut(e, p.hi)}>
-                <div style={{ width: 40, height: 40, flexShrink: 0, borderRadius: 10,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  background: p.hi ? "rgba(217,138,106,0.18)" : "rgba(217,138,106,0.10)",
-                  border: `1px solid ${p.hi ? "rgba(232,244,255,0.40)" : "rgba(217,138,106,0.20)"}` }}>
-                  <span style={{ color: C.amber, fontSize: 14, fontWeight: 600 }}>→</span>
-                </div>
+                <div style={{ width: 10, height: 10, flexShrink: 0, borderRadius: "50%",
+                  background: C.terra,
+                  boxShadow: "0 2px 6px rgba(217,138,106,0.45), 0 1px 2px rgba(217,138,106,0.25)" }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: p.hi ? C.amber : C.warmWhite, lineHeight: 1.3 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: p.hi ? C.terra : C.textDark, lineHeight: 1.3 }}>
                     {p.label}
                   </div>
-                  <div style={{ fontSize: 12, color: "rgba(232,244,255,0.30)", fontWeight: 300, marginTop: 2 }}>
+                  <div style={{ fontSize: 12, color: C.textMid, fontWeight: 300, marginTop: 2 }}>
                     {p.sub}
                   </div>
                 </div>
-                <span style={{ color: "rgba(217,138,106,0.45)", fontSize: 14 }}>→</span>
+                <span style={{ color: "rgba(217,138,106,0.35)", fontSize: 14 }}>→</span>
               </Link>
             ))}
           </div>
