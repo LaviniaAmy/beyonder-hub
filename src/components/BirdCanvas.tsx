@@ -66,7 +66,7 @@ function initBirds(dpr: number): Bird[] {
       dp2: Math.random() * TAU,
       of_: 3e-5 + Math.random() * 4e-5,
       oph: Math.random() * TAU,
-      bs:  (7.5 + Math.random() * 9) * dpr,
+      bs:  (6.0 + Math.random() * 7.2) * dpr,
       ds:  0.65 + Math.random() * 0.4,
       dop: 0.35 + Math.random() * 0.5,
       ff:  0.006 + Math.random() * 0.005,
