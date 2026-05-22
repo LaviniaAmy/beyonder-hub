@@ -75,21 +75,25 @@ const pillarOut = (e: React.MouseEvent<HTMLAnchorElement>, hi: boolean) => {
 };
 
 const newsIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
-  e.currentTarget.style.transform = "translateY(-2px)";
-  e.currentTarget.style.boxShadow = "0 6px 20px rgba(27,26,53,0.08)";
+  e.currentTarget.style.transform = "translateY(-3px)";
+  e.currentTarget.style.boxShadow = "0 8px 24px rgba(27,26,53,0.10)";
+  e.currentTarget.style.borderColor = "rgba(217,138,106,0.28)";
 };
 const newsOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.transform = "none";
-  e.currentTarget.style.boxShadow = "none";
+  e.currentTarget.style.boxShadow = "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)";
+  e.currentTarget.style.borderColor = C.creamDark;
 };
 
 const commIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
-  e.currentTarget.style.transform = "translateY(-2px)";
-  e.currentTarget.style.boxShadow = "0 6px 20px rgba(27,26,53,0.08)";
+  e.currentTarget.style.transform = "translateY(-3px)";
+  e.currentTarget.style.boxShadow = "0 8px 24px rgba(27,26,53,0.10)";
+  e.currentTarget.style.borderColor = "rgba(217,138,106,0.28)";
 };
 const commOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.transform = "none";
-  e.currentTarget.style.boxShadow = "none";
+  e.currentTarget.style.boxShadow = "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)";
+  e.currentTarget.style.borderColor = C.creamDark;
 };
 
 const chipIn = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -1994,6 +1998,7 @@ const Index = () => {
                         borderRadius: 14,
                         padding: "16px 18px",
                         border: `1.5px solid ${C.creamDark}`,
+                        boxShadow: "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)",
                         textDecoration: "none",
                         display: "flex",
                         gap: 14,
@@ -2109,6 +2114,7 @@ const Index = () => {
                         borderRadius: 14,
                         padding: "16px 18px",
                         border: `1.5px solid ${C.creamDark}`,
+                        boxShadow: "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)",
                         textDecoration: "none",
                         display: "block",
                       }}
@@ -2268,6 +2274,7 @@ const Index = () => {
                     borderRadius: 11,
                     overflow: "hidden",
                     border: `1.5px solid ${C.creamDark}`,
+                    boxShadow: "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)",
                     textDecoration: "none",
                     display: "flex",
                     flexDirection: "column",
