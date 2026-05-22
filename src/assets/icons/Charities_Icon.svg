@@ -4,7 +4,7 @@
   <defs>
     <clipPath id="line-reveal" clipPathUnits="userSpaceOnUse">
       <rect x="15" y="35" height="40" width="0">
-        <animate attributeName="width" values="0;168;168;0;0" keyTimes="0;0.3;0.92;0.98;1" dur="5s" repeatCount="indefinite" begin="3.2s"/>
+        <animate attributeName="width" values="0;168;168;0;0" keyTimes="0;0.3;0.92;0.921;1" dur="5s" repeatCount="indefinite" begin="3.2s"/>
       </rect>
     </clipPath>
   </defs>
