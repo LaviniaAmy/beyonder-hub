@@ -1710,7 +1710,7 @@ const Index = () => {
         {/* ── 6. PROVIDER BAND ── */}
         <section
           style={{
-            background: "#20447f",
+            background: "#13244e",
             padding: "36px 60px",
             borderTop: "1px solid rgba(43,76,126,0.30)",
             borderBottom: "1px solid rgba(43,76,126,0.30)",
