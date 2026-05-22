@@ -1551,9 +1551,10 @@ const Index = () => {
           <div style={{
             display: "grid", gridTemplateColumns: "repeat(4,1fr)",
             maxWidth: 1280, margin: "0 auto",
-            background: C.white, borderRadius: 20,
-            border: "1px solid rgba(217,138,106,0.18)",
-            boxShadow: "0 4px 24px rgba(217,138,106,0.12), 0 1px 4px rgba(0,0,0,0.04)",
+            background: "rgba(250, 244, 235, 0.68)", borderRadius: 20,
+            border: "1px solid rgba(217,138,106,0.22)",
+            boxShadow: "0 4px 24px rgba(217,138,106,0.10), 0 1px 4px rgba(0,0,0,0.03)",
+            backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
             overflow: "hidden",
           }}>
             {(
