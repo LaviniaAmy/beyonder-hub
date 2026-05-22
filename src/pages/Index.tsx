@@ -66,10 +66,10 @@ const cardOut = (e: React.MouseEvent<HTMLAnchorElement>, borderColor = C.creamDa
 };
 
 const pillarIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
-  e.currentTarget.style.background = "rgba(255,255,255,0.15)";
+  e.currentTarget.style.background = "rgba(217,138,106,0.18)";
 };
 const pillarOut = (e: React.MouseEvent<HTMLAnchorElement>, hi: boolean) => {
-  e.currentTarget.style.background = hi ? "rgba(255,255,255,0.12)" : "transparent";
+  e.currentTarget.style.background = hi ? "rgba(217,138,106,0.14)" : "transparent";
 };
 
 const newsIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -699,8 +699,8 @@ const Index = () => {
         </section>
 
         {/* ── 3. PILLARS STRIP (moved below categories) ── */}
-        <section style={{ background: "linear-gradient(180deg, #D98A6A 0%, #E8A080 100%)",
-          borderTop: "1px solid rgba(255,255,255,0.20)", borderBottom: "1px solid rgba(217,138,106,0.40)" }}>
+        <section style={{ background: "linear-gradient(180deg, rgba(217,138,106,0.22) 0%, rgba(232,160,128,0.10) 100%)",
+          borderTop: "1px solid rgba(217,138,106,0.28)", borderBottom: "1px solid rgba(217,138,106,0.14)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", maxWidth: 1280, margin: "0 auto" }}>
             {([
               { label: "Find Local Support",   sub: "Therapists, clubs & specialists", to: "/explore",       hi: false },
@@ -709,23 +709,23 @@ const Index = () => {
               { label: "For Providers",        sub: "Create your free profile today",  to: "/for-providers", hi: true  },
             ] as const).map((p) => (
               <Link key={p.label} to={p.to} style={{ padding: "20px 28px",
-                borderRight: "1px solid rgba(255,255,255,0.20)",
-                background: p.hi ? "rgba(255,255,255,0.12)" : "transparent",
+                borderRight: "1px solid rgba(217,138,106,0.15)",
+                background: p.hi ? "rgba(217,138,106,0.14)" : "transparent",
                 textDecoration: "none", display: "flex", alignItems: "center", gap: 14 }}
                 onMouseEnter={(e) => pillarIn(e)}
                 onMouseLeave={(e) => pillarOut(e, p.hi)}>
                 <div style={{ width: 14, height: 14, flexShrink: 0, borderRadius: "50%",
-                  background: C.white,
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.10)" }} />
+                  background: C.terra,
+                  boxShadow: "0 3px 8px rgba(217,138,106,0.55), 0 1px 3px rgba(217,138,106,0.30)" }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: C.white, lineHeight: 1.3 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: C.textDark, lineHeight: 1.3 }}>
                     {p.label}
                   </div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", fontWeight: 300, marginTop: 2 }}>
+                  <div style={{ fontSize: 12, color: C.textMid, fontWeight: 300, marginTop: 2 }}>
                     {p.sub}
                   </div>
                 </div>
-                <span style={{ color: "rgba(255,255,255,0.60)", fontSize: 14 }}>→</span>
+                <span style={{ color: "rgba(217,138,106,0.45)", fontSize: 14 }}>→</span>
               </Link>
             ))}
           </div>
