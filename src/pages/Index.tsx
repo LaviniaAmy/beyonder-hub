@@ -1546,15 +1546,16 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── 3. PILLARS STRIP (moved below categories) ── */}
-        <section
-          style={{
-            background: "linear-gradient(180deg, rgba(217,138,106,0.22) 0%, rgba(232,160,128,0.10) 100%)",
-            borderTop: "1px solid rgba(217,138,106,0.28)",
-            borderBottom: "1px solid rgba(217,138,106,0.14)",
-          }}
-        >
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", maxWidth: 1280, margin: "0 auto" }}>
+        {/* ── 3. PILLARS STRIP ── */}
+        <section style={{ padding: "0 60px 36px" }}>
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(4,1fr)",
+            maxWidth: 1280, margin: "0 auto",
+            background: C.white, borderRadius: 20,
+            border: "1px solid rgba(217,138,106,0.18)",
+            boxShadow: "0 4px 24px rgba(217,138,106,0.12), 0 1px 4px rgba(0,0,0,0.04)",
+            overflow: "hidden",
+          }}>
             {(
               [
                 { label: "Find Local Support", sub: "Therapists, clubs & specialists", to: "/explore", hi: false },
@@ -1567,32 +1568,25 @@ const Index = () => {
                 key={p.label}
                 to={p.to}
                 style={{
-                  padding: "20px 28px",
+                  padding: "22px 28px",
                   borderRight: "1px solid rgba(217,138,106,0.15)",
-                  background: p.hi ? "rgba(217,138,106,0.14)" : "transparent",
+                  background: p.hi ? "rgba(217,138,106,0.08)" : "transparent",
                   textDecoration: "none",
                   display: "flex",
                   alignItems: "center",
                   gap: 14,
+                  transition: "background 0.18s",
                 }}
-                onMouseEnter={(e) => pillarIn(e)}
-                onMouseLeave={(e) => pillarOut(e, p.hi)}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(217,138,106,0.14)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = p.hi ? "rgba(217,138,106,0.08)" : "transparent"; }}
               >
-                <div
-                  style={{
-                    width: 14,
-                    height: 14,
-                    flexShrink: 0,
-                    borderRadius: "50%",
-                    background: C.terra,
-                    boxShadow: "0 3px 8px rgba(217,138,106,0.55), 0 1px 3px rgba(217,138,106,0.30)",
-                  }}
-                />
+                <div style={{ width: 12, height: 12, flexShrink: 0, borderRadius: "50%", background: C.terra,
+                  boxShadow: "0 2px 6px rgba(217,138,106,0.50)" }} />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: C.textDark, lineHeight: 1.3 }}>{p.label}</div>
                   <div style={{ fontSize: 12, color: C.textMid, fontWeight: 300, marginTop: 2 }}>{p.sub}</div>
                 </div>
-                <span style={{ color: "rgba(217,138,106,0.45)", fontSize: 14 }}>→</span>
+                <span style={{ color: C.terra, fontSize: 14 }}>→</span>
               </Link>
             ))}
           </div>
