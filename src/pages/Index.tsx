@@ -391,7 +391,7 @@ const Index = () => {
 
             {/* Join Beyonder */}
             <Link to="/for-providers" style={{ textDecoration: "none" }}>
-              <div style={{ background: C.deep, borderRadius: 18, overflow: "hidden", position: "relative",
+              <div style={{ background: "#13244e", borderRadius: 18, overflow: "hidden", position: "relative",
                 border: "1px solid rgba(232,244,255,0.05)",
                 boxShadow: "0 4px 20px rgba(28,20,40,0.25), 0 1px 3px rgba(0,0,0,0.15)",
                 display: "flex", alignItems: "stretch", minHeight: 88 }}>
