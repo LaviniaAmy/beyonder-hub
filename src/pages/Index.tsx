@@ -9,6 +9,8 @@ import EducationIcon  from "@/assets/icons/Education_Icon.svg";
 import WorkIcon       from "@/assets/icons/Work_Icon.svg";
 import TherapistsIcon from "@/assets/icons/Therapists_Icon.svg";
 import ClubsIcon      from "@/assets/icons/Clubs_Icon.svg";
+import ShoppingIcon   from "@/assets/icons/Shopping_Icon.svg";
+import CharitiesIcon  from "@/assets/icons/Charities_Icon.svg";
 import NewsIcon       from "@/assets/icons/News_Icon.svg";
 
 import StepLocationIcon  from "@/assets/icons/Step_Location.svg";
@@ -677,9 +679,9 @@ const Index = () => {
               {[
                 { label: "Therapists & Specialists",     sub: "OTs, SaLTs, psychologists",      to: "/providers?category=therapists", icon: TherapistsIcon },
                 { label: "Inclusive Clubs & Activities", sub: "Sport, arts, sensory play",      to: "/providers?category=activities", icon: ClubsIcon      },
-                { label: "Products & Equipment",         sub: "Sensory, adaptive, learning",    to: "/providers?category=products",   icon: NewsIcon       },
+                { label: "Products & Equipment",         sub: "Sensory, adaptive, learning",    to: "/providers?category=products",   icon: ShoppingIcon   },
                 { label: "Education & Learning Support", sub: "Tutors, EHCP, SEN specialists",  to: "/providers?category=education",  icon: EducationIcon  },
-                { label: "Charities & Organisations",    sub: "Support groups, advocacy",       to: "/providers?category=charities",  icon: LocalIcon      },
+                { label: "Charities & Organisations",    sub: "Support groups, advocacy",       to: "/providers?category=charities",  icon: CharitiesIcon  },
               ].map((c) => (
                 <Link key={c.label} to={c.to} style={{ background: C.white, borderRadius: 14,
                   padding: "12px 16px 12px", border: `1.5px solid ${C.creamDark}`,
