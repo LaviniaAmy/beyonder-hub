@@ -166,8 +166,8 @@
 .hero-bg     { animation: hero-load-in 0.8s ease-out 0s     both; }
 
 @keyframes livepulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(217,138,106,0.4); }
-  50%       { opacity: 0.7; box-shadow: 0 0 0 4px rgba(217,138,106,0); }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(1.4); }
 }
 
 @media (prefers-reduced-motion: reduce) {
