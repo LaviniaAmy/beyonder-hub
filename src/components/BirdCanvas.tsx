@@ -31,11 +31,11 @@ interface Bird {
 
 function initGroups(): Group[] {
   return [
-    { bx: 0.28, by: 0.22 },
-    { bx: 0.72, by: 0.18 },
-    { bx: 0.50, by: 0.14 },
-    { bx: 0.50, by: 0.26 },
-    { bx: 0.50, by: 0.20 },
+    { bx: 0.28, by: 0.29 },
+    { bx: 0.72, by: 0.25 },
+    { bx: 0.50, by: 0.21 },
+    { bx: 0.50, by: 0.33 },
+    { bx: 0.50, by: 0.27 },
   ].map(({ bx, by }) => ({
     bx, by,
     wx1: 4e-5 + Math.random() * 3e-5,
@@ -66,7 +66,7 @@ function initBirds(dpr: number): Bird[] {
       dp2: Math.random() * TAU,
       of_: 3e-5 + Math.random() * 4e-5,
       oph: Math.random() * TAU,
-      bs:  (5 + Math.random() * 6) * dpr,
+      bs:  (7.5 + Math.random() * 9) * dpr,
       ds:  0.65 + Math.random() * 0.4,
       dop: 0.35 + Math.random() * 0.5,
       ff:  0.006 + Math.random() * 0.005,
