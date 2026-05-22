@@ -1696,14 +1696,13 @@ const Index = () => {
                     background: C.white,
                     borderRadius: 12,
                     padding: "18px 16px",
-                    border: `1px solid ${C.creamDark}`,
-                    boxShadow: "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)",
+                    border: "1.5px solid rgba(47,108,162,0.35)",
                     display: "flex",
                     flexDirection: "column",
                     gap: 4,
                   }}
                 >
-                  <span style={{ fontSize: "1.9rem", fontWeight: 700, color: C.terra, lineHeight: 1 }}>{s.num}</span>
+                  <span style={{ fontSize: "1.9rem", fontWeight: 700, color: "#2f6ca2", lineHeight: 1 }}>{s.num}</span>
                   <span style={{ fontSize: "0.73rem", color: C.textMid, lineHeight: 1.5 }}>{s.label}</span>
                   <span style={{ fontSize: "0.60rem", color: C.textLight, marginTop: 2 }}>{s.src}</span>
                 </div>
