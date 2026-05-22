@@ -60,11 +60,15 @@ const cardIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.transform = "translateY(-3px)";
   e.currentTarget.style.boxShadow = "0 8px 24px rgba(27,26,53,0.10)";
   e.currentTarget.style.borderColor = "rgba(217,138,106,0.28)";
+  const obj = e.currentTarget.querySelector("object") as HTMLObjectElement | null;
+  obj?.contentDocument?.documentElement?.classList.add("hovered");
 };
 const cardOut = (e: React.MouseEvent<HTMLAnchorElement>, borderColor = C.creamDark) => {
   e.currentTarget.style.transform = "none";
   e.currentTarget.style.boxShadow = "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)";
   e.currentTarget.style.borderColor = borderColor;
+  const obj = e.currentTarget.querySelector("object") as HTMLObjectElement | null;
+  obj?.contentDocument?.documentElement?.classList.remove("hovered");
 };
 
 const pillarIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -1538,7 +1542,7 @@ const Index = () => {
                       justifyContent: "center",
                     }}
                   >
-                    <img src={c.icon} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                    <object data={c.icon} type="image/svg+xml" style={{ width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
                   </div>
                   <span style={{ fontSize: "0.82rem", fontWeight: 600, color: C.textDark, lineHeight: 1.3 }}>
                     {c.label}
