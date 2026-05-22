@@ -4,16 +4,16 @@
   <style>
     #wing {
       transform-box: fill-box;
-      transform-origin: 88% 90%;
+      transform-origin: 85% 10%;
       animation: wing-flutter 5s ease-in-out infinite;
       animation-delay: 1.7s;
     }
     @keyframes wing-flutter {
       0%,100% { transform: rotate(0deg); }
-      4%      { transform: rotate(-20deg); }
-      8%      { transform: rotate(12deg); }
-      12%     { transform: rotate(-8deg); }
-      16%     { transform: rotate(0deg); }
+      5%      { transform: rotate(-30deg); }
+      10%     { transform: rotate(-18deg); }
+      15%     { transform: rotate(-25deg); }
+      20%     { transform: rotate(0deg); }
     }
   </style>
   <ellipse cx="98.65" cy="107.34" rx="78.58" ry="8.02" fill="#8ba5be"/>
