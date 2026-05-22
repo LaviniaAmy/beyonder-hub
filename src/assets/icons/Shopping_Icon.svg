@@ -15,6 +15,7 @@
       15%     { transform: rotate(25deg); }
       20%     { transform: rotate(0deg); }
     }
+    :root.hovered #wing { animation: wing-flutter 0.7s ease-in-out 2; animation-delay: 0s; }
   </style>
   <ellipse cx="98.65" cy="107.34" rx="78.58" ry="8.02" fill="#8ba5be"/>
   <g>

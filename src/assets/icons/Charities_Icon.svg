@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 200 130">
   <!-- Generator: Adobe Illustrator 30.4.0, SVG Export Plug-In . SVG Version: 2.1.4 Build 226)  -->
+  <style>
+    ellipse { transform-box: fill-box; transform-origin: 50% 50%; }
+    @keyframes char-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+    :root.hovered ellipse { animation: char-pulse 0.5s ease-out 2; }
+  </style>
   <defs>
     <clipPath id="line-reveal" clipPathUnits="userSpaceOnUse">
       <rect x="15" y="35" height="40" width="0">

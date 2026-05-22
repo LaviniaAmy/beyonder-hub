@@ -21,6 +21,9 @@
       14%     { transform: scale(1.35); opacity: 0.4; }
       28%,100%{ transform: scale(1); opacity: 1; }
     }
+    :root.hovered #ring-l { animation: ring-pulse 1.2s ease-in-out 2; animation-delay: 0s; }
+    :root.hovered #ring-m { animation: ring-pulse 1.2s ease-in-out 2; animation-delay: 0.2s; }
+    :root.hovered #ring-r { animation: ring-pulse 1.2s ease-in-out 2; animation-delay: 0.4s; }
   </style>
   <circle cx="66.82" cy="63.75" r="1.19" fill="#8ba5be"/>
   <circle cx="70.92" cy="79.13" r="3.17" fill="#ff8156"/>
