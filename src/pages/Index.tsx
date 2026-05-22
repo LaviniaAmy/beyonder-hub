@@ -179,50 +179,25 @@ const Index = () => {
         {/* ── Mobile Hero ── */}
         <div
           style={{
-            background: "linear-gradient(180deg, #0e152a 0%, #13244e 28%, #20447f 55%, #2f6ca2 75%, #72b3cf 100%)",
             padding: "14px 20px 0",
             position: "relative",
             overflow: "hidden",
+            minHeight: 480,
           }}
         >
-          {/* Gradient glows */}
-          <div
-            style={{
-              position: "absolute",
-              top: -30,
-              right: -30,
-              width: 150,
-              height: 150,
-              borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(43,76,126,0.35) 0%, transparent 70%)",
-              pointerEvents: "none",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: -40,
-              width: 140,
-              height: 140,
-              borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(43,76,126,0.25) 0%, transparent 70%)",
-              pointerEvents: "none",
-            }}
-          />
-          {/* Stars */}
+          {/* Bird canvas sky background */}
+          <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+            <BirdCanvas />
+          </div>
+          {/* Legibility overlay */}
           <div
             style={{
               position: "absolute",
               inset: 0,
+              zIndex: 1,
               pointerEvents: "none",
-              backgroundImage: `
-            radial-gradient(1px 1px at 18% 25%, rgba(232,244,255,0.45) 0%, transparent 100%),
-            radial-gradient(1px 1px at 78% 12%, rgba(232,244,255,0.30) 0%, transparent 100%),
-            radial-gradient(1.5px 1.5px at 52% 55%, rgba(232,244,255,0.35) 0%, transparent 100%),
-            radial-gradient(1px 1px at 33% 78%, rgba(232,244,255,0.20) 0%, transparent 100%),
-            radial-gradient(1px 1px at 88% 68%, rgba(232,244,255,0.18) 0%, transparent 100%)
-          `,
+              background:
+                "linear-gradient(180deg, rgba(8,12,24,0.10) 0%, rgba(8,12,24,0.04) 50%, rgba(8,12,24,0.20) 100%)",
             }}
           />
 
@@ -232,9 +207,9 @@ const Index = () => {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              marginBottom: 20,
+              marginBottom: 56,
               position: "relative",
-              zIndex: 2,
+              zIndex: 3,
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
@@ -260,38 +235,57 @@ const Index = () => {
             </Link>
           </div>
 
-          {/* Headline */}
-          <div style={{ position: "relative", zIndex: 2 }}>
+          {/* Centered Beyonder logo */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 3,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              marginBottom: 40,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 11, height: 11, borderRadius: "50%", background: C.terra }} />
+              <span
+                style={{
+                  fontSize: "2.6rem",
+                  fontWeight: 300,
+                  color: "#ffffff",
+                  letterSpacing: "1.5px",
+                  fontFamily: "'Josefin Sans', sans-serif",
+                  lineHeight: 1,
+                }}
+              >
+                Beyonder
+              </span>
+            </div>
             <div
               style={{
-                fontSize: "0.54rem",
-                color: C.terra,
-                fontWeight: 700,
-                letterSpacing: "2.5px",
-                textTransform: "uppercase",
-                marginBottom: 8,
+                marginTop: 10,
+                width: "70%",
+                height: 1,
+                background: "linear-gradient(to right, transparent, rgba(120,200,255,0.22), transparent)",
               }}
-            >
-              SEND Support Platform
-            </div>
-            <h1
-              style={{
-                fontSize: "2.25rem",
-                fontWeight: 400,
-                color: C.warmWhite,
-                lineHeight: 1.14,
-                letterSpacing: "-0.5px",
-                margin: "0 0 18px",
-                fontFamily: "'Josefin Sans', sans-serif",
-              }}
-            >
-              Find the right
-              <br />
-              support for <span style={{ color: C.amber }}>your</span>
-              <br />
-              child.
-            </h1>
+            />
           </div>
+
+          {/* Tagline */}
+          <p
+            style={{
+              position: "relative",
+              zIndex: 3,
+              fontSize: "0.78rem",
+              color: "rgba(232,244,255,0.55)",
+              fontWeight: 300,
+              margin: "0 0 14px",
+              textAlign: "center",
+            }}
+          >
+            One place for everything SEND
+          </p>
+
 
           {/* Search bar */}
           <div style={{ position: "relative", zIndex: 2, marginBottom: 20 }}>
