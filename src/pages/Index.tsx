@@ -700,34 +700,31 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── 3. PILLARS STRIP (moved below categories) ── */}
-        <section style={{ background: "linear-gradient(180deg, rgba(217,138,106,0.22) 0%, rgba(232,160,128,0.10) 100%)",
-          borderTop: "1px solid rgba(217,138,106,0.28)", borderBottom: "1px solid rgba(217,138,106,0.14)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", maxWidth: 1280, margin: "0 auto" }}>
+        {/* ── 3. PILLARS STRIP ── */}
+        <section style={{ padding: "0 60px 36px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, maxWidth: 1280, margin: "0 auto" }}>
             {([
               { label: "Find Local Support",   sub: "Therapists, clubs & specialists", to: "/explore",       hi: false },
               { label: "Community",            sub: "Forums, meetups & peer support",  to: "/community",     hi: false },
               { label: "News & Research",      sub: "Legislation, guides & updates",   to: "/news",          hi: false },
               { label: "For Providers",        sub: "Create your free profile today",  to: "/for-providers", hi: true  },
             ] as const).map((p) => (
-              <Link key={p.label} to={p.to} style={{ padding: "20px 28px",
-                borderRight: "1px solid rgba(217,138,106,0.15)",
-                background: p.hi ? "rgba(217,138,106,0.14)" : "transparent",
-                textDecoration: "none", display: "flex", alignItems: "center", gap: 14 }}
-                onMouseEnter={(e) => pillarIn(e)}
-                onMouseLeave={(e) => pillarOut(e, p.hi)}>
-                <div style={{ width: 14, height: 14, flexShrink: 0, borderRadius: "50%",
-                  background: C.terra,
-                  boxShadow: "0 3px 8px rgba(217,138,106,0.55), 0 1px 3px rgba(217,138,106,0.30)" }} />
+              <Link key={p.label} to={p.to}
+                style={{ textDecoration: "none", background: p.hi ? `linear-gradient(135deg, rgba(217,138,106,0.10), rgba(217,138,106,0.04))` : C.white,
+                  borderRadius: 16, padding: "20px 22px",
+                  border: p.hi ? "1px solid rgba(217,138,106,0.22)" : "1px solid rgba(27,26,53,0.07)",
+                  boxShadow: "0 2px 12px rgba(27,26,53,0.05), 0 1px 3px rgba(0,0,0,0.03)",
+                  display: "flex", alignItems: "center", gap: 14,
+                  transition: "box-shadow 0.2s, transform 0.2s" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 24px rgba(27,26,53,0.10)"; (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 12px rgba(27,26,53,0.05)"; (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; }}>
+                <div style={{ width: 12, height: 12, flexShrink: 0, borderRadius: "50%", background: C.terra,
+                  boxShadow: "0 2px 6px rgba(217,138,106,0.50)" }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: C.textDark, lineHeight: 1.3 }}>
-                    {p.label}
-                  </div>
-                  <div style={{ fontSize: 12, color: C.textMid, fontWeight: 300, marginTop: 2 }}>
-                    {p.sub}
-                  </div>
+                  <div style={{ fontSize: "0.9rem", fontWeight: 600, color: C.textDark, lineHeight: 1.3 }}>{p.label}</div>
+                  <div style={{ fontSize: "0.72rem", fontWeight: 300, color: C.textMid, marginTop: 2 }}>{p.sub}</div>
                 </div>
-                <span style={{ color: "rgba(217,138,106,0.45)", fontSize: 14 }}>→</span>
+                <span style={{ color: C.terra, fontSize: "0.9rem", flexShrink: 0 }}>→</span>
               </Link>
             ))}
           </div>
