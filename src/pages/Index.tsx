@@ -498,7 +498,75 @@ const Index = () => {
             place to find support, connect with others who understand, and stay informed about everything SEND.
           </p>
 
+          {/* Category Cards — 2 per row */}
+          <div style={{ marginBottom: 26 }}>
+            <div style={{ textAlign: "center", marginBottom: 14 }}>
+              <div
+                style={{
+                  fontSize: "0.55rem",
+                  fontWeight: 700,
+                  letterSpacing: "2.5px",
+                  textTransform: "uppercase",
+                  color: C.terra,
+                  marginBottom: 6,
+                }}
+              >
+                The Beyonder Ecosystem
+              </div>
+              <h2
+                style={{
+                  fontSize: "1.35rem",
+                  fontWeight: 400,
+                  color: C.textDark,
+                  letterSpacing: "-0.3px",
+                  margin: "0 0 8px",
+                  fontFamily: "'Josefin Sans', sans-serif",
+                }}
+              >
+                Where would you like to start?
+              </h2>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              {[
+                { label: "Therapists & Specialists", sub: "OTs, SaLTs, psychologists", to: "/providers?category=therapists", icon: TherapistsIcon },
+                { label: "Inclusive Clubs", sub: "Sport, arts, sensory play", to: "/providers?category=activities", icon: ClubsIcon },
+                { label: "Products & Equipment", sub: "Sensory, adaptive, learning", to: "/providers?category=products", icon: ShoppingIcon },
+                { label: "Education Support", sub: "Tutors, EHCP, SEN", to: "/providers?category=education", icon: EducationIcon },
+                { label: "Charities", sub: "Support groups, advocacy", to: "/providers?category=charities", icon: CharitiesIcon },
+              ].map((c) => (
+                <Link
+                  key={c.label}
+                  to={c.to}
+                  style={{
+                    background: C.white,
+                    borderRadius: 14,
+                    padding: "12px 10px 14px",
+                    border: `1.5px solid ${C.creamDark}`,
+                    boxShadow: "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)",
+                    textDecoration: "none",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 4,
+                    textAlign: "center",
+                  }}
+                >
+                  <div style={{ width: "100%", height: 84, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <object data={c.icon} type="image/svg+xml" style={{ width: "100%", height: "100%", display: "block", pointerEvents: "none" }} />
+                  </div>
+                  <span style={{ fontSize: "0.72rem", fontWeight: 600, color: C.textDark, lineHeight: 1.25 }}>
+                    {c.label}
+                  </span>
+                  <span style={{ fontSize: "0.58rem", color: C.textLight, fontWeight: 300, lineHeight: 1.3 }}>
+                    {c.sub}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
           {/* Pillar Cards */}
+
           <div style={{ display: "flex", flexDirection: "column", gap: 13, marginBottom: 22 }}>
             {/* All Support */}
             <Link to="/providers" style={{ textDecoration: "none" }}>
