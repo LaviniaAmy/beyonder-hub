@@ -12,14 +12,14 @@
     #ring-l, #ring-m, #ring-r {
       transform-box: fill-box;
       transform-origin: 50% 50%;
-      animation: ring-pulse 2.4s ease-in-out infinite;
+      animation: ring-pulse 7s ease-in-out infinite;
     }
     #ring-m { animation-delay: 0.4s; }
     #ring-r { animation-delay: 0.8s; }
     @keyframes ring-pulse {
-      0%,100% { transform: scale(1); opacity: 1; }
-      40%     { transform: scale(1.7); opacity: 0.3; }
-      80%     { transform: scale(1); opacity: 1; }
+      0%      { transform: scale(1); opacity: 1; }
+      14%     { transform: scale(1.35); opacity: 0.4; }
+      28%,100%{ transform: scale(1); opacity: 1; }
     }
   </style>
   <circle cx="66.82" cy="63.75" r="1.19" fill="#8ba5be"/>
