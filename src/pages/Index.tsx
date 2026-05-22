@@ -1697,6 +1697,7 @@ const Index = () => {
                     borderRadius: 12,
                     padding: "18px 16px",
                     border: `1px solid ${C.creamDark}`,
+                    boxShadow: "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)",
                     display: "flex",
                     flexDirection: "column",
                     gap: 4,
