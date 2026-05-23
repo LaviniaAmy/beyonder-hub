@@ -1777,559 +1777,580 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── 6. PROVIDER BAND ── */}
-        <section
-          style={{
-            background: "#13244e",
-            padding: "36px 60px",
-            borderTop: "1px solid rgba(43,76,126,0.30)",
-            borderBottom: "1px solid rgba(43,76,126,0.30)",
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
+        {/* ── 6. PROVIDER ── */}
+        <section style={{ background: C.cream, padding: "24px 60px 52px" }}>
           <div
             style={{
-              position: "absolute",
-              inset: 0,
-              pointerEvents: "none",
-              background: "radial-gradient(ellipse 60% 100% at 100% 50%, rgba(217,138,106,0.07) 0%, transparent 65%)",
-            }}
-          />
-          <div
-            style={{
-              maxWidth: 1280,
+              maxWidth: 960,
               margin: "0 auto",
+              background: C.white,
+              borderRadius: 24,
+              boxShadow: "0 4px 32px rgba(26,34,54,0.08), 0 1px 4px rgba(26,34,54,0.04)",
+              padding: "44px 52px",
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
-              gap: "3.5rem",
-              alignItems: "center",
-              position: "relative",
-              zIndex: 1,
+              gap: 56,
+              alignItems: "start",
             }}
           >
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ fontSize: "1rem", fontWeight: 700, color: C.amber }}>For Providers</span>
-                <div style={{ width: 32, height: 1.5, background: "rgba(232,244,255,0.25)" }} />
-                <span style={{ fontSize: "0.75rem", color: "rgba(232,244,255,0.30)", fontWeight: 300 }}>
-                  Therapists, clubs, specialists &amp; organisations
-                </span>
+            {/* LEFT: text + benefits + CTA */}
+            <div>
+              <div
+                style={{
+                  fontSize: "0.62rem",
+                  fontWeight: 500,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  color: C.terra,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  marginBottom: 14,
+                }}
+              >
+                <span style={{ fontSize: "1.1rem", lineHeight: 0 }}>·</span>
+                For Providers
               </div>
               <h2
                 style={{
-                  fontSize: "1.35rem",
-                  fontWeight: 400,
-                  color: C.warmWhite,
-                  lineHeight: 1.25,
-                  letterSpacing: "-0.3px",
-                  margin: 0,
                   fontFamily: "'Josefin Sans', sans-serif",
+                  fontSize: "1.9rem",
+                  fontWeight: 300,
+                  lineHeight: 1.2,
+                  color: C.textDark,
+                  letterSpacing: "-0.01em",
+                  margin: "0 0 14px",
                 }}
               >
-                Reach the families already searching for you.
+                The families you can help<br />are{" "}
+                <em style={{ fontStyle: "italic", color: C.terra }}>already here</em>.
               </h2>
               <p
                 style={{
-                  fontSize: "0.80rem",
-                  color: "rgba(232,244,255,0.40)",
-                  fontWeight: 300,
-                  lineHeight: 1.7,
-                  maxWidth: 380,
-                  margin: 0,
+                  fontSize: "0.83rem",
+                  lineHeight: 1.8,
+                  color: C.textMid,
+                  margin: "0 0 24px",
+                  maxWidth: 340,
                 }}
               >
-                Beyonder connects SEND families with local support at the moment they need it most. Your profile goes
-                live immediately — no approval wait, no upfront cost.
+                Beyonder connects SEND families with local support at the moment they need it most. Your profile goes live immediately — no approval wait, no upfront cost.
               </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 30px", display: "flex", flexDirection: "column", gap: 13 }}>
                 {[
-                  "Free to list — live the moment you create it",
-                  "Enquiries come through Beyonder — no cold calls",
-                  "Full control of your profile and availability",
-                ].map((pt) => (
-                  <div
-                    key={pt}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 9,
-                      fontSize: "0.76rem",
-                      color: "rgba(232,244,255,0.50)",
-                      fontWeight: 300,
-                    }}
-                  >
+                  {
+                    text: "Free to list — live the moment you create it",
+                    icon: (
+                      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" style={{ flexShrink: 0, marginTop: -1 }}>
+                        <circle cx="14" cy="14" r="13" stroke={C.textDark} strokeWidth="1.2"/>
+                        <path d="M9 14.5C9 11 11 9.5 13 9.5c0 0 0 2.5 0 4m0 0c0-2 1.5-3 3-3 1 0 1.5 1 1.5 2.5V14m-4.5-.5V18" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round"/>
+                        <path d="M17.5 14c0-1.5 1-2 1.5-1.5s.5 1.5.5 2.5V17c0 2-1.5 3-3.5 3H12c-1 0-2-.5-2.5-1.5L8.5 16" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    ),
+                  },
+                  {
+                    text: "Enquiries direct through Beyonder, no referral fees",
+                    icon: (
+                      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" style={{ flexShrink: 0, marginTop: -1 }}>
+                        <circle cx="14" cy="14" r="13" stroke={C.textDark} strokeWidth="1.2"/>
+                        <path d="M8 10c0-1 1-1.5 2-1.5h8c1 0 2 .5 2 1.5v6c0 1-1 1.5-2 1.5h-2.5L13 20v-2.5H10c-1 0-2-.5-2-1.5z" stroke={C.textDark} strokeWidth="1.1" strokeLinejoin="round"/>
+                        <path d="M11 12h6M11 14.5h4" stroke={C.textDark} strokeWidth="1" strokeLinecap="round"/>
+                      </svg>
+                    ),
+                  },
+                  {
+                    text: "Full control of your profile and availability",
+                    icon: (
+                      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" style={{ flexShrink: 0, marginTop: -1 }}>
+                        <circle cx="14" cy="14" r="13" stroke={C.textDark} strokeWidth="1.2"/>
+                        <circle cx="14" cy="11" r="2.5" stroke={C.textDark} strokeWidth="1.1"/>
+                        <path d="M8.5 19.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round"/>
+                      </svg>
+                    ),
+                  },
+                ].map((b) => (
+                  <li key={b.text} style={{ fontSize: "0.82rem", color: C.textMid, lineHeight: 1.6, display: "flex", alignItems: "flex-start", gap: 13 }}>
+                    {b.icon}
+                    {b.text}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to="/for-providers"
+                style={{
+                  display: "inline-block",
+                  background: C.terra,
+                  color: C.white,
+                  fontFamily: "'Nunito Sans', sans-serif",
+                  fontSize: "0.82rem",
+                  letterSpacing: "0.04em",
+                  padding: "11px 28px",
+                  borderRadius: 100,
+                  textDecoration: "none",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.opacity = "0.88";
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.opacity = "1";
+                  e.currentTarget.style.transform = "none";
+                }}
+              >
+                Create your free profile
+              </Link>
+            </div>
+            {/* RIGHT: stats + quote */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                {[
+                  { num: "2,400", plus: true, lbl: "families searching\non Beyonder" },
+                  { num: "38", plus: false, lbl: "providers live\nthis month" },
+                ].map((s) => (
+                  <div key={s.num} style={{ background: C.cream, borderRadius: 14, padding: "20px 18px" }}>
                     <div
                       style={{
-                        width: 16,
-                        height: 16,
-                        borderRadius: "50%",
-                        flexShrink: 0,
-                        background: "rgba(217,138,106,0.20)",
-                        border: "1px solid rgba(217,138,106,0.35)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        fontFamily: "'Josefin Sans', sans-serif",
+                        fontSize: "2.4rem",
+                        fontWeight: 300,
+                        color: C.textDark,
+                        lineHeight: 1,
+                        marginBottom: 4,
                       }}
                     >
-                      <span style={{ color: C.amber, fontSize: 9, fontWeight: 700 }}>✓</span>
+                      {s.num}
+                      {s.plus && <span style={{ fontSize: "1.3rem" }}>+</span>}
                     </div>
-                    {pt}
+                    <div style={{ fontSize: "0.73rem", color: C.textLight, lineHeight: 1.5, whiteSpace: "pre-line" }}>
+                      {s.lbl}
+                    </div>
                   </div>
                 ))}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 4 }}>
-                <Link
-                  to="/for-providers"
-                  style={{
-                    display: "inline-block",
-                    padding: "11px 24px",
-                    borderRadius: 8,
-                    background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`,
-                    boxShadow: "0 4px 16px rgba(217,138,106,0.28)",
-                    color: C.warmWhite,
-                    fontSize: "0.84rem",
-                    fontWeight: 600,
-                    textDecoration: "none",
-                  }}
-                  onMouseEnter={terraIn}
-                  onMouseLeave={(e) => terraOut(e)}
-                >
-                  Create your free profile
-                </Link>
-                <Link
-                  to="/for-providers"
-                  style={{
-                    fontSize: "0.76rem",
-                    padding: "10px 16px",
-                    borderRadius: 8,
-                    textDecoration: "none",
-                    background: "transparent",
-                    border: "1px solid rgba(232,244,255,0.18)",
-                    color: "rgba(232,244,255,0.50)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "rgba(217,138,106,0.12)";
-                    e.currentTarget.style.borderColor = "rgba(232,244,255,0.55)";
-                    e.currentTarget.style.color = C.warmWhite;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.borderColor = "rgba(232,244,255,0.18)";
-                    e.currentTarget.style.color = "rgba(232,244,255,0.50)";
-                  }}
-                >
-                  See how it works →
-                </Link>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                {[
-                  { num: "2,400+", label: "Families actively searching" },
-                  { num: "38", label: "Counties with active searches" },
-                  { num: "Free", label: "To list. Upgrade only if you want more." },
-                  { num: "Live", label: "Profile goes live instantly on sign-up" },
-                ].map((s) => (
-                  <div
-                    key={s.num}
-                    style={{
-                      background: "rgba(232,244,255,0.03)",
-                      border: "1px solid rgba(217,138,106,0.10)",
-                      borderRadius: 10,
-                      padding: "12px 14px",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 2,
-                    }}
-                  >
-                    <span style={{ fontSize: "1.4rem", fontWeight: 700, color: C.amber, lineHeight: 1 }}>{s.num}</span>
-                    <span
-                      style={{ fontSize: "0.66rem", color: "rgba(232,244,255,0.28)", fontWeight: 300, lineHeight: 1.4 }}
-                    >
-                      {s.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <blockquote
+              <div
                 style={{
-                  background: "rgba(217,138,106,0.07)",
-                  border: "1px solid rgba(217,138,106,0.14)",
-                  borderRadius: 8,
-                  padding: "12px 14px",
-                  margin: 0,
+                  background: C.cream,
+                  borderRadius: 14,
+                  padding: "22px 26px",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
               >
-                <p
+                <svg
+                  style={{ position: "absolute", top: 14, right: 18, opacity: 0.1, width: 72, height: 72 }}
+                  viewBox="0 0 80 80"
+                  fill="none"
+                >
+                  <circle cx="28" cy="22" r="8" stroke={C.textDark} strokeWidth="1.8"/>
+                  <path d="M14 48c0-9 7-14 14-14s14 5 14 14" stroke={C.textDark} strokeWidth="1.8" strokeLinecap="round"/>
+                  <circle cx="54" cy="26" r="6" stroke={C.textDark} strokeWidth="1.6"/>
+                  <path d="M44 48c0-7 4-11 10-11s10 4 10 11" stroke={C.textDark} strokeWidth="1.6" strokeLinecap="round"/>
+                  <path d="M36 38c2-3 8-4 12-2" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round" strokeDasharray="2 2"/>
+                </svg>
+                <blockquote
                   style={{
-                    fontSize: "0.74rem",
+                    fontFamily: "'Josefin Sans', sans-serif",
+                    fontSize: "0.95rem",
                     fontStyle: "italic",
-                    color: "rgba(232,244,255,0.38)",
-                    lineHeight: 1.6,
                     fontWeight: 300,
-                    margin: 0,
+                    color: C.textDark,
+                    lineHeight: 1.65,
+                    margin: "0 0 10px",
+                    position: "relative",
+                    zIndex: 1,
                   }}
                 >
-                  "Within two weeks I had three enquiries from families I'd never have reached otherwise."
-                </p>
-                <cite
-                  style={{
-                    display: "block",
-                    marginTop: 5,
-                    fontSize: "0.62rem",
-                    color: "rgba(232,244,255,0.20)",
-                    fontStyle: "normal",
-                  }}
-                >
-                  — Paediatric OT, Hampshire · Founding Provider
+                  "Within two weeks I had enquiries from families I'd never have reached otherwise."
+                </blockquote>
+                <cite style={{ fontSize: "0.68rem", color: C.textLight, fontStyle: "normal", letterSpacing: "0.04em" }}>
+                  Speech &amp; Language Therapist, Hampshire
                 </cite>
-              </blockquote>
+              </div>
             </div>
           </div>
         </section>
 
         {/* ── 7. COMMUNITY ── */}
-        <section style={{ background: C.cream, padding: "52px 60px", borderTop: `1px solid rgba(27,26,53,0.08)` }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-            <div style={{ textAlign: "center", marginBottom: 32 }}>
-              <span
-                style={{
-                  fontSize: "0.62rem",
-                  fontWeight: 600,
-                  letterSpacing: 2,
-                  textTransform: "uppercase",
-                  color: C.terra,
-                  display: "block",
-                  marginBottom: 8,
-                }}
-              >
-                Community
-              </span>
-              <h2
-                style={{
-                  fontSize: "1.55rem",
-                  fontWeight: 400,
-                  color: C.textDark,
-                  letterSpacing: "-0.3px",
-                  margin: "0 0 6px",
-                  fontFamily: "'Josefin Sans', sans-serif",
-                }}
-              >
-                A place where people really get it.
-              </h2>
-              <p style={{ fontSize: "0.85rem", color: C.textMid, fontWeight: 300, lineHeight: 1.6, margin: 0 }}>
+        <section style={{ background: C.white, padding: "56px 60px 64px", borderTop: `1px solid ${C.creamDark}` }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            {/* intro */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 80,
+                alignItems: "end",
+                marginBottom: 40,
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    fontSize: "0.62rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    color: C.terra,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 14,
+                  }}
+                >
+                  <span style={{ fontSize: "1.1rem", lineHeight: 0 }}>·</span>
+                  Community
+                </div>
+                <h2
+                  style={{
+                    fontFamily: "'Josefin Sans', sans-serif",
+                    fontSize: "2rem",
+                    fontWeight: 300,
+                    lineHeight: 1.2,
+                    color: C.textDark,
+                    letterSpacing: "-0.01em",
+                    margin: 0,
+                  }}
+                >
+                  A place where people<br />
+                  <em style={{ fontStyle: "italic", color: C.terra }}>really</em> get it.
+                </h2>
+              </div>
+              <p style={{ fontSize: "0.87rem", lineHeight: 1.8, color: C.textMid, margin: 0 }}>
                 Real conversations, local meetups and shared experiences — all in one place, just for SEND families.
               </p>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 28 }}>
-              {/* Upcoming */}
-              <div>
+            {/* body: events col + threads col */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1.1fr 1.9fr",
+                gap: 24,
+                alignItems: "start",
+                marginBottom: 36,
+              }}
+            >
+              {/* events col */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <span
                   style={{
                     fontSize: "0.58rem",
-                    fontWeight: 600,
-                    letterSpacing: 2,
+                    fontWeight: 500,
+                    letterSpacing: "0.16em",
                     textTransform: "uppercase",
-                    color: C.terra,
-                    display: "block",
-                    marginBottom: 10,
+                    color: C.textLight,
+                    marginBottom: 2,
                   }}
                 >
-                  Upcoming near you
+                  Near you
                 </span>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {[
-                    {
-                      day: "14",
-                      mon: "Apr",
-                      title: "SEND Parents Coffee Morning — Southampton",
-                      meta: "St James Community Centre · 10am · Free to attend",
-                      chip: "Meetup",
-                    },
-                    {
-                      day: "21",
-                      mon: "Apr",
-                      title: "Understanding Your Child's EHCP — Online Session",
-                      meta: "Via Zoom · 7pm · Free for members",
-                      chip: "Workshop",
-                    },
-                  ].map((m) => (
-                    <Link
-                      key={m.day}
-                      to="/community"
+                {[
+                  { day: "14", mon: "Jun", title: "SEND Parents Coffee Morning — Southampton", sub: "Sea Saints Community Coffee · Free" },
+                  { day: "23", mon: "Jun", title: "Understanding Your Child's EHCP — Online", sub: "Free · Hosted by SEN Advisor" },
+                ].map((ev) => (
+                  <Link
+                    key={ev.day + ev.mon}
+                    to="/community"
+                    style={{
+                      background: C.cream,
+                      borderRadius: 14,
+                      padding: "16px 18px",
+                      display: "flex",
+                      gap: 14,
+                      alignItems: "flex-start",
+                      textDecoration: "none",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+                  >
+                    <div
                       style={{
-                        background: C.white,
-                        borderRadius: 14,
-                        padding: "16px 18px",
-                        border: `1.5px solid ${C.creamDark}`,
-                        boxShadow: "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)",
-                        textDecoration: "none",
+                        width: 40,
+                        minWidth: 40,
+                        height: 40,
+                        borderRadius: 10,
+                        background: "rgba(212,133,106,0.15)",
                         display: "flex",
-                        gap: 14,
-                        alignItems: "flex-start",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
                       }}
-                      onMouseEnter={commIn}
-                      onMouseLeave={commOut}
                     >
-                      <div
-                        style={{
-                          width: 46,
-                          height: 50,
-                          flexShrink: 0,
-                          borderRadius: 10,
-                          background: C.terra,
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          boxShadow: "0 3px 10px rgba(217,138,106,0.20)",
-                        }}
-                      >
-                        <span style={{ fontSize: "1.25rem", fontWeight: 700, color: C.warmWhite, lineHeight: 1 }}>
-                          {m.day}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "0.52rem",
-                            color: "rgba(232,244,255,0.75)",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                            marginTop: 1,
-                          }}
-                        >
-                          {m.mon}
-                        </span>
+                      <span style={{ fontFamily: "'Josefin Sans', sans-serif", fontSize: "1.1rem", color: C.terra, lineHeight: 1 }}>
+                        {ev.day}
+                      </span>
+                      <span style={{ fontSize: "0.50rem", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: C.terra, opacity: 0.8 }}>
+                        {ev.mon}
+                      </span>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: "0.82rem", fontWeight: 500, color: C.textDark, lineHeight: 1.4, marginBottom: 3 }}>
+                        {ev.title}
                       </div>
-                      <div>
-                        <div
-                          style={{
-                            fontSize: "0.86rem",
-                            fontWeight: 600,
-                            color: C.textDark,
-                            lineHeight: 1.3,
-                            marginBottom: 3,
-                          }}
-                        >
-                          {m.title}
-                        </div>
-                        <div style={{ fontSize: "0.70rem", color: C.textMid, fontWeight: 300, lineHeight: 1.5 }}>
-                          {m.meta}
-                        </div>
-                        <span
-                          style={{
-                            display: "inline-block",
-                            marginTop: 5,
-                            padding: "2px 9px",
-                            borderRadius: 20,
-                            background: "rgba(217,138,106,0.08)",
-                            border: "1px solid rgba(217,138,106,0.18)",
-                            fontSize: "0.60rem",
-                            color: C.terra,
-                            fontWeight: 500,
-                          }}
-                        >
-                          {m.chip}
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
+                      <span style={{ fontSize: "0.68rem", color: C.textLight }}>{ev.sub}</span>
+                    </div>
+                  </Link>
+                ))}
+                {/* community scene illustration */}
+                <div style={{ display: "flex", justifyContent: "center", marginTop: 6, opacity: 0.72 }}>
+                  <svg width="150" height="82" viewBox="0 0 160 90" fill="none">
+                    <path d="M10 72Q80 68 150 72" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
+                    <circle cx="32" cy="42" r="5.5" stroke={C.textDark} strokeWidth="1.2"/>
+                    <path d="M32 47.5L32 61M32 61L28 70M32 61L36 70" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
+                    <path d="M26 52L38 52" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
+                    <circle cx="22" cy="50" r="3.5" stroke={C.textDark} strokeWidth="1.1"/>
+                    <path d="M22 53.5L22 63M22 63L19.5 70M22 63L24.5 70" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round"/>
+                    <path d="M18 56L26 56" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round"/>
+                    <circle cx="80" cy="38" r="6" stroke={C.textDark} strokeWidth="1.2"/>
+                    <path d="M80 44L80 59M80 59L76 70M80 59L84 70" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
+                    <path d="M73 50L87 50" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
+                    <circle cx="126" cy="42" r="5.5" stroke={C.textDark} strokeWidth="1.2"/>
+                    <path d="M126 47.5L126 61M126 61L122 70M126 61L130 70" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
+                    <path d="M120 52L132 52" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
+                    <circle cx="136" cy="49" r="3.5" stroke={C.textDark} strokeWidth="1.1"/>
+                    <path d="M136 52.5L136 62M136 62L133.5 70M136 62L138.5 70" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round"/>
+                    <path d="M132 55L140 55" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round"/>
+                    <path d="M88 30C88 26 92 24 98 24C104 24 108 26 108 30C108 34 104 36 98 36L94 38L95 36C91 36 88 34 88 30Z" stroke={C.textDark} strokeWidth="1.1" strokeLinejoin="round"/>
+                    <circle cx="95" cy="30" r="1.2" fill={C.textDark}/>
+                    <circle cx="98" cy="30" r="1.2" fill={C.textDark}/>
+                    <circle cx="101" cy="30" r="1.2" fill={C.textDark}/>
+                    <path d="M44 58Q62 55 73 56" stroke={C.textDark} strokeWidth="0.8" strokeLinecap="round" strokeDasharray="3 3" opacity="0.5"/>
+                    <path d="M87 56Q106 54 118 55" stroke={C.textDark} strokeWidth="0.8" strokeLinecap="round" strokeDasharray="3 3" opacity="0.5"/>
+                  </svg>
                 </div>
               </div>
-
-              {/* Forum threads */}
-              <div>
+              {/* threads col */}
+              <div style={{ display: "flex", flexDirection: "column" }}>
                 <span
                   style={{
                     fontSize: "0.58rem",
-                    fontWeight: 600,
-                    letterSpacing: 2,
+                    fontWeight: 500,
+                    letterSpacing: "0.16em",
                     textTransform: "uppercase",
-                    color: C.terra,
-                    display: "block",
-                    marginBottom: 10,
+                    color: C.textLight,
+                    marginBottom: 12,
                   }}
                 >
                   People are talking
                 </span>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {[
-                    {
-                      initials: "SL",
-                      name: "Sarah L",
-                      topic: "General Support · 2hrs ago",
-                      replies: 12,
-                      avatarBg: `linear-gradient(135deg,${C.sienna},${C.terra})`,
-                      text: '"Does anyone know of sensory-friendly swimming lessons near Southampton? My son loves water but busy pools are really overwhelming for him."',
-                    },
-                    {
-                      initials: "MK",
-                      name: "Mark K",
-                      topic: "Education · Yesterday",
-                      replies: 28,
-                      avatarBg: `linear-gradient(135deg,${C.rose},${C.purple})`,
-                      text: "\"We have our EHCP annual review next month and I want to make sure I'm asking for the right things. Any advice from parents who've been through it?\"",
-                    },
-                  ].map((t) => (
-                    <Link
-                      key={t.initials}
-                      to="/community"
-                      style={{
-                        background: C.white,
-                        borderRadius: 14,
-                        padding: "16px 18px",
-                        border: `1.5px solid ${C.creamDark}`,
-                        boxShadow: "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)",
-                        textDecoration: "none",
-                        display: "block",
-                      }}
-                      onMouseEnter={commIn}
-                      onMouseLeave={commOut}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                        <div
-                          style={{
-                            width: 32,
-                            height: 32,
-                            borderRadius: "50%",
-                            flexShrink: 0,
-                            background: t.avatarBg,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "0.66rem",
-                            fontWeight: 700,
-                            color: C.warmWhite,
-                          }}
-                        >
-                          {t.initials}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: "0.74rem", fontWeight: 600, color: C.textDark, lineHeight: 1.2 }}>
-                            {t.name}
-                          </div>
-                          <div style={{ fontSize: "0.63rem", color: C.sienna }}>{t.topic}</div>
-                        </div>
-                      </div>
-                      <p style={{ fontSize: "0.83rem", color: C.textDark, lineHeight: 1.55, margin: 0 }}>{t.text}</p>
-                      <div
+                {[
+                  { quote: '"Does anyone know of sensory-friendly swimming lessons near Southampton? Busy pools are really overwhelming for her."', meta: "Sarah L.", replies: "12 replies", time: "1 hr ago", tag: "Therapy" },
+                  { quote: '"EHCP annual review next month — any advice from parents who\'ve been through it on what to ask for?"', meta: "Mark H.", replies: "8 replies", time: "2 hrs ago", tag: "EHCP" },
+                  { quote: '"Has anyone found a good swimming club for a child with hypermobility in the Winchester area?"', meta: "Priya M.", replies: "5 replies", time: "4 hrs ago", tag: "Activities" },
+                ].map((t, i) => (
+                  <Link
+                    key={i}
+                    to="/community"
+                    style={{
+                      paddingTop: i === 0 ? 0 : 16,
+                      paddingBottom: 16,
+                      borderBottom: i < 2 ? `1px solid ${C.creamDark}` : "none",
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 16,
+                      alignItems: "start",
+                      textDecoration: "none",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.7"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+                  >
+                    <div>
+                      <blockquote
                         style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          marginTop: 9,
-                          paddingTop: 9,
-                          borderTop: `1px solid ${C.creamDark}`,
+                          fontFamily: "'Josefin Sans', sans-serif",
+                          fontSize: "0.95rem",
+                          fontStyle: "italic",
+                          fontWeight: 300,
+                          color: C.textDark,
+                          lineHeight: 1.5,
+                          margin: "0 0 7px",
                         }}
                       >
-                        <span style={{ fontSize: "0.62rem", color: C.textLight }}>{t.replies} replies</span>
-                        <span style={{ fontSize: "0.65rem", color: C.terra, fontWeight: 500 }}>
-                          Join the conversation →
-                        </span>
+                        {t.quote}
+                      </blockquote>
+                      <div style={{ fontSize: "0.68rem", color: C.textLight, display: "flex", alignItems: "center", gap: 7 }}>
+                        {t.meta}
+                        <span style={{ width: 3, height: 3, borderRadius: "50%", background: C.textLight, display: "inline-block" }} />
+                        {t.replies}
+                        <span style={{ width: 3, height: 3, borderRadius: "50%", background: C.textLight, display: "inline-block" }} />
+                        {t.time}
                       </div>
-                    </Link>
-                  ))}
-                </div>
+                    </div>
+                    <span
+                      style={{
+                        fontSize: "0.60rem",
+                        fontWeight: 500,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        background: C.cream,
+                        color: C.terra,
+                        padding: "3px 9px",
+                        borderRadius: 100,
+                        whiteSpace: "nowrap",
+                        alignSelf: "start",
+                        marginTop: 2,
+                      }}
+                    >
+                      {t.tag}
+                    </span>
+                  </Link>
+                ))}
               </div>
             </div>
-
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 14 }}>
+            {/* footer */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <p style={{ fontSize: "0.87rem", color: C.textMid, margin: 0 }}>
+                Join 2,400+ SEND families already sharing, supporting and connecting.
+              </p>
               <Link
                 to="/community"
                 style={{
-                  padding: "11px 28px",
-                  borderRadius: 8,
-                  background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`,
-                  color: C.warmWhite,
-                  fontSize: "0.84rem",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                  boxShadow: "0 4px 16px rgba(217,138,106,0.28)",
-                }}
-                onMouseEnter={terraIn}
-                onMouseLeave={(e) => terraOut(e)}
-              >
-                Join the Community
-              </Link>
-              <Link
-                to="/community"
-                style={{
-                  padding: "10px 20px",
-                  borderRadius: 8,
-                  background: "transparent",
-                  border: `1.5px solid rgba(217,138,106,0.30)`,
-                  color: C.terra,
+                  display: "inline-block",
+                  background: C.terra,
+                  color: C.white,
+                  fontFamily: "'Nunito Sans', sans-serif",
                   fontSize: "0.82rem",
+                  letterSpacing: "0.04em",
+                  padding: "11px 28px",
+                  borderRadius: 100,
                   textDecoration: "none",
                 }}
-                onMouseEnter={(e) => ghostIn(e)}
-                onMouseLeave={(e) => ghostOut(e)}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.opacity = "0.88";
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.opacity = "1";
+                  e.currentTarget.style.transform = "none";
+                }}
               >
-                Browse all forums
+                Join the community
               </Link>
-              <span style={{ fontSize: "0.74rem", color: C.textMid, fontStyle: "italic", fontWeight: 300 }}>
-                Free to join · Moderated · Safe space
-              </span>
             </div>
           </div>
         </section>
 
         {/* ── 8. NEWS ── */}
-        <section style={{ background: C.white, padding: "40px 60px", borderTop: `1px solid ${C.creamDark}` }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 22 }}>
-              <h2
-                style={{
-                  fontSize: "1.55rem",
-                  fontWeight: 400,
-                  color: C.textDark,
-                  letterSpacing: "-0.3px",
-                  margin: 0,
-                  fontFamily: "'Josefin Sans', sans-serif",
-                }}
-              >
-                Stay ahead of what matters.
-              </h2>
-              <Link
-                to="/news"
-                style={{
-                  fontSize: "0.78rem",
-                  color: C.terra,
-                  fontWeight: 500,
-                  borderBottom: `1px solid rgba(217,138,106,0.30)`,
-                  textDecoration: "none",
-                }}
-              >
-                All news →
-              </Link>
+        <section style={{ background: C.cream, padding: "56px 60px 64px", borderTop: `1px solid ${C.creamDark}` }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-end",
+                justifyContent: "space-between",
+                marginBottom: 32,
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    fontSize: "0.62rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    color: C.terra,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 14,
+                  }}
+                >
+                  <span style={{ fontSize: "1.1rem", lineHeight: 0 }}>·</span>
+                  News &amp; Research
+                </div>
+                <div style={{ display: "flex", alignItems: "flex-end", gap: 24 }}>
+                  <h2
+                    style={{
+                      fontFamily: "'Josefin Sans', sans-serif",
+                      fontSize: "2rem",
+                      fontWeight: 300,
+                      color: C.textDark,
+                      lineHeight: 1.2,
+                      letterSpacing: "-0.01em",
+                      margin: 0,
+                    }}
+                  >
+                    Stay ahead of<br />what matters.
+                  </h2>
+                  <svg
+                    style={{ marginBottom: 4, flexShrink: 0, opacity: 0.78 }}
+                    width="56"
+                    height="50"
+                    viewBox="0 0 72 64"
+                    fill="none"
+                  >
+                    <circle cx="36" cy="12" r="7" stroke={C.textDark} strokeWidth="1.4"/>
+                    <path d="M36 19L36 36" stroke={C.textDark} strokeWidth="1.4" strokeLinecap="round"/>
+                    <path d="M36 36Q30 40 26 48" stroke={C.textDark} strokeWidth="1.3" strokeLinecap="round"/>
+                    <path d="M36 36Q42 40 46 48" stroke={C.textDark} strokeWidth="1.3" strokeLinecap="round"/>
+                    <path d="M24 48Q36 44 48 48" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
+                    <path d="M36 25Q28 27 24 32" stroke={C.textDark} strokeWidth="1.3" strokeLinecap="round"/>
+                    <path d="M36 25Q44 27 48 32" stroke={C.textDark} strokeWidth="1.3" strokeLinecap="round"/>
+                    <path d="M24 32Q36 29 48 32L48 42Q36 39 24 42Z" stroke={C.textDark} strokeWidth="1.2" strokeLinejoin="round"/>
+                    <path d="M36 30L36 42" stroke={C.textDark} strokeWidth="1" strokeLinecap="round"/>
+                    <path d="M28 34L34 33M28 37L34 36" stroke={C.textDark} strokeWidth="0.8" strokeLinecap="round" opacity="0.6"/>
+                    <path d="M38 33L44 34M38 36L44 37" stroke={C.textDark} strokeWidth="0.8" strokeLinecap="round" opacity="0.6"/>
+                    <path d="M16 54Q36 51 56 54" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round" opacity="0.4"/>
+                  </svg>
+                </div>
+              </div>
+              <div style={{ textAlign: "right", paddingBottom: 4 }}>
+                <p
+                  style={{
+                    fontSize: "0.82rem",
+                    color: C.textMid,
+                    lineHeight: 1.7,
+                    maxWidth: 240,
+                    margin: "0 0 8px",
+                  }}
+                >
+                  Legislation, research and stories that matter — curated for SEND families.
+                </p>
+                <Link
+                  to="/news"
+                  style={{
+                    fontSize: "0.68rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    color: C.terra,
+                    textDecoration: "none",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.7"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+                >
+                  View all articles →
+                </Link>
+              </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr", gap: 14 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1.55fr 1fr 1fr", gap: 14 }}>
               {[
                 {
-                  featured: true,
-                  chip: "Research",
-                  bg: "linear-gradient(135deg,#111827,#1A2848)",
+                  tag: "Research",
+                  bg: "linear-gradient(160deg, #233a52 0%, #1a3050 55%, #2a4560 100%)",
+                  aspectRatio: "3/2",
                   title: "Early SaLT intervention reduces communication difficulties by up to 60% at age 7",
-                  excerpt:
-                    "A landmark UK study tracking 2,400 children over five years confirms what many SEND parents have long argued for.",
-                  date: "3 April 2026 · Research",
+                  excerpt: "A landmark study tracking 1,800 children over five years confirms what many SEND parents have long argued for.",
+                  date: "2 June 2026",
+                  featured: true,
                 },
                 {
-                  featured: false,
-                  chip: "Legislation",
-                  bg: "linear-gradient(135deg,#1E1B3A,#162040)",
+                  tag: "Legislation",
+                  bg: "linear-gradient(160deg, #3a2a22 0%, #52362a 60%, #3d2618 100%)",
+                  aspectRatio: "16/9",
                   title: "SEND Code of Practice 2026: what changes for families",
-                  excerpt: "Key updates to EHCP timelines and local authority obligations.",
-                  date: "28 March 2026 · Legislation",
+                  excerpt: "New statutory duties for local authorities around EHCP timelines.",
+                  date: "24 March 2026",
+                  featured: false,
                 },
                 {
-                  featured: false,
-                  chip: "Therapy",
-                  bg: "linear-gradient(135deg,#1A2848,#2B3A5A)",
+                  tag: "Therapy",
+                  bg: "linear-gradient(160deg, #1e301e 0%, #2a4430 60%, #1c2e1c 100%)",
+                  aspectRatio: "16/9",
                   title: "Sensory integration therapy: the evidence and what parents should know",
-                  excerpt: "A balanced look at research on sensory approaches for autism.",
-                  date: "22 March 2026 · Therapy",
+                  excerpt: "A balanced look at research on sensory integration approaches for autism.",
+                  date: "12 March 2026",
+                  featured: false,
                 },
               ].map((n) => (
                 <Link
@@ -2337,59 +2358,91 @@ const Index = () => {
                   to="/news"
                   style={{
                     background: C.white,
-                    borderRadius: 11,
+                    borderRadius: 18,
                     overflow: "hidden",
-                    border: `1.5px solid ${C.creamDark}`,
-                    boxShadow: "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)",
-                    textDecoration: "none",
                     display: "flex",
                     flexDirection: "column",
+                    textDecoration: "none",
+                    border: `1.5px solid ${C.creamDark}`,
+                    boxShadow: "0 2px 8px rgba(27,26,53,0.07), 0 1px 3px rgba(27,26,53,0.04)",
                   }}
                   onMouseEnter={newsIn}
                   onMouseLeave={newsOut}
                 >
                   <div
                     style={{
-                      height: n.featured ? 120 : 90,
+                      width: "100%",
+                      aspectRatio: n.aspectRatio,
                       background: n.bg,
-                      display: "flex",
-                      alignItems: "flex-end",
-                      padding: 10,
+                      position: "relative",
+                      overflow: "hidden",
+                      flexShrink: 0,
                     }}
                   >
                     <span
                       style={{
-                        background: "rgba(217,138,106,0.80)",
-                        color: C.warmWhite,
-                        fontSize: "0.56rem",
-                        fontWeight: 600,
-                        padding: "2px 7px",
-                        borderRadius: 3,
-                        letterSpacing: "0.5px",
+                        position: "absolute",
+                        bottom: 12,
+                        left: 14,
+                        fontSize: "0.55rem",
+                        letterSpacing: "0.12em",
                         textTransform: "uppercase",
+                        color: "rgba(255,255,255,0.2)",
                       }}
                     >
-                      {n.chip}
+                      Photography
                     </span>
                   </div>
-                  <div style={{ padding: 14, flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
+                  <div style={{ padding: "18px 20px 22px", flex: 1, display: "flex", flexDirection: "column" }}>
+                    <span
+                      style={{
+                        fontSize: "0.60rem",
+                        fontWeight: 500,
+                        letterSpacing: "0.12em",
+                        textTransform: "uppercase",
+                        color: C.terra,
+                        marginBottom: 8,
+                        display: "block",
+                      }}
+                    >
+                      {n.tag}
+                    </span>
                     <h3
                       style={{
-                        fontSize: n.featured ? "0.98rem" : "0.85rem",
-                        fontWeight: 600,
+                        fontFamily: "'Josefin Sans', sans-serif",
+                        fontWeight: 400,
                         color: C.textDark,
                         lineHeight: 1.4,
-                        margin: 0,
+                        flex: 1,
+                        fontSize: n.featured ? "1.1rem" : "0.92rem",
+                        margin: "0 0 10px",
                       }}
                     >
                       {n.title}
                     </h3>
-                    <p style={{ fontSize: "0.72rem", color: C.textMid, lineHeight: 1.55, fontWeight: 300, margin: 0 }}>
+                    <p
+                      style={{
+                        fontSize: "0.78rem",
+                        color: C.textMid,
+                        lineHeight: 1.7,
+                        margin: "0 0 14px",
+                      }}
+                    >
                       {n.excerpt}
                     </p>
-                    <span style={{ fontSize: "0.62rem", color: C.textLight, marginTop: "auto", paddingTop: 4 }}>
-                      {n.date}
-                    </span>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginTop: "auto",
+                        paddingTop: 12,
+                        borderTop: `1px solid ${C.creamDark}`,
+                      }}
+                    >
+                      <span style={{ fontSize: "0.68rem", color: C.textLight }}>{n.date}</span>
+                      <span style={{ fontSize: "1rem", color: C.terra, opacity: 0.6 }}>→</span>
+                    </div>
                   </div>
                 </Link>
               ))}
