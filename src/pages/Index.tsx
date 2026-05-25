@@ -12,6 +12,7 @@ import ClubsIcon from "@/assets/icons/Clubs_Icon.svg";
 import ShoppingIcon from "@/assets/icons/Shopping_Icon.svg";
 import CharitiesIcon from "@/assets/icons/Charities_Icon.svg";
 import NewsIcon from "@/assets/icons/News_Icon.svg";
+import CommunityIcon from "@/assets/icons/Community_Icon.svg";
 
 import ProviderFreeToListIcon from "@/assets/icons/Provider_FreeToList_Icon.svg";
 import ProviderEnquiriesIcon from "@/assets/icons/Provider_Enquiries_Icon.svg";
@@ -2079,30 +2080,7 @@ const Index = () => {
                 ))}
                 {/* community scene illustration */}
                 <div style={{ display: "flex", justifyContent: "center", marginTop: 6, opacity: 0.72 }}>
-                  <svg width="150" height="82" viewBox="0 0 160 90" fill="none">
-                    <path d="M10 72Q80 68 150 72" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
-                    <circle cx="32" cy="42" r="5.5" stroke={C.textDark} strokeWidth="1.2"/>
-                    <path d="M32 47.5L32 61M32 61L28 70M32 61L36 70" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
-                    <path d="M26 52L38 52" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
-                    <circle cx="22" cy="50" r="3.5" stroke={C.textDark} strokeWidth="1.1"/>
-                    <path d="M22 53.5L22 63M22 63L19.5 70M22 63L24.5 70" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round"/>
-                    <path d="M18 56L26 56" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round"/>
-                    <circle cx="80" cy="38" r="6" stroke={C.textDark} strokeWidth="1.2"/>
-                    <path d="M80 44L80 59M80 59L76 70M80 59L84 70" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
-                    <path d="M73 50L87 50" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
-                    <circle cx="126" cy="42" r="5.5" stroke={C.textDark} strokeWidth="1.2"/>
-                    <path d="M126 47.5L126 61M126 61L122 70M126 61L130 70" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
-                    <path d="M120 52L132 52" stroke={C.textDark} strokeWidth="1.2" strokeLinecap="round"/>
-                    <circle cx="136" cy="49" r="3.5" stroke={C.textDark} strokeWidth="1.1"/>
-                    <path d="M136 52.5L136 62M136 62L133.5 70M136 62L138.5 70" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round"/>
-                    <path d="M132 55L140 55" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round"/>
-                    <path d="M88 30C88 26 92 24 98 24C104 24 108 26 108 30C108 34 104 36 98 36L94 38L95 36C91 36 88 34 88 30Z" stroke={C.textDark} strokeWidth="1.1" strokeLinejoin="round"/>
-                    <circle cx="95" cy="30" r="1.2" fill={C.textDark}/>
-                    <circle cx="98" cy="30" r="1.2" fill={C.textDark}/>
-                    <circle cx="101" cy="30" r="1.2" fill={C.textDark}/>
-                    <path d="M44 58Q62 55 73 56" stroke={C.textDark} strokeWidth="0.8" strokeLinecap="round" strokeDasharray="3 3" opacity="0.5"/>
-                    <path d="M87 56Q106 54 118 55" stroke={C.textDark} strokeWidth="0.8" strokeLinecap="round" strokeDasharray="3 3" opacity="0.5"/>
-                  </svg>
+                  <img src={CommunityIcon} alt="" width={150} height={97} style={{ display: "block" }} />
                 </div>
               </div>
               {/* threads col */}
