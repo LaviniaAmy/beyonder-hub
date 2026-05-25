@@ -14,6 +14,8 @@ import CharitiesIcon from "@/assets/icons/Charities_Icon.svg";
 import NewsIcon from "@/assets/icons/News_Icon.svg";
 import CommunityIcon from "@/assets/icons/Community_Icon.svg";
 import NewsSLTPhoto from "@/assets/news/news-slt-intervention.png";
+import NewsSENDPhoto from "@/assets/news/news-send-code-practice.png";
+import NewsSensoryPhoto from "@/assets/news/news-sensory-integration.png";
 
 import ProviderFreeToListIcon from "@/assets/icons/Provider_FreeToList_Icon.svg";
 import ProviderEnquiriesIcon from "@/assets/icons/Provider_Enquiries_Icon.svg";
@@ -2308,7 +2310,7 @@ const Index = () => {
                   excerpt: "New statutory duties for local authorities around EHCP timelines.",
                   date: "24 March 2026",
                   featured: false,
-                  img: null,
+                  img: NewsSENDPhoto,
                 },
                 {
                   tag: "Therapy",
@@ -2318,7 +2320,7 @@ const Index = () => {
                   excerpt: "A balanced look at research on sensory integration approaches for autism.",
                   date: "12 March 2026",
                   featured: false,
-                  img: null,
+                  img: NewsSensoryPhoto,
                 },
               ].map((n) => (
                 <Link
