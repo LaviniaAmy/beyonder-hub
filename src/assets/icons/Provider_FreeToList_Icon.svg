@@ -12,5 +12,5 @@
   <path d="M23.38,12.72c-.06-.02-.29-.1-.55,0-.25.09-.38.28-.41.34" fill="none" stroke="#010d2d" stroke-linecap="round" stroke-miterlimit="10" stroke-width=".5"/>
   <path d="M11.8,9.96c-.03-.13-.12-.46-.41-.68-.38-.29-.91-.27-.95-.17-.04.11.51.21.81.71.3.5.16,1.08.26,1.09.07,0,.07-.34.35-.65.12-.13.25-.21.5-.36.2-.12.38-.21.51-.27" fill="none" stroke="#010d2d" stroke-linecap="round" stroke-miterlimit="10" stroke-width=".5"/>
   <path d="M16.56,17.19c.59-.31,1.27-.63,2.03-.91.97-.37,1.88-.62,2.67-.79.44-.13,1.04-.25,1.73-.23,1.5.02,2.62.63,3.15.97" fill="none" stroke="#010d2d" stroke-linecap="round" stroke-miterlimit="10" stroke-width=".5"/>
-  <circle cx="15.15" cy="14.9" r="12.57" fill="none" stroke="#010d2d" stroke-linecap="round" stroke-miterlimit="10" stroke-width=".75"/>
+  <circle cx="15.15" cy="14.9" r="12.57" fill="none" stroke="#010d2d" stroke-linecap="round" stroke-miterlimit="10" stroke-width=".5"/>
 </svg>
