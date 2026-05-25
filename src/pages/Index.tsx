@@ -13,6 +13,10 @@ import ShoppingIcon from "@/assets/icons/Shopping_Icon.svg";
 import CharitiesIcon from "@/assets/icons/Charities_Icon.svg";
 import NewsIcon from "@/assets/icons/News_Icon.svg";
 
+import ProviderFreeToListIcon from "@/assets/icons/Provider_FreeToList_Icon.svg";
+import ProviderEnquiriesIcon from "@/assets/icons/Provider_Enquiries_Icon.svg";
+import ProviderFullControlIcon from "@/assets/icons/Provider_FullControl_Icon.svg";
+
 import StepLocationIcon from "@/assets/icons/Step_Location.svg";
 import StepSupportIcon from "@/assets/icons/Step_Support.svg";
 import StepMessagingIcon from "@/assets/icons/Step_Messaging.svg";
@@ -1840,37 +1844,19 @@ const Index = () => {
                 {[
                   {
                     text: "Free to list — live the moment you create it",
-                    icon: (
-                      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" style={{ flexShrink: 0, marginTop: -1 }}>
-                        <circle cx="14" cy="14" r="13" stroke={C.textDark} strokeWidth="1.2"/>
-                        <path d="M9 14.5C9 11 11 9.5 13 9.5c0 0 0 2.5 0 4m0 0c0-2 1.5-3 3-3 1 0 1.5 1 1.5 2.5V14m-4.5-.5V18" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round"/>
-                        <path d="M17.5 14c0-1.5 1-2 1.5-1.5s.5 1.5.5 2.5V17c0 2-1.5 3-3.5 3H12c-1 0-2-.5-2.5-1.5L8.5 16" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    ),
+                    icon: ProviderFreeToListIcon,
                   },
                   {
                     text: "Enquiries direct through Beyonder, no referral fees",
-                    icon: (
-                      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" style={{ flexShrink: 0, marginTop: -1 }}>
-                        <circle cx="14" cy="14" r="13" stroke={C.textDark} strokeWidth="1.2"/>
-                        <path d="M8 10c0-1 1-1.5 2-1.5h8c1 0 2 .5 2 1.5v6c0 1-1 1.5-2 1.5h-2.5L13 20v-2.5H10c-1 0-2-.5-2-1.5z" stroke={C.textDark} strokeWidth="1.1" strokeLinejoin="round"/>
-                        <path d="M11 12h6M11 14.5h4" stroke={C.textDark} strokeWidth="1" strokeLinecap="round"/>
-                      </svg>
-                    ),
+                    icon: ProviderEnquiriesIcon,
                   },
                   {
                     text: "Full control of your profile and availability",
-                    icon: (
-                      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" style={{ flexShrink: 0, marginTop: -1 }}>
-                        <circle cx="14" cy="14" r="13" stroke={C.textDark} strokeWidth="1.2"/>
-                        <circle cx="14" cy="11" r="2.5" stroke={C.textDark} strokeWidth="1.1"/>
-                        <path d="M8.5 19.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke={C.textDark} strokeWidth="1.1" strokeLinecap="round"/>
-                      </svg>
-                    ),
+                    icon: ProviderFullControlIcon,
                   },
                 ].map((b) => (
                   <li key={b.text} style={{ fontSize: "0.82rem", color: C.textMid, lineHeight: 1.6, display: "flex", alignItems: "flex-start", gap: 13 }}>
-                    {b.icon}
+                    <img src={b.icon} alt="" style={{ width: 26, height: 26, flexShrink: 0, marginTop: 1 }} />
                     {b.text}
                   </li>
                 ))}
