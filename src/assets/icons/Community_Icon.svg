@@ -58,6 +58,6 @@
     <path d="M60.92,40.87c.35-.03.77,0,1.03.26.31.31.21.75.48.86.23.09.41-.18.81-.26.3-.06.69,0,1.19.34" fill="none" stroke="#101552" stroke-linecap="round" stroke-linejoin="round" stroke-width=".52"/>
     <path d="M60.06,43.71c.23-.02.51,0,.68.17.2.21.14.5.32.57.15.06.28-.12.54-.17.2-.04.46,0,.79.22" fill="none" stroke="#101552" stroke-linecap="round" stroke-linejoin="round" stroke-width=".35"/>
     <path d="M61.51,46.95c.23-.02.51,0,.68.17.2.21.14.5.32.57.15.06.28-.12.54-.17.2-.04.46,0,.79.22" fill="none" stroke="#101552" stroke-linecap="round" stroke-linejoin="round" stroke-width=".35"/>
-    <text transform="translate(57.11 22.19)" fill="#6387a5"><tspan font-size="14.1"><tspan x="0" y="0" font-family="'Josefin Sans', sans-serif" font-weight="300">Community</tspan></tspan><tspan font-family="'Nunito Sans', sans-serif" font-size="7.05"><tspan x="16.37" y="8.46">Forum &amp; Events</tspan></tspan></text>
+    <text transform="translate(92 22.19)" text-anchor="middle" fill="#6387a5"><tspan x="0" y="0" font-size="14.1" font-family="'Josefin Sans', sans-serif" font-weight="300">Community</tspan><tspan x="0" y="8.46" font-size="7.05" font-family="'Nunito Sans', sans-serif">Forum &amp; Events</tspan></text>
   </g>
 </svg>
