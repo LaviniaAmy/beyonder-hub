@@ -13,7 +13,7 @@ import ShoppingIcon from "@/assets/icons/Shopping_Icon.svg";
 import CharitiesIcon from "@/assets/icons/Charities_Icon.svg";
 import NewsIcon from "@/assets/icons/News_Icon.svg";
 import CommunityIcon from "@/assets/icons/Community_Icon.svg";
-import NewsSLTPhoto from "@/assets/news/news-slt-intervention.jpg";
+import NewsSLTPhoto from "@/assets/news/news-slt-intervention.png";
 
 import ProviderFreeToListIcon from "@/assets/icons/Provider_FreeToList_Icon.svg";
 import ProviderEnquiriesIcon from "@/assets/icons/Provider_Enquiries_Icon.svg";
