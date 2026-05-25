@@ -1856,7 +1856,7 @@ const Index = () => {
                   },
                 ].map((b) => (
                   <li key={b.text} style={{ fontSize: "0.82rem", color: C.textMid, lineHeight: 1.6, display: "flex", alignItems: "flex-start", gap: 13 }}>
-                    <img src={b.icon} alt="" style={{ width: 26, height: 26, flexShrink: 0, marginTop: 1 }} />
+                    <img src={b.icon} alt="" style={{ width: 36, height: 36, flexShrink: 0, marginTop: -2 }} />
                     {b.text}
                   </li>
                 ))}
