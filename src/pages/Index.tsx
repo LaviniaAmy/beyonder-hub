@@ -1840,7 +1840,7 @@ const Index = () => {
               >
                 Beyonder connects SEND families with local support at the moment they need it most. Your profile goes live immediately — no approval wait, no upfront cost.
               </p>
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 30px", display: "flex", flexDirection: "column", gap: 8 }}>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 30px", display: "flex", flexDirection: "column", gap: 4 }}>
                 {[
                   {
                     text: "Free to list — live the moment you create it",
@@ -1856,7 +1856,7 @@ const Index = () => {
                   },
                 ].map((b) => (
                   <li key={b.text} style={{ fontSize: "0.82rem", color: C.textMid, lineHeight: 1.6, display: "flex", alignItems: "center", gap: 10 }}>
-                    <img src={b.icon} alt="" style={{ width: 50, height: 50, flexShrink: 0 }} />
+                    <img src={b.icon} alt="" style={{ width: 55, height: 55, flexShrink: 0 }} />
                     {b.text}
                   </li>
                 ))}
