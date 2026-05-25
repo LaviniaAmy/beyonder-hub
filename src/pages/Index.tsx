@@ -2080,7 +2080,7 @@ const Index = () => {
                 ))}
                 {/* community scene illustration */}
                 <div style={{ display: "flex", justifyContent: "center", marginTop: 6, opacity: 0.72 }}>
-                  <img src={CommunityIcon} alt="" style={{ display: "block", width: "100%", maxWidth: 280, height: "auto" }} />
+                  <img src={CommunityIcon} alt="" style={{ display: "block", width: "100%", maxWidth: 320, height: "auto" }} />
                 </div>
               </div>
               {/* threads col */}
