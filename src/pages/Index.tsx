@@ -13,6 +13,7 @@ import ShoppingIcon from "@/assets/icons/Shopping_Icon.svg";
 import CharitiesIcon from "@/assets/icons/Charities_Icon.svg";
 import NewsIcon from "@/assets/icons/News_Icon.svg";
 import CommunityIcon from "@/assets/icons/Community_Icon.svg";
+import NewsSLTPhoto from "@/assets/news/news-slt-intervention.jpg";
 
 import ProviderFreeToListIcon from "@/assets/icons/Provider_FreeToList_Icon.svg";
 import ProviderEnquiriesIcon from "@/assets/icons/Provider_Enquiries_Icon.svg";
@@ -2297,6 +2298,7 @@ const Index = () => {
                   excerpt: "A landmark study tracking 1,800 children over five years confirms what many SEND parents have long argued for.",
                   date: "2 June 2026",
                   featured: true,
+                  img: NewsSLTPhoto,
                 },
                 {
                   tag: "Legislation",
@@ -2306,6 +2308,7 @@ const Index = () => {
                   excerpt: "New statutory duties for local authorities around EHCP timelines.",
                   date: "24 March 2026",
                   featured: false,
+                  img: null,
                 },
                 {
                   tag: "Therapy",
@@ -2315,11 +2318,13 @@ const Index = () => {
                   excerpt: "A balanced look at research on sensory integration approaches for autism.",
                   date: "12 March 2026",
                   featured: false,
+                  img: null,
                 },
               ].map((n) => (
                 <Link
                   key={n.title}
                   to="/news"
+                  className="news-card"
                   style={{
                     background: C.white,
                     borderRadius: 18,
@@ -2343,19 +2348,21 @@ const Index = () => {
                       flexShrink: 0,
                     }}
                   >
-                    <span
-                      style={{
-                        position: "absolute",
-                        bottom: 12,
-                        left: 14,
-                        fontSize: "0.55rem",
-                        letterSpacing: "0.12em",
-                        textTransform: "uppercase",
-                        color: "rgba(255,255,255,0.2)",
-                      }}
-                    >
-                      Photography
-                    </span>
+                    {n.img && (
+                      <img
+                        src={n.img}
+                        alt=""
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          objectPosition: "center",
+                        }}
+                      />
+                    )}
+                    <div className="news-overlay" />
                   </div>
                   <div style={{ padding: "18px 20px 22px", flex: 1, display: "flex", flexDirection: "column" }}>
                     <span
