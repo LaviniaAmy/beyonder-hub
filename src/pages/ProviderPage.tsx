@@ -117,7 +117,7 @@ const ProviderPage = () => {
       {/* Hero — gradient header */}
       <section
         style={{
-          background: "linear-gradient(to bottom, #0c1028 0%, #141c42 40%, #1e2058 75%, #2e2a70 100%)",
+          background: "linear-gradient(to bottom, #090d1c 0%, #0d1428 50%, #111d35 75%, #162040 100%)",
           padding: "clamp(28px, 5vw, 52px) 0 clamp(28px, 5vw, 52px)",
         }}
       >
