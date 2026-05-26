@@ -585,7 +585,7 @@ const Index = () => {
           — Edit CATEGORIES array above to add/remove/change category cards.
             Changes appear on both mobile and desktop automatically.
       ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: C.cream, padding: "clamp(24px, 4vw, 52px) clamp(20px, 5vw, 60px) clamp(20px, 3vw, 36px)" }}>
+      <section style={{ background: C.cream, padding: "clamp(12px, 1.5vw, 16px) clamp(20px, 5vw, 60px) clamp(20px, 3vw, 36px)" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
 
           {/* Intro text */}
