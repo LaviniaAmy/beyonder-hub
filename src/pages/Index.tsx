@@ -594,7 +594,7 @@ const Index = () => {
             <h2 style={{
               fontSize: "clamp(1.4rem, 3vw, 1.9rem)", fontWeight: 400, color: C.textDark,
               letterSpacing: "-0.4px", margin: "0 0 14px", fontFamily: "'Josefin Sans', sans-serif",
-              lineHeight: 1.25, paddingBottom: "0.15em",
+              lineHeight: 1.4, paddingBottom: "0.35em", overflow: "visible",
             }}>
               Everything your family needs, together
             </h2>
