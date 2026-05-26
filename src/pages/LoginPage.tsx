@@ -66,7 +66,7 @@ const LoginPage = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <PageBanner title="Log In" />
+      <PageBanner title="Log in" />
       <div className="flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-sm border-0 shadow-card animate-fade-in">
         <CardHeader className="text-center pb-2">

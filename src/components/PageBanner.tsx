@@ -5,14 +5,10 @@ interface PageBannerProps {
   subtitle?: string;
 }
 
-/**
- * Short page-header banner using the homepage hero colour palette.
- * Appears on every page except the homepage (which uses BirdCanvas).
- */
 const PageBanner = ({ title, subtitle }: PageBannerProps) => (
   <div
     style={{
-      background: "linear-gradient(to bottom, #090d1c 0%, #0d1428 50%, #111d35 75%, #162040 100%)",
+      background: "linear-gradient(to bottom, #162038 0%, #1c2c50 50%, #223662 75%, #2b4472 100%)",
       padding: "clamp(22px, 4vw, 38px) clamp(20px, 5vw, 60px)",
       display: "flex",
       flexDirection: "column",
@@ -23,48 +19,41 @@ const PageBanner = ({ title, subtitle }: PageBannerProps) => (
       position: "relative",
     }}
   >
-    {/* Subtle bottom fade into page content */}
+    {/* Subtle bottom fade */}
     <div
       style={{
         position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
+        bottom: 0, left: 0, right: 0,
         height: 28,
         background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.16))",
         pointerEvents: "none",
       }}
     />
 
-    {/* Decorative dot — matches homepage logo dot */}
-    <div
-      style={{
-        width: 6,
-        height: 6,
-        borderRadius: "50%",
-        background: "#D98A6A",
-        marginBottom: 10,
-        position: "relative",
-        zIndex: 1,
-      }}
-    />
-
-    <h1
-      style={{
-        fontFamily: "'Josefin Sans', sans-serif",
-        fontSize: "clamp(1.3rem, 3.5vw, 2rem)",
-        fontWeight: 300,
-        color: "#ffffff",
-        letterSpacing: "clamp(2px, 0.5vw, 5px)",
-        textTransform: "uppercase",
-        margin: 0,
-        position: "relative",
-        zIndex: 1,
-        lineHeight: 1.2,
-      }}
-    >
-      {title}
-    </h1>
+    {/* Dot + title inline */}
+    <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative", zIndex: 1 }}>
+      <div
+        style={{
+          width: 8, height: 8,
+          borderRadius: "50%",
+          background: "#D98A6A",
+          flexShrink: 0,
+        }}
+      />
+      <h1
+        style={{
+          fontFamily: "'Josefin Sans', sans-serif",
+          fontSize: "clamp(1.3rem, 3.5vw, 2rem)",
+          fontWeight: 300,
+          color: "#ffffff",
+          letterSpacing: "clamp(1px, 0.2vw, 2px)",
+          margin: 0,
+          lineHeight: 1.2,
+        }}
+      >
+        {title}
+      </h1>
+    </div>
 
     {subtitle && (
       <p

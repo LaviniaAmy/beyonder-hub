@@ -9,7 +9,7 @@ const articles = [
 
 const NewsPage = () => (
   <div className="bg-background min-h-screen">
-    <PageBanner title="News & Updates" />
+    <PageBanner title="News & updates" />
     <div className="container max-w-2xl animate-fade-in py-12">
       <div className="space-y-4">
         {articles.map((a) => (

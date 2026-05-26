@@ -184,7 +184,7 @@ const AdminPanel = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <PageBanner title="Admin Panel" />
+      <PageBanner title="Admin panel" />
       <div className="container animate-fade-in py-10">
 
 

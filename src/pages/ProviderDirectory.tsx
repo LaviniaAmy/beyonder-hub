@@ -245,7 +245,7 @@ const ProviderDirectory = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <PageBanner title={isLocalView ? "Find Local Support" : "Provider Directory"} />
+      <PageBanner title={isLocalView ? "Find local support" : "Provider directory"} />
       <div className="container py-10">
 
         {/* Main filters */}

@@ -11,7 +11,7 @@ const faqs = [
 
 const HelpCentre = () => (
   <div className="bg-background min-h-screen">
-    <PageBanner title="Help Centre" subtitle="Find answers to the most common questions about Beyonder." />
+    <PageBanner title="Help centre" subtitle="Find answers to the most common questions about Beyonder." />
     <div className="container max-w-2xl animate-fade-in py-12">
       <div className="rounded-xl bg-card p-6 shadow-card">
         <Accordion type="single" collapsible>

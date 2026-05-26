@@ -87,7 +87,7 @@ const ParentDashboard = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <PageBanner title="My Dashboard" />
+      <PageBanner title="My dashboard" />
       <div className="container max-w-3xl animate-fade-in py-10">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-xl font-bold text-foreground">Your Enquiries</h1>
