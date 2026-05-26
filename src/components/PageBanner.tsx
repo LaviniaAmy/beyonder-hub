@@ -12,7 +12,7 @@ interface PageBannerProps {
 const PageBanner = ({ title, subtitle }: PageBannerProps) => (
   <div
     style={{
-      background: "linear-gradient(160deg, #06091a 0%, #0e1530 35%, #171445 65%, #221f50 100%)",
+      background: "linear-gradient(to bottom, #0c1028 0%, #141c42 40%, #1e2058 75%, #2e2a70 100%)",
       padding: "clamp(22px, 4vw, 38px) clamp(20px, 5vw, 60px)",
       display: "flex",
       flexDirection: "column",

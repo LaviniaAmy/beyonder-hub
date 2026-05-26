@@ -282,11 +282,10 @@ const Index = () => {
               onSubmit={handleSearch}
               style={{
                 display: "flex", width: "min(580px, 92vw)", height: 52,
-                background: "rgba(232,244,255,0.15)",
-                backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,0.22)",
+                background: "#ffffff",
+                border: "none",
                 borderRadius: 12, overflow: "visible",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.22)",
                 marginBottom: 10, position: "relative", zIndex: 3,
               }}
             >
@@ -295,7 +294,7 @@ const Index = () => {
                 ref={regionRef}
                 style={{
                   flex: 1, display: "flex", flexDirection: "column", justifyContent: "center",
-                  padding: "7px 16px", borderRight: "1px solid rgba(255,255,255,0.20)",
+                  padding: "7px 16px", borderRight: "1px solid #E8E3DC",
                   position: "relative", cursor: "pointer",
                 }}
                 onClick={() => setRegionOpen((o) => !o)}
@@ -310,13 +309,13 @@ const Index = () => {
                     placeholder="Select a region"
                     onClick={(e) => { e.stopPropagation(); setRegionOpen(true); }}
                     style={{
-                      fontSize: "0.8rem", color: C.white, fontWeight: 300,
+                      fontSize: "0.8rem", color: C.textDark, fontWeight: 300,
                       background: "transparent", border: "none", outline: "none",
                       fontFamily: "'Nunito Sans', sans-serif", flex: 1, minWidth: 0, cursor: "pointer",
                     }}
                   />
-                  <svg width="10" height="10" viewBox="0 0 10 10" style={{ flexShrink: 0, opacity: 0.5, marginRight: 2 }}>
-                    <path d="M2 3.5 L5 6.5 L8 3.5" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg width="10" height="10" viewBox="0 0 10 10" style={{ flexShrink: 0, opacity: 0.35, marginRight: 2 }}>
+                    <path d="M2 3.5 L5 6.5 L8 3.5" stroke="#1B1A35" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 {regionOpen && filteredRegions.length > 0 && (
@@ -357,7 +356,7 @@ const Index = () => {
                   onChange={(e) => setSupport(e.target.value)}
                   placeholder="e.g. OT, Speech therapy, Clubs"
                   style={{
-                    fontSize: "0.8rem", color: C.white, fontWeight: 300,
+                    fontSize: "0.8rem", color: C.textDark, fontWeight: 300,
                     background: "transparent", border: "none", outline: "none",
                     fontFamily: "'Nunito Sans', sans-serif",
                   }}
