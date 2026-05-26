@@ -123,7 +123,7 @@ const EnquiryPage = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <PageBanner title="Send Enquiry" />
+      <PageBanner title="Send enquiry" />
       <div className="container max-w-lg animate-fade-in py-12">
         <Card className="border-0 shadow-card">
           <CardHeader>

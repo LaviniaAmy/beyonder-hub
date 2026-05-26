@@ -2,7 +2,7 @@ import PageBanner from "@/components/PageBanner";
 
 const AboutPage = () => (
   <div className="bg-background min-h-screen">
-    <PageBanner title="About Us" />
+    <PageBanner title="About us" />
     <div className="container max-w-2xl animate-fade-in py-12">
       <div className="rounded-xl bg-card p-8 shadow-card space-y-4 text-muted-foreground leading-relaxed">
         <p>Beyonder was born from a simple idea: finding the right support for a child with special educational needs or disabilities shouldn't feel overwhelming.</p>

@@ -15,7 +15,7 @@ const ExploreServices = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <PageBanner title="Explore Services" subtitle="Choose a category to find the right support for your family." />
+      <PageBanner title="Explore services" subtitle="Choose a category to find the right support for your family." />
       <div className="container animate-fade-in py-12">
 
         {/* Region Dropdown */}

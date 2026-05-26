@@ -1114,7 +1114,7 @@ const ProviderDashboard = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <PageBanner title="Provider Dashboard" />
+      <PageBanner title="Provider dashboard" />
       <div className="bg-card border-b border-teal-500/15">
         <div className="container max-w-3xl px-4 sm:px-6 py-5 sm:py-6">
           {isSuspended && (

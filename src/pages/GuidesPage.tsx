@@ -10,7 +10,7 @@ const guides = [
 
 const GuidesPage = () => (
   <div className="bg-background min-h-screen">
-    <PageBanner title="Guides & Understanding" subtitle="Clear, jargon-free guides to help you navigate the SEND landscape." />
+    <PageBanner title="Guides & understanding" subtitle="Clear, jargon-free guides to help you navigate the SEND landscape." />
     <div className="container max-w-2xl animate-fade-in py-12">
       <div className="space-y-4">
         {guides.map((g) => (
