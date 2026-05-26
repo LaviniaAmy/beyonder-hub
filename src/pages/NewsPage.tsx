@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import PageBanner from "@/components/PageBanner";
 
 const articles = [
   { title: "New SEND Reforms Announced for 2026", date: "2026-02-01", summary: "The government has outlined new proposals for improving SEND provision across England and Wales." },
@@ -7,10 +8,10 @@ const articles = [
 ];
 
 const NewsPage = () => (
-  <div className="bg-background min-h-screen py-16">
-    <div className="container max-w-2xl animate-fade-in">
-      <h1 className="mb-4 text-3xl font-bold text-accent-foreground">News & Updates</h1>
-      <div className="space-y-4 mt-8">
+  <div className="bg-background min-h-screen">
+    <PageBanner title="News & Updates" />
+    <div className="container max-w-2xl animate-fade-in py-12">
+      <div className="space-y-4">
         {articles.map((a) => (
           <Card key={a.title} className="cursor-pointer border-0 shadow-card card-hover-lift">
             <CardContent className="p-7">

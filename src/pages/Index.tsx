@@ -220,8 +220,7 @@ const Index = () => {
   };
 
   return (
-    <div style={{ fontFamily: "'Nunito Sans', sans-serif", background: C.cream }}
-         className="pb-[72px] md:pb-0">
+    <div style={{ fontFamily: "'Nunito Sans', sans-serif", background: C.cream }}>
 
       {/* ══════════════════════════════════════════════════════════════════
           HERO — BirdCanvas background, shared logo + tagline,
@@ -1017,38 +1016,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* ══════════════════════════════════════════════════════════════════
-          MOBILE BOTTOM NAVIGATION — hidden on desktop
-      ══════════════════════════════════════════════════════════════════ */}
-      <nav
-        className="md:hidden"
-        style={{
-          position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100,
-          background: C.white, borderTop: `1px solid ${C.creamDark}`,
-          display: "flex", padding: "10px 0 16px",
-          boxShadow: "0 -4px 20px rgba(0,0,0,0.08)",
-        }}
-      >
-        {([
-          { icon: "🏠", label: "Home",      to: "/",          active: true  },
-          { icon: "🔍", label: "Find",       to: "/explore",   active: false },
-          { icon: "💬", label: "Community",  to: "/community", active: false },
-          { icon: "📰", label: "News",       to: "/news",      active: false },
-          { icon: "👤", label: "Profile",    to: "/login",     active: false },
-        ] as const).map((item) => (
-          <Link
-            key={item.label}
-            to={item.to}
-            style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4, textDecoration: "none" }}
-          >
-            <span style={{ fontSize: 20 }}>{item.icon}</span>
-            <span style={{ fontSize: "0.57rem", color: item.active ? C.terra : C.textLight, letterSpacing: "0.04em", fontWeight: item.active ? 600 : 400 }}>
-              {item.label}
-            </span>
-          </Link>
-        ))}
-      </nav>
 
     </div>
   );

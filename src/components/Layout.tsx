@@ -4,6 +4,15 @@ import { Menu, X, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
 
+// ── Mobile bottom-nav config ──────────────────────────────────────────────────
+const BOTTOM_NAV = [
+  { icon: "🏠", label: "Home",      to: "/"          },
+  { icon: "🔍", label: "Find",      to: "/explore"   },
+  { icon: "💬", label: "Community", to: "/community" },
+  { icon: "📰", label: "News",      to: "/news"      },
+  { icon: "👤", label: "Profile",   to: "__profile"  }, // resolved at render
+] as const;
+
 const C = {
   navy:       "#111827",
   indigo:     "#1E1B3A",
@@ -323,11 +332,67 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         )}
       </header>
 
-      <main className="flex-1" style={{ paddingTop: 58 }}>
+      <main className="flex-1 pb-[72px] md:pb-0" style={{ paddingTop: 58 }}>
         {children}
       </main>
 
       <Footer />
+
+      {/* ── Mobile bottom navigation (md and above: hidden) ── */}
+      <nav
+        className="md:hidden"
+        style={{
+          position: "fixed",
+          bottom: 0, left: 0, right: 0,
+          zIndex: 200,
+          background: "#ffffff",
+          borderTop: "1px solid #EAE6DF",
+          display: "flex",
+          padding: "10px 0 16px",
+          boxShadow: "0 -4px 20px rgba(0,0,0,0.08)",
+        }}
+      >
+        {BOTTOM_NAV.map((item) => {
+          const href = item.to === "__profile"
+            ? (isAuthenticated ? dashboardLink : "/login")
+            : item.to;
+
+          const active =
+            href === "/"
+              ? location.pathname === "/"
+              : href === "/explore"
+                ? location.pathname === "/explore" || location.pathname.startsWith("/providers")
+                : location.pathname.startsWith(href);
+
+          return (
+            <Link
+              key={item.label}
+              to={href}
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 4,
+                textDecoration: "none",
+              }}
+            >
+              <span style={{ fontSize: 20 }}>{item.icon}</span>
+              <span
+                style={{
+                  fontSize: "0.57rem",
+                  color: active ? "#D98A6A" : "#7C7C8A",
+                  letterSpacing: "0.04em",
+                  fontWeight: active ? 600 : 400,
+                  fontFamily: "'Nunito Sans', sans-serif",
+                }}
+              >
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
     </div>
   );
 };

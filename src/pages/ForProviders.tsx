@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getProvider } from "@/data/providerStore";
 import { providers } from "@/data/mockData";
+import PageBanner from "@/components/PageBanner";
 
 const ForProviders = () => {
   const [searchParams] = useSearchParams();
@@ -52,12 +53,17 @@ const ForProviders = () => {
         </div>
       )}
 
-      {/* Hero */}
-      <section className="bg-background py-20">
+      {/* Hero — gradient banner */}
+      <section
+        style={{
+          background: "linear-gradient(160deg, #0c1021 0%, #111827 50%, #1E1B3A 100%)",
+          padding: "clamp(32px, 6vw, 60px) clamp(20px, 5vw, 60px)",
+        }}
+      >
         <div className="container animate-fade-in text-center max-w-3xl mx-auto">
-          <Badge className="mb-4 bg-teal-500/20 text-teal-400 border-0">For Service Providers</Badge>
-          <h1 className="text-4xl font-bold text-accent-foreground mb-4">Reach SEND families who need you most</h1>
-          <p className="text-lg text-accent-foreground/70 mb-8 leading-relaxed">
+          <Badge className="mb-4 bg-white/10 text-white/80 border border-white/20">For Service Providers</Badge>
+          <h1 className="text-4xl font-bold text-white mb-4">Reach SEND families who need you most</h1>
+          <p className="text-lg text-white/60 mb-8 leading-relaxed">
             Beyonder connects your service with thousands of families navigating special educational needs and
             disabilities. Join a trusted directory built specifically for the SEND community.
           </p>
@@ -69,7 +75,12 @@ const ForProviders = () => {
             >
               {claimProviderId ? "Claim Your Profile" : "Join Beyonder Free"}
             </Button>
-            <Button size="lg" variant="outline" className="border-accent-foreground/20 text-accent-foreground" asChild>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white/25 text-white/80 hover:bg-white/10 hover:text-white hover:border-white/40"
+              asChild
+            >
               <Link to="/providers">Browse Directory</Link>
             </Button>
           </div>

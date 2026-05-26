@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { categories, regions } from "@/data/mockData";
 import { useState } from "react";
+import PageBanner from "@/components/PageBanner";
 
 const iconMap: Record<string, React.ElementType> = {
   Heart, Users, ShoppingBag, GraduationCap, HandHeart,
@@ -13,12 +14,9 @@ const ExploreServices = () => {
   const [region, setRegion] = useState("all");
 
   return (
-    <div className="bg-background min-h-screen py-16">
-      <div className="container animate-fade-in">
-        <div className="mb-12 text-center">
-          <h1 className="mb-4 text-3xl font-bold text-accent-foreground">How can Beyonder help today?</h1>
-          <p className="text-accent-foreground/70 leading-relaxed">Choose a category to find the right support for your family.</p>
-        </div>
+    <div className="bg-background min-h-screen">
+      <PageBanner title="Explore Services" subtitle="Choose a category to find the right support for your family." />
+      <div className="container animate-fade-in py-12">
 
         {/* Region Dropdown */}
         <div className="mx-auto mb-10 max-w-xs">

@@ -114,11 +114,16 @@ const ProviderPage = () => {
 
   return (
     <div className="pb-24">
-      {/* Hero */}
-      <section className="bg-background py-12">
+      {/* Hero — gradient header */}
+      <section
+        style={{
+          background: "linear-gradient(160deg, #0c1021 0%, #111827 50%, #1E1B3A 100%)",
+          padding: "clamp(28px, 5vw, 52px) 0 clamp(28px, 5vw, 52px)",
+        }}
+      >
         <div className="container animate-fade-in">
           {isSuspended && (
-            <div className="flex items-center gap-3 rounded-xl border border-red-500/25 bg-red-500/08 p-4 mb-6">
+            <div className="flex items-center gap-3 rounded-xl border border-red-500/25 bg-red-500/10 p-4 mb-6">
               <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />
               <p className="text-sm text-red-400">This listing is currently unavailable.</p>
             </div>
@@ -127,25 +132,25 @@ const ProviderPage = () => {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="mb-3 flex flex-wrap gap-2">
-                <Badge variant="secondary" className="bg-navy-600 text-accent-foreground border-0">
+                <Badge className="bg-white/10 text-white/80 border border-white/20">
                   {provider.typeBadge}
                 </Badge>
-                <Badge className="bg-teal-500/20 text-teal-400 border-0 capitalize">{provider.plan_type}</Badge>
+                <Badge className="bg-teal-400/20 text-teal-300 border-0 capitalize">{provider.plan_type}</Badge>
                 {provider.isVerified && (
-                  <Badge className="bg-teal-500/20 text-teal-400 border-0 gap-1">
+                  <Badge className="bg-teal-400/20 text-teal-300 border-0 gap-1">
                     <ShieldCheck className="h-3.5 w-3.5" /> Verified Provider
                   </Badge>
                 )}
                 {isTherapist && provider.ehcpSupport && (
-                  <Badge className="bg-orange-500/15 text-orange-400 border-0 gap-1">
+                  <Badge className="bg-orange-500/20 text-orange-300 border-0 gap-1">
                     <Heart className="h-3.5 w-3.5" /> EHCP Supported
                   </Badge>
                 )}
               </div>
 
-              <h1 className="text-3xl font-bold text-accent-foreground">{provider.businessName}</h1>
+              <h1 className="text-3xl font-bold text-white">{provider.businessName}</h1>
 
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-accent-foreground/70">
+              <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-white/65">
                 <span className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
                   {provider.location}
@@ -185,18 +190,18 @@ const ProviderPage = () => {
                   {claimBlocked ? (
                     <div className="rounded-xl border border-orange-500/25 bg-orange-500/[0.08] px-4 py-3 max-w-sm">
                       <p className="text-sm font-semibold text-orange-400">Account already exists</p>
-                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                      <p className="text-xs text-white/50 mt-1 leading-relaxed">
                         You're currently logged in to an existing account. To claim a profile, please sign up with a new
                         provider account linked to your organisation's email address.
                       </p>
                     </div>
                   ) : (
                     <div className="flex items-center gap-3">
-                      <span className="text-sm text-accent-foreground/40">Own this profile?</span>
+                      <span className="text-sm text-white/40">Own this profile?</span>
                       <Button
                         size="sm"
                         variant="outline"
-                        className="border-teal-500/40 text-teal-400 hover:bg-teal-500/10"
+                        className="border-teal-400/40 text-teal-300 hover:bg-teal-500/10 hover:border-teal-400/60"
                         onClick={handleClaim}
                       >
                         Claim this profile

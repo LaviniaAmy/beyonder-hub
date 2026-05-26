@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import PageBanner from "@/components/PageBanner";
 import {
   MapPin,
   Star,
@@ -243,11 +244,9 @@ const ProviderDirectory = () => {
   const hasProductFilters = priceRange !== "all" || needFilter !== "all" || productSearch;
 
   return (
-    <div className="bg-background min-h-screen py-10">
-      <div className="container">
-        <h1 className="mb-8 text-3xl font-bold text-accent-foreground animate-fade-in">
-          {isLocalView ? "Find Local Support" : "Provider Directory"}
-        </h1>
+    <div className="bg-background min-h-screen">
+      <PageBanner title={isLocalView ? "Find Local Support" : "Provider Directory"} />
+      <div className="container py-10">
 
         {/* Main filters */}
         {!isProductView && (

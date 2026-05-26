@@ -1,11 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Calendar } from "lucide-react";
+import PageBanner from "@/components/PageBanner";
 
 const CommunityPage = () => (
-  <div className="bg-background min-h-screen py-16">
-    <div className="container max-w-2xl animate-fade-in">
-      <h1 className="mb-4 text-3xl font-bold text-accent-foreground">Community</h1>
-      <p className="mb-10 text-accent-foreground/70 leading-relaxed">Connect with other SEND families, share experiences, and find local events.</p>
+  <div className="bg-background min-h-screen">
+    <PageBanner title="Community" subtitle="Connect with other SEND families, share experiences, and find local events." />
+    <div className="container max-w-2xl animate-fade-in py-12">
       <div className="grid gap-5 sm:grid-cols-2">
         <Card className="border-0 shadow-card card-hover-lift">
           <CardContent className="flex items-start gap-4 p-7">

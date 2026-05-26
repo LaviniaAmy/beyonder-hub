@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { claimRecords, pendingClaims } from "@/data/founderStore";
+import PageBanner from "@/components/PageBanner";
 
 const TEST_LOGINS = [
   { label: "Parent", email: "test@parent.com" },
@@ -64,7 +65,9 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="bg-background flex min-h-[80vh] items-center justify-center py-16">
+    <div className="bg-background min-h-screen">
+      <PageBanner title="Log In" />
+      <div className="flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-sm border-0 shadow-card animate-fade-in">
         <CardHeader className="text-center pb-2">
           {redirectTo?.startsWith("/enquiry") && (
@@ -132,6 +135,7 @@ const LoginPage = () => {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };

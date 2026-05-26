@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate, Navigate } from "react-router-dom";
+import PageBanner from "@/components/PageBanner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -121,9 +122,9 @@ const EnquiryPage = () => {
   }
 
   return (
-    <div className="bg-background min-h-screen py-16">
-      <div className="container max-w-lg animate-fade-in">
-        <h1 className="mb-6 text-2xl font-bold text-accent-foreground">Send Enquiry</h1>
+    <div className="bg-background min-h-screen">
+      <PageBanner title="Send Enquiry" />
+      <div className="container max-w-lg animate-fade-in py-12">
         <Card className="border-0 shadow-card">
           <CardHeader>
             <CardTitle className="text-lg">{provider.businessName}</CardTitle>
