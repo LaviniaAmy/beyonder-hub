@@ -1,5 +1,6 @@
 import BirdCanvas from "@/components/BirdCanvas";
 import { useState, useEffect, useRef } from "react";
+import { MapPin } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 import TherapistsIcon from "@/assets/icons/Therapists_Icon.svg";
@@ -227,9 +228,9 @@ const Index = () => {
           mobile glass search card / desktop inline search bar
       ══════════════════════════════════════════════════════════════════ */}
       <section
+        className="min-h-[340px] md:min-h-[490px] md:max-h-[560px]"
         style={{
           position: "relative", overflow: "hidden",
-          minHeight: "clamp(490px, 72vh, 560px)",
           display: "flex", flexDirection: "column",
         }}
       >
@@ -237,47 +238,26 @@ const Index = () => {
         <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
           <BirdCanvas />
         </div>
-        {/* Legibility overlay */}
+        {/* Legibility overlay — darker, fades out higher up so lighter sky is less visible */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
-          background: "linear-gradient(180deg, rgba(8,12,24,0.10) 0%, rgba(8,12,24,0.04) 50%, rgba(8,12,24,0.20) 100%)",
+          background: "linear-gradient(180deg, rgba(8,12,24,0.18) 0%, rgba(8,12,24,0.12) 35%, rgba(8,12,24,0.32) 75%, rgba(8,12,24,0.52) 100%)",
         }} />
 
         {/* Content column */}
         <div style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column", flex: 1 }}>
 
-          {/* ── Mobile mini-nav (sign-in shortcut over the canvas) ── */}
-          <div className="md:hidden flex justify-between items-center px-5 pt-4 pb-2">
-            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-              <div style={{ width: 7, height: 7, borderRadius: "50%", background: C.terra }} />
-              <span style={{ fontSize: "0.9rem", fontWeight: 700, color: C.amber, letterSpacing: "-0.3px" }}>
-                Beyonder
-              </span>
-            </div>
-            <Link
-              to="/login"
-              style={{
-                fontSize: "0.70rem", fontWeight: 600, color: "rgba(232,244,255,0.55)",
-                padding: "6px 14px", borderRadius: 8,
-                border: "1px solid rgba(232,244,255,0.12)",
-                background: "rgba(232,244,255,0.05)", textDecoration: "none",
-              }}
-            >
-              Sign in
-            </Link>
-          </div>
-
           {/* ── Logo + tagline (shared by both viewports) ── */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}
                className="pt-8 md:pt-16 px-5">
-            <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 1.5vw, 16px)", marginBottom: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "clamp(10px, 1.5vw, 18px)", marginBottom: 8 }}>
               <div style={{
-                width: "clamp(9px, 1.5vw, 18px)", height: "clamp(9px, 1.5vw, 18px)",
+                width: "clamp(11px, 1.8vw, 22px)", height: "clamp(11px, 1.8vw, 22px)",
                 borderRadius: "50%", background: C.terra,
               }} />
               <span style={{
                 fontFamily: "'Josefin Sans', sans-serif",
-                fontSize: "clamp(2.4rem, 7vw, 5.8rem)",
+                fontSize: "clamp(2.9rem, 7vw, 7rem)",
                 fontWeight: 300, color: "#ffffff",
                 letterSpacing: "clamp(1px, 0.3vw, 2px)", lineHeight: 1,
               }}>
@@ -427,7 +407,7 @@ const Index = () => {
           {/* Flex spacer — grows to push mobile search card to bottom */}
           <div className="flex-1" />
 
-          {/* ── Mobile search card (glass effect) ── */}
+          {/* ── Mobile search card (glass outer, single white bar inside) ── */}
           <div
             className="md:hidden mx-4"
             style={{
@@ -436,108 +416,107 @@ const Index = () => {
               border: "1px solid rgba(255,255,255,0.24)",
               borderRadius: "20px 20px 0 0",
               boxShadow: "0 -14px 40px rgba(0,0,0,0.22)",
-              padding: "20px 18px 24px",
+              padding: "14px 14px 18px",
             }}
           >
-            {/* Region field */}
-            <div ref={mobileRegionRef} style={{ position: "relative", marginBottom: 10 }}>
-              <div
-                style={{ background: "rgba(255,255,255,0.92)", borderRadius: 12, padding: "10px 14px", cursor: "pointer" }}
-                onClick={() => setMobileRegionOpen((o) => !o)}
-              >
-                <div style={{ fontSize: "0.56rem", fontWeight: 600, color: C.terra, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 3 }}>
-                  Region
-                </div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <input
-                    type="text" value={region}
-                    onChange={(e) => { setRegion(e.target.value); setMobileRegionOpen(true); }}
-                    placeholder="Select a region"
-                    onClick={(e) => { e.stopPropagation(); setMobileRegionOpen(true); }}
+            {/* Single search bar: [icon] [text input] [Region pill] [arrow] */}
+            <div style={{ position: "relative", marginBottom: 12 }}>
+              <div style={{
+                display: "flex", alignItems: "center",
+                background: "#ffffff", borderRadius: 12,
+                padding: "0 6px 0 12px", height: 48,
+              }}>
+                {/* Search icon */}
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none"
+                     style={{ flexShrink: 0, opacity: 0.30, marginRight: 8 }}>
+                  <circle cx="7" cy="7" r="5" stroke={C.textDark} strokeWidth="1.6"/>
+                  <path d="M11 11L14 14" stroke={C.textDark} strokeWidth="1.6" strokeLinecap="round"/>
+                </svg>
+                {/* Support text input */}
+                <input
+                  type="text" value={support}
+                  onChange={(e) => setSupport(e.target.value)}
+                  placeholder="OT, Speech therapy, Clubs..."
+                  style={{
+                    flex: 1, fontSize: "0.85rem", color: C.textDark, fontWeight: 300,
+                    background: "transparent", border: "none", outline: "none",
+                    fontFamily: "'Nunito Sans', sans-serif", minWidth: 0,
+                  }}
+                />
+                {/* Region pill */}
+                <div ref={mobileRegionRef} style={{ position: "relative", flexShrink: 0 }}>
+                  <button
                     style={{
-                      fontSize: "0.87rem", color: C.textDark, fontWeight: 300,
-                      background: "transparent", border: "none", outline: "none",
-                      fontFamily: "'Nunito Sans', sans-serif", flex: 1,
+                      display: "flex", alignItems: "center", gap: 4,
+                      background: "rgba(27,26,53,0.09)", borderRadius: 8,
+                      padding: "6px 10px", border: "none", cursor: "pointer",
+                      fontSize: "0.73rem", fontWeight: 600, color: C.textDark,
+                      fontFamily: "'Nunito Sans', sans-serif", whiteSpace: "nowrap",
+                      marginRight: 6,
                     }}
-                  />
-                  <svg width="10" height="10" viewBox="0 0 10 10" style={{ flexShrink: 0, opacity: 0.3 }}>
-                    <path d="M2 3.5 L5 6.5 L8 3.5" stroke={C.textDark} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-              </div>
-              {mobileRegionOpen && filteredRegions.length > 0 && (
-                <div style={{
-                  position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0,
-                  background: "rgba(232,244,255,0.99)", borderRadius: 10,
-                  boxShadow: "0 8px 24px rgba(27,26,53,0.18)",
-                  zIndex: 9999, overflowY: "auto", maxHeight: "200px", border: "1px solid #DDD8D0",
-                }}>
-                  {filteredRegions.map((r, i) => (
-                    <div key={r}
-                      style={{
-                        padding: "10px 14px", fontSize: "0.85rem",
-                        color: r === region ? C.terra : C.textDark,
-                        fontWeight: r === region ? 600 : 300,
-                        fontFamily: "'Nunito Sans', sans-serif", cursor: "pointer",
-                        borderTop: i > 0 ? "1px solid #E8E3DC" : "none",
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(217,138,106,0.06)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                      onMouseDown={(e) => { e.preventDefault(); setRegion(r); setMobileRegionOpen(false); }}
-                    >
-                      {r}
+                    onClick={() => setMobileRegionOpen((o) => !o)}
+                  >
+                    <MapPin size={11} />
+                    {region || "Region"}
+                  </button>
+                  {mobileRegionOpen && filteredRegions.length > 0 && (
+                    <div style={{
+                      position: "absolute", bottom: "calc(100% + 6px)", right: 0,
+                      background: "rgba(232,244,255,0.99)", borderRadius: 10,
+                      boxShadow: "0 8px 24px rgba(27,26,53,0.18)",
+                      zIndex: 9999, overflowY: "auto", maxHeight: "200px",
+                      border: "1px solid #DDD8D0", minWidth: 180,
+                    }}>
+                      {filteredRegions.map((r, i) => (
+                        <div key={r}
+                          style={{
+                            padding: "10px 14px", fontSize: "0.85rem",
+                            color: r === region ? C.terra : C.textDark,
+                            fontWeight: r === region ? 600 : 300,
+                            fontFamily: "'Nunito Sans', sans-serif", cursor: "pointer",
+                            borderTop: i > 0 ? "1px solid #E8E3DC" : "none",
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(217,138,106,0.06)")}
+                          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                          onMouseDown={(e) => { e.preventDefault(); setRegion(r); setMobileRegionOpen(false); }}
+                        >
+                          {r}
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
-            </div>
-
-            {/* Support field */}
-            <div style={{ background: "rgba(255,255,255,0.92)", borderRadius: 12, padding: "10px 14px", marginBottom: 12 }}>
-              <div style={{ fontSize: "0.56rem", fontWeight: 600, color: C.terra, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 3 }}>
-                Type of support
+                {/* Orange arrow button */}
+                <button
+                  onClick={() => {
+                    const params = new URLSearchParams();
+                    if (region.trim())  params.set("region", region.trim());
+                    if (support.trim()) params.set("support", support.trim());
+                    navigate(params.toString() ? `/providers?${params.toString()}` : "/providers");
+                  }}
+                  style={{
+                    width: 36, height: 36, borderRadius: 9, flexShrink: 0,
+                    background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`,
+                    border: "none", color: "#fff", cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
               </div>
-              <input
-                type="text" value={support}
-                onChange={(e) => setSupport(e.target.value)}
-                placeholder="e.g. OT, Speech therapy, Clubs"
-                style={{
-                  fontSize: "0.87rem", color: C.textDark, fontWeight: 300,
-                  background: "transparent", border: "none", outline: "none",
-                  fontFamily: "'Nunito Sans', sans-serif", width: "100%",
-                }}
-              />
             </div>
 
-            {/* Find Support button */}
-            <button
-              onClick={() => {
-                const params = new URLSearchParams();
-                if (region.trim())  params.set("region", region.trim());
-                if (support.trim()) params.set("support", support.trim());
-                navigate(params.toString() ? `/providers?${params.toString()}` : "/providers");
-              }}
-              style={{
-                width: "100%", padding: "15px",
-                background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`,
-                border: "none", color: "#fff",
-                fontSize: "0.9rem", fontWeight: 600,
-                fontFamily: "'Nunito Sans', sans-serif",
-                cursor: "pointer", borderRadius: 12, marginBottom: 14,
-              }}
-            >
-              Find Support
-            </button>
-
-            {/* Mobile hint chips */}
+            {/* Mobile hint chips — white */}
             <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
               {hints.map((h) => (
                 <button key={h.label}
                   style={{
                     padding: "5px 12px", borderRadius: 100,
-                    border: "1px solid rgba(217,138,106,0.30)",
-                    fontSize: "0.72rem", color: C.terra,
-                    background: "rgba(217,138,106,0.08)",
+                    border: "1px solid rgba(255,255,255,0.45)",
+                    fontSize: "0.72rem", color: "#ffffff",
+                    background: "rgba(255,255,255,0.12)",
                     cursor: "pointer", fontFamily: "'Nunito Sans', sans-serif",
                   }}
                   onClick={() => navigate(h.to)}
