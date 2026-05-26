@@ -1,4 +1,5 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import PageBanner from "@/components/PageBanner";
 
 const faqs = [
   { q: "How do I find services near me?", a: "Use the Explore Services page to browse by category, or use the search bar on the homepage. You can filter by location, age range, and delivery type." },
@@ -9,10 +10,9 @@ const faqs = [
 ];
 
 const HelpCentre = () => (
-  <div className="bg-background min-h-screen py-16">
-    <div className="container max-w-2xl animate-fade-in">
-      <h1 className="mb-4 text-3xl font-bold text-accent-foreground">Help Centre</h1>
-      <p className="mb-10 text-accent-foreground/70 leading-relaxed">Find answers to the most common questions about Beyonder.</p>
+  <div className="bg-background min-h-screen">
+    <PageBanner title="Help Centre" subtitle="Find answers to the most common questions about Beyonder." />
+    <div className="container max-w-2xl animate-fade-in py-12">
       <div className="rounded-xl bg-card p-6 shadow-card">
         <Accordion type="single" collapsible>
           {faqs.map((faq, i) => (

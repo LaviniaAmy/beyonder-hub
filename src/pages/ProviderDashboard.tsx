@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
+import PageBanner from "@/components/PageBanner";
 import {
   CheckCircle,
   Lock,
@@ -1113,6 +1114,7 @@ const ProviderDashboard = () => {
 
   return (
     <div className="bg-background min-h-screen">
+      <PageBanner title="Provider Dashboard" />
       <div className="bg-card border-b border-teal-500/15">
         <div className="container max-w-3xl px-4 sm:px-6 py-5 sm:py-6">
           {isSuspended && (

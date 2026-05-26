@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import PageBanner from "@/components/PageBanner";
 
 const guides = [
   { title: "Understanding EHCPs", summary: "A plain-English guide to Education, Health and Care Plans — what they are, how to apply, and what to expect." },
@@ -8,10 +9,9 @@ const guides = [
 ];
 
 const GuidesPage = () => (
-  <div className="bg-background min-h-screen py-16">
-    <div className="container max-w-2xl animate-fade-in">
-      <h1 className="mb-4 text-3xl font-bold text-accent-foreground">Guides & Understanding</h1>
-      <p className="mb-10 text-accent-foreground/70 leading-relaxed">Clear, jargon-free guides to help you navigate the SEND landscape.</p>
+  <div className="bg-background min-h-screen">
+    <PageBanner title="Guides & Understanding" subtitle="Clear, jargon-free guides to help you navigate the SEND landscape." />
+    <div className="container max-w-2xl animate-fade-in py-12">
       <div className="space-y-4">
         {guides.map((g) => (
           <Card key={g.title} className="cursor-pointer border-0 shadow-card card-hover-lift">

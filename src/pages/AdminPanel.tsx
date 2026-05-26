@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PageBanner from "@/components/PageBanner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -182,9 +183,10 @@ const AdminPanel = () => {
   });
 
   return (
-    <div className="bg-background min-h-screen py-10">
-      <div className="container animate-fade-in">
-        <h1 className="mb-6 text-3xl font-bold text-foreground">Admin Panel</h1>
+    <div className="bg-background min-h-screen">
+      <PageBanner title="Admin Panel" />
+      <div className="container animate-fade-in py-10">
+
 
         <Tabs defaultValue="providers">
           <TabsList className="bg-muted border-0">

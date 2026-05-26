@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import PageBanner from "@/components/PageBanner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,7 +68,9 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="bg-background flex min-h-[80vh] items-center justify-center py-16">
+    <div className="bg-background min-h-screen">
+      <PageBanner title="Join Beyonder" />
+      <div className="flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-md border-0 shadow-card animate-fade-in">
         <CardHeader className="text-center pb-2">
           <CardTitle className="text-2xl">Join Beyonder</CardTitle>
@@ -204,6 +207,7 @@ const SignupPage = () => {
           </p>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };

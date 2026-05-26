@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import PageBanner from "@/components/PageBanner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -85,10 +86,11 @@ const ParentDashboard = () => {
   const showReplyBox = selectedRecord?.isUnlocked && !atCap && isParentTurn(selectedRecord);
 
   return (
-    <div className="bg-background min-h-screen py-10">
-      <div className="container max-w-3xl animate-fade-in">
+    <div className="bg-background min-h-screen">
+      <PageBanner title="My Dashboard" />
+      <div className="container max-w-3xl animate-fade-in py-10">
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-foreground">Your Dashboard</h1>
+          <h1 className="text-xl font-bold text-foreground">Your Enquiries</h1>
           <Badge className="bg-muted text-foreground border-0">
             {mockParent.subscriptionTier === "free" ? "Free Tier" : "Subscribed"}
           </Badge>
