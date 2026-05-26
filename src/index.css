@@ -182,3 +182,21 @@
     transform: none !important;
   }
 }
+
+/* ── News card image overlay ── */
+.news-card .news-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 16, 35, 0.52);
+  opacity: 1;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.news-card:hover .news-overlay {
+  opacity: 0;
+}
+.news-card .news-tag {
+  position: relative;
+  z-index: 2;
+}
