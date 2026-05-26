@@ -591,7 +591,7 @@ const Index = () => {
           {/* Intro text */}
           <div style={{ textAlign: "center", marginBottom: "clamp(24px, 4vw, 40px)" }}>
             <p style={{ ...eyebrowStyle, marginBottom: 10 }}>The Beyonder Ecosystem</p>
-            <h2 style={{
+            <h2 className="md:!mt-10 lg:!mt-16" style={{
               fontSize: "clamp(1.4rem, 3vw, 1.9rem)", fontWeight: 400, color: C.textDark,
               letterSpacing: "-0.4px", margin: "0 0 14px", fontFamily: "'Josefin Sans', sans-serif",
               lineHeight: 1.4, paddingBottom: "0.35em", overflow: "visible",
