@@ -43,7 +43,7 @@ const PageBanner = ({ title, subtitle }: PageBannerProps) => (
       <h1
         style={{
           fontFamily: "'Josefin Sans', sans-serif",
-          fontSize: "clamp(1.3rem, 3.5vw, 2rem)",
+          fontSize: "clamp(1.95rem, 5.25vw, 3rem)",
           fontWeight: 300,
           color: "#ffffff",
           letterSpacing: "clamp(1px, 0.2vw, 2px)",
