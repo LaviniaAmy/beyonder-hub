@@ -227,7 +227,7 @@ const Index = () => {
           mobile glass search card / desktop inline search bar
       ══════════════════════════════════════════════════════════════════ */}
       <section
-        className="min-h-[260px] md:min-h-[500px] md:max-h-[580px] lg:min-h-[570px] lg:max-h-[660px]"
+        className="min-h-[260px] md:min-h-[500px] md:max-h-[580px]"
         style={{
           position: "relative", overflow: "hidden",
           display: "flex", flexDirection: "column",
