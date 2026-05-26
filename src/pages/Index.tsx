@@ -227,7 +227,7 @@ const Index = () => {
           mobile glass search card / desktop inline search bar
       ══════════════════════════════════════════════════════════════════ */}
       <section
-        className="min-h-[260px] md:min-h-[500px] md:max-h-[580px]"
+        className="min-h-[250px] md:min-h-[440px] md:max-h-[510px]"
         style={{
           position: "relative", overflow: "hidden",
           display: "flex", flexDirection: "column",
@@ -280,7 +280,7 @@ const Index = () => {
 
           {/* ── Desktop search bar (inline, bottom of hero) ── */}
           <div className="hidden md:flex flex-col items-center"
-               style={{ paddingBottom: 170, position: "relative", zIndex: 3 }}>
+               style={{ paddingBottom: 155, position: "relative", zIndex: 3 }}>
             <form
               onSubmit={handleSearch}
               style={{
