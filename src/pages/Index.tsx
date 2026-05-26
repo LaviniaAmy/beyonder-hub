@@ -227,7 +227,7 @@ const Index = () => {
           mobile glass search card / desktop inline search bar
       ══════════════════════════════════════════════════════════════════ */}
       <section
-        className="min-h-[340px] md:min-h-[490px] md:max-h-[560px]"
+        className="min-h-[290px] md:min-h-[500px] md:max-h-[580px] lg:min-h-[570px] lg:max-h-[660px]"
         style={{
           position: "relative", overflow: "hidden",
           display: "flex", flexDirection: "column",
@@ -256,7 +256,7 @@ const Index = () => {
               }} />
               <span style={{
                 fontFamily: "'Josefin Sans', sans-serif",
-                fontSize: "clamp(2.9rem, 7vw, 7rem)",
+                fontSize: "clamp(2.9rem, 8vw, 7rem)",
                 fontWeight: 300, color: "#ffffff",
                 letterSpacing: "clamp(1px, 0.3vw, 2px)", lineHeight: 1,
               }}>
@@ -275,9 +275,12 @@ const Index = () => {
             </p>
           </div>
 
-          {/* ── Desktop search bar (inline, mid-hero) ── */}
+          {/* Flex spacer — grows to push search bar to bottom of hero */}
+          <div className="flex-1" />
+
+          {/* ── Desktop search bar (inline, bottom of hero) ── */}
           <div className="hidden md:flex flex-col items-center"
-               style={{ marginTop: 20, paddingBottom: 108, position: "relative", zIndex: 3 }}>
+               style={{ paddingBottom: 108, position: "relative", zIndex: 3 }}>
             <form
               onSubmit={handleSearch}
               style={{
@@ -401,9 +404,6 @@ const Index = () => {
               ))}
             </div>
           </div>
-
-          {/* Flex spacer — grows to push mobile search card to bottom */}
-          <div className="flex-1" />
 
           {/* ── Mobile search card (glass outer, single white bar inside) ── */}
           <div
