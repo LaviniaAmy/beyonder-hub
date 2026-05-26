@@ -340,14 +340,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
       {/* ── Mobile bottom navigation (md and above: hidden) ── */}
       <nav
-        className="md:hidden"
+        className="md:hidden flex"
         style={{
           position: "fixed",
           bottom: 0, left: 0, right: 0,
           zIndex: 200,
           background: "#ffffff",
           borderTop: "1px solid #EAE6DF",
-          display: "flex",
           padding: "10px 0 16px",
           boxShadow: "0 -4px 20px rgba(0,0,0,0.08)",
         }}
