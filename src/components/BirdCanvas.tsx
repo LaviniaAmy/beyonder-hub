@@ -20,9 +20,12 @@ const LOGO_Y = 0.24;
 
 interface Group {
   bx: number; by: number;
-  wx1: number; wx2: number; wy1: number; wy2: number;
-  px1: number; px2: number; py1: number; py2: number;
-  ax1: number; ax2: number; ay1: number; ay2: number;
+  // Primary elliptical orbit — cos(X) + sin(Y) at same freq+phase = clean ellipse
+  wr:  number; pr:  number;
+  arx: number; ary: number;
+  // Secondary smaller ellipse at different speed → spirograph variety
+  wr2: number; pr2: number;
+  ar2x: number; ar2y: number;
 }
 
 interface Bird {
@@ -37,28 +40,26 @@ interface Bird {
 }
 
 function initGroups(): Group[] {
-  // Five group anchors arranged around the logo centre.
-  // Larger ax/ay amplitudes than before → wide sweeping loops around the logo.
+  // Five anchors around the logo. Each orbits in a proper ellipse
+  // (cos for X, sin for Y, same freq) so paths loop visibly rather than drift.
+  // Primary orbit: 36–91s per loop at desktop speed (wr 2e-4–5e-4).
+  // Secondary orbit: smaller spirograph layer for organic variety.
   return [
-    { bx: LOGO_X,        by: LOGO_Y        },  // centre — on the logo
-    { bx: LOGO_X - 0.26, by: LOGO_Y - 0.07 }, // upper-left arc
-    { bx: LOGO_X + 0.26, by: LOGO_Y - 0.07 }, // upper-right arc
-    { bx: LOGO_X - 0.22, by: LOGO_Y + 0.10 }, // lower-left sweep
-    { bx: LOGO_X + 0.22, by: LOGO_Y + 0.10 }, // lower-right sweep
+    { bx: LOGO_X,        by: LOGO_Y        },
+    { bx: LOGO_X - 0.24, by: LOGO_Y - 0.06 },
+    { bx: LOGO_X + 0.24, by: LOGO_Y - 0.06 },
+    { bx: LOGO_X - 0.20, by: LOGO_Y + 0.10 },
+    { bx: LOGO_X + 0.20, by: LOGO_Y + 0.10 },
   ].map(({ bx, by }) => ({
     bx, by,
-    // Slightly faster oscillation than original → more looping feel
-    wx1: 5e-5 + Math.random() * 4e-5,
-    wx2: 3e-5 + Math.random() * 3e-5,
-    wy1: 4.5e-5 + Math.random() * 3.5e-5,
-    wy2: 2.5e-5 + Math.random() * 2e-5,
-    px1: Math.random() * TAU, px2: Math.random() * TAU,
-    py1: Math.random() * TAU, py2: Math.random() * TAU,
-    // Keep wide horizontal sweeps; reduce vertical amplitude to stay in top half
-    ax1: 0.18 + Math.random() * 0.10,
-    ax2: 0.09 + Math.random() * 0.06,
-    ay1: 0.07 + Math.random() * 0.04,
-    ay2: 0.03 + Math.random() * 0.02,
+    wr:   2e-4 + Math.random() * 3e-4,
+    pr:   Math.random() * TAU,
+    arx:  0.18 + Math.random() * 0.12,   // wide horizontal loops
+    ary:  0.07 + Math.random() * 0.05,   // shallower vertical (stay in top half)
+    wr2:  4e-4 + Math.random() * 4e-4,
+    pr2:  Math.random() * TAU,
+    ar2x: 0.05 + Math.random() * 0.05,
+    ar2y: 0.02 + Math.random() * 0.03,
   }));
 }
 
@@ -77,20 +78,22 @@ function initBirds(dpr: number): Bird[] {
     dp2:  Math.random() * TAU,
     of_:  3e-5 + Math.random() * 4e-5,
     oph:  Math.random() * TAU,
-    bs:   (6.0 + Math.random() * 7.2) * dpr * 1.2, // +20% base size; responsive multiplier applied in draw()
+    bs:   (6.0 + Math.random() * 7.2) * dpr * 1.2,
     ds:   0.65 + Math.random() * 0.4,
     dop:  0.35 + Math.random() * 0.5,
-    ff:   0.005 + Math.random() * 0.013, // spread: slow gliders (0.005) to fast flappers (0.018)
+    ff:   0.005 + Math.random() * 0.013,
     fp:   Math.random() * TAU,
-    fa:   0.20 + Math.random() * 0.50,   // wider amplitude: subtle dips to deep beats
-    front: Math.random() < 0.10, // 10% render in front of logo
+    fa:   0.20 + Math.random() * 0.50,
+    front: Math.random() < 0.10,
   }));
 }
 
 function groupPos(g: Group, t: number, W: number, H: number) {
+  // cos(X) + sin(Y) at same frequency & phase traces an ellipse.
+  // Two overlapping ellipses at different speeds → organic spirograph loops.
   return {
-    x: (g.bx + g.ax1 * Math.sin(t * g.wx1 * TAU + g.px1) + g.ax2 * Math.sin(t * g.wx2 * TAU + g.px2)) * W,
-    y: (g.by + g.ay1 * Math.sin(t * g.wy1 * TAU + g.py1) + g.ay2 * Math.sin(t * g.wy2 * TAU + g.py2)) * H,
+    x: (g.bx + g.arx  * Math.cos(t * g.wr  * TAU + g.pr)  + g.ar2x * Math.cos(t * g.wr2 * TAU + g.pr2)) * W,
+    y: (g.by + g.ary  * Math.sin(t * g.wr  * TAU + g.pr)  + g.ar2y * Math.sin(t * g.wr2 * TAU + g.pr2)) * H,
   };
 }
 
