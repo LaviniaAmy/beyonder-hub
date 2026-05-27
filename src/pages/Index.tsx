@@ -433,7 +433,7 @@ const Index = () => {
             MOBILE CONTENT COLUMN — original code, completely untouched.
             Hidden on desktop (md:hidden). Mobile layout unchanged.
         ══════════════════════════════════════════════════════════════════ */}
-        <div className="flex flex-col flex-1 md:hidden" style={{ position: "relative", zIndex: 3 }}>
+        <div className="mobile-hero-col" style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column", flex: 1 }}>
 
           {/* ── Logo + tagline (shared by both viewports) ── */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}
