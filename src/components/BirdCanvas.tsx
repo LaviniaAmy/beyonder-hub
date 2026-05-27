@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 
+// ── OUR sky gradient — unchanged ───────────────────────────────────────────
 const SKY_COLORS = ["#0e152a", "#13244e", "#20447f", "#2f6ca2", "#72b3cf"];
 const SKY_STOPS  = [0, 0.20, 0.44, 0.66, 0.88];
 
@@ -8,7 +9,7 @@ const BIRD_PATH_D =
 
 const SVG_W = 609.94, SVG_H = 394.73, BCX = 300, BCY = 180;
 const IS_MOBILE = typeof window !== "undefined" && window.innerWidth < 768;
-const NUM_BIRDS = IS_MOBILE ? Math.round(220 * 0.8) : 220;
+const NUM_BIRDS  = IS_MOBILE ? Math.round(220 * 0.8) : 220;
 const NUM_GROUPS = 5;
 const TAU = Math.PI * 2;
 
@@ -18,14 +19,12 @@ const TAU = Math.PI * 2;
 const LOGO_X = 0.50;
 const LOGO_Y = 0.24;
 
+// ── Types ──────────────────────────────────────────────────────────────────
 interface Group {
   bx: number; by: number;
-  // Primary elliptical orbit — cos(X) + sin(Y) at same freq+phase = clean ellipse
-  wr:  number; pr:  number;
-  arx: number; ary: number;
-  // Secondary smaller ellipse at different speed → spirograph variety
-  wr2: number; pr2: number;
-  ar2x: number; ar2y: number;
+  wx1: number; wx2: number; wy1: number; wy2: number;
+  px1: number; px2: number; py1: number; py2: number;
+  ax1: number; ax2: number; ay1: number; ay2: number;
 }
 
 interface Bird {
@@ -36,30 +35,34 @@ interface Bird {
   of_: number; oph: number;
   bs: number; ds: number; dop: number;
   ff: number; fp: number; fa: number;
-  front: boolean; // ~10% render on the front canvas (above logo)
+  front: boolean;
 }
 
+// ── Init ───────────────────────────────────────────────────────────────────
 function initGroups(): Group[] {
-  // Five anchors around the logo. Each orbits in a proper ellipse
-  // (cos for X, sin for Y, same freq) so paths loop visibly rather than drift.
-  // Primary orbit: 36–91s per loop at desktop speed (wr 2e-4–5e-4).
-  // Secondary orbit: smaller spirograph layer for organic variety.
+  // HTML-style sin/sin groups anchored around our logo (LOGO_X=0.50, LOGO_Y=0.24).
+  // Layout: left flank, right flank, above logo, below logo, on logo.
+  // Frequencies scaled ×6 vs the HTML reference to give equivalent orbital
+  // periods at our slower time rate (55–80 units/sec vs HTML's 390 units/sec).
+  // Spatial amplitudes kept identical to the HTML.
   return [
-    { bx: LOGO_X,        by: LOGO_Y        },
-    { bx: LOGO_X - 0.24, by: LOGO_Y - 0.06 },
-    { bx: LOGO_X + 0.24, by: LOGO_Y - 0.06 },
-    { bx: LOGO_X - 0.20, by: LOGO_Y + 0.10 },
-    { bx: LOGO_X + 0.20, by: LOGO_Y + 0.10 },
+    { bx: 0.25,   by: LOGO_Y        },   // left flank
+    { bx: 0.75,   by: LOGO_Y        },   // right flank
+    { bx: LOGO_X, by: LOGO_Y - 0.14 },   // above logo
+    { bx: LOGO_X, by: LOGO_Y + 0.13 },   // below logo (yCeil handles top-half)
+    { bx: LOGO_X, by: LOGO_Y        },   // on the logo
   ].map(({ bx, by }) => ({
     bx, by,
-    wr:   2e-4 + Math.random() * 3e-4,
-    pr:   Math.random() * TAU,
-    arx:  0.18 + Math.random() * 0.12,   // wide horizontal loops
-    ary:  0.07 + Math.random() * 0.05,   // shallower vertical (stay in top half)
-    wr2:  4e-4 + Math.random() * 4e-4,
-    pr2:  Math.random() * TAU,
-    ar2x: 0.05 + Math.random() * 0.05,
-    ar2y: 0.02 + Math.random() * 0.03,
+    wx1: 2.4e-4 + Math.random() * 1.8e-4,
+    wx2: 1.5e-4 + Math.random() * 1.2e-4,
+    wy1: 2.1e-4 + Math.random() * 1.5e-4,
+    wy2: 1.2e-4 + Math.random() * 0.9e-4,
+    px1: Math.random() * TAU, px2: Math.random() * TAU,
+    py1: Math.random() * TAU, py2: Math.random() * TAU,
+    ax1: 0.10 + Math.random() * 0.06,   // HTML amplitudes — unchanged
+    ax2: 0.05 + Math.random() * 0.04,
+    ay1: 0.06 + Math.random() * 0.04,
+    ay2: 0.03 + Math.random() * 0.03,
   }));
 }
 
@@ -70,30 +73,30 @@ function initBirds(dpr: number): Bird[] {
     or:   Math.pow(Math.random(), 0.4),
     sx:   0.12 + Math.random() * 0.08,
     sy:   0.07 + Math.random() * 0.05,
-    df:   6e-5 + Math.random() * 8e-5,
-    da:   0.015 + Math.random() * 0.018,
+    df:   3.6e-4 + Math.random() * 4.8e-4,  // HTML driftFreq scaled ×6
+    da:   0.015  + Math.random() * 0.018,
     dph:  Math.random() * TAU,
-    df2:  9e-5 + Math.random() * 7e-5,
-    da2:  0.010 + Math.random() * 0.012,
+    df2:  5.4e-4 + Math.random() * 4.2e-4,  // HTML driftFreq2 scaled ×6
+    da2:  0.010  + Math.random() * 0.012,
     dp2:  Math.random() * TAU,
-    of_:  3e-5 + Math.random() * 4e-5,
+    of_:  1.8e-4 + Math.random() * 2.4e-4,  // HTML orbitFreq scaled ×6
     oph:  Math.random() * TAU,
-    bs:   (6.0 + Math.random() * 7.2) * dpr * 1.2,
-    ds:   0.65 + Math.random() * 0.4,
-    dop:  0.35 + Math.random() * 0.5,
-    ff:   0.005 + Math.random() * 0.013,
+    bs:   (7 + Math.random() * 7) * dpr * 1.2,  // HTML base size + our 1.2× scale
+    ds:   0.7  + Math.random() * 0.25,           // HTML depthScale (non-front birds)
+    dop:  0.4  + Math.random() * 0.45,           // HTML depthOpacity (non-front birds)
+    ff:   0.005 + Math.random() * 0.013,          // our tuned flutter range
     fp:   Math.random() * TAU,
-    fa:   0.20 + Math.random() * 0.50,
+    fa:   0.25 + Math.random() * 0.35,
     front: Math.random() < 0.10,
   }));
 }
 
+// ── Motion ─────────────────────────────────────────────────────────────────
 function groupPos(g: Group, t: number, W: number, H: number) {
-  // cos(X) + sin(Y) at same frequency & phase traces an ellipse.
-  // Two overlapping ellipses at different speeds → organic spirograph loops.
+  // HTML's original sin/sin formula — the motion style the user approved
   return {
-    x: (g.bx + g.arx  * Math.cos(t * g.wr  * TAU + g.pr)  + g.ar2x * Math.cos(t * g.wr2 * TAU + g.pr2)) * W,
-    y: (g.by + g.ary  * Math.sin(t * g.wr  * TAU + g.pr)  + g.ar2y * Math.sin(t * g.wr2 * TAU + g.pr2)) * H,
+    x: (g.bx + g.ax1 * Math.sin(t * g.wx1 * TAU + g.px1) + g.ax2 * Math.sin(t * g.wx2 * TAU + g.px2)) * W,
+    y: (g.by + g.ay1 * Math.sin(t * g.wy1 * TAU + g.py1) + g.ay2 * Math.sin(t * g.wy2 * TAU + g.py2)) * H,
   };
 }
 
@@ -107,6 +110,7 @@ function birdPos(b: Bird, groups: Group[], t: number, W: number, H: number) {
   return { x, y };
 }
 
+// ── Component ──────────────────────────────────────────────────────────────
 const BirdCanvas = () => {
   const backRef  = useRef<HTMLCanvasElement>(null);
   const frontRef = useRef<HTMLCanvasElement>(null);
@@ -183,10 +187,10 @@ const BirdCanvas = () => {
       fctx.clearRect(0, 0, W, H);
       drawSky();
 
-      // Responsive size multiplier: 0.8 at 375px CSS width → 1.404 at 1440px, clamped at both ends
+      // Responsive size multiplier: 0.8 at 375px CSS width → 1.264 at 1440px
       const cssW = W / DPR;
       const t = Math.max(0, Math.min(1, (cssW - 375) / (1440 - 375)));
-      const sizeMultiplier = 0.8 + 0.464 * t; // desktop end: 1.404 → 1.264 (-10%); mobile end unchanged
+      const sizeMultiplier = 0.8 + 0.464 * t;
 
       const cp = birds.map((b) => birdPos(b, groups, time, W, H));
 
@@ -204,7 +208,7 @@ const BirdCanvas = () => {
         const ex    = Math.min(x / (W * 0.08), (W - x) / (W * 0.08), 1);
         const ey    = Math.min(y / (H * 0.08), (H - y) / (H * 0.08), 1);
         const edge  = Math.max(0, Math.min(1, ex, ey));
-        // Fade birds to invisible as they approach the vertical midpoint (top-half constraint)
+        // Fade birds out as they approach the vertical midpoint (top-half constraint)
         const yCeil = Math.max(0, Math.min(1, 1 - (y - H * 0.42) / (H * 0.10)));
         const s     = b.bs * b.ds * sizeMultiplier;
         const flap  = 1 - b.fa * Math.abs(Math.sin(time * b.ff * TAU + b.fp));
@@ -213,9 +217,7 @@ const BirdCanvas = () => {
       });
 
       lastPos = cp;
-      // Delta-time keeps speed frame-rate independent across all devices.
-      // Responsive multiplier: 0.08 on mobile (375px) → 0.055 on desktop (1440px)
-      // so desktop drifts more slowly than mobile; both slower than before.
+      // Delta-time: frame-rate independent, responsive speed (desktop slower than mobile)
       const dt = lastTs === null ? 16.67 : Math.min(ts - lastTs, 50);
       lastTs = ts;
       const speedMult = 0.08 - 0.025 * Math.max(0, Math.min(1, (W / DPR - 375) / (1440 - 375)));
