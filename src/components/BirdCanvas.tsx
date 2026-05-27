@@ -40,11 +40,9 @@ interface Bird {
 
 // ── Init ───────────────────────────────────────────────────────────────────
 function initGroups(): Group[] {
-  // HTML-style sin/sin groups anchored around our logo (LOGO_X=0.50, LOGO_Y=0.24).
-  // Layout: left flank, right flank, above logo, below logo, on logo.
-  // Frequencies scaled ×6 vs the HTML reference to give equivalent orbital
-  // periods at our slower time rate (55–80 units/sec vs HTML's 390 units/sec).
-  // Spatial amplitudes kept identical to the HTML.
+  // HTML reference group layout, anchored around our logo (LOGO_X=0.50, LOGO_Y=0.24).
+  // Frequencies are EXACT from the HTML — no scaling needed because the time
+  // step below (dt × 0.39) reproduces the HTML's 6.5 units/frame at 60 fps.
   return [
     { bx: 0.25,   by: LOGO_Y        },   // left flank
     { bx: 0.75,   by: LOGO_Y        },   // right flank
@@ -53,13 +51,15 @@ function initGroups(): Group[] {
     { bx: LOGO_X, by: LOGO_Y        },   // on the logo
   ].map(({ bx, by }) => ({
     bx, by,
-    wx1: 2.4e-4 + Math.random() * 1.8e-4,
-    wx2: 1.5e-4 + Math.random() * 1.2e-4,
-    wy1: 2.1e-4 + Math.random() * 1.5e-4,
-    wy2: 1.2e-4 + Math.random() * 0.9e-4,
+    // HTML's exact frequencies — work correctly at our time rate (dt × 0.39)
+    wx1: 4e-5  + Math.random() * 3e-5,
+    wx2: 2.5e-5 + Math.random() * 2e-5,
+    wy1: 3.5e-5 + Math.random() * 3e-5,
+    wy2: 2e-5   + Math.random() * 1.5e-5,
     px1: Math.random() * TAU, px2: Math.random() * TAU,
     py1: Math.random() * TAU, py2: Math.random() * TAU,
-    ax1: 0.10 + Math.random() * 0.06,   // HTML amplitudes — unchanged
+    // HTML's exact amplitudes
+    ax1: 0.10 + Math.random() * 0.06,
     ax2: 0.05 + Math.random() * 0.04,
     ay1: 0.06 + Math.random() * 0.04,
     ay2: 0.03 + Math.random() * 0.03,
@@ -73,18 +73,18 @@ function initBirds(dpr: number): Bird[] {
     or:   Math.pow(Math.random(), 0.4),
     sx:   0.12 + Math.random() * 0.08,
     sy:   0.07 + Math.random() * 0.05,
-    df:   3.6e-4 + Math.random() * 4.8e-4,  // HTML driftFreq scaled ×6
-    da:   0.015  + Math.random() * 0.018,
+    df:   6e-5  + Math.random() * 8e-5,  // HTML's exact driftFreq
+    da:   0.015 + Math.random() * 0.018,
     dph:  Math.random() * TAU,
-    df2:  5.4e-4 + Math.random() * 4.2e-4,  // HTML driftFreq2 scaled ×6
-    da2:  0.010  + Math.random() * 0.012,
+    df2:  9e-5  + Math.random() * 7e-5,  // HTML's exact driftFreq2
+    da2:  0.010 + Math.random() * 0.012,
     dp2:  Math.random() * TAU,
-    of_:  1.8e-4 + Math.random() * 2.4e-4,  // HTML orbitFreq scaled ×6
+    of_:  3e-5  + Math.random() * 4e-5,  // HTML's exact orbitFreq
     oph:  Math.random() * TAU,
     bs:   (7 + Math.random() * 7) * dpr * 1.2,  // HTML base size + our 1.2× scale
-    ds:   0.7  + Math.random() * 0.25,           // HTML depthScale (non-front birds)
-    dop:  0.4  + Math.random() * 0.45,           // HTML depthOpacity (non-front birds)
-    ff:   0.005 + Math.random() * 0.013,          // our tuned flutter range
+    ds:   0.7  + Math.random() * 0.25,           // HTML depthScale
+    dop:  0.4  + Math.random() * 0.45,           // HTML depthOpacity
+    ff:   0.006 + Math.random() * 0.005,          // HTML's exact flapFreq
     fp:   Math.random() * TAU,
     fa:   0.25 + Math.random() * 0.35,
     front: Math.random() < 0.10,
@@ -93,7 +93,6 @@ function initBirds(dpr: number): Bird[] {
 
 // ── Motion ─────────────────────────────────────────────────────────────────
 function groupPos(g: Group, t: number, W: number, H: number) {
-  // HTML's original sin/sin formula — the motion style the user approved
   return {
     x: (g.bx + g.ax1 * Math.sin(t * g.wx1 * TAU + g.px1) + g.ax2 * Math.sin(t * g.wx2 * TAU + g.px2)) * W,
     y: (g.by + g.ay1 * Math.sin(t * g.wy1 * TAU + g.py1) + g.ay2 * Math.sin(t * g.wy2 * TAU + g.py2)) * H,
@@ -187,10 +186,10 @@ const BirdCanvas = () => {
       fctx.clearRect(0, 0, W, H);
       drawSky();
 
-      // Responsive size multiplier: 0.8 at 375px CSS width → 1.264 at 1440px
+      // Responsive size: 0.8 at 375px CSS width → 1.264 at 1440px
       const cssW = W / DPR;
-      const t = Math.max(0, Math.min(1, (cssW - 375) / (1440 - 375)));
-      const sizeMultiplier = 0.8 + 0.464 * t;
+      const tSize = Math.max(0, Math.min(1, (cssW - 375) / (1440 - 375)));
+      const sizeMultiplier = 0.8 + 0.464 * tSize;
 
       const cp = birds.map((b) => birdPos(b, groups, time, W, H));
 
@@ -208,7 +207,7 @@ const BirdCanvas = () => {
         const ex    = Math.min(x / (W * 0.08), (W - x) / (W * 0.08), 1);
         const ey    = Math.min(y / (H * 0.08), (H - y) / (H * 0.08), 1);
         const edge  = Math.max(0, Math.min(1, ex, ey));
-        // Fade birds out as they approach the vertical midpoint (top-half constraint)
+        // Fade birds out approaching vertical midpoint (top-half constraint)
         const yCeil = Math.max(0, Math.min(1, 1 - (y - H * 0.42) / (H * 0.10)));
         const s     = b.bs * b.ds * sizeMultiplier;
         const flap  = 1 - b.fa * Math.abs(Math.sin(time * b.ff * TAU + b.fp));
@@ -217,11 +216,11 @@ const BirdCanvas = () => {
       });
 
       lastPos = cp;
-      // Delta-time: frame-rate independent, responsive speed (desktop slower than mobile)
+      // dt × 0.39 = HTML's "time += 6.5" made frame-rate independent.
+      // At 60 fps: 16.67 × 0.39 = 6.5 units/frame — identical to the HTML reference.
       const dt = lastTs === null ? 16.67 : Math.min(ts - lastTs, 50);
       lastTs = ts;
-      const speedMult = 0.08 - 0.025 * Math.max(0, Math.min(1, (W / DPR - 375) / (1440 - 375)));
-      time += dt * speedMult;
+      time += dt * 0.39;
       rafRef.current = requestAnimationFrame(draw as FrameRequestCallback);
     }
 
