@@ -81,7 +81,7 @@ function initBirds(dpr: number): Bird[] {
     dp2:  Math.random() * TAU,
     of_:  3e-5  + Math.random() * 4e-5,  // HTML's exact orbitFreq
     oph:  Math.random() * TAU,
-    bs:   (7 + Math.random() * 7) * dpr * 1.2,  // HTML base size + our 1.2× scale
+    bs:   (7 + Math.random() * 7) * dpr * 0.96,  // HTML base size × 0.96 (1.2 − 20%)
     ds:   0.7  + Math.random() * 0.25,           // HTML depthScale
     dop:  0.4  + Math.random() * 0.45,           // HTML depthOpacity
     ff:   0.006 + Math.random() * 0.005,  // HTML's exact flapFreq
