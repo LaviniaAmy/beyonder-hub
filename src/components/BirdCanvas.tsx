@@ -80,9 +80,9 @@ function initBirds(dpr: number): Bird[] {
     bs:   (6.0 + Math.random() * 7.2) * dpr * 1.2, // +20% base size; responsive multiplier applied in draw()
     ds:   0.65 + Math.random() * 0.4,
     dop:  0.35 + Math.random() * 0.5,
-    ff:   0.012 + Math.random() * 0.010, // doubled to restore original flap rate after time-step halved
+    ff:   0.005 + Math.random() * 0.020, // wide spread: slow gliders (0.005) to fast flappers (0.025)
     fp:   Math.random() * TAU,
-    fa:   0.25 + Math.random() * 0.35,
+    fa:   0.20 + Math.random() * 0.50,   // wider amplitude: subtle dips to deep beats
     front: Math.random() < 0.10, // 10% render in front of logo
   }));
 }
@@ -210,12 +210,13 @@ const BirdCanvas = () => {
       });
 
       lastPos = cp;
-      // Delta-time: advance by actual ms elapsed × 0.12 so speed is
-      // identical at 30 fps, 60 fps, 120 fps, and on every mobile device.
-      // (0.12 keeps the same pace as the previous fixed step of 2.0 at 60 fps)
+      // Delta-time keeps speed frame-rate independent across all devices.
+      // Responsive multiplier: 0.08 on mobile (375px) → 0.055 on desktop (1440px)
+      // so desktop drifts more slowly than mobile; both slower than before.
       const dt = lastTs === null ? 16.67 : Math.min(ts - lastTs, 50);
       lastTs = ts;
-      time += dt * 0.09;
+      const speedMult = 0.08 - 0.025 * Math.max(0, Math.min(1, (W / DPR - 375) / (1440 - 375)));
+      time += dt * speedMult;
       rafRef.current = requestAnimationFrame(draw as FrameRequestCallback);
     }
 
