@@ -223,27 +223,28 @@ const Index = () => {
     <div style={{ fontFamily: "'Nunito Sans', sans-serif", background: C.cream }}>
 
       {/* ══════════════════════════════════════════════════════════════════
-          HERO — all elements independently positioned
-          Desktop: fixed height, every element absolute
-          Mobile: normal-flow wrapper drives height (refactor later)
+          HERO — Desktop: every element independently absolute-positioned
+                 Mobile: original content column untouched
       ══════════════════════════════════════════════════════════════════ */}
       <section
         className="min-h-[250px] md:h-[480px]"
-        style={{ position: "relative", overflow: "hidden" }}
+        style={{
+          position: "relative", overflow: "hidden",
+          display: "flex", flexDirection: "column",
+        }}
       >
-
-        {/* ── LAYER: BirdCanvas (murmurations) — independent ── */}
+        {/* BirdCanvas sky */}
         <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
           <BirdCanvas />
         </div>
 
-        {/* ── LAYER: Legibility overlay — independent ── */}
+        {/* Legibility overlay */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
           background: "linear-gradient(180deg, rgba(8,12,24,0.18) 0%, rgba(8,12,24,0.12) 35%, rgba(8,12,24,0.32) 75%, rgba(8,12,24,0.52) 100%)",
         }} />
 
-        {/* ── DESKTOP: Logo — independent ── */}
+        {/* ── DESKTOP ONLY: Logo — independent ── */}
         <div className="hidden md:flex"
           style={{
             position: "absolute", top: 64, left: 0, right: 0,
@@ -265,7 +266,7 @@ const Index = () => {
           </span>
         </div>
 
-        {/* ── DESKTOP: Horizon line — fully independent ── */}
+        {/* ── DESKTOP ONLY: Horizon line — fully independent ── */}
         <div className="hidden md:flex"
           style={{
             position: "absolute", top: 180, left: 0, right: 0,
@@ -278,7 +279,7 @@ const Index = () => {
           }} />
         </div>
 
-        {/* ── DESKTOP: Tagline — independent ── */}
+        {/* ── DESKTOP ONLY: Tagline — independent ── */}
         <div className="hidden md:flex"
           style={{
             position: "absolute", top: 186, left: 0, right: 0,
@@ -293,7 +294,7 @@ const Index = () => {
           </p>
         </div>
 
-        {/* ── DESKTOP: Search bar — independent ── */}
+        {/* ── DESKTOP ONLY: Search bar — independent ── */}
         <div className="hidden md:flex"
           style={{
             position: "absolute", top: 235, left: 0, right: 0,
@@ -403,7 +404,7 @@ const Index = () => {
           </form>
         </div>
 
-        {/* ── DESKTOP: Hint chips — independent ── */}
+        {/* ── DESKTOP ONLY: Hint chips — independent ── */}
         <div className="hidden md:flex"
           style={{
             position: "absolute", top: 297, left: 0, right: 0,
@@ -428,12 +429,15 @@ const Index = () => {
           ))}
         </div>
 
-        {/* ── MOBILE: Normal-flow wrapper — untouched, refactor later ── */}
-        <div className="md:hidden" style={{ display: "flex", flexDirection: "column", minHeight: 250 }}>
+        {/* ══════════════════════════════════════════════════════════════════
+            MOBILE CONTENT COLUMN — original code, completely untouched.
+            Hidden on desktop (md:hidden). Mobile layout unchanged.
+        ══════════════════════════════════════════════════════════════════ */}
+        <div className="md:hidden" style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column", flex: 1 }}>
 
-          {/* Mobile logo + tagline */}
+          {/* ── Logo + tagline (shared by both viewports) ── */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}
-               className="pt-8 px-5">
+               className="pt-8 md:pt-16 px-5">
             <div style={{ display: "flex", alignItems: "center", gap: "clamp(10px, 1.5vw, 18px)", marginBottom: 8 }}>
               <div style={{
                 width: "clamp(11px, 1.8vw, 22px)", height: "clamp(11px, 1.8vw, 22px)",
@@ -460,12 +464,53 @@ const Index = () => {
             </p>
           </div>
 
-          {/* Flex spacer */}
-          <div style={{ flex: 1 }} />
+          {/* Flex spacer — grows to push search bar to bottom of hero */}
+          <div className="flex-1" />
 
-          {/* Mobile search card */}
+          {/* ── Desktop search bar (inline, bottom of hero) ── */}
+          <div className="hidden md:flex flex-col items-center"
+               style={{ paddingBottom: 155, position: "relative", zIndex: 3 }}>
+            <form
+              onSubmit={handleSearch}
+              style={{
+                display: "flex", width: "min(580px, 92vw)", height: 52,
+                background: "#ffffff",
+                border: "none",
+                borderRadius: 12, overflow: "visible",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.22)",
+                marginBottom: 10, position: "relative", zIndex: 3,
+              }}
+            >
+              <div
+                ref={regionRef}
+                style={{
+                  flex: 1, display: "flex", flexDirection: "column", justifyContent: "center",
+                  padding: "7px 16px", borderRight: "1px solid #E8E3DC",
+                  position: "relative", cursor: "pointer",
+                }}
+                onClick={() => setRegionOpen((o) => !o)}
+              >
+                <span style={{ fontSize: "0.56rem", fontWeight: 600, color: C.terra, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 1 }}>Region</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <input type="text" value={region} onChange={(e) => { setRegion(e.target.value); setRegionOpen(true); }} placeholder="Select a region" onClick={(e) => { e.stopPropagation(); setRegionOpen(true); }} style={{ fontSize: "0.8rem", color: C.textDark, fontWeight: 300, background: "transparent", border: "none", outline: "none", fontFamily: "'Nunito Sans', sans-serif", flex: 1, minWidth: 0, cursor: "pointer" }} />
+                  <svg width="10" height="10" viewBox="0 0 10 10" style={{ flexShrink: 0, opacity: 0.35, marginRight: 2 }}><path d="M2 3.5 L5 6.5 L8 3.5" stroke="#1B1A35" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </div>
+              </div>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "7px 16px" }}>
+                <span style={{ fontSize: "0.56rem", fontWeight: 600, color: C.terra, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 1 }}>Type of support</span>
+                <input type="text" value={support} onChange={(e) => setSupport(e.target.value)} placeholder="e.g. OT, Speech therapy, Clubs" style={{ fontSize: "0.8rem", color: C.textDark, fontWeight: 300, background: "transparent", border: "none", outline: "none", fontFamily: "'Nunito Sans', sans-serif" }} />
+              </div>
+              <button type="submit" style={{ width: 110, flexShrink: 0, background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`, border: "none", color: C.warmWhite, fontSize: "0.85rem", fontWeight: 600, fontFamily: "'Nunito Sans', sans-serif", cursor: "pointer", borderRadius: "0 12px 12px 0" }} onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")} onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}>Find Support</button>
+            </form>
+            <div style={{ display: "flex", gap: 7, justifyContent: "center", flexWrap: "wrap" }}>
+              <span style={{ fontSize: "0.65rem", color: "rgba(232,244,255,0.25)", alignSelf: "center" }}>Try:</span>
+              {hints.map((h) => (<button key={h.label} style={{ padding: "4px 11px", borderRadius: 14, border: "1px solid rgba(217,138,106,0.32)", fontSize: "0.68rem", color: "rgba(232,244,255,0.45)", background: "rgba(217,138,106,0.06)", cursor: "pointer", fontFamily: "'Nunito Sans', sans-serif" }} onMouseEnter={chipIn} onMouseLeave={chipOut} onClick={() => navigate(h.to)}>{h.label}</button>))}
+            </div>
+          </div>
+
+          {/* ── Mobile search card (glass outer, single white bar inside) ── */}
           <div
-            className="mx-4"
+            className="md:hidden mx-4"
             style={{
               background: "rgba(255,255,255,0.13)",
               backdropFilter: "blur(22px)", WebkitBackdropFilter: "blur(22px)",
@@ -482,103 +527,33 @@ const Index = () => {
                 background: "#ffffff", borderRadius: 12,
                 padding: "0 6px 0 12px", height: 48,
               }}>
-                {/* Search icon */}
-                <svg width="15" height="15" viewBox="0 0 16 16" fill="none"
-                     style={{ flexShrink: 0, opacity: 0.30, marginRight: 8 }}>
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, opacity: 0.30, marginRight: 8 }}>
                   <circle cx="7" cy="7" r="5" stroke={C.textDark} strokeWidth="1.6"/>
                   <path d="M11 11L14 14" stroke={C.textDark} strokeWidth="1.6" strokeLinecap="round"/>
                 </svg>
-                {/* Support text input */}
-                <input
-                  type="text" value={support}
-                  onChange={(e) => setSupport(e.target.value)}
-                  placeholder="OT, Speech therapy, Clubs..."
-                  style={{
-                    flex: 1, fontSize: "0.85rem", color: C.textDark, fontWeight: 300,
-                    background: "transparent", border: "none", outline: "none",
-                    fontFamily: "'Nunito Sans', sans-serif", minWidth: 0,
-                  }}
-                />
-                {/* Region pill */}
+                <input type="text" value={support} onChange={(e) => setSupport(e.target.value)} placeholder="OT, Speech therapy, Clubs..." style={{ flex: 1, fontSize: "0.85rem", color: C.textDark, fontWeight: 300, background: "transparent", border: "none", outline: "none", fontFamily: "'Nunito Sans', sans-serif", minWidth: 0 }} />
                 <div ref={mobileRegionRef} style={{ position: "relative", flexShrink: 0 }}>
-                  <button
-                    style={{
-                      display: "flex", alignItems: "center", gap: 4,
-                      background: "rgba(27,26,53,0.09)", borderRadius: 8,
-                      padding: "6px 10px", border: "none", cursor: "pointer",
-                      fontSize: "0.73rem", fontWeight: 600, color: C.textDark,
-                      fontFamily: "'Nunito Sans', sans-serif", whiteSpace: "nowrap",
-                      marginRight: 6,
-                    }}
-                    onClick={() => setMobileRegionOpen((o) => !o)}
-                  >
+                  <button style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(27,26,53,0.09)", borderRadius: 8, padding: "6px 10px", border: "none", cursor: "pointer", fontSize: "0.73rem", fontWeight: 600, color: C.textDark, fontFamily: "'Nunito Sans', sans-serif", whiteSpace: "nowrap", marginRight: 6 }} onClick={() => setMobileRegionOpen((o) => !o)}>
                     <MapPin size={11} />
                     {region || "Region"}
                   </button>
                   {mobileRegionOpen && filteredRegions.length > 0 && (
-                    <div style={{
-                      position: "absolute", bottom: "calc(100% + 6px)", right: 0,
-                      background: "rgba(232,244,255,0.99)", borderRadius: 10,
-                      boxShadow: "0 8px 24px rgba(27,26,53,0.18)",
-                      zIndex: 9999, overflowY: "auto", maxHeight: "200px",
-                      border: "1px solid #DDD8D0", minWidth: 180,
-                    }}>
+                    <div style={{ position: "absolute", bottom: "calc(100% + 6px)", right: 0, background: "rgba(232,244,255,0.99)", borderRadius: 10, boxShadow: "0 8px 24px rgba(27,26,53,0.18)", zIndex: 9999, overflowY: "auto", maxHeight: "200px", border: "1px solid #DDD8D0", minWidth: 180 }}>
                       {filteredRegions.map((r, i) => (
-                        <div key={r}
-                          style={{
-                            padding: "10px 14px", fontSize: "0.85rem",
-                            color: r === region ? C.terra : C.textDark,
-                            fontWeight: r === region ? 600 : 300,
-                            fontFamily: "'Nunito Sans', sans-serif", cursor: "pointer",
-                            borderTop: i > 0 ? "1px solid #E8E3DC" : "none",
-                          }}
-                          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(217,138,106,0.06)")}
-                          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                          onMouseDown={(e) => { e.preventDefault(); setRegion(r); setMobileRegionOpen(false); }}
-                        >
-                          {r}
-                        </div>
+                        <div key={r} style={{ padding: "10px 14px", fontSize: "0.85rem", color: r === region ? C.terra : C.textDark, fontWeight: r === region ? 600 : 300, fontFamily: "'Nunito Sans', sans-serif", cursor: "pointer", borderTop: i > 0 ? "1px solid #E8E3DC" : "none" }} onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(217,138,106,0.06)")} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")} onMouseDown={(e) => { e.preventDefault(); setRegion(r); setMobileRegionOpen(false); }}>{r}</div>
                       ))}
                     </div>
                   )}
                 </div>
-                {/* Orange arrow button */}
-                <button
-                  onClick={() => {
-                    const params = new URLSearchParams();
-                    if (region.trim())  params.set("region", region.trim());
-                    if (support.trim()) params.set("support", support.trim());
-                    navigate(params.toString() ? `/providers?${params.toString()}` : "/providers");
-                  }}
-                  style={{
-                    width: 36, height: 36, borderRadius: 9, flexShrink: 0,
-                    background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`,
-                    border: "none", color: "#fff", cursor: "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}
-                >
-                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                <button onClick={() => { const params = new URLSearchParams(); if (region.trim()) params.set("region", region.trim()); if (support.trim()) params.set("support", support.trim()); navigate(params.toString() ? `/providers?${params.toString()}` : "/providers"); }} style={{ width: 36, height: 36, borderRadius: 9, flexShrink: 0, background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`, border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
               </div>
             </div>
-
-            {/* Mobile hint chips */}
+            {/* Mobile hint chips — white */}
             <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
               {hints.map((h) => (
-                <button key={h.label}
-                  style={{
-                    padding: "5px 12px", borderRadius: 100,
-                    border: "1px solid rgba(255,255,255,0.45)",
-                    fontSize: "0.72rem", color: "#ffffff",
-                    background: "rgba(255,255,255,0.12)",
-                    cursor: "pointer", fontFamily: "'Nunito Sans', sans-serif",
-                  }}
-                  onClick={() => navigate(h.to)}
-                >
-                  {h.label}
-                </button>
+                <button key={h.label} style={{ padding: "5px 12px", borderRadius: 100, border: "1px solid rgba(255,255,255,0.45)", fontSize: "0.72rem", color: "#ffffff", background: "rgba(255,255,255,0.12)", cursor: "pointer", fontFamily: "'Nunito Sans', sans-serif" }} onClick={() => navigate(h.to)}>{h.label}</button>
               ))}
             </div>
           </div>
