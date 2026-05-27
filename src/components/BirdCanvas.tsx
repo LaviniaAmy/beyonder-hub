@@ -84,9 +84,9 @@ function initBirds(dpr: number): Bird[] {
     bs:   (7 + Math.random() * 7) * dpr * 1.2,  // HTML base size + our 1.2× scale
     ds:   0.7  + Math.random() * 0.25,           // HTML depthScale
     dop:  0.4  + Math.random() * 0.45,           // HTML depthOpacity
-    ff:   0.006 + Math.random() * 0.005,          // HTML's exact flapFreq
+    ff:   0.002 + Math.random() * 0.003,  // very slow flutter — barely noticeable (0.30–0.75 Hz at our rate)
     fp:   Math.random() * TAU,
-    fa:   0.25 + Math.random() * 0.35,
+    fa:   0.12 + Math.random() * 0.18,   // subtle dips only
     front: Math.random() < 0.10,
   }));
 }
@@ -216,11 +216,11 @@ const BirdCanvas = () => {
       });
 
       lastPos = cp;
-      // dt × 0.39 = HTML's "time += 6.5" made frame-rate independent.
-      // At 60 fps: 16.67 × 0.39 = 6.5 units/frame — identical to the HTML reference.
+      // dt × 0.15 ≈ 2.6× slower than the HTML reference (6.5/frame at 60fps).
+      // Calm, unhurried drift — appropriate for a SEND family audience.
       const dt = lastTs === null ? 16.67 : Math.min(ts - lastTs, 50);
       lastTs = ts;
-      time += dt * 0.39;
+      time += dt * 0.15;
       rafRef.current = requestAnimationFrame(draw as FrameRequestCallback);
     }
 
