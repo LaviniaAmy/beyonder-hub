@@ -248,7 +248,7 @@ const Index = () => {
         {/* ── DESKTOP ONLY: Logo — independent ── */}
         <div className="hidden md:flex"
           style={{
-            position: "absolute", top: 64, left: 0, right: 0,
+            position: "absolute", top: 69, left: 0, right: 0,
             justifyContent: "center", alignItems: "center",
             gap: "clamp(10px, 1.5vw, 18px)", zIndex: 3,
           }}
