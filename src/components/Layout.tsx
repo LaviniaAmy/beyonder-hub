@@ -3,14 +3,20 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
+import FooterImage from "@/assets/footer/footer-image.svg";
+import NavHome      from "@/assets/icons/nav/nav-home.svg";
+import NavSearch    from "@/assets/icons/nav/nav-search.svg";
+import NavCommunity from "@/assets/icons/nav/nav-community.svg";
+import NavNews      from "@/assets/icons/nav/nav-news.svg";
+import NavProfile   from "@/assets/icons/nav/nav-profile.svg";
 
 // ── Mobile bottom-nav config ──────────────────────────────────────────────────
 const BOTTOM_NAV = [
-  { icon: "🏠", label: "Home",      to: "/"          },
-  { icon: "🔍", label: "Find",      to: "/explore"   },
-  { icon: "💬", label: "Community", to: "/community" },
-  { icon: "📰", label: "News",      to: "/news"      },
-  { icon: "👤", label: "Profile",   to: "__profile"  }, // resolved at render
+  { icon: NavHome,      label: "Home",      to: "/"          },
+  { icon: NavSearch,    label: "Find",      to: "/explore"   },
+  { icon: NavCommunity, label: "Community", to: "/community" },
+  { icon: NavNews,      label: "News",      to: "/news"      },
+  { icon: NavProfile,   label: "Profile",   to: "__profile"  },
 ] as const;
 
 const C = {
@@ -336,6 +342,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         {children}
       </main>
 
+      {/* Footer image — sits above footer on every page */}
+      <div style={{ background: "linear-gradient(180deg, #1E1B3A 0%, #111827 100%)", display: "flex", justifyContent: "center", paddingTop: 32 }}>
+        <img src={FooterImage} alt="" style={{ width: "100%", maxWidth: 1100, display: "block", pointerEvents: "none" }} />
+      </div>
+
       <Footer />
 
       {/* ── Mobile bottom navigation (md and above: hidden) ── */}
@@ -376,7 +387,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 textDecoration: "none",
               }}
             >
-              <span style={{ fontSize: 20 }}>{item.icon}</span>
+              <img src={item.icon} alt={item.label} style={{ width: 24, height: 24, objectFit: "contain", opacity: active ? 1 : 0.45 }} />
               <span
                 style={{
                   fontSize: "0.57rem",
