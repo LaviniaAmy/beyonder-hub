@@ -464,49 +464,8 @@ const Index = () => {
             </p>
           </div>
 
-          {/* Flex spacer — grows to push search bar to bottom of hero */}
+          {/* Flex spacer — grows to push mobile search card to bottom */}
           <div className="flex-1" />
-
-          {/* ── Desktop search bar (inline, bottom of hero) ── */}
-          <div className="hidden md:flex flex-col items-center"
-               style={{ paddingBottom: 155, position: "relative", zIndex: 3 }}>
-            <form
-              onSubmit={handleSearch}
-              style={{
-                display: "flex", width: "min(580px, 92vw)", height: 52,
-                background: "#ffffff",
-                border: "none",
-                borderRadius: 12, overflow: "visible",
-                boxShadow: "0 4px 24px rgba(0,0,0,0.22)",
-                marginBottom: 10, position: "relative", zIndex: 3,
-              }}
-            >
-              <div
-                ref={regionRef}
-                style={{
-                  flex: 1, display: "flex", flexDirection: "column", justifyContent: "center",
-                  padding: "7px 16px", borderRight: "1px solid #E8E3DC",
-                  position: "relative", cursor: "pointer",
-                }}
-                onClick={() => setRegionOpen((o) => !o)}
-              >
-                <span style={{ fontSize: "0.56rem", fontWeight: 600, color: C.terra, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 1 }}>Region</span>
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <input type="text" value={region} onChange={(e) => { setRegion(e.target.value); setRegionOpen(true); }} placeholder="Select a region" onClick={(e) => { e.stopPropagation(); setRegionOpen(true); }} style={{ fontSize: "0.8rem", color: C.textDark, fontWeight: 300, background: "transparent", border: "none", outline: "none", fontFamily: "'Nunito Sans', sans-serif", flex: 1, minWidth: 0, cursor: "pointer" }} />
-                  <svg width="10" height="10" viewBox="0 0 10 10" style={{ flexShrink: 0, opacity: 0.35, marginRight: 2 }}><path d="M2 3.5 L5 6.5 L8 3.5" stroke="#1B1A35" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </div>
-              </div>
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "7px 16px" }}>
-                <span style={{ fontSize: "0.56rem", fontWeight: 600, color: C.terra, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 1 }}>Type of support</span>
-                <input type="text" value={support} onChange={(e) => setSupport(e.target.value)} placeholder="e.g. OT, Speech therapy, Clubs" style={{ fontSize: "0.8rem", color: C.textDark, fontWeight: 300, background: "transparent", border: "none", outline: "none", fontFamily: "'Nunito Sans', sans-serif" }} />
-              </div>
-              <button type="submit" style={{ width: 110, flexShrink: 0, background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`, border: "none", color: C.warmWhite, fontSize: "0.85rem", fontWeight: 600, fontFamily: "'Nunito Sans', sans-serif", cursor: "pointer", borderRadius: "0 12px 12px 0" }} onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")} onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}>Find Support</button>
-            </form>
-            <div style={{ display: "flex", gap: 7, justifyContent: "center", flexWrap: "wrap" }}>
-              <span style={{ fontSize: "0.65rem", color: "rgba(232,244,255,0.25)", alignSelf: "center" }}>Try:</span>
-              {hints.map((h) => (<button key={h.label} style={{ padding: "4px 11px", borderRadius: 14, border: "1px solid rgba(217,138,106,0.32)", fontSize: "0.68rem", color: "rgba(232,244,255,0.45)", background: "rgba(217,138,106,0.06)", cursor: "pointer", fontFamily: "'Nunito Sans', sans-serif" }} onMouseEnter={chipIn} onMouseLeave={chipOut} onClick={() => navigate(h.to)}>{h.label}</button>))}
-            </div>
-          </div>
 
           {/* ── Mobile search card (glass outer, single white bar inside) ── */}
           <div
