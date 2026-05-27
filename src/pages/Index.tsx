@@ -457,7 +457,7 @@ const Index = () => {
             }} />
             <p style={{
               fontSize: "clamp(0.75rem, 2vw, 1rem)",
-              color: "rgba(232,244,255,0.50)", fontWeight: 300, margin: 0,
+              color: "rgba(232,244,255,0.50)", fontWeight: 300, margin: 0, marginTop: -5,
             }}>
               One place for everything SEND
             </p>
