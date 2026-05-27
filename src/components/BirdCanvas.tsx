@@ -80,7 +80,7 @@ function initBirds(dpr: number): Bird[] {
     bs:   (6.0 + Math.random() * 7.2) * dpr * (IS_MOBILE ? 0.8 : 1.404),
     ds:   0.65 + Math.random() * 0.4,
     dop:  0.35 + Math.random() * 0.5,
-    ff:   0.006 + Math.random() * 0.005,
+    ff:   0.012 + Math.random() * 0.010, // doubled to restore original flap rate after time-step halved
     fp:   Math.random() * TAU,
     fa:   0.25 + Math.random() * 0.35,
     front: Math.random() < 0.10, // 10% render in front of logo
