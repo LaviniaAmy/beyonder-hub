@@ -227,7 +227,7 @@ const Index = () => {
                  Mobile: original content column untouched
       ══════════════════════════════════════════════════════════════════ */}
       <section
-        className="min-h-[250px] md:h-[500px]"
+        className="min-h-[460px] md:h-[500px]"
         style={{
           position: "relative", overflow: "hidden",
           display: "flex", flexDirection: "column",
@@ -434,9 +434,9 @@ const Index = () => {
         ══════════════════════════════════════════════════════════════════ */}
         <div className="mobile-hero-col" style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column", flex: 1 }}>
 
-          {/* ── Logo + tagline (shared by both viewports) ── */}
+          {/* ── Logo (mobile only) ── */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}
-               className="pt-8 md:pt-16 px-5">
+               className="pt-14 px-5">
             <div style={{ display: "flex", alignItems: "center", gap: "clamp(10px, 1.5vw, 18px)", marginBottom: 8 }}>
               <div style={{
                 width: "clamp(11px, 1.8vw, 22px)", height: "clamp(11px, 1.8vw, 22px)",
@@ -452,19 +452,22 @@ const Index = () => {
               </span>
             </div>
             <div style={{
-              width: "clamp(140px, 40vw, 480px)", height: 1, marginBottom: 10,
+              width: "clamp(140px, 40vw, 480px)", height: 1,
               background: "linear-gradient(to right, transparent, rgba(120,200,255,0.22), transparent)",
             }} />
-            <p style={{
-              fontSize: "clamp(0.75rem, 2vw, 1rem)",
-              color: "rgba(232,244,255,0.50)", fontWeight: 300, margin: 0, marginTop: -5,
-            }}>
-              One place for everything SEND
-            </p>
           </div>
 
           {/* Flex spacer — grows to push mobile search card to bottom */}
           <div className="flex-1" />
+
+          {/* ── Tagline — sits just above search card ── */}
+          <p style={{
+            fontSize: "clamp(0.75rem, 3.5vw, 1rem)",
+            color: "rgba(232,244,255,0.50)", fontWeight: 300,
+            margin: "0 0 10px 0", textAlign: "center", padding: "0 20px",
+          }}>
+            One place for everything SEND
+          </p>
 
           {/* ── Mobile search card (glass outer, single white bar inside) ── */}
           <div
