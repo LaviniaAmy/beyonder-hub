@@ -77,7 +77,7 @@ function initBirds(dpr: number): Bird[] {
     dp2:  Math.random() * TAU,
     of_:  3e-5 + Math.random() * 4e-5,
     oph:  Math.random() * TAU,
-    bs:   (6.0 + Math.random() * 7.2) * dpr, // multiplier applied responsively in draw()
+    bs:   (6.0 + Math.random() * 7.2) * dpr * 1.2, // +20% base size; responsive multiplier applied in draw()
     ds:   0.65 + Math.random() * 0.4,
     dop:  0.35 + Math.random() * 0.5,
     ff:   0.012 + Math.random() * 0.010, // doubled to restore original flap rate after time-step halved
