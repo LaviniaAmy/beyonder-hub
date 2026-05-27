@@ -297,7 +297,7 @@ const Index = () => {
         {/* ── DESKTOP ONLY: Search bar — independent ── */}
         <div className="hidden md:flex"
           style={{
-            position: "absolute", top: 235, left: 0, right: 0,
+            position: "absolute", top: 243, left: 0, right: 0,
             justifyContent: "center", zIndex: 3,
           }}
         >
@@ -407,7 +407,7 @@ const Index = () => {
         {/* ── DESKTOP ONLY: Hint chips — independent ── */}
         <div className="hidden md:flex"
           style={{
-            position: "absolute", top: 297, left: 0, right: 0,
+            position: "absolute", top: 305, left: 0, right: 0,
             justifyContent: "center", gap: 7, flexWrap: "wrap", zIndex: 3,
           }}
         >
