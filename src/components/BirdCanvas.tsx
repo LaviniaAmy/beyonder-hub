@@ -80,7 +80,7 @@ function initBirds(dpr: number): Bird[] {
     bs:   (6.0 + Math.random() * 7.2) * dpr * 1.2, // +20% base size; responsive multiplier applied in draw()
     ds:   0.65 + Math.random() * 0.4,
     dop:  0.35 + Math.random() * 0.5,
-    ff:   0.005 + Math.random() * 0.020, // wide spread: slow gliders (0.005) to fast flappers (0.025)
+    ff:   0.005 + Math.random() * 0.013, // spread: slow gliders (0.005) to fast flappers (0.018)
     fp:   Math.random() * TAU,
     fa:   0.20 + Math.random() * 0.50,   // wider amplitude: subtle dips to deep beats
     front: Math.random() < 0.10, // 10% render in front of logo
@@ -183,7 +183,7 @@ const BirdCanvas = () => {
       // Responsive size multiplier: 0.8 at 375px CSS width → 1.404 at 1440px, clamped at both ends
       const cssW = W / DPR;
       const t = Math.max(0, Math.min(1, (cssW - 375) / (1440 - 375)));
-      const sizeMultiplier = 0.8 + 0.604 * t;
+      const sizeMultiplier = 0.8 + 0.464 * t; // desktop end: 1.404 → 1.264 (-10%); mobile end unchanged
 
       const cp = birds.map((b) => birdPos(b, groups, time, W, H));
 
