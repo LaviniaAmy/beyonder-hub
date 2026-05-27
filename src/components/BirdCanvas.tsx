@@ -138,6 +138,7 @@ const BirdCanvas = () => {
     const groups = initGroups();
     const birds  = initBirds(DPR);
     let time = 0;
+    let lastTs: number | null = null;
     let lastPos: Array<{ x: number; y: number }> | null = null;
 
     function drawSky() {
@@ -173,7 +174,7 @@ const BirdCanvas = () => {
       ctx.restore();
     }
 
-    function draw() {
+    function draw(ts: number) {
       const W = back!.width, H = back!.height;
       bctx.clearRect(0, 0, W, H);
       fctx.clearRect(0, 0, W, H);
@@ -209,11 +210,16 @@ const BirdCanvas = () => {
       });
 
       lastPos = cp;
-      time += 2.0;
-      rafRef.current = requestAnimationFrame(draw);
+      // Delta-time: advance by actual ms elapsed × 0.12 so speed is
+      // identical at 30 fps, 60 fps, 120 fps, and on every mobile device.
+      // (0.12 keeps the same pace as the previous fixed step of 2.0 at 60 fps)
+      const dt = lastTs === null ? 16.67 : Math.min(ts - lastTs, 50);
+      lastTs = ts;
+      time += dt * 0.12;
+      rafRef.current = requestAnimationFrame(draw as FrameRequestCallback);
     }
 
-    rafRef.current = requestAnimationFrame(draw);
+    rafRef.current = requestAnimationFrame(draw as FrameRequestCallback);
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
