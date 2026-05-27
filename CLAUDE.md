@@ -41,6 +41,17 @@ The section immediately after the mobile steps strip:
 
 ---
 
+---
+
+## Mobile / Desktop scope
+
+All new work applies to **both mobile and desktop** simultaneously unless the user
+explicitly says otherwise. The previous "mobile only" / "desktop only" restrictions
+are lifted. When adding or changing anything below the locked sections, always
+implement for both breakpoints.
+
+---
+
 ### Rule
 
 When making any change to `src/pages/Index.tsx` or `src/components/BirdCanvas.tsx`,
