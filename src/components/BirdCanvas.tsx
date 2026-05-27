@@ -204,7 +204,7 @@ const BirdCanvas = () => {
       });
 
       lastPos = cp;
-      time += 4.0;
+      time += 2.0;
       rafRef.current = requestAnimationFrame(draw);
     }
 
