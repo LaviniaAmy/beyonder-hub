@@ -43,8 +43,8 @@ function initGroups(): Group[] {
     { bx: LOGO_X,        by: LOGO_Y        },  // centre — on the logo
     { bx: LOGO_X - 0.26, by: LOGO_Y - 0.07 }, // upper-left arc
     { bx: LOGO_X + 0.26, by: LOGO_Y - 0.07 }, // upper-right arc
-    { bx: LOGO_X - 0.22, by: LOGO_Y + 0.16 }, // lower-left sweep
-    { bx: LOGO_X + 0.22, by: LOGO_Y + 0.16 }, // lower-right sweep
+    { bx: LOGO_X - 0.22, by: LOGO_Y + 0.10 }, // lower-left sweep
+    { bx: LOGO_X + 0.22, by: LOGO_Y + 0.10 }, // lower-right sweep
   ].map(({ bx, by }) => ({
     bx, by,
     // Slightly faster oscillation than original → more looping feel
@@ -54,11 +54,11 @@ function initGroups(): Group[] {
     wy2: 2.5e-5 + Math.random() * 2e-5,
     px1: Math.random() * TAU, px2: Math.random() * TAU,
     py1: Math.random() * TAU, py2: Math.random() * TAU,
-    // Wider amplitudes (was ~0.10/0.06) → big sweeping orbits
+    // Keep wide horizontal sweeps; reduce vertical amplitude to stay in top half
     ax1: 0.18 + Math.random() * 0.10,
     ax2: 0.09 + Math.random() * 0.06,
-    ay1: 0.12 + Math.random() * 0.08,
-    ay2: 0.05 + Math.random() * 0.04,
+    ay1: 0.07 + Math.random() * 0.04,
+    ay2: 0.03 + Math.random() * 0.02,
   }));
 }
 
@@ -192,13 +192,15 @@ const BirdCanvas = () => {
           if (Math.abs(dx) > 0.001 || Math.abs(dy) > 0.001) heading = Math.atan2(dy, dx);
         }
 
-        const ex   = Math.min(x / (W * 0.08), (W - x) / (W * 0.08), 1);
-        const ey   = Math.min(y / (H * 0.08), (H - y) / (H * 0.08), 1);
-        const edge = Math.max(0, Math.min(1, ex, ey));
-        const s    = b.bs * b.ds;
-        const flap = 1 - b.fa * Math.abs(Math.sin(time * b.ff * TAU + b.fp));
+        const ex    = Math.min(x / (W * 0.08), (W - x) / (W * 0.08), 1);
+        const ey    = Math.min(y / (H * 0.08), (H - y) / (H * 0.08), 1);
+        const edge  = Math.max(0, Math.min(1, ex, ey));
+        // Fade birds to invisible as they approach the vertical midpoint (top-half constraint)
+        const yCeil = Math.max(0, Math.min(1, 1 - (y - H * 0.42) / (H * 0.10)));
+        const s     = b.bs * b.ds;
+        const flap  = 1 - b.fa * Math.abs(Math.sin(time * b.ff * TAU + b.fp));
 
-        drawBird(b.front ? fctx : bctx, x, y, heading, s, s * (SVG_H / SVG_W), flap, b.dop * edge);
+        drawBird(b.front ? fctx : bctx, x, y, heading, s, s * (SVG_H / SVG_W), flap, b.dop * edge * yCeil);
       });
 
       lastPos = cp;
