@@ -77,7 +77,7 @@ function initBirds(dpr: number): Bird[] {
     dp2:  Math.random() * TAU,
     of_:  3e-5 + Math.random() * 4e-5,
     oph:  Math.random() * TAU,
-    bs:   (6.0 + Math.random() * 7.2) * dpr * (IS_MOBILE ? 0.8 : 1.404),
+    bs:   (6.0 + Math.random() * 7.2) * dpr, // multiplier applied responsively in draw()
     ds:   0.65 + Math.random() * 0.4,
     dop:  0.35 + Math.random() * 0.5,
     ff:   0.012 + Math.random() * 0.010, // doubled to restore original flap rate after time-step halved
@@ -179,6 +179,11 @@ const BirdCanvas = () => {
       fctx.clearRect(0, 0, W, H);
       drawSky();
 
+      // Responsive size multiplier: 0.8 at 375px CSS width → 1.404 at 1440px, clamped at both ends
+      const cssW = W / DPR;
+      const t = Math.max(0, Math.min(1, (cssW - 375) / (1440 - 375)));
+      const sizeMultiplier = 0.8 + 0.604 * t;
+
       const cp = birds.map((b) => birdPos(b, groups, time, W, H));
 
       birds.forEach((b, i) => {
@@ -197,7 +202,7 @@ const BirdCanvas = () => {
         const edge  = Math.max(0, Math.min(1, ex, ey));
         // Fade birds to invisible as they approach the vertical midpoint (top-half constraint)
         const yCeil = Math.max(0, Math.min(1, 1 - (y - H * 0.42) / (H * 0.10)));
-        const s     = b.bs * b.ds;
+        const s     = b.bs * b.ds * sizeMultiplier;
         const flap  = 1 - b.fa * Math.abs(Math.sin(time * b.ff * TAU + b.fp));
 
         drawBird(b.front ? fctx : bctx, x, y, heading, s, s * (SVG_H / SVG_W), flap, b.dop * edge * yCeil);
