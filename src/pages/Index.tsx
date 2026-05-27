@@ -236,6 +236,13 @@ const Index = () => {
         {/* BirdCanvas sky — two canvases: back (zIndex 0) + front (zIndex 4) */}
         <BirdCanvas />
 
+        {/* Legibility overlay */}
+        <div style={{
+          position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
+          opacity: 0.75,
+          background: "linear-gradient(180deg, rgba(8,12,24,0.18) 0%, rgba(8,12,24,0.12) 35%, rgba(8,12,24,0.32) 75%, rgba(8,12,24,0.52) 100%)",
+        }} />
+
         {/* ── DESKTOP ONLY: Logo — independent ── */}
         <div className="hidden md:flex"
           style={{
