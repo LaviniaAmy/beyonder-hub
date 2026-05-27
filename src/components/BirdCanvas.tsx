@@ -8,9 +8,15 @@ const BIRD_PATH_D =
 
 const SVG_W = 609.94, SVG_H = 394.73, BCX = 300, BCY = 180;
 const IS_MOBILE = typeof window !== "undefined" && window.innerWidth < 768;
-const NUM_BIRDS = IS_MOBILE ? Math.round(220 * 0.8) : 220, NUM_GROUPS = 5;
-
+const NUM_BIRDS = IS_MOBILE ? Math.round(220 * 0.8) : 220;
+const NUM_GROUPS = 5;
 const TAU = Math.PI * 2;
+
+// Logo centre as a fraction of canvas dimensions.
+// Matches: desktop logo top:69px, approx height:100px, section height:500px
+// → vertical centre ≈ (69 + 50) / 500 = 0.238
+const LOGO_X = 0.50;
+const LOGO_Y = 0.24;
 
 interface Group {
   bx: number; by: number;
@@ -27,53 +33,58 @@ interface Bird {
   of_: number; oph: number;
   bs: number; ds: number; dop: number;
   ff: number; fp: number; fa: number;
+  front: boolean; // ~10% render on the front canvas (above logo)
 }
 
 function initGroups(): Group[] {
+  // Five group anchors arranged around the logo centre.
+  // Larger ax/ay amplitudes than before → wide sweeping loops around the logo.
   return [
-    { bx: 0.28, by: 0.29 },
-    { bx: 0.72, by: 0.25 },
-    { bx: 0.50, by: 0.21 },
-    { bx: 0.50, by: 0.33 },
-    { bx: 0.50, by: 0.27 },
+    { bx: LOGO_X,        by: LOGO_Y        },  // centre — on the logo
+    { bx: LOGO_X - 0.26, by: LOGO_Y - 0.07 }, // upper-left arc
+    { bx: LOGO_X + 0.26, by: LOGO_Y - 0.07 }, // upper-right arc
+    { bx: LOGO_X - 0.22, by: LOGO_Y + 0.16 }, // lower-left sweep
+    { bx: LOGO_X + 0.22, by: LOGO_Y + 0.16 }, // lower-right sweep
   ].map(({ bx, by }) => ({
     bx, by,
-    wx1: 4e-5 + Math.random() * 3e-5,
-    wx2: 2.5e-5 + Math.random() * 2e-5,
-    wy1: 3.5e-5 + Math.random() * 3e-5,
-    wy2: 2e-5 + Math.random() * 1.5e-5,
+    // Slightly faster oscillation than original → more looping feel
+    wx1: 5e-5 + Math.random() * 4e-5,
+    wx2: 3e-5 + Math.random() * 3e-5,
+    wy1: 4.5e-5 + Math.random() * 3.5e-5,
+    wy2: 2.5e-5 + Math.random() * 2e-5,
     px1: Math.random() * TAU, px2: Math.random() * TAU,
     py1: Math.random() * TAU, py2: Math.random() * TAU,
-    ax1: 0.10 + Math.random() * 0.06, ax2: 0.05 + Math.random() * 0.04,
-    ay1: 0.06 + Math.random() * 0.04, ay2: 0.03 + Math.random() * 0.03,
+    // Wider amplitudes (was ~0.10/0.06) → big sweeping orbits
+    ax1: 0.18 + Math.random() * 0.10,
+    ax2: 0.09 + Math.random() * 0.06,
+    ay1: 0.12 + Math.random() * 0.08,
+    ay2: 0.05 + Math.random() * 0.04,
   }));
 }
 
 function initBirds(dpr: number): Bird[] {
-  return Array.from({ length: NUM_BIRDS }, () => {
-    const gi = Math.floor(Math.random() * NUM_GROUPS);
-    return {
-      gi,
-      oa:  Math.random() * TAU,
-      or:  Math.pow(Math.random(), 0.4),
-      sx:  0.12 + Math.random() * 0.08,
-      sy:  0.07 + Math.random() * 0.05,
-      df:  6e-5 + Math.random() * 8e-5,
-      da:  0.015 + Math.random() * 0.018,
-      dph: Math.random() * TAU,
-      df2: 9e-5 + Math.random() * 7e-5,
-      da2: 0.010 + Math.random() * 0.012,
-      dp2: Math.random() * TAU,
-      of_: 3e-5 + Math.random() * 4e-5,
-      oph: Math.random() * TAU,
-      bs:  (6.0 + Math.random() * 7.2) * dpr * (IS_MOBILE ? 0.8 : 1.404),
-      ds:  0.65 + Math.random() * 0.4,
-      dop: 0.35 + Math.random() * 0.5,
-      ff:  0.006 + Math.random() * 0.005,
-      fp:  Math.random() * TAU,
-      fa:  0.25 + Math.random() * 0.35,
-    };
-  });
+  return Array.from({ length: NUM_BIRDS }, () => ({
+    gi:   Math.floor(Math.random() * NUM_GROUPS),
+    oa:   Math.random() * TAU,
+    or:   Math.pow(Math.random(), 0.4),
+    sx:   0.12 + Math.random() * 0.08,
+    sy:   0.07 + Math.random() * 0.05,
+    df:   6e-5 + Math.random() * 8e-5,
+    da:   0.015 + Math.random() * 0.018,
+    dph:  Math.random() * TAU,
+    df2:  9e-5 + Math.random() * 7e-5,
+    da2:  0.010 + Math.random() * 0.012,
+    dp2:  Math.random() * TAU,
+    of_:  3e-5 + Math.random() * 4e-5,
+    oph:  Math.random() * TAU,
+    bs:   (6.0 + Math.random() * 7.2) * dpr * (IS_MOBILE ? 0.8 : 1.404),
+    ds:   0.65 + Math.random() * 0.4,
+    dop:  0.35 + Math.random() * 0.5,
+    ff:   0.006 + Math.random() * 0.005,
+    fp:   Math.random() * TAU,
+    fa:   0.25 + Math.random() * 0.35,
+    front: Math.random() < 0.10, // 10% render in front of logo
+  }));
 }
 
 function groupPos(g: Group, t: number, W: number, H: number) {
@@ -94,29 +105,35 @@ function birdPos(b: Bird, groups: Group[], t: number, W: number, H: number) {
 }
 
 const BirdCanvas = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rafRef    = useRef<number | null>(null);
+  const backRef  = useRef<HTMLCanvasElement>(null);
+  const frontRef = useRef<HTMLCanvasElement>(null);
+  const rafRef   = useRef<number | null>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d")!;
-    const DPR = window.devicePixelRatio || 1;
+    const back  = backRef.current;
+    const front = frontRef.current;
+    if (!back || !front) return;
+
+    const bctx = back.getContext("2d")!;
+    const fctx = front.getContext("2d")!;
+    const DPR  = window.devicePixelRatio || 1;
 
     const birdPath = new Path2D(BIRD_PATH_D);
 
     function resize() {
-      const parent = canvas!.parentElement!;
+      const parent = back!.parentElement!;
       const pw = parent.offsetWidth;
       const ph = parent.offsetHeight;
-      canvas!.width  = pw * DPR;
-      canvas!.height = ph * DPR;
-      canvas!.style.width  = pw + "px";
-      canvas!.style.height = ph + "px";
+      [back, front].forEach(c => {
+        c.width        = pw * DPR;
+        c.height       = ph * DPR;
+        c.style.width  = pw + "px";
+        c.style.height = ph + "px";
+      });
     }
     resize();
     const ro = new ResizeObserver(resize);
-    ro.observe(canvas.parentElement!);
+    ro.observe(back.parentElement!);
 
     const groups = initGroups();
     const birds  = initBirds(DPR);
@@ -124,21 +141,22 @@ const BirdCanvas = () => {
     let lastPos: Array<{ x: number; y: number }> | null = null;
 
     function drawSky() {
-      const W = canvas!.width, H = canvas!.height;
-      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      const W = back!.width, H = back!.height;
+      const grad = bctx.createLinearGradient(0, 0, 0, H);
       SKY_COLORS.forEach((col, i) => grad.addColorStop(SKY_STOPS[i], col));
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
+      bctx.fillStyle = grad;
+      bctx.fillRect(0, 0, W, H);
       const hy = H * 0.38;
-      const sg = ctx.createRadialGradient(W * 0.5, hy, 0, W * 0.5, hy, W * 0.55);
-      sg.addColorStop(0,    "rgba(80,160,220,0.18)");
-      sg.addColorStop(0.3,  "rgba(40,100,160,0.08)");
-      sg.addColorStop(1,    "rgba(20,60,120,0)");
-      ctx.fillStyle = sg;
-      ctx.fillRect(0, 0, W, H);
+      const sg = bctx.createRadialGradient(W * 0.5, hy, 0, W * 0.5, hy, W * 0.55);
+      sg.addColorStop(0,   "rgba(80,160,220,0.18)");
+      sg.addColorStop(0.3, "rgba(40,100,160,0.08)");
+      sg.addColorStop(1,   "rgba(20,60,120,0)");
+      bctx.fillStyle = sg;
+      bctx.fillRect(0, 0, W, H);
     }
 
     function drawBird(
+      ctx: CanvasRenderingContext2D,
       x: number, y: number, heading: number,
       dw: number, dh: number, flapScale: number, opacity: number,
     ) {
@@ -147,8 +165,8 @@ const BirdCanvas = () => {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(heading + Math.PI / 2);
-      ctx.globalAlpha   = opacity;
-      ctx.fillStyle     = "#04080e";
+      ctx.globalAlpha  = opacity;
+      ctx.fillStyle    = "#04080e";
       ctx.translate(-BCX * sx, -BCY * sy);
       ctx.scale(sx, sy);
       ctx.fill(birdPath);
@@ -156,8 +174,9 @@ const BirdCanvas = () => {
     }
 
     function draw() {
-      const W = canvas!.width, H = canvas!.height;
-      ctx.clearRect(0, 0, W, H);
+      const W = back!.width, H = back!.height;
+      bctx.clearRect(0, 0, W, H);
+      fctx.clearRect(0, 0, W, H);
       drawSky();
 
       const cp = birds.map((b) => birdPos(b, groups, time, W, H));
@@ -179,7 +198,7 @@ const BirdCanvas = () => {
         const s    = b.bs * b.ds;
         const flap = 1 - b.fa * Math.abs(Math.sin(time * b.ff * TAU + b.fp));
 
-        drawBird(x, y, heading, s, s * (SVG_H / SVG_W), flap, b.dop * edge);
+        drawBird(b.front ? fctx : bctx, x, y, heading, s, s * (SVG_H / SVG_W), flap, b.dop * edge);
       });
 
       lastPos = cp;
@@ -196,10 +215,18 @@ const BirdCanvas = () => {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }}
-    />
+    <>
+      {/* Back canvas — sky + 90% of birds — sits behind logo (zIndex 0) */}
+      <canvas
+        ref={backRef}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", zIndex: 0 }}
+      />
+      {/* Front canvas — 10% of birds — sits in front of logo (zIndex 4) */}
+      <canvas
+        ref={frontRef}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", zIndex: 4 }}
+      />
+    </>
   );
 };
 

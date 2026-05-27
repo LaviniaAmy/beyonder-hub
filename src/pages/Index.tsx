@@ -233,10 +233,8 @@ const Index = () => {
           display: "flex", flexDirection: "column",
         }}
       >
-        {/* BirdCanvas sky */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-          <BirdCanvas />
-        </div>
+        {/* BirdCanvas sky — two canvases: back (zIndex 0) + front (zIndex 4) */}
+        <BirdCanvas />
 
         {/* Legibility overlay */}
         <div style={{
