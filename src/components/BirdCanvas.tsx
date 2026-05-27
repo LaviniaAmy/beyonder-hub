@@ -186,10 +186,11 @@ const BirdCanvas = () => {
       fctx.clearRect(0, 0, W, H);
       drawSky();
 
-      // Responsive size: 0.8 at 375px CSS width → 1.264 at 1440px
+      // Responsive size: 0.824 at 375px CSS width → 1.264 at 1440px
+      // Mobile base raised 3% (0.8 → 0.824); desktop unchanged at 1.264
       const cssW = W / DPR;
       const tSize = Math.max(0, Math.min(1, (cssW - 375) / (1440 - 375)));
-      const sizeMultiplier = 0.8 + 0.464 * tSize;
+      const sizeMultiplier = 0.824 + 0.440 * tSize;
 
       const cp = birds.map((b) => birdPos(b, groups, time, W, H));
 
