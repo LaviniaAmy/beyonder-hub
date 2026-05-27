@@ -200,3 +200,8 @@
   position: relative;
   z-index: 2;
 }
+
+/* ── Hide mobile hero column on desktop ── */
+@media (min-width: 768px) {
+  .mobile-hero-col { display: none !important; }
+}
