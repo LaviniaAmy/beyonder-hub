@@ -283,7 +283,7 @@ const Index = () => {
         {/* ── DESKTOP ONLY: Tagline — independent ── */}
         <div className="hidden md:flex"
           style={{
-            position: "absolute", top: 186, left: 0, right: 0,
+            position: "absolute", top: 196, left: 0, right: 0,
             justifyContent: "center", zIndex: 3,
           }}
         >
