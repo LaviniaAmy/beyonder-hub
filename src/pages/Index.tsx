@@ -227,7 +227,7 @@ const Index = () => {
                  Mobile: original content column untouched
       ══════════════════════════════════════════════════════════════════ */}
       <section
-        className="min-h-[460px] md:h-[500px]"
+        className="min-h-[410px] md:h-[500px]"
         style={{
           position: "relative", overflow: "hidden",
           display: "flex", flexDirection: "column",
