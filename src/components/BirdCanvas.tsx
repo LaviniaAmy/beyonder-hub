@@ -215,7 +215,7 @@ const BirdCanvas = () => {
       // (0.12 keeps the same pace as the previous fixed step of 2.0 at 60 fps)
       const dt = lastTs === null ? 16.67 : Math.min(ts - lastTs, 50);
       lastTs = ts;
-      time += dt * 0.12;
+      time += dt * 0.09;
       rafRef.current = requestAnimationFrame(draw as FrameRequestCallback);
     }
 
