@@ -343,8 +343,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </main>
 
       {/* Footer image — sits above footer on every page */}
-      <div style={{ background: "linear-gradient(180deg, #1E1B3A 0%, #111827 100%)", display: "flex", justifyContent: "center", paddingTop: 32 }}>
-        <img src={FooterImage} alt="" style={{ width: "100%", maxWidth: 1100, display: "block", pointerEvents: "none" }} />
+      <div style={{ background: "#F6F3EE", display: "flex", justifyContent: "center", padding: "0 20px" }}>
+        <img src={FooterImage} alt="" style={{ width: "70%", maxWidth: 770, display: "block", pointerEvents: "none" }} />
       </div>
 
       <Footer />
