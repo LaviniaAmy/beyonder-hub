@@ -356,10 +356,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           position: "fixed",
           bottom: 0, left: 0, right: 0,
           zIndex: 200,
-          background: "#ffffff",
-          borderTop: "1px solid #EAE6DF",
+          background: "rgba(255,255,255,0.82)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          borderTop: "1px solid rgba(255,255,255,0.55)",
+          borderRadius: "18px 18px 0 0",
           padding: "10px 0 16px",
-          boxShadow: "0 -4px 20px rgba(0,0,0,0.08)",
+          boxShadow: "0 -4px 24px rgba(0,0,0,0.10)",
         }}
       >
         {BOTTOM_NAV.map((item) => {
@@ -387,7 +390,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 textDecoration: "none",
               }}
             >
-              <img src={item.icon} alt={item.label} style={{ width: 24, height: 24, objectFit: "contain", opacity: active ? 1 : 0.45 }} />
+              <img src={item.icon} alt={item.label} style={{ width: 29, height: 29, objectFit: "contain", opacity: active ? 1 : 0.40 }} />
               <span
                 style={{
                   fontSize: "0.57rem",
