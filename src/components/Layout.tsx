@@ -361,7 +361,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           WebkitBackdropFilter: "blur(20px)",
           borderTop: "1px solid rgba(255,255,255,0.55)",
           borderRadius: "18px 18px 0 0",
-          padding: "10px 0 16px",
+          padding: "6px 0 10px",
           boxShadow: "0 -4px 24px rgba(0,0,0,0.10)",
         }}
       >
@@ -390,7 +390,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 textDecoration: "none",
               }}
             >
-              <img src={item.icon} alt={item.label} style={{ width: 29, height: 29, objectFit: "contain", opacity: active ? 1 : 0.40 }} />
+              <img src={item.icon} alt={item.label} style={{ width: 29, height: 29, objectFit: "contain", opacity: active ? 1 : 0.70 }} />
               <span
                 style={{
                   fontSize: "0.57rem",
