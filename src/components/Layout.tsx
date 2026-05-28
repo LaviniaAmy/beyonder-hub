@@ -356,7 +356,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           position: "fixed",
           bottom: 0, left: 0, right: 0,
           zIndex: 200,
-          background: "rgba(255,255,255,0.82)",
+          background: "rgba(255,255,255,0.65)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           borderTop: "1px solid rgba(255,255,255,0.55)",
