@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1375.66 418.21">
+  <defs>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600&amp;display=swap');</style>
+  </defs>
   <!-- Generator: Adobe Illustrator 30.4.0, SVG Export Plug-In . SVG Version: 2.1.4 Build 226)  -->
   <g id="Layer_1">
     <circle cx="874.47" cy="184.82" r="55.66" fill="#fcc9b9"/>
-    <text transform="translate(180.91 384.41)" fill="#061c4c" font-family="ArialMT, Arial" font-size="18"><tspan x="0" y="0">Find local</tspan><tspan x="8.5" y="21.6">support</tspan></text>
+    <text transform="translate(180.91 384.41)" fill="#061c4c" font-family="'Nunito Sans', Arial, sans-serif" font-weight="300" font-size="18"><tspan x="0" y="0">Find local</tspan><tspan x="8.5" y="21.6">support</tspan></text>
     <circle cx="165.94" cy="390.12" r="5.71" fill="#ff8156"/>
-    <text transform="translate(452.59 384.41)" fill="#061c4c" font-family="ArialMT, Arial" font-size="18"><tspan x="0" y="0">Connect &amp; meet</tspan><tspan x="8.5" y="21.6">up with others</tspan></text>
+    <text transform="translate(452.59 384.41)" fill="#061c4c" font-family="'Nunito Sans', Arial, sans-serif" font-weight="300" font-size="18"><tspan x="0" y="0">Connect &amp; meet</tspan><tspan x="8.5" y="21.6">up with others</tspan></text>
     <circle cx="437.11" cy="390.12" r="5.71" fill="#ff8156"/>
     <circle cx="744.68" cy="390.12" r="5.71" fill="#ff8156"/>
     <circle cx="1071.41" cy="390.12" r="5.71" fill="#ff8156"/>
-    <text transform="translate(769.09 384.41)" fill="#061c4c" font-family="ArialMT, Arial" font-size="18"><tspan x="0" y="0">Access resources &amp;</tspan><tspan x="-10.52" y="21.6">support your wellbeing</tspan></text>
-    <text transform="translate(1084.8877 384.4134)" fill="#061c4c" font-family="ArialMT, Arial" font-size="18"><tspan x="0" y="0">Navigate your journey </tspan><tspan x="28.01" y="21.6">with confidence</tspan></text>
+    <text transform="translate(769.09 384.41)" fill="#061c4c" font-family="'Nunito Sans', Arial, sans-serif" font-weight="300" font-size="18"><tspan x="0" y="0">Access resources &amp;</tspan><tspan x="-10.52" y="21.6">support your wellbeing</tspan></text>
+    <text transform="translate(1084.8877 384.4134)" fill="#061c4c" font-family="'Nunito Sans', Arial, sans-serif" font-weight="300" font-size="18"><tspan x="0" y="0">Navigate your journey </tspan><tspan x="28.01" y="21.6">with confidence</tspan></text>
   </g>
   <g id="Layer_2">
     <path d="M529.87,313.87c2.29-2.45,4.11-5.12,3.74-8-.19-1.48-1.16-4.64-12.94-10.38-7.6-3.7-10.29-3.9-18.72-7.49-8.66-3.69-15.99-6.82-15.66-9.53.31-2.54,7.07-2.42,17.36-5.79,8.29-2.71,24.76-9.61,24.35-15.46-.42-6.05-18.79-9.36-22.99-10.07-6.25-1.54-12.31-3.57-12.26-5.79.11-4.22,22.21-5.23,22.47-9.53.12-2.08-4.84-5.01-23.49-9.19,7.34-6.99,18.09-16.2,32.34-25.19,13.2-8.32,23.63-14.9,39.15-18.73,21.75-5.37,39.94-1.99,50.04,0,16.47,3.25,29.58,9.27,33.7,11.24,14.7,7.03,18.39,11.93,30.64,16.34,12.24,4.41,26.08,4.25,31.66,4.47,5.42.22,9.98.13,13.28,0,10.69-2.54,26.65-6.44,45.96-11.62,32.45-8.71,39.9-11.8,48-13.28,20.37-3.73,51.39,1.48,97.02,42.89,22.77-13.53,42.81-24.77,59.23-33.7,11.79-6.41,19.59-10.48,30.64-11.23,18.95-1.3,34.43,8.02,42.89,14.3,8.4,6.93,16.01,10.59,21.45,12.64,9.33,3.53,16.46,3.96,19.4,9.82,1.52,3.03,1.82,7.29,0,10.48-3.03,5.32-9.76,3.85-22.47,6.88-18.36,4.38-20.39,11.3-34.72,11.23-5.77-.03-7.16-1.16-11.23,0-10.68,3.04-15.9,15.03-17.36,18.38-10.85,24.92,14.99,57.57,16.34,59.23-303.14,2.46-515.71,3.37-515.74,1.02,0-.66,16.94-2.22,27.91-13.96Z" fill="#d3ddea"/>
