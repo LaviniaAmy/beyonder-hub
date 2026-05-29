@@ -2,6 +2,7 @@ import BirdCanvas from "@/components/BirdCanvas";
 import { useState, useEffect, useRef } from "react";
 import { MapPin } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import FamilyPortrait from "@/assets/family-portrait.svg";
 
 import TherapistsIcon from "@/assets/icons/Therapists_Icon.svg";
 import ClubsIcon from "@/assets/icons/Clubs_Icon.svg";
@@ -700,6 +701,10 @@ const Index = () => {
               }}>
                 Built because we couldn't find what we needed either.
               </h2>
+              <div style={{ borderRadius: 14, overflow: "hidden", boxShadow: "0 4px 20px rgba(27,26,53,0.10)" }}>
+                <img src={FamilyPortrait} alt="Co-founder family" style={{ width: "100%", display: "block" }} />
+              </div>
+
               <blockquote style={{
                 background: C.white, borderLeft: `3px solid ${C.terra}`,
                 padding: "18px 20px", borderRadius: "0 10px 10px 0",
