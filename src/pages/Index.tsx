@@ -231,6 +231,7 @@ const Index = () => {
         style={{
           position: "relative", overflow: "hidden",
           display: "flex", flexDirection: "column",
+          background: "#0e152a",
         }}
       >
         {/* BirdCanvas sky — two canvases: back (zIndex 0) + front (zIndex 4) */}
