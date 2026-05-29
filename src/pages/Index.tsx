@@ -691,33 +691,38 @@ const Index = () => {
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
           <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
 
-            {/* Left: heading + quote */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }} className="mb-7 md:mb-0">
-              <span style={eyebrowStyle}>Why Beyonder exists</span>
-              <h2 style={{
-                fontFamily: "'Josefin Sans', sans-serif",
-                fontSize: "clamp(1.25rem, 3vw, 1.5rem)", fontWeight: 400,
-                color: C.textDark, lineHeight: 1.25, letterSpacing: "-0.3px", margin: 0,
-              }}>
-                Built because we couldn't find what we needed either.
-              </h2>
-              <div style={{ width: "50%", borderRadius: 14, overflow: "hidden", boxShadow: "0 4px 20px rgba(27,26,53,0.10)" }}>
+            {/* Left: portrait beside heading + quote */}
+            <div className="flex flex-col sm:flex-row mb-7 md:mb-0" style={{ gap: 20, alignItems: "flex-start" }}>
+
+              {/* Portrait */}
+              <div className="w-full sm:w-[42%]" style={{ flexShrink: 0, borderRadius: 14, overflow: "hidden", boxShadow: "0 4px 20px rgba(27,26,53,0.10)" }}>
                 <img src={FamilyPortrait} alt="Co-founder family" style={{ width: "100%", display: "block" }} />
               </div>
 
-              <blockquote style={{
-                background: C.white, borderLeft: `3px solid ${C.terra}`,
-                padding: "18px 20px", borderRadius: "0 10px 10px 0",
-                boxShadow: "0 2px 10px rgba(27,26,53,0.04)", margin: 0,
-              }}>
-                <p style={{ fontSize: "clamp(0.82rem, 1.5vw, 0.92rem)", fontStyle: "italic", color: C.textDark, lineHeight: 1.7, fontWeight: 300, margin: 0 }}>
-                  "I spent nearly a year searching for the right OT for my son. Information was scattered across
-                  Facebook groups, outdated PDFs and word of mouth. I kept thinking — there has to be a better way."
-                </p>
-                <cite style={{ display: "block", marginTop: 10, fontSize: "0.70rem", color: C.textLight, fontStyle: "normal", fontWeight: 500 }}>
-                  — Co-founder, parent of an 8-year-old with SEND
-                </cite>
-              </blockquote>
+              {/* Text column */}
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
+                <span style={eyebrowStyle}>Why Beyonder exists</span>
+                <h2 style={{
+                  fontFamily: "'Josefin Sans', sans-serif",
+                  fontSize: "clamp(1.25rem, 3vw, 1.5rem)", fontWeight: 400,
+                  color: C.textDark, lineHeight: 1.25, letterSpacing: "-0.3px", margin: 0,
+                }}>
+                  Built because we couldn't find what we needed either.
+                </h2>
+                <blockquote style={{
+                  background: C.white, borderLeft: `3px solid ${C.terra}`,
+                  padding: "18px 20px", borderRadius: "0 10px 10px 0",
+                  boxShadow: "0 2px 10px rgba(27,26,53,0.04)", margin: 0,
+                }}>
+                  <p style={{ fontSize: "clamp(0.82rem, 1.5vw, 0.92rem)", fontStyle: "italic", color: C.textDark, lineHeight: 1.7, fontWeight: 300, margin: 0 }}>
+                    "I spent nearly a year searching for the right OT for my son. Information was scattered across
+                    Facebook groups, outdated PDFs and word of mouth. I kept thinking — there has to be a better way."
+                  </p>
+                  <cite style={{ display: "block", marginTop: 10, fontSize: "0.70rem", color: C.textLight, fontStyle: "normal", fontWeight: 500 }}>
+                    — Co-founder, parent of an 8-year-old with SEND
+                  </cite>
+                </blockquote>
+              </div>
             </div>
 
             {/* Right: stats grid — 2 cols on all screen sizes */}
