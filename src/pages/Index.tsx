@@ -701,7 +701,7 @@ const Index = () => {
               }}>
                 Built because we couldn't find what we needed either.
               </h2>
-              <div style={{ borderRadius: 14, overflow: "hidden", boxShadow: "0 4px 20px rgba(27,26,53,0.10)" }}>
+              <div style={{ width: "50%", borderRadius: 14, overflow: "hidden", boxShadow: "0 4px 20px rgba(27,26,53,0.10)" }}>
                 <img src={FamilyPortrait} alt="Co-founder family" style={{ width: "100%", display: "block" }} />
               </div>
 
