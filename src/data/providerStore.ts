@@ -65,6 +65,8 @@ export interface EditableProvider {
   volunteerInfo: string;
   // Import/onboarding status
   draftStatus?: "draft" | "pending_review" | "live";
+  // Contact person (public display)
+  contactName?: string;
   // Pass-through (unchanged)
   type: string;
   category_type: string;
@@ -171,6 +173,7 @@ export function importProvider(data: {
   email: string;
   phone: string;
   website: string;
+  contactName?: string;
 }): EditableProvider {
   const id = `imported-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const categoryTypeMap: Record<string, string> = {
@@ -220,6 +223,7 @@ export function importProvider(data: {
     staffProfiles: [],
     events: [],
     volunteerInfo: "",
+    contactName: data.contactName ?? "",
     type: data.category_type,
     category_type: data.category_type,
     typeBadge: categoryTypeMap[data.category_type] ?? data.category_type,

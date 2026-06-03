@@ -663,20 +663,16 @@ const ProviderPage = () => {
               <CardTitle>Practical Info</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <div>
-                <strong className="text-foreground">Coverage Area</strong>
-                <p className="text-muted-foreground">{provider.coverageArea}</p>
-              </div>
-              {provider.email && (
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-teal-500 shrink-0" />
-                  <span>{provider.email}</span>
+              {provider.contactName && (
+                <div>
+                  <strong className="text-foreground">Contact</strong>
+                  <p className="text-muted-foreground">{provider.contactName}</p>
                 </div>
               )}
-              {provider.phone && (
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-teal-500 shrink-0" />
-                  <span>{provider.phone}</span>
+              {provider.coverageArea && (
+                <div>
+                  <strong className="text-foreground">Coverage Area</strong>
+                  <p className="text-muted-foreground">{provider.coverageArea}</p>
                 </div>
               )}
               {provider.website && (

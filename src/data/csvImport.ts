@@ -86,36 +86,31 @@ export function parseCSV(raw: string): ParsedProviderRow[] {
     if (!businessName) errors.push("business_name is required");
 
     const rawCategory = get("category_type").toLowerCase();
-    if (!VALID_CATEGORIES.includes(rawCategory as CategoryType)) {
-      errors.push(`category_type must be one of: ${VALID_CATEGORIES.join(", ")}`);
+    const categoryValid = VALID_CATEGORIES.includes(rawCategory as CategoryType);
+    if (rawCategory && !categoryValid) {
+      errors.push(`category_type "${rawCategory}" not recognised — must be one of: ${VALID_CATEGORIES.join(", ")}`);
     }
 
     const rawFormat = get("delivery_format").toLowerCase();
-    if (!VALID_FORMATS.includes(rawFormat)) {
-      errors.push(`delivery_format must be one of: ${VALID_FORMATS.join(", ")}`);
-    }
-
-    const email = get("email");
-    if (!email) errors.push("email is required");
-
-    const shortDesc = get("short_description");
-    if (shortDesc.length > 160) errors.push("short_description exceeds 160 characters");
+    const formatValid = VALID_FORMATS.includes(rawFormat);
+    // Non-blocking: default to "in-person" if blank or unrecognised
+    const deliveryFormat = formatValid ? rawFormat : "in-person";
 
     return {
       businessName,
-      category_type: rawCategory as CategoryType,
+      category_type: (categoryValid ? rawCategory : "") as CategoryType,
       region: (get("region") as Region) || null,
       location: get("location"),
       coverageArea: get("coverage_area"),
-      shortDescription: shortDesc,
+      shortDescription: get("short_description"),
       description: get("full_description"),
       needsSupported: get("needs_supported")
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean),
       ageRange: get("age_range"),
-      deliveryFormat: rawFormat as "in-person" | "online" | "hybrid",
-      email,
+      deliveryFormat: deliveryFormat as "in-person" | "online" | "hybrid",
+      email: get("email"),
       phone: get("phone"),
       website: get("website"),
       contactName: get("contact_name"),
