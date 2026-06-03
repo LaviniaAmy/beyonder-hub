@@ -25,6 +25,7 @@ import NewsPage from "./pages/NewsPage";
 import CommunityPage from "./pages/CommunityPage";
 import NotFound from "./pages/NotFound";
 import TestGuidePage from "./pages/TestGuidePage";
+import ClaimInvitePage from "./pages/ClaimInvitePage";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,7 @@ const App = () => (
               <Route path="/guides" element={<GuidesPage />} />
               <Route path="/news" element={<NewsPage />} />
               <Route path="/community" element={<CommunityPage />} />
+              <Route path="/claim" element={<ClaimInvitePage />} />
               <Route path="/test-guide" element={<TestGuidePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

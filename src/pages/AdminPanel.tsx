@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ShieldCheck, Star, Heart } from "lucide-react";
+import { ShieldCheck, Star, Heart, Upload, Link2, Copy, Check, Download, AlertCircle, X } from "lucide-react";
 import { reviews } from "@/data/mockData";
 import {
   adminSettings,
@@ -20,7 +20,9 @@ import {
   rejectPendingClaim,
   PendingClaim,
 } from "@/data/founderStore";
-import { getAllProviders, updateProvider } from "@/data/providerStore";
+import { getAllProviders, updateProvider, importProvider } from "@/data/providerStore";
+import { createInviteToken, getInviteStatus, getTokenForProvider, inviteTokens } from "@/data/inviteTokenStore";
+import { parseCSV, generateCSVTemplate, ParsedProviderRow } from "@/data/csvImport";
 import type { PlanType, PlanStatus, CategoryType } from "@/lib/featureGating";
 
 const mockParents = [
@@ -91,6 +93,18 @@ const AdminPanel = () => {
   );
   const [savedRows, setSavedRows] = useState<Record<string, boolean>>({});
   const [claimList, setClaimList] = useState<PendingClaim[]>(pendingClaims);
+  const [activeTab, setActiveTab] = useState("providers");
+
+  // ── Import & Invites state ──
+  const [csvText, setCsvText] = useState("");
+  const [parsedRows, setParsedRows] = useState<ParsedProviderRow[] | null>(null);
+  const [importDone, setImportDone] = useState(false);
+  const [importCount, setImportCount] = useState(0);
+  const [copiedToken, setCopiedToken] = useState<string | null>(null);
+  const [inviteEmail, setInviteEmail] = useState<Record<string, string>>({});
+  const [inviteState, setInviteState] = useState<Record<string, "idle" | "generated">>({});
+  const [generatedLinks, setGeneratedLinks] = useState<Record<string, string>>({});
+  const [providerList, setProviderList] = useState(getAllProviders());
 
   const handleApproveClaim = (id: string) => {
     approvePendingClaim(id);
@@ -174,6 +188,60 @@ const AdminPanel = () => {
     setTimeout(() => setSavedRows((prev) => ({ ...prev, [providerId]: false })), 2000);
   };
 
+  // ── Import handlers ──
+  const handleParseCSV = () => {
+    if (!csvText.trim()) return;
+    setParsedRows(parseCSV(csvText));
+    setImportDone(false);
+  };
+
+  const handleConfirmImport = () => {
+    if (!parsedRows) return;
+    const valid = parsedRows.filter((r) => r.errors.length === 0);
+    valid.forEach((r) => importProvider(r));
+    setImportCount(valid.length);
+    setImportDone(true);
+    setParsedRows(null);
+    setCsvText("");
+    setProviderList(getAllProviders());
+  };
+
+  const handleDownloadTemplate = () => {
+    const csv = generateCSVTemplate();
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "beyonder_provider_import_template.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleGenerateInvite = (providerId: string, providerName: string) => {
+    const email = inviteEmail[providerId] ?? "";
+    const tokenRecord = createInviteToken(providerId, providerName, email);
+    const link = `${window.location.origin}/claim?token=${tokenRecord.token}`;
+    setGeneratedLinks((prev) => ({ ...prev, [providerId]: link }));
+    setInviteState((prev) => ({ ...prev, [providerId]: "generated" }));
+  };
+
+  const handleCopyLink = (providerId: string) => {
+    const link = generatedLinks[providerId];
+    if (!link) return;
+    navigator.clipboard.writeText(link);
+    setCopiedToken(providerId);
+    setTimeout(() => setCopiedToken(null), 2000);
+  };
+
+  const handleCopyEmailTemplate = (providerId: string, providerName: string) => {
+    const link = generatedLinks[providerId];
+    if (!link) return;
+    const template = `Hi there,\n\nWe've created a profile for ${providerName} on Beyonder Hub — a directory helping SEND families find trusted local support.\n\nYour listing is ready and waiting for you. Click the link below to claim your profile and start connecting with families who need your services:\n\n${link}\n\nThis link is personal to you and expires in 30 days.\n\nIf you have any questions, just reply to this email — we'd love to help you get set up.\n\nWarm wishes,\nThe Beyonder Team`;
+    navigator.clipboard.writeText(template);
+    setCopiedToken(`email-${providerId}`);
+    setTimeout(() => setCopiedToken(null), 2500);
+  };
+
   const sortedProviders = [...getAllProviders()].sort((a, b) => {
     const aActive = ["sent", "acknowledged"].includes(changeRequestState[a.id]?.status);
     const bActive = ["sent", "acknowledged"].includes(changeRequestState[b.id]?.status);
@@ -188,8 +256,32 @@ const AdminPanel = () => {
       <div className="container animate-fade-in py-10">
 
 
-        <Tabs defaultValue="providers">
-          <TabsList className="bg-muted border-0">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          {/* Mobile: dropdown selector */}
+          <div className="md:hidden mb-4">
+            <Select value={activeTab} onValueChange={setActiveTab}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-card">
+                <SelectItem value="providers">Providers</SelectItem>
+                <SelectItem value="parents">Parents</SelectItem>
+                <SelectItem value="reviews">Reviews</SelectItem>
+                <SelectItem value="plans">Plans & Categories</SelectItem>
+                <SelectItem value="founder">Founder Settings</SelectItem>
+                <SelectItem value="claims">
+                  Claim Requests{claimList.filter((c) => c.status === "pending_review").length > 0
+                    ? ` (${claimList.filter((c) => c.status === "pending_review").length})`
+                    : ""}
+                </SelectItem>
+                <SelectItem value="content">Content Strings</SelectItem>
+                <SelectItem value="import">Import & Invites</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Desktop: tab bar */}
+          <TabsList className="bg-muted border-0 hidden md:flex flex-wrap h-auto gap-1">
             <TabsTrigger
               value="providers"
               className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
@@ -237,6 +329,12 @@ const AdminPanel = () => {
             >
               Content Strings
             </TabsTrigger>
+            <TabsTrigger
+              value="import"
+              className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
+            >
+              Import & Invites
+            </TabsTrigger>
           </TabsList>
 
           {/* ── Providers ── */}
@@ -261,7 +359,7 @@ const AdminPanel = () => {
                         key={p.id}
                         className={`rounded-xl border p-4 transition-colors ${hasActiveRequest ? "border-orange-500/40 bg-orange-500/[0.04]" : "border-border/60"}`}
                       >
-                        <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                           <div>
                             <p className="font-medium flex items-center gap-2 flex-wrap">
                               {p.businessName}
@@ -427,7 +525,7 @@ const AdminPanel = () => {
                   {mockParents.map((p) => (
                     <div
                       key={p.id}
-                      className="flex items-center justify-between rounded-xl border border-border/60 p-4"
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-xl border border-border/60 p-4 gap-3"
                     >
                       <div>
                         <p className="font-medium">{p.name}</p>
@@ -457,7 +555,7 @@ const AdminPanel = () => {
                   {reviews.map((r) => (
                     <div
                       key={r.id}
-                      className="flex items-center justify-between rounded-xl border border-border/60 p-4"
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-xl border border-border/60 p-4 gap-3"
                     >
                       <div>
                         <p className="font-medium">
@@ -488,12 +586,12 @@ const AdminPanel = () => {
                     if (!row) return null;
                     return (
                       <div key={p.id} className="rounded-xl border border-border/60 p-5 space-y-3">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                           <div>
                             <p className="font-medium">{p.businessName}</p>
                             <p className="text-sm text-muted-foreground">{p.typeBadge}</p>
                           </div>
-                          <div className="flex gap-2 flex-wrap justify-end">
+                          <div className="flex gap-2 flex-wrap">
                             <Badge className="bg-muted text-foreground border-0 text-xs">
                               {row.categoryType}
                             </Badge>
@@ -635,7 +733,7 @@ const AdminPanel = () => {
                   <div className="space-y-3">
                     {claimList.map((claim) => (
                       <div key={claim.id} className="rounded-xl border border-border/60 p-4 space-y-3">
-                        <div className="flex items-start justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                           <div className="space-y-1">
                             <p className="font-medium">{claim.providerName}</p>
                             <p className="text-sm text-muted-foreground">
@@ -712,6 +810,235 @@ const AdminPanel = () => {
               </CardContent>
             </Card>
           </TabsContent>
+          {/* ── Import & Invites ── */}
+          <TabsContent value="import" className="mt-6 space-y-6">
+
+            {/* CSV Import */}
+            <Card className="border-0 shadow-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Upload className="h-4 w-4 text-teal-400" /> Bulk Import Providers
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button variant="outline" className="gap-2" onClick={handleDownloadTemplate}>
+                    <Download className="h-4 w-4" /> Download CSV Template
+                  </Button>
+                  <p className="text-sm text-muted-foreground self-center">
+                    Fill in the template then paste the CSV content below.
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="csv-input">Paste CSV content</Label>
+                  <textarea
+                    id="csv-input"
+                    className="w-full min-h-[160px] rounded-md border border-input bg-background px-3 py-2 text-sm font-mono resize-y focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    placeholder="Paste your CSV here (including the header row)…"
+                    value={csvText}
+                    onChange={(e) => { setCsvText(e.target.value); setParsedRows(null); setImportDone(false); }}
+                  />
+                </div>
+
+                <Button
+                  className="bg-teal-500 hover:bg-teal-400"
+                  onClick={handleParseCSV}
+                  disabled={!csvText.trim()}
+                >
+                  Preview Import
+                </Button>
+
+                {importDone && (
+                  <div className="flex items-center gap-2 rounded-lg bg-teal-500/10 border border-teal-500/20 px-4 py-3 text-sm text-teal-400">
+                    <Check className="h-4 w-4 shrink-0" />
+                    {importCount} provider{importCount !== 1 ? "s" : ""} imported successfully. They are in Draft status.
+                  </div>
+                )}
+
+                {parsedRows && parsedRows.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium">
+                        {parsedRows.length} row{parsedRows.length !== 1 ? "s" : ""} found —{" "}
+                        <span className="text-teal-400">{parsedRows.filter((r) => r.errors.length === 0).length} valid</span>
+                        {parsedRows.some((r) => r.errors.length > 0) && (
+                          <span className="text-red-400 ml-1">
+                            · {parsedRows.filter((r) => r.errors.length > 0).length} with errors
+                          </span>
+                        )}
+                      </p>
+                      <Button
+                        size="sm"
+                        className="bg-teal-500 hover:bg-teal-400"
+                        disabled={parsedRows.filter((r) => r.errors.length === 0).length === 0}
+                        onClick={handleConfirmImport}
+                      >
+                        Confirm Import ({parsedRows.filter((r) => r.errors.length === 0).length} valid)
+                      </Button>
+                    </div>
+                    <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                      {parsedRows.map((row, i) => (
+                        <div
+                          key={i}
+                          className={`rounded-lg border px-4 py-3 text-sm ${
+                            row.errors.length > 0
+                              ? "border-red-500/30 bg-red-500/5"
+                              : "border-teal-500/20 bg-teal-500/5"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <span className="font-medium">{row.businessName || `Row ${i + 2}`}</span>
+                            <div className="flex gap-1.5 flex-wrap">
+                              {row.category_type && (
+                                <Badge className="bg-muted text-foreground border-0 text-xs">{row.category_type}</Badge>
+                              )}
+                              {row.region && (
+                                <Badge className="bg-muted text-foreground border-0 text-xs">{row.region}</Badge>
+                              )}
+                              {row.errors.length === 0 ? (
+                                <Badge className="bg-teal-500/15 text-teal-400 border-0 text-xs gap-1">
+                                  <Check className="h-3 w-3" /> Valid
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-red-500/15 text-red-400 border-0 text-xs gap-1">
+                                  <AlertCircle className="h-3 w-3" /> {row.errors.length} error{row.errors.length !== 1 ? "s" : ""}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          {row.errors.length > 0 && (
+                            <ul className="mt-2 space-y-0.5">
+                              {row.errors.map((err, j) => (
+                                <li key={j} className="text-xs text-red-400 flex items-start gap-1.5">
+                                  <X className="h-3 w-3 shrink-0 mt-0.5" /> {err}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Invite Links */}
+            <Card className="border-0 shadow-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Link2 className="h-4 w-4 text-teal-400" /> Provider Invite Links
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Generate a personalised invite link for each provider. The link auto-approves their profile claim — no domain verification needed.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {providerList.map((p) => {
+                    const status = getInviteStatus(p.id);
+                    const tokenRecord = getTokenForProvider(p.id);
+                    const isGenerated = inviteState[p.id] === "generated";
+                    const link = generatedLinks[p.id];
+
+                    return (
+                      <div key={p.id} className="rounded-xl border border-border/60 p-4 space-y-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div>
+                            <p className="font-medium">{p.businessName}</p>
+                            <p className="text-xs text-muted-foreground">{p.typeBadge} · {p.location}</p>
+                          </div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {/* Claim/invite status badge */}
+                            {status === "none" && (
+                              <Badge className="bg-muted text-muted-foreground border-0 text-xs">No invite sent</Badge>
+                            )}
+                            {status === "pending" && tokenRecord && (
+                              <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs">
+                                Invited · {new Date(tokenRecord.createdAt).toLocaleDateString("en-GB")}
+                              </Badge>
+                            )}
+                            {status === "claimed" && tokenRecord && (
+                              <Badge className="bg-teal-500/15 text-teal-400 border-0 text-xs">
+                                Claimed · {tokenRecord.claimedAt ? new Date(tokenRecord.claimedAt).toLocaleDateString("en-GB") : ""}
+                              </Badge>
+                            )}
+                            {status === "expired" && (
+                              <Badge className="bg-red-500/15 text-red-400 border-0 text-xs">Expired</Badge>
+                            )}
+                          </div>
+                        </div>
+
+                        {!isGenerated ? (
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <Input
+                              placeholder="Provider email address (optional)"
+                              value={inviteEmail[p.id] ?? ""}
+                              onChange={(e) => setInviteEmail((prev) => ({ ...prev, [p.id]: e.target.value }))}
+                              className="text-sm"
+                            />
+                            <Button
+                              size="sm"
+                              className="bg-teal-500 hover:bg-teal-400 shrink-0"
+                              onClick={() => handleGenerateInvite(p.id, p.businessName)}
+                            >
+                              <Link2 className="h-3.5 w-3.5 mr-1.5" />
+                              Generate Link
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2">
+                              <code className="text-xs flex-1 truncate text-teal-400">{link}</code>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="shrink-0 h-7 px-2"
+                                onClick={() => handleCopyLink(p.id)}
+                              >
+                                {copiedToken === p.id ? (
+                                  <Check className="h-3.5 w-3.5 text-teal-400" />
+                                ) : (
+                                  <Copy className="h-3.5 w-3.5" />
+                                )}
+                              </Button>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-1.5 text-xs"
+                                onClick={() => handleCopyEmailTemplate(p.id, p.businessName)}
+                              >
+                                {copiedToken === `email-${p.id}` ? (
+                                  <><Check className="h-3 w-3 text-teal-400" /> Copied!</>
+                                ) : (
+                                  <><Copy className="h-3 w-3" /> Copy email template</>
+                                )}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="text-xs text-muted-foreground"
+                                onClick={() => {
+                                  setInviteState((prev) => ({ ...prev, [p.id]: "idle" }));
+                                  setGeneratedLinks((prev) => { const n = {...prev}; delete n[p.id]; return n; });
+                                }}
+                              >
+                                Generate new link
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
         </Tabs>
       </div>
     </div>

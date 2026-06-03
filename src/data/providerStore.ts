@@ -63,6 +63,8 @@ export interface EditableProvider {
   events: { title: string; date: string; type: "online" | "in-person"; description: string }[];
   // 6.2 Volunteer info (charity)
   volunteerInfo: string;
+  // Import/onboarding status
+  draftStatus?: "draft" | "pending_review" | "live";
   // Pass-through (unchanged)
   type: string;
   category_type: string;
@@ -151,6 +153,90 @@ export function updateProvider(id: string, updates: Partial<EditableProvider>): 
 
 export function getAllProviders(): EditableProvider[] {
   return providerStore;
+}
+
+export type ProviderDraftStatus = "draft" | "pending_review" | "live";
+
+export function importProvider(data: {
+  businessName: string;
+  category_type: string;
+  region: string | null;
+  location: string;
+  coverageArea: string;
+  shortDescription: string;
+  description: string;
+  needsSupported: string[];
+  ageRange: string;
+  deliveryFormat: "in-person" | "online" | "hybrid";
+  email: string;
+  phone: string;
+  website: string;
+}): EditableProvider {
+  const id = `imported-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  const categoryTypeMap: Record<string, string> = {
+    therapist: "Therapist & Specialist",
+    club: "Inclusive Club & Activity",
+    education: "Education & Learning",
+    charity: "Charity & Organisation",
+    product: "Product & Equipment",
+  };
+
+  const record: EditableProvider = {
+    id,
+    businessName: data.businessName,
+    description: data.description,
+    shortDescription: data.shortDescription,
+    location: data.location,
+    region: data.region,
+    coverageArea: data.coverageArea,
+    email: data.email,
+    phone: data.phone,
+    website: data.website,
+    websiteDomain: data.website.replace(/^https?:\/\//, "").split("/")[0],
+    ageRange: data.ageRange,
+    deliveryFormat: data.deliveryFormat,
+    needsSupported: data.needsSupported,
+    searchTags: data.needsSupported,
+    credentials: [],
+    timetable: [],
+    gallery: [],
+    caseStudies: [],
+    spotlightMessage: "",
+    storeUrl: "",
+    products: [],
+    availabilityStatus: "accepting",
+    moderationStatus: "active",
+    suspendedMessage: "",
+    changeRequest: null,
+    isVerified: false,
+    isFeatured: false,
+    ehcpSupport: false,
+    sessionTypes: [],
+    availabilityDates: [],
+    sessionCapacity: [],
+    termProgramme: [],
+    openDays: [],
+    ehcpAdmissionsInfo: "",
+    staffProfiles: [],
+    events: [],
+    volunteerInfo: "",
+    type: data.category_type,
+    category_type: data.category_type,
+    typeBadge: categoryTypeMap[data.category_type] ?? data.category_type,
+    verified: false,
+    foundingProvider: false,
+    rating: 0,
+    reviewCount: 0,
+    plan_type: "free",
+    plan_status: "active",
+    plan_expires_at: null,
+    search_boost: 0,
+    contactMethod: data.email,
+    draftStatus: "draft" as ProviderDraftStatus,
+  } as EditableProvider & { draftStatus: ProviderDraftStatus };
+
+  providerStore.push(record);
+  return record;
 }
 
 export function getActiveProviders(): EditableProvider[] {
