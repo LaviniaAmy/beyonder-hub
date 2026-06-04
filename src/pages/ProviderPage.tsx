@@ -6,8 +6,6 @@ import {
   ShieldCheck,
   Award,
   Clock,
-  Mail,
-  Phone,
   Globe,
   AlertTriangle,
   CheckCircle,
@@ -673,19 +671,6 @@ const ProviderPage = () => {
                 <div>
                   <strong className="text-foreground">Coverage Area</strong>
                   <p className="text-muted-foreground">{provider.coverageArea}</p>
-                </div>
-              )}
-              {provider.website && (
-                <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4 text-teal-500 shrink-0" />
-                  <a
-                    href={provider.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-teal-400 hover:underline break-all"
-                  >
-                    {provider.website}
-                  </a>
                 </div>
               )}
               {canShow("store_link") && provider.storeUrl && (
