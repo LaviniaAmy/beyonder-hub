@@ -116,16 +116,16 @@ const LoginPage = () => {
             </p>
           </form>
 
-          {/* Pilot test logins — one tap, no password needed */}
+          {/* Pilot test logins */}
           <div className="mt-4 border-t pt-4">
-            <p className="text-xs text-muted-foreground mb-2">Pilot test logins — tap to enter instantly:</p>
+            <p className="text-xs text-muted-foreground mb-2">Pilot test logins (any password):</p>
             <div className="flex flex-wrap gap-1">
               {TEST_LOGINS.map(({ label, email: e }) => (
                 <button
                   key={e}
                   type="button"
                   className="rounded-md bg-muted px-2 py-1 text-xs hover:bg-teal-500/10 hover:text-teal-500 transition-colors"
-                  onClick={() => handleLogin(e)}
+                  onClick={() => setEmail(e)}
                 >
                   {label}
                 </button>
