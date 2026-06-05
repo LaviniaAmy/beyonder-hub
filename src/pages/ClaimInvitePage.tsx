@@ -60,7 +60,7 @@ const ClaimInvitePage = () => {
 
     // Register the claim in the founder store as auto-approved
     if (record) {
-      attemptClaim(record.providerId, `invited-user-${Date.now()}`, email);
+      attemptClaim(`invited-user-${Date.now()}`, email, record.providerId, record.providerName, extractEmailDomain(email));
     }
 
     setState("success");
