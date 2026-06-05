@@ -15,7 +15,6 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  authReady: boolean;
   login: (email: string, password: string, forceRole?: UserRole) => void;
   logout: () => void;
 }
@@ -95,19 +94,15 @@ function resolveUser(email: string): { role: UserRole; id: string; name: string;
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [authReady, setAuthReady] = useState(false);
-
-  useEffect(() => {
+  const [user, setUser] = useState<User | null>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setUser(JSON.parse(stored));
+      return stored ? JSON.parse(stored) : null;
     } catch {
       localStorage.removeItem(STORAGE_KEY);
-    } finally {
-      setAuthReady(true);
+      return null;
     }
-  }, []);
+  });
 
   const login = (email: string, _password: string, forceRole?: UserRole) => {
     const resolved = resolveUser(email);
@@ -128,7 +123,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, authReady, login, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>{children}</AuthContext.Provider>
   );
 };
 
