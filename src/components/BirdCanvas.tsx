@@ -243,7 +243,7 @@ const BirdCanvas = () => {
       {/* Front canvas — 10% of birds — sits in front of logo (zIndex 4) */}
       <canvas
         ref={frontRef}
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", zIndex: 4 }}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", zIndex: 4, pointerEvents: "none" }}
       />
     </>
   );
