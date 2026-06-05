@@ -94,16 +94,15 @@ function resolveUser(email: string): { role: UserRole; id: string; name: string;
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
+  const [user, setUser] = useState<User | null>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setUser(JSON.parse(stored));
+      return stored ? JSON.parse(stored) : null;
     } catch {
       localStorage.removeItem(STORAGE_KEY);
+      return null;
     }
-  }, []);
+  });
 
   const login = (email: string, _password: string, forceRole?: UserRole) => {
     const resolved = resolveUser(email);

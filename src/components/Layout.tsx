@@ -344,7 +344,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
       {/* Footer image — sits above footer on every page */}
       <div style={{ background: "#F6F3EE", display: "flex", justifyContent: "center", padding: "0 20px" }}>
-        <object data={FooterImage} type="image/svg+xml" style={{ width: "84%", maxWidth: 924, display: "block", pointerEvents: "none" }} />
+        <img src={FooterImage} alt="" aria-hidden="true" style={{ width: "84%", maxWidth: 924, display: "block", pointerEvents: "none" }} />
       </div>
 
       <Footer />

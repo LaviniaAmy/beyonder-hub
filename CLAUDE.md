@@ -58,3 +58,21 @@ When making any change to `src/pages/Index.tsx` or `src/components/BirdCanvas.ts
 only touch the specific element the user has asked about.
 Do not adjust spacing, positioning, sizing, colours, or structure of any locked element
 as a side-effect of another change.
+
+---
+
+## Pending work — do not forget
+
+These items were agreed but not yet built. Raise them with the user at the start of
+the relevant phase so they aren't lost.
+
+### Phase 1B — before starting the onboarding wizard
+
+- **Outreach status tracker** (Admin → Import & Invites tab)
+  A unified column/status for every provider showing one of:
+  `Not contacted` · `Invite sent` (date) · `Claimed` (date)
+  — regardless of whether they claimed via invite token or directly via the domain-match claim flow.
+  Currently the two flows are tracked separately (inviteTokenStore vs founderStore/pendingClaims) and
+  there is no single view. This needs to be reconciled so the admin can see at a glance who has been
+  reached out to and who has claimed, without checking two tabs.
+
