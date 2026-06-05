@@ -28,24 +28,25 @@ const LoginPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password);
+    handleLogin(email);
+  };
 
-    const lower = email.toLowerCase().trim();
+  const handleLogin = (emailToUse: string) => {
+    login(emailToUse, "");
 
-    // Check for admin
+    const lower = emailToUse.toLowerCase().trim();
+
     if (lower === "admin@beyonder.com" || lower === "test@admin.com") {
       navigate("/admin");
       return;
     }
 
-    // Check if this email has an approved claim → full provider dashboard
     const approvedClaim = claimRecords.find((r) => r.claimantEmail.toLowerCase() === lower);
     if (approvedClaim) {
       navigate("/provider-dashboard");
       return;
     }
 
-    // Check if this email has a pending claim → pending screen
     const pendingClaim = pendingClaims.find(
       (p) => p.claimantEmail.toLowerCase() === lower && p.status === "pending_review",
     );
@@ -54,13 +55,11 @@ const LoginPage = () => {
       return;
     }
 
-    // Hardcoded test provider emails
     if (lower.endsWith("@beyonder.test")) {
       navigate("/provider-dashboard");
       return;
     }
 
-    // Everyone else → parent dashboard (or redirect back to where they came from)
     navigate(redirectTo ?? "/dashboard");
   };
 
@@ -103,7 +102,6 @@ const LoginPage = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
               />
             </div>
             <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-400">
@@ -117,16 +115,16 @@ const LoginPage = () => {
             </p>
           </form>
 
-          {/* Pilot test logins */}
+          {/* Pilot test logins — one tap, no password needed */}
           <div className="mt-4 border-t pt-4">
-            <p className="text-xs text-muted-foreground mb-2">Pilot test logins (any password):</p>
+            <p className="text-xs text-muted-foreground mb-2">Pilot test logins — tap to enter instantly:</p>
             <div className="flex flex-wrap gap-1">
               {TEST_LOGINS.map(({ label, email: e }) => (
                 <button
                   key={e}
                   type="button"
                   className="rounded-md bg-muted px-2 py-1 text-xs hover:bg-teal-500/10 hover:text-teal-500 transition-colors"
-                  onClick={() => setEmail(e)}
+                  onClick={() => handleLogin(e)}
                 >
                   {label}
                 </button>
