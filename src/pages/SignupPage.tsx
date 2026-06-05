@@ -68,9 +68,9 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-background">
       <PageBanner title="Join Beyonder" />
-      <div className="flex items-center justify-center py-12 px-4">
+      <div className="flex items-start md:items-center justify-center py-8 md:py-12 px-4">
       <Card className="w-full max-w-md border-0 shadow-card animate-fade-in">
         <CardHeader className="text-center pb-2">
           <CardTitle className="text-2xl">Join Beyonder</CardTitle>
