@@ -338,7 +338,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         )}
       </header>
 
-      <main className="flex-1 pb-[72px] md:pb-0" style={{ paddingTop: 58 }}>
+      <main
+        className="flex-1 bg-background pb-[72px] md:pb-0"
+        style={{ paddingTop: 58, background: "#F6F3EE" }}
+      >
         {children}
       </main>
 
