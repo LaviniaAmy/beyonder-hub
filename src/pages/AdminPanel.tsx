@@ -1,4 +1,5 @@
-import { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import PageBanner from "@/components/PageBanner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ShieldCheck, Star, Heart, Upload, Link2, Copy, Check, Download, AlertCircle, X } from "lucide-react";
+import { ShieldCheck, Star, Heart, Upload, Link2, Copy, Check, Download, AlertCircle, X, MessageSquare, Ban } from "lucide-react";
 import { reviews } from "@/data/mockData";
 import {
   adminSettings,
@@ -107,6 +108,15 @@ const AdminPanel = () => {
   const [generatedLinks, setGeneratedLinks] = useState<Record<string, string>>({});
   const [providerList, setProviderList] = useState(getAllProviders());
 
+  // ── Provider list filters ──
+  const [filterSearch, setFilterSearch] = useState("");
+  const [filterCategory, setFilterCategory] = useState("all");
+  const [filterRegion, setFilterRegion] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterPlan, setFilterPlan] = useState("all");
+  const [filterMessage, setFilterMessage] = useState("all");
+  const [expandedMessage, setExpandedMessage] = useState<string | null>(null);
+
   const handleApproveClaim = (id: string) => {
     approvePendingClaim(id);
     setClaimList([...pendingClaims]);
@@ -189,6 +199,15 @@ const AdminPanel = () => {
     setTimeout(() => setSavedRows((prev) => ({ ...prev, [providerId]: false })), 2000);
   };
 
+  const handleInlinePlanChange = (providerId: string, field: "planType" | "planStatus", value: string) => {
+    const current = providerPlans[providerId];
+    if (!current) return;
+    const updated = { ...current, [field]: value };
+    setProviderPlans((prev) => ({ ...prev, [providerId]: updated }));
+    updateProvider(providerId, { plan_type: updated.planType, plan_status: updated.planStatus, category_type: updated.categoryType });
+    applyPlanOverride(providerId, updated.planType, updated.planStatus, updated.categoryType);
+  };
+
   // ── Import handlers ──
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -254,13 +273,33 @@ const AdminPanel = () => {
     setTimeout(() => setCopiedToken(null), 2500);
   };
 
-  const sortedProviders = [...getAllProviders()].sort((a, b) => {
-    const aActive = ["sent", "acknowledged"].includes(changeRequestState[a.id]?.status);
-    const bActive = ["sent", "acknowledged"].includes(changeRequestState[b.id]?.status);
-    if (aActive && !bActive) return -1;
-    if (!aActive && bActive) return 1;
-    return 0;
-  });
+  const allRegions = useMemo(
+    () => [...new Set(getAllProviders().map((p) => p.region).filter(Boolean))].sort() as string[],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [providerList],
+  );
+
+  const filteredProviders = useMemo(() => {
+    const q = filterSearch.toLowerCase();
+    return [...getAllProviders()]
+      .sort((a, b) => {
+        const aA = ["sent", "acknowledged"].includes(changeRequestState[a.id]?.status);
+        const bA = ["sent", "acknowledged"].includes(changeRequestState[b.id]?.status);
+        if (aA && !bA) return -1;
+        if (!aA && bA) return 1;
+        return 0;
+      })
+      .filter((p) => {
+        if (q && !p.businessName.toLowerCase().includes(q) && !(p.contactName ?? "").toLowerCase().includes(q)) return false;
+        if (filterCategory !== "all" && p.category_type !== filterCategory) return false;
+        if (filterRegion !== "all" && p.region !== filterRegion) return false;
+        if (filterStatus === "active" && moderationState[p.id] === "suspended") return false;
+        if (filterStatus === "suspended" && moderationState[p.id] !== "suspended") return false;
+        if (filterPlan !== "all" && providerPlans[p.id]?.planType !== filterPlan) return false;
+        if (filterMessage === "pending" && !["sent", "acknowledged"].includes(changeRequestState[p.id]?.status)) return false;
+        return true;
+      });
+  }, [providerList, filterSearch, filterCategory, filterRegion, filterStatus, filterPlan, filterMessage, moderationState, changeRequestState, providerPlans]);
 
   return (
     <div className="bg-background min-h-screen">
@@ -279,7 +318,6 @@ const AdminPanel = () => {
                 <SelectItem value="providers">Providers</SelectItem>
                 <SelectItem value="parents">Parents</SelectItem>
                 <SelectItem value="reviews">Reviews</SelectItem>
-                <SelectItem value="plans">Plans & Categories</SelectItem>
                 <SelectItem value="founder">Founder Settings</SelectItem>
                 <SelectItem value="claims">
                   Claim Requests{claimList.filter((c) => c.status === "pending_review").length > 0
@@ -313,12 +351,6 @@ const AdminPanel = () => {
               Reviews
             </TabsTrigger>
             <TabsTrigger
-              value="plans"
-              className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
-            >
-              Plans & Categories
-            </TabsTrigger>
-            <TabsTrigger
               value="founder"
               className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
             >
@@ -350,180 +382,248 @@ const AdminPanel = () => {
           </TabsList>
 
           {/* ── Providers ── */}
-          <TabsContent value="providers" className="mt-6">
-            <Card className="border-0 shadow-card">
-              <CardHeader>
-                <CardTitle>Provider Moderation</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {sortedProviders.map((p) => {
-                    const isSuspended = moderationState[p.id] === "suspended";
-                    const cr = changeRequestState[p.id];
-                    const isComposing = cr?.status === "composing";
-                    const isSent = cr?.status === "sent";
-                    const isAcknowledged = cr?.status === "acknowledged";
-                    const hasActiveRequest = isSent || isAcknowledged;
-                    const isTherapist = p.category_type === "therapist";
+          <TabsContent value="providers" className="mt-6 space-y-3">
+            {/* Filters */}
+            <div className="flex flex-wrap gap-2 items-center">
+              <Input
+                placeholder="Search name or contact…"
+                value={filterSearch}
+                onChange={(e) => setFilterSearch(e.target.value)}
+                className="h-8 text-xs w-full sm:w-48"
+              />
+              <Select value={filterCategory} onValueChange={setFilterCategory}>
+                <SelectTrigger className="h-8 text-xs w-36"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-card">
+                  <SelectItem value="all">All categories</SelectItem>
+                  {categoryTypes.map((c) => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={filterRegion} onValueChange={setFilterRegion}>
+                <SelectTrigger className="h-8 text-xs w-40"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-card">
+                  <SelectItem value="all">All regions</SelectItem>
+                  {allRegions.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="h-8 text-xs w-32"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-card">
+                  <SelectItem value="all">All statuses</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="suspended">Suspended</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={filterPlan} onValueChange={setFilterPlan}>
+                <SelectTrigger className="h-8 text-xs w-32"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-card">
+                  <SelectItem value="all">All plans</SelectItem>
+                  {planTypes.map((pt) => <SelectItem key={pt} value={pt} className="capitalize">{pt}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={filterMessage} onValueChange={setFilterMessage}>
+                <SelectTrigger className="h-8 text-xs w-36"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-card">
+                  <SelectItem value="all">All messages</SelectItem>
+                  <SelectItem value="pending">Pending message</SelectItem>
+                </SelectContent>
+              </Select>
+              <span className="ml-auto text-xs text-muted-foreground">
+                {filteredProviders.length} / {getAllProviders().length}
+              </span>
+            </div>
 
-                    return (
-                      <div
-                        key={p.id}
-                        className={`rounded-xl border p-4 transition-colors ${hasActiveRequest ? "border-orange-500/40 bg-orange-500/[0.04]" : "border-border/60"}`}
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                          <div>
-                            <p className="font-medium flex items-center gap-2 flex-wrap">
-                              {p.businessName}
-                              {verifiedState[p.id] && (
-                                <Badge className="bg-teal-500/20 text-teal-400 border-0 text-xs gap-1">
-                                  <ShieldCheck className="h-3 w-3" /> Verified
-                                </Badge>
-                              )}
-                              {featuredState[p.id] && (
-                                <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs gap-1">
-                                  <Star className="h-3 w-3" /> Featured
-                                </Badge>
-                              )}
-                              {isTherapist && ehcpState[p.id] && (
-                                <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs gap-1">
-                                  <Heart className="h-3 w-3" /> EHCP
-                                </Badge>
-                              )}
-                              {isAcknowledged && (
-                                <Badge className="bg-emerald-500/15 text-emerald-400 border-0 text-xs">
-                                  Changes Confirmed
-                                </Badge>
-                              )}
-                              {isSent && (
-                                <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs">
-                                  Awaiting Changes
-                                </Badge>
-                              )}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {p.typeBadge} · {p.location}
-                            </p>
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            <Badge className="bg-muted text-foreground border-0 text-xs">
-                              {p.category_type}
-                            </Badge>
-                            <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">{p.plan_type}</Badge>
-                            {isSuspended ? (
-                              <Badge className="bg-red-500/15 text-red-400 border-0 text-xs">Suspended</Badge>
-                            ) : (
-                              <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">Active</Badge>
-                            )}
+            {/* Table */}
+            <div className="rounded-xl border border-border/60 overflow-hidden">
+              <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight: "72vh" }}>
+                <table className="w-full text-sm" style={{ minWidth: 960 }}>
+                  <thead className="sticky top-0 z-10 bg-card border-b border-border/60">
+                    <tr className="text-xs text-muted-foreground">
+                      <th className="py-2 px-3 text-left font-medium">Business</th>
+                      <th className="py-2 px-3 text-left font-medium w-24">Category</th>
+                      <th className="py-2 px-3 text-left font-medium w-28">Region</th>
+                      <th className="py-2 px-3 text-left font-medium w-28">Plan</th>
+                      <th className="py-2 px-3 text-left font-medium w-24">P. Status</th>
+                      <th className="py-2 px-3 text-left font-medium w-24">Status</th>
+                      <th className="py-2 px-3 text-left font-medium w-28">Contact</th>
+                      <th className="py-2 px-3 text-left font-medium w-44">Contact Info</th>
+                      <th className="py-2 px-3 text-left font-medium w-32">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/30">
+                    {filteredProviders.map((p) => {
+                      const isSuspended = moderationState[p.id] === "suspended";
+                      const cr = changeRequestState[p.id];
+                      const isSent = cr?.status === "sent";
+                      const isAcknowledged = cr?.status === "acknowledged";
+                      const hasActiveRequest = isSent || isAcknowledged;
+                      const isTherapist = p.category_type === "therapist";
+                      const plan = providerPlans[p.id];
+                      const isExpanded = expandedMessage === p.id;
 
-                            {/* 1.1 — Verify toggle */}
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className={verifiedState[p.id] ? "border-teal-500/60 text-teal-400" : ""}
-                              onClick={() => handleToggleVerified(p.id)}
-                            >
-                              <ShieldCheck className="h-3 w-3 mr-1" />
-                              {verifiedState[p.id] ? "Unverify" : "Verify"}
-                            </Button>
-
-                            {/* 1.2 — Feature toggle */}
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className={featuredState[p.id] ? "border-orange-500/60 text-orange-400" : ""}
-                              onClick={() => handleToggleFeatured(p.id)}
-                            >
-                              <Star className="h-3 w-3 mr-1" />
-                              {featuredState[p.id] ? "Unfeature" : "Feature"}
-                            </Button>
-
-                            {/* 1.3 — EHCP toggle (therapist only) */}
-                            {isTherapist && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className={ehcpState[p.id] ? "border-orange-500/60 text-orange-400" : ""}
-                                onClick={() => handleToggleEhcp(p.id)}
-                              >
-                                <Heart className="h-3 w-3 mr-1" />
-                                {ehcpState[p.id] ? "Remove EHCP" : "EHCP"}
-                              </Button>
-                            )}
-
-                            {!hasActiveRequest && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className={isComposing ? "border-orange-500/60 text-orange-400" : ""}
-                                onClick={() =>
-                                  setChangeRequestState((prev) => ({
-                                    ...prev,
-                                    [p.id]: {
-                                      status: isComposing ? "idle" : "composing",
-                                      message: prev[p.id]?.message ?? "",
-                                    },
-                                  }))
-                                }
-                              >
-                                {isComposing ? "Cancel" : "Request Changes"}
-                              </Button>
-                            )}
-                            {isAcknowledged && (
-                              <Button
-                                size="sm"
-                                className="bg-teal-500 hover:bg-teal-400"
-                                onClick={() => handleMarkReviewed(p.id)}
-                              >
-                                Mark Reviewed
-                              </Button>
-                            )}
-                            <Button
-                              size="sm"
-                              variant={isSuspended ? "outline" : "destructive"}
-                              className={isSuspended ? "text-teal-400 border-teal-500/40" : ""}
-                              onClick={() => handleToggleSuspend(p.id)}
-                            >
-                              {isSuspended ? "Reinstate" : "Suspend"}
-                            </Button>
-                          </div>
-                        </div>
-                        {isComposing && (
-                          <div className="mt-3 space-y-2">
-                            <Textarea
-                              rows={3}
-                              placeholder="Describe what needs to be updated..."
-                              value={cr.message}
-                              onChange={(e) =>
-                                setChangeRequestState((prev) => ({
-                                  ...prev,
-                                  [p.id]: { ...prev[p.id], message: e.target.value },
-                                }))
-                              }
-                              className="text-sm"
-                            />
-                            <Button
-                              size="sm"
-                              className="bg-orange-500 hover:bg-orange-400"
-                              disabled={!cr.message.trim()}
-                              onClick={() => handleSendChangeRequest(p.id)}
-                            >
-                              Send Request
-                            </Button>
-                          </div>
-                        )}
-                        {(isSent || isAcknowledged) && (
-                          <div className="mt-3 rounded-lg border border-orange-500/20 bg-orange-500/[0.08] px-3 py-2 text-sm text-orange-300">
-                            <span className="font-medium text-orange-400">Your note: </span>
-                            {cr.message}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+                      return (
+                        <React.Fragment key={p.id}>
+                          <tr className={`hover:bg-muted/20 transition-colors ${hasActiveRequest ? "bg-orange-500/[0.03]" : ""}`}>
+                            {/* Business Name */}
+                            <td className="py-2 px-3 max-w-[180px]">
+                              <div className="flex items-center gap-1.5">
+                                <Link
+                                  to={`/providers/${p.id}`}
+                                  className="font-medium hover:text-teal-400 transition-colors truncate max-w-[140px] block"
+                                  title={p.businessName}
+                                >
+                                  {p.businessName}
+                                </Link>
+                                {verifiedState[p.id] && <ShieldCheck className="h-3 w-3 text-teal-400 shrink-0" />}
+                                {featuredState[p.id] && <Star className="h-3 w-3 text-orange-400 shrink-0" />}
+                                {hasActiveRequest && <MessageSquare className="h-3 w-3 text-orange-400 shrink-0" />}
+                              </div>
+                            </td>
+                            {/* Category */}
+                            <td className="py-2 px-3">
+                              <Badge className="bg-muted text-foreground border-0 text-xs capitalize">{p.category_type}</Badge>
+                            </td>
+                            {/* Region */}
+                            <td className="py-2 px-3 text-xs text-muted-foreground">{p.region || "—"}</td>
+                            {/* Plan type */}
+                            <td className="py-2 px-3">
+                              {plan && (
+                                <Select value={plan.planType} onValueChange={(v) => handleInlinePlanChange(p.id, "planType", v)}>
+                                  <SelectTrigger className="h-7 text-xs w-[100px] px-2 border-border/40">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-card">
+                                    {planTypes.map((pt) => (
+                                      <SelectItem key={pt} value={pt} className="text-xs capitalize">{pt}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              )}
+                            </td>
+                            {/* Plan status */}
+                            <td className="py-2 px-3">
+                              {plan && (
+                                <Select value={plan.planStatus} onValueChange={(v) => handleInlinePlanChange(p.id, "planStatus", v)}>
+                                  <SelectTrigger className="h-7 text-xs w-[88px] px-2 border-border/40">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-card">
+                                    {planStatuses.map((ps) => (
+                                      <SelectItem key={ps} value={ps} className="text-xs capitalize">{ps}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              )}
+                            </td>
+                            {/* Status */}
+                            <td className="py-2 px-3">
+                              {isSuspended
+                                ? <Badge className="bg-red-500/15 text-red-400 border-0 text-xs">Suspended</Badge>
+                                : <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">Active</Badge>}
+                            </td>
+                            {/* Contact name */}
+                            <td className="py-2 px-3 text-xs text-muted-foreground">{p.contactName || "—"}</td>
+                            {/* Contact links */}
+                            <td className="py-2 px-3 text-xs text-muted-foreground max-w-[176px]">
+                              <span className="truncate block" title={p.contactLinks || ""}>{p.contactLinks || "—"}</span>
+                            </td>
+                            {/* Actions */}
+                            <td className="py-2 px-3">
+                              <div className="flex items-center gap-0.5">
+                                <Button
+                                  size="sm" variant="ghost"
+                                  className={`h-7 w-7 p-0 ${verifiedState[p.id] ? "text-teal-400" : "text-muted-foreground hover:text-foreground"}`}
+                                  title={verifiedState[p.id] ? "Unverify" : "Verify"}
+                                  onClick={() => handleToggleVerified(p.id)}
+                                >
+                                  <ShieldCheck className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  size="sm" variant="ghost"
+                                  className={`h-7 w-7 p-0 ${featuredState[p.id] ? "text-orange-400" : "text-muted-foreground hover:text-foreground"}`}
+                                  title={featuredState[p.id] ? "Unfeature" : "Feature"}
+                                  onClick={() => handleToggleFeatured(p.id)}
+                                >
+                                  <Star className="h-3.5 w-3.5" />
+                                </Button>
+                                {isTherapist && (
+                                  <Button
+                                    size="sm" variant="ghost"
+                                    className={`h-7 w-7 p-0 ${ehcpState[p.id] ? "text-orange-400" : "text-muted-foreground hover:text-foreground"}`}
+                                    title={ehcpState[p.id] ? "Remove EHCP" : "Add EHCP"}
+                                    onClick={() => handleToggleEhcp(p.id)}
+                                  >
+                                    <Heart className="h-3.5 w-3.5" />
+                                  </Button>
+                                )}
+                                <Button
+                                  size="sm" variant="ghost"
+                                  className={`h-7 w-7 p-0 ${hasActiveRequest || isExpanded ? "text-orange-400" : "text-muted-foreground hover:text-foreground"}`}
+                                  title="Message provider"
+                                  onClick={() => setExpandedMessage(isExpanded ? null : p.id)}
+                                >
+                                  <MessageSquare className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  size="sm" variant="ghost"
+                                  className={`h-7 w-7 p-0 ${isSuspended ? "text-teal-400" : "text-red-400 hover:text-red-300"}`}
+                                  title={isSuspended ? "Reinstate" : "Suspend"}
+                                  onClick={() => handleToggleSuspend(p.id)}
+                                >
+                                  <Ban className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                          {/* Expanded message row */}
+                          {isExpanded && (
+                            <tr className="bg-muted/30">
+                              <td colSpan={9} className="px-4 py-3">
+                                <div className="space-y-2 max-w-lg">
+                                  {(isSent || isAcknowledged) && (
+                                    <div className="flex items-start gap-3 rounded-lg border border-orange-500/20 bg-orange-500/[0.08] px-3 py-2 text-xs text-orange-300">
+                                      <span className="flex-1"><span className="font-medium text-orange-400">Sent: </span>{cr.message}</span>
+                                      {isAcknowledged && (
+                                        <Button size="sm" className="h-6 text-xs shrink-0 bg-teal-500 hover:bg-teal-400" onClick={() => handleMarkReviewed(p.id)}>
+                                          Mark Reviewed
+                                        </Button>
+                                      )}
+                                    </div>
+                                  )}
+                                  {!hasActiveRequest && (
+                                    <div className="flex gap-2">
+                                      <Textarea
+                                        rows={2}
+                                        placeholder="Type a message to this provider…"
+                                        value={cr?.message ?? ""}
+                                        onChange={(e) =>
+                                          setChangeRequestState((prev) => ({
+                                            ...prev,
+                                            [p.id]: { status: "composing", message: e.target.value },
+                                          }))
+                                        }
+                                        className="text-xs resize-none"
+                                      />
+                                      <Button
+                                        size="sm"
+                                        className="bg-orange-500 hover:bg-orange-400 self-end shrink-0"
+                                        disabled={!cr?.message?.trim()}
+                                        onClick={() => handleSendChangeRequest(p.id)}
+                                      >
+                                        Send
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </TabsContent>
 
           {/* ── Parents ── */}
@@ -580,104 +680,6 @@ const AdminPanel = () => {
                       </Button>
                     </div>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* ── Plans & Categories ── */}
-          <TabsContent value="plans" className="mt-6">
-            <Card className="border-0 shadow-card">
-              <CardHeader>
-                <CardTitle>Provider Plans & Categories</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {getAllProviders().map((p) => {
-                    const row = providerPlans[p.id];
-                    if (!row) return null;
-                    return (
-                      <div key={p.id} className="rounded-xl border border-border/60 p-5 space-y-3">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                          <div>
-                            <p className="font-medium">{p.businessName}</p>
-                            <p className="text-sm text-muted-foreground">{p.typeBadge}</p>
-                          </div>
-                          <div className="flex gap-2 flex-wrap">
-                            <Badge className="bg-muted text-foreground border-0 text-xs">
-                              {row.categoryType}
-                            </Badge>
-                            <Badge className="bg-teal-500/20 text-teal-500 border-0 text-xs">{row.planType}</Badge>
-                            <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">
-                              {row.planStatus}
-                            </Badge>
-                          </div>
-                        </div>
-                        <div className="grid gap-3 sm:grid-cols-3">
-                          <div>
-                            <Label className="text-xs">Category Type</Label>
-                            <Select
-                              value={row.categoryType}
-                              onValueChange={(v) => handlePlanChange(p.id, "categoryType", v)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="bg-card">
-                                {categoryTypes.map((ct) => (
-                                  <SelectItem key={ct} value={ct}>
-                                    {ct}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <Label className="text-xs">Plan Type</Label>
-                            <Select value={row.planType} onValueChange={(v) => handlePlanChange(p.id, "planType", v)}>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="bg-card">
-                                {planTypes.map((pt) => (
-                                  <SelectItem key={pt} value={pt}>
-                                    {pt}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <Label className="text-xs">Plan Status</Label>
-                            <Select
-                              value={row.planStatus}
-                              onValueChange={(v) => handlePlanChange(p.id, "planStatus", v)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="bg-card">
-                                {planStatuses.map((ps) => (
-                                  <SelectItem key={ps} value={ps}>
-                                    {ps}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                        <div className="flex justify-end">
-                          <Button
-                            size="sm"
-                            className="bg-teal-500 hover:bg-teal-400"
-                            onClick={() => handleSaveProviderPlan(p.id)}
-                          >
-                            {savedRows[p.id] ? "Saved ✓" : "Save Changes"}
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
                 </div>
               </CardContent>
             </Card>
