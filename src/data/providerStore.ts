@@ -69,10 +69,7 @@ export interface EditableProvider {
   contactName?: string;
   // Admin-only outreach contact details
   contactMethodType?: "email" | "phone" | "online_form" | "social_only" | "unknown";
-  contactFormUrl?: string;
-  socialFacebook?: string;
-  socialInstagram?: string;
-  socialOther?: string;
+  contactLinks?: string;
   // Pass-through (unchanged)
   type: string;
   category_type: string;
@@ -181,10 +178,7 @@ export function importProvider(data: {
   website: string;
   contactName?: string;
   contactMethodType?: "email" | "phone" | "online_form" | "social_only" | "unknown";
-  contactFormUrl?: string;
-  socialFacebook?: string;
-  socialInstagram?: string;
-  socialOther?: string;
+  contactLinks?: string;
 }): EditableProvider {
   const id = `imported-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const categoryTypeMap: Record<string, string> = {
@@ -236,10 +230,7 @@ export function importProvider(data: {
     volunteerInfo: "",
     contactName: data.contactName ?? "",
     contactMethodType: data.contactMethodType ?? "unknown",
-    contactFormUrl: data.contactFormUrl ?? "",
-    socialFacebook: data.socialFacebook ?? "",
-    socialInstagram: data.socialInstagram ?? "",
-    socialOther: data.socialOther ?? "",
+    contactLinks: data.contactLinks ?? "",
     type: data.category_type,
     category_type: data.category_type,
     typeBadge: categoryTypeMap[data.category_type] ?? data.category_type,

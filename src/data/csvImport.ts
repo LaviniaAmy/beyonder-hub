@@ -15,14 +15,8 @@ export const CSV_TEMPLATE_HEADERS = [
   "delivery_format",      // in-person | online | hybrid
   // ── Admin-only contact fields ─────────────────────────────
   "contact_name",
-  "email",
-  "phone",
-  "website",
   "contact_method",       // email | phone | online_form | social_only | unknown
-  "contact_form_url",     // URL to provider's own contact/enquiry form
-  "social_facebook",      // Facebook page URL
-  "social_instagram",     // Instagram profile URL
-  "social_other",         // LinkedIn, X, Linktree, or any other link
+  "contact_links",        // all contact details in one cell, comma-separated
 ];
 
 export const CSV_TEMPLATE_EXAMPLE_ROW = [
@@ -37,14 +31,8 @@ export const CSV_TEMPLATE_EXAMPLE_ROW = [
   "2–18",
   "in-person",
   "Sarah Mitchell",
-  "hello@brightsteps.co.uk",
-  "07700 900000",
-  "https://brightsteps.co.uk",
   "email",
-  "",
-  "https://facebook.com/brightstepstherapy",
-  "https://instagram.com/brightstepstherapy",
-  "",
+  "hello@brightsteps.co.uk | 07700 900000 | https://brightsteps.co.uk",
 ];
 
 export type ContactMethod = "email" | "phone" | "online_form" | "social_only" | "unknown";
@@ -62,14 +50,8 @@ export interface ParsedProviderRow {
   deliveryFormat: "in-person" | "online" | "hybrid";
   // Admin-only contact fields
   contactName: string;
-  email: string;
-  phone: string;
-  website: string;
   contactMethodType: ContactMethod;
-  contactFormUrl: string;
-  socialFacebook: string;
-  socialInstagram: string;
-  socialOther: string;
+  contactLinks: string;
   // errors found during validation
   errors: string[];
 }
@@ -113,7 +95,6 @@ export function parseCSV(raw: string): ParsedProviderRow[] {
 
     const rawFormat = get("delivery_format").toLowerCase();
     const formatValid = VALID_FORMATS.includes(rawFormat);
-    // Non-blocking: default to "in-person" if blank or unrecognised
     const deliveryFormat = formatValid ? rawFormat : "in-person";
 
     return {
@@ -131,16 +112,10 @@ export function parseCSV(raw: string): ParsedProviderRow[] {
       ageRange: get("age_range"),
       deliveryFormat: deliveryFormat as "in-person" | "online" | "hybrid",
       contactName: get("contact_name"),
-      email: get("email"),
-      phone: get("phone"),
-      website: get("website"),
       contactMethodType: (VALID_CONTACT_METHODS.includes(get("contact_method") as ContactMethod)
         ? get("contact_method")
         : "unknown") as ContactMethod,
-      contactFormUrl: get("contact_form_url"),
-      socialFacebook: get("social_facebook"),
-      socialInstagram: get("social_instagram"),
-      socialOther: get("social_other"),
+      contactLinks: get("contact_links"),
       errors,
     };
   });
