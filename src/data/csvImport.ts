@@ -13,10 +13,16 @@ export const CSV_TEMPLATE_HEADERS = [
   "needs_supported",      // Comma-separated: "Autism, ADHD, Sensory Processing"
   "age_range",            // e.g. "0–18" or "5–16"
   "delivery_format",      // in-person | online | hybrid
+  // ── Admin-only contact fields ─────────────────────────────
+  "contact_name",
   "email",
   "phone",
   "website",
-  "contact_name",
+  "contact_method",       // email | phone | online_form | social_only | unknown
+  "contact_form_url",     // URL to provider's own contact/enquiry form
+  "social_facebook",      // Facebook page URL
+  "social_instagram",     // Instagram profile URL
+  "social_other",         // LinkedIn, X, Linktree, or any other link
 ];
 
 export const CSV_TEMPLATE_EXAMPLE_ROW = [
@@ -30,11 +36,18 @@ export const CSV_TEMPLATE_EXAMPLE_ROW = [
   "Autism, Speech & Language, Social Communication",
   "2–18",
   "in-person",
+  "Sarah Mitchell",
   "hello@brightsteps.co.uk",
   "07700 900000",
   "https://brightsteps.co.uk",
-  "Sarah Mitchell",
+  "email",
+  "",
+  "https://facebook.com/brightstepstherapy",
+  "https://instagram.com/brightstepstherapy",
+  "",
 ];
+
+export type ContactMethod = "email" | "phone" | "online_form" | "social_only" | "unknown";
 
 export interface ParsedProviderRow {
   businessName: string;
@@ -47,16 +60,23 @@ export interface ParsedProviderRow {
   needsSupported: string[];
   ageRange: string;
   deliveryFormat: "in-person" | "online" | "hybrid";
+  // Admin-only contact fields
+  contactName: string;
   email: string;
   phone: string;
   website: string;
-  contactName: string;
+  contactMethodType: ContactMethod;
+  contactFormUrl: string;
+  socialFacebook: string;
+  socialInstagram: string;
+  socialOther: string;
   // errors found during validation
   errors: string[];
 }
 
 const VALID_CATEGORIES: CategoryType[] = ["therapist", "club", "education", "charity", "product"];
 const VALID_FORMATS = ["in-person", "online", "hybrid"];
+const VALID_CONTACT_METHODS: ContactMethod[] = ["email", "phone", "online_form", "social_only", "unknown"];
 
 export function generateCSVTemplate(): string {
   const rows = [CSV_TEMPLATE_HEADERS.join(","), CSV_TEMPLATE_EXAMPLE_ROW.map(quoteCell).join(",")];
@@ -110,10 +130,17 @@ export function parseCSV(raw: string): ParsedProviderRow[] {
         .filter(Boolean),
       ageRange: get("age_range"),
       deliveryFormat: deliveryFormat as "in-person" | "online" | "hybrid",
+      contactName: get("contact_name"),
       email: get("email"),
       phone: get("phone"),
       website: get("website"),
-      contactName: get("contact_name"),
+      contactMethodType: (VALID_CONTACT_METHODS.includes(get("contact_method") as ContactMethod)
+        ? get("contact_method")
+        : "unknown") as ContactMethod,
+      contactFormUrl: get("contact_form_url"),
+      socialFacebook: get("social_facebook"),
+      socialInstagram: get("social_instagram"),
+      socialOther: get("social_other"),
       errors,
     };
   });
