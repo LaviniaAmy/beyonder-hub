@@ -926,6 +926,25 @@ const AdminPanel = () => {
                               )}
                             </div>
                           </div>
+                          {/* Contact method summary */}
+                          {(row.contactMethodType !== "unknown" || row.email || row.phone || row.contactFormUrl || row.socialFacebook || row.socialInstagram || row.socialOther) && (
+                            <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                              {row.contactMethodType && row.contactMethodType !== "unknown" && (
+                                <span className="inline-flex items-center gap-1">
+                                  <span className="text-foreground/40">via</span>
+                                  <span className="capitalize text-foreground/70">{row.contactMethodType.replace("_", " ")}</span>
+                                </span>
+                              )}
+                              {row.email && <span>{row.email}</span>}
+                              {row.phone && <span>{row.phone}</span>}
+                              {row.contactFormUrl && (
+                                <span className="text-teal-400/70">Contact form ✓</span>
+                              )}
+                              {row.socialFacebook && <span className="text-blue-400/70">Facebook ✓</span>}
+                              {row.socialInstagram && <span className="text-pink-400/70">Instagram ✓</span>}
+                              {row.socialOther && <span className="text-foreground/50">Other link ✓</span>}
+                            </div>
+                          )}
                           {row.errors.length > 0 && (
                             <ul className="mt-2 space-y-0.5">
                               {row.errors.map((err, j) => (
