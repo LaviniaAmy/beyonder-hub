@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 200 130">
+  <!-- Generator: Adobe Illustrator 30.4.0, SVG Export Plug-In . SVG Version: 2.1.4 Build 226)  -->
+  <style>
+    #star-1 { transform-box: fill-box; transform-origin: 50% 50%; animation: twinkle 2.1s ease-in-out infinite; }
+    #star-2 { transform-box: fill-box; transform-origin: 50% 50%; animation: twinkle 2.7s ease-in-out infinite; animation-delay: 0.9s; }
+    #star-3 { transform-box: fill-box; transform-origin: 50% 50%; animation: twinkle 1.8s ease-in-out infinite; animation-delay: 0.4s; }
+    @keyframes twinkle {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%     { opacity: 0.1; transform: scale(0.5); }
+    }
+    #ring-l, #ring-m, #ring-r {
+      transform-box: fill-box;
+      transform-origin: 50% 50%;
+      animation: ring-pulse 7s ease-in-out infinite;
+    }
+    #ring-m { animation-delay: 0.4s; }
+    #ring-r { animation-delay: 0.8s; }
+    @keyframes ring-pulse {
+      0%      { transform: scale(1); opacity: 1; }
+      14%     { transform: scale(1.35); opacity: 0.4; }
+      28%,100%{ transform: scale(1); opacity: 1; }
+    }
+    :root.hovered #ring-l { animation: ring-pulse 1.2s ease-in-out 2; animation-delay: 0s; }
+    :root.hovered #ring-m { animation: ring-pulse 1.2s ease-in-out 2; animation-delay: 0.2s; }
+    :root.hovered #ring-r { animation: ring-pulse 1.2s ease-in-out 2; animation-delay: 0.4s; }
+  </style>
+  <circle cx="66.82" cy="63.75" r="1.19" fill="#8ba5be"/>
+  <circle cx="70.92" cy="79.13" r="3.17" fill="#ff8156"/>
+  <circle cx="43.13" cy="52.89" r="2.01" fill="#fcc9b9"/>
+  <circle cx="159.88" cy="29.4" r="2.01" fill="#fcc9b9"/>
+  <circle cx="142.2" cy="49.28" r="1.19" fill="#8ba5be"/>
+  <line x1="48.53" y1="55.5" x2="66.82" y2="63.75" fill="none" stroke="#8ba5be" stroke-miterlimit="10" stroke-width="1.63"/>
+  <line x1="103.68" y1="48.46" x2="122.11" y2="71.03" fill="none" stroke="#8ba5be" stroke-miterlimit="10" stroke-width="1.63"/>
+  <line x1="97.44" y1="48.09" x2="70.27" y2="62.57" fill="none" stroke="#8ba5be" stroke-miterlimit="10" stroke-width="1.63"/>
+  <g>
+    <line x1="139.82" y1="51.33" x2="139.54" y2="51.63" fill="none" stroke="#8ba5be" stroke-linecap="round" stroke-miterlimit="10" stroke-width="1.63"/>
+    <line x1="137.18" y1="54.1" x2="126.59" y2="65.21" fill="none" stroke="#8ba5be" stroke-dasharray=".85 3.41" stroke-linecap="round" stroke-miterlimit="10" stroke-width="1.63"/>
+    <line x1="125.42" y1="66.44" x2="125.14" y2="66.74" fill="none" stroke="#8ba5be" stroke-linecap="round" stroke-miterlimit="10" stroke-width="1.63"/>
+  </g>
+  <polygon points="66.85 50.97 68.84 51.71 66.85 52.44 66.11 54.43 65.38 52.44 63.39 51.71 65.38 50.97 66.11 48.98 66.85 50.97" fill="#8ba5be"/>
+  <polygon id="star-1" points="170.36 18.92 172.35 19.66 170.36 20.39 169.62 22.38 168.89 20.39 166.9 19.66 168.89 18.92 169.62 16.93 170.36 18.92" fill="#ff8156"/>
+  <polygon id="star-2" points="35.14 65.38 37.13 66.12 35.14 66.85 34.4 68.84 33.66 66.85 31.67 66.12 33.66 65.38 34.4 63.39 35.14 65.38" fill="#ff8156"/>
+  <polygon id="star-3" points="84.59 61.08 86.58 61.81 84.59 62.55 83.86 64.54 83.12 62.55 81.13 61.81 83.12 61.08 83.86 59.08 84.59 61.08" fill="#ff8156"/>
+  <line x1="67.32" y1="66.12" x2="69.89" y2="76.77" fill="none" stroke="#8ba5be" stroke-dasharray=".82 3.26" stroke-linecap="round" stroke-miterlimit="10" stroke-width="1.63"/>
+  <path d="M134.78,84.61c-5.21-1.64-12.96-3.37-22.35-2.9-16.14.8-27.82,7.6-33.17,11.22-4.75-.74-11.4-1.22-19.16,0-12.1,1.91-20.9,7.03-25.7,10.35,13.29,2.04,26.57,4.09,39.86,6.13,9.51-2.27,17.33-3.78,22.7-4.74,16.05-2.88,22.83-3.07,29.5-8.61,4.51-3.75,6.97-8.27,8.33-11.45Z" fill="#acc0d0"/>
+  <path d="M1.52,111.89c15.41-9.99,28.25-11.57,35.61-11.66,6.86-.08,13.42,1.33,26.26,4.16,11.96,2.64,21.77,5.4,28.64,7.5H1.52Z" fill="#8ba5be"/>
+  <path d="M198.36,88.29c-8.67,2.59-17.34,5.18-26.01,7.77-3.93-1.12-8.05-2.18-12.35-3.13-12.1-2.68-23.39-4.06-33.54-4.64,1.42-.98,3.48-2.35,6.02-3.89,5.8-3.5,12.68-7.66,20.08-9.72,16.73-4.65,31.56,2.71,32.76,3.33,6.36,3.28,10.61,7.48,13.05,10.27Z" fill="#8ba5be"/>
+  <path d="M170.74,96.06c-6.32-1.6-13.18-3.07-20.54-4.3-8.96-1.49-17.36-2.4-25.06-2.92-1.96,1.22-4.07,2.43-6.32,3.61-5.09,2.68-9.97,4.7-14.41,6.25,3.89.33,7.91.57,12.05.69,16.97.52,32.41-.95,45.95-3.33.47-.08-6.8,2.4-10.97,3.44,0,0-5.68,1.41-14.54,5.73-.55.27-1.77.88-1.84,1.8-.06.89.97,1.71,2.51,2.6,1.83,1.06,4.85,2.46,9.36,3.26h22.87c-3.55-.53-6.43-.91-8.33-1.15-2.46-.31-10.28-1.27-15.44-4.13-.76-.42-1.91-1.13-1.87-1.98.05-.98,1.68-1.65,2.43-1.94,5.42-2.14,8.13-3.2,13.74-4.44,2.49-.55,6.09-1.49,10.41-3.19Z" fill="#95b0c6"/>
+  <line x1="142.2" y1="49.28" x2="156.26" y2="34.06" fill="none" stroke="#8ba5be" stroke-miterlimit="10" stroke-width="1.63"/>
+  <circle id="ring-l" cx="43.13" cy="52.89" r="6" fill="none" stroke="#010d2d" stroke-miterlimit="10" stroke-width="1.63"/>
+  <circle id="ring-r" cx="160" cy="29.4" r="6" fill="none" stroke="#010d2d" stroke-miterlimit="10" stroke-width="1.63"/>
+  <circle id="ring-m" cx="100.68" cy="46.26" r="3.73" fill="none" stroke="#010d2d" stroke-miterlimit="10" stroke-width="1.63"/>
+  <circle cx="122.11" cy="71.03" r="3.17" fill="#ff8156"/>
+</svg>
