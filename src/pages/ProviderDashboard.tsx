@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import PageBanner from "@/components/PageBanner";
 import {
   CheckCircle,
   Lock,
@@ -614,37 +613,53 @@ const ProviderDashboard = () => {
         <p className="text-xs text-muted-foreground mt-1">When families message you, they'll appear here.</p>
       </div>
     ) : (
-      <div className="rounded-xl border border-border/40 bg-card overflow-hidden divide-y divide-border/30">
-        {providerEnquiries.map((e) => (
-          <div
-            key={e.enquiryId}
-            className="flex items-center gap-3 px-4 py-3.5 cursor-pointer hover:bg-muted/10 transition-colors"
-            onClick={() => {
-              setSelectedEnquiryId(e.enquiryId);
-              setReplyText("");
-              setNotesText(e.providerNotes ?? "");
-            }}
-          >
-            <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm font-semibold text-white" style={{ background: e.statusForProvider === "new" ? "#c87060" : "#94a3b8" }}>
-              {e.parentName.charAt(0).toUpperCase()}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <p className={`text-sm truncate ${e.statusForProvider === "new" ? "font-semibold text-foreground" : "font-medium text-foreground/80"}`}>{e.parentName}</p>
-                {e.statusForProvider === "new" && (
-                  <span className="inline-flex items-center rounded-full px-1.5 py-0.5 text-xs font-semibold shrink-0" style={{ background: "rgba(200,112,96,0.12)", color: "#c87060" }}>New</span>
-                )}
+      <div className="rounded-xl border border-border/40 bg-card overflow-hidden divide-y divide-border/25">
+        {providerEnquiries.map((e) => {
+          const isNew = e.statusForProvider === "new";
+          return (
+            <div
+              key={e.enquiryId}
+              className="flex items-start gap-3 px-4 py-3.5 cursor-pointer hover:bg-muted/20 transition-colors"
+              onClick={() => {
+                setSelectedEnquiryId(e.enquiryId);
+                setReplyText("");
+                setNotesText(e.providerNotes ?? "");
+              }}
+            >
+              {/* Avatar */}
+              <div
+                className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-sm font-bold text-white mt-0.5"
+                style={{ background: isNew ? "#c87060" : "#b0bec5" }}
+              >
+                {e.parentName.charAt(0).toUpperCase()}
               </div>
-              <p className="text-xs text-muted-foreground truncate mt-0.5">
-                {e.childName ? `${e.childName} · ` : ""}{e.needs || e.message}
-              </p>
+
+              {/* Body */}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2 mb-0.5">
+                  <p className={`text-sm truncate ${isNew ? "font-semibold text-foreground" : "font-medium text-foreground/75"}`}>
+                    {e.parentName}
+                  </p>
+                  <span className="text-xs text-muted-foreground shrink-0 ml-1">{e.createdAt}</span>
+                </div>
+                <p className="text-xs text-muted-foreground truncate leading-relaxed">
+                  {e.childName ? <span className="font-medium text-foreground/60">{e.childName} · </span> : null}
+                  {e.needs || e.message}
+                </p>
+              </div>
+
+              {/* Status + arrow */}
+              <div className="flex flex-col items-end gap-2 shrink-0 ml-1 mt-0.5">
+                {isNew ? (
+                  <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ background: "rgba(200,112,96,0.12)", color: "#c87060" }}>New</span>
+                ) : (
+                  <span className="inline-flex items-center rounded-full border border-border/50 px-2 py-0.5 text-[11px] text-muted-foreground">Replied</span>
+                )}
+                <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/30" />
+              </div>
             </div>
-            <div className="flex items-center gap-1 shrink-0">
-              <span className="text-xs text-muted-foreground hidden sm:block">{e.createdAt}</span>
-              <ChevronRight className="h-4 w-4 text-muted-foreground/30" />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   };
@@ -867,56 +882,75 @@ const ProviderDashboard = () => {
         );
       }
 
-      case "profile":
+      case "profile": {
+        const hasContact = profile.email || profile.phone || profile.website;
         return (
-          <div className="space-y-5">
-            <div className="flex items-center justify-between">
+          <div className="space-y-4">
+            {/* Header row */}
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  {profile.businessName}
-                </h2>
-                <p className="text-sm text-foreground/50">
-                  {profile.typeBadge}
-                </p>
+                <h2 className="text-base font-bold text-foreground leading-tight">{profile.businessName}</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">{profile.typeBadge}</p>
               </div>
-              <Button size="sm" onClick={() => setEditOpen(true)} style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0">
+              <Button size="sm" onClick={() => setEditOpen(true)} style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0 shrink-0">
                 Edit Profile
               </Button>
             </div>
-            <div className="rounded-xl border border-border/50 bg-card overflow-hidden">
+
+            {/* Description */}
+            {profile.description && (
+              <div className="rounded-xl border border-border/40 bg-card p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2">About</p>
+                <p className="text-sm leading-relaxed text-foreground/80">{profile.description}</p>
+              </div>
+            )}
+
+            {/* Location & Service */}
+            <div className="rounded-xl border border-border/40 bg-card overflow-hidden">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 px-4 pt-3.5 pb-2">Location & Service</p>
               {[
                 { label: "Location", value: profile.location },
                 { label: "Coverage Area", value: profile.coverageArea },
                 { label: "Age Range", value: profile.ageRange },
                 { label: "Delivery", value: profile.deliveryFormat },
-                profile.email ? { label: "Email", value: profile.email } : null,
-                profile.phone ? { label: "Phone", value: profile.phone } : null,
-                profile.website ? { label: "Website", value: profile.website } : null,
-              ]
-                .filter(Boolean)
-                .map((row, i, arr) => (
-                  <div
-                    key={row!.label}
-                    className={`flex items-center justify-between px-5 py-3 ${i < arr.length - 1 ? "border-b border-border/25" : ""}`}
-                  >
-                    <span className="text-xs font-medium text-muted-foreground w-28 shrink-0">
-                      {row!.label}
-                    </span>
-                    <span className="text-sm text-right text-foreground capitalize">
-                      {row!.value || (
-                        <span className="italic text-muted-foreground/40 normal-case">
-                          Not set
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                ))}
+              ].map((row, i, arr) => (
+                <div
+                  key={row.label}
+                  className={`flex items-center justify-between px-4 py-2.5 ${i < arr.length - 1 ? "border-t border-border/25" : "border-t border-border/25"}`}
+                >
+                  <span className="text-xs text-muted-foreground w-28 shrink-0">{row.label}</span>
+                  <span className="text-sm text-right text-foreground capitalize">
+                    {row.value || <span className="italic text-muted-foreground/30 normal-case text-xs">Not set</span>}
+                  </span>
+                </div>
+              ))}
+              <div className="pb-1" />
             </div>
+
+            {/* Contact */}
+            {hasContact && (
+              <div className="rounded-xl border border-border/40 bg-card overflow-hidden">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 px-4 pt-3.5 pb-2">Contact</p>
+                {[
+                  profile.email ? { label: "Email", value: profile.email } : null,
+                  profile.phone ? { label: "Phone", value: profile.phone } : null,
+                  profile.website ? { label: "Website", value: profile.website } : null,
+                ]
+                  .filter(Boolean)
+                  .map((row, i) => (
+                    <div key={row!.label} className={`flex items-center justify-between px-4 py-2.5 border-t border-border/25`}>
+                      <span className="text-xs text-muted-foreground w-28 shrink-0">{row!.label}</span>
+                      <span className="text-sm text-right text-foreground break-all">{row!.value}</span>
+                    </div>
+                  ))}
+                <div className="pb-1" />
+              </div>
+            )}
+
+            {/* Needs Supported */}
             {(profile.needsSupported ?? []).length > 0 && (
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-2">
-                  Needs Supported
-                </p>
+              <div className="rounded-xl border border-border/40 bg-card p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-3">Needs Supported</p>
                 <div className="flex flex-wrap gap-1.5">
                   {profile.needsSupported.map((n: string) => (
                     <span
@@ -930,20 +964,9 @@ const ProviderDashboard = () => {
                 </div>
               </div>
             )}
-            {profile.description && (
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-2">
-                  Description
-                </p>
-                <div className="rounded-xl border border-border/50 bg-card p-4">
-                  <p className="text-sm leading-relaxed text-foreground/80">
-                    {profile.description}
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         );
+      }
 
       case "enquiries":
         return (
@@ -1201,9 +1224,8 @@ const ProviderDashboard = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <PageBanner title="Provider dashboard" />
       <div className="bg-card border-b border-border/40">
-        <div className="container max-w-3xl px-4 sm:px-6 py-3 sm:py-4">
+        <div className="container max-w-3xl px-4 sm:px-6 pt-4 pb-0">
           {isSuspended && (
             <div className="mb-4 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/[0.08] p-4">
               <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
@@ -1249,51 +1271,57 @@ const ProviderDashboard = () => {
           )}
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <div className="flex items-center gap-1.5 mb-0.5">
+              <p className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground/50 mb-1">Provider Dashboard</p>
+              <h1 className="text-base sm:text-lg font-bold text-foreground leading-tight truncate">{profile.businessName}</h1>
+              <div className="flex items-center gap-2 mt-0.5">
                 <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: avail.dot }} />
-                <span className="text-xs text-muted-foreground">{avail.label}</span>
+                <p className="text-xs text-muted-foreground truncate">
+                  {avail.label}{profile.typeBadge ? ` · ${profile.typeBadge}` : ""}{profile.location ? ` · ${profile.location}` : ""}
+                </p>
               </div>
-              <h1 className="text-lg sm:text-xl font-bold text-foreground leading-tight truncate">{profile.businessName}</h1>
-              <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                {profile.typeBadge}{profile.location ? ` · ${profile.location}` : ""}
-              </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <Badge className="bg-[#c87060]/15 text-[#c87060] border-0 capitalize text-xs">{profile.plan_type}</Badge>
+              <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize" style={{ background: "rgba(200,112,96,0.1)", color: "#c87060" }}>{profile.plan_type}</span>
               {profile.isVerified && (
-                <Badge className="bg-[#c87060]/15 text-[#c87060] border-0 text-xs gap-1">
+                <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium" style={{ background: "rgba(200,112,96,0.1)", color: "#c87060" }}>
                   <ShieldCheck className="h-3 w-3" /> Verified
-                </Badge>
+                </span>
               )}
             </div>
           </div>
-          <div className="mt-3 flex gap-0 overflow-x-auto scrollbar-hide -mb-px">
-            {TABS.map((tab) => {
-              const isActive = activeTab === tab.id;
-              const shortLabels: Record<string, string> = {
-                overview: "Overview",
-                profile: "Profile",
-                enquiries: "Enquiries",
-                features: "Listing",
-                plan: "Plan",
-              };
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1.5 px-2.5 sm:px-4 py-2 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 transition-colors relative ${isActive ? "border-b-[#c87060] text-[#c87060]" : "border-b-transparent text-foreground/40 hover:text-foreground/60"}`}
-                >
-                  <tab.icon className="h-3.5 w-3.5 shrink-0" />
-                  <span className="sm:hidden">{shortLabels[tab.id]}</span>
-                  <span className="hidden sm:inline">{tab.label}</span>
-                  {tab.id === "enquiries" && newEnquiryCount > 0 && (
-                    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#c87060] text-white text-xs font-bold leading-none">
-                      {newEnquiryCount}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+          {/* Tab bar — horizontally scrollable, no visible scrollbar */}
+          <div className="mt-4 -mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide">
+            <div className="flex min-w-max border-b border-border/40">
+              {TABS.map((tab) => {
+                const isActive = activeTab === tab.id;
+                const shortLabels: Record<string, string> = {
+                  overview: "Overview",
+                  profile: "Profile",
+                  enquiries: "Enquiries",
+                  features: "Listing",
+                  plan: "Plan",
+                };
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className="flex items-center gap-1.5 px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-all relative"
+                    style={{
+                      borderBottomColor: isActive ? "#c87060" : "transparent",
+                      color: isActive ? "#c87060" : undefined,
+                    }}
+                  >
+                    <tab.icon className={`h-3.5 w-3.5 shrink-0 ${isActive ? "" : "opacity-50"}`} />
+                    <span>{shortLabels[tab.id]}</span>
+                    {tab.id === "enquiries" && newEnquiryCount > 0 && (
+                      <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-white text-[10px] font-bold leading-none" style={{ background: "#c87060" }}>
+                        {newEnquiryCount}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
