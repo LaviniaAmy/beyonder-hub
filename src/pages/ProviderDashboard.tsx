@@ -1279,9 +1279,12 @@ const ProviderDashboard = () => {
               <p className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground/50 mb-1">Provider Dashboard</p>
               <h1 className="text-base sm:text-lg font-bold text-foreground leading-tight truncate">{profile.businessName}</h1>
               <div className="flex items-center gap-2 mt-0.5">
-                <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: avail.dot }} />
+                {sections.some((s) => s.key === "availability") && (
+                  <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: avail.dot }} />
+                )}
                 <p className="text-xs text-muted-foreground truncate">
-                  {avail.label}{profile.typeBadge ? ` · ${profile.typeBadge}` : ""}{profile.location ? ` · ${profile.location}` : ""}
+                  {sections.some((s) => s.key === "availability") ? `${avail.label} · ` : ""}
+                  {profile.typeBadge ?? ""}{profile.location ? ` · ${profile.location}` : ""}
                 </p>
               </div>
             </div>
