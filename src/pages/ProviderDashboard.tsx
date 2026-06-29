@@ -1310,7 +1310,7 @@ const ProviderDashboard = () => {
                       style={isActive ? {
                         background: "#ffffff",
                         color: "#c87060",
-                        boxShadow: "0 -2px 6px rgba(0,0,0,0.07), 2px 0 4px rgba(0,0,0,0.04), -2px 0 4px rgba(0,0,0,0.04)",
+                        boxShadow: "0 -3px 8px rgba(0,0,0,0.05)",
                       } : {
                         background: "hsl(36 20% 94%)",
                         color: "hsl(215 14% 44%)",
