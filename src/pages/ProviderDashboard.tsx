@@ -767,7 +767,7 @@ const ProviderDashboard = () => {
           <div className="space-y-5">
             {/* First-visit welcome banner */}
             {showWelcome && (
-              <div className="rounded-xl border border-[#2B4C7E]/30 overflow-hidden" style={{ background: "rgba(30,27,58,0.04)" }}>
+              <div className="rounded-xl border overflow-hidden" style={{ background: "hsl(36 35% 92%)", border: "1px solid rgba(200,112,96,0.3)" }}>
                 <div className="flex items-start justify-between px-4 pt-4 pb-2 gap-3">
                   <div>
                     <p className="text-sm font-bold text-foreground">Welcome to your Beyonder dashboard 👋</p>
@@ -1145,7 +1145,7 @@ const ProviderDashboard = () => {
                         {!enabled ? (
                           <Badge variant="outline" className="text-xs text-muted-foreground/60 border-border/40">Upgrade to unlock</Badge>
                         ) : (
-                          <ChevronRight className={`h-4 w-4 text-muted-foreground/40 transition-transform ${isOpen ? "rotate-90" : ""}`} />
+                          <ChevronRight className={`h-4 w-4 transition-transform ${isOpen ? "rotate-90" : ""}`} style={{ color: "#1E1B3A" }} />
                         )}
                       </div>
                     </button>
