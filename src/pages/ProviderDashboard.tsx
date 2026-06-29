@@ -1186,7 +1186,7 @@ const ProviderDashboard = () => {
                     ) : profile.ehcpSupport ? (
                       <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs">Active</Badge>
                     ) : (
-                      <ChevronRight className={`h-4 w-4 text-muted-foreground/40 transition-transform ${openSections.has("ehcp") ? "rotate-90" : ""}`} />
+                      <ChevronRight className={`h-4 w-4 transition-transform ${openSections.has("ehcp") ? "rotate-90" : ""}`} style={{ color: "#1E1B3A" }} />
                     )}
                   </div>
                 </button>
@@ -1247,7 +1247,7 @@ const ProviderDashboard = () => {
                   {!hasReferralNotes ? (
                     <Badge variant="outline" className="text-xs text-muted-foreground/60 border-border/40">Upgrade to unlock</Badge>
                   ) : (
-                    <ChevronRight className={`h-4 w-4 text-muted-foreground/40 transition-transform ${openSections.has("referral_notes") ? "rotate-90" : ""}`} />
+                    <ChevronRight className={`h-4 w-4 transition-transform ${openSections.has("referral_notes") ? "rotate-90" : ""}`} style={{ color: "#1E1B3A" }} />
                   )}
                 </div>
               </button>
