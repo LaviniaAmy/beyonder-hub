@@ -203,6 +203,13 @@ const ProviderDashboard = () => {
       return next;
     });
   }, []);
+  const [showWelcome, setShowWelcome] = useState(() => {
+    try { return !localStorage.getItem(`beyonder_welcomed_${providerId}`); } catch { return false; }
+  });
+  const dismissWelcome = useCallback(() => {
+    try { localStorage.setItem(`beyonder_welcomed_${providerId}`, "1"); } catch {}
+    setShowWelcome(false);
+  }, [providerId]);
 
   const profile =
     storeProfile ??
@@ -758,6 +765,36 @@ const ProviderDashboard = () => {
 
         return (
           <div className="space-y-5">
+            {/* First-visit welcome banner */}
+            {showWelcome && (
+              <div className="rounded-xl border border-[#2B4C7E]/30 overflow-hidden" style={{ background: "rgba(30,27,58,0.04)" }}>
+                <div className="flex items-start justify-between px-4 pt-4 pb-2 gap-3">
+                  <div>
+                    <p className="text-sm font-bold text-foreground">Welcome to your Beyonder dashboard 👋</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Here are three things to do first:</p>
+                  </div>
+                  <button onClick={dismissWelcome} className="text-muted-foreground/40 hover:text-muted-foreground transition-colors text-lg leading-none shrink-0 mt-0.5">✕</button>
+                </div>
+                <div className="px-4 pb-4 space-y-2">
+                  {[
+                    { step: "1", text: "Complete your profile so families can find you", tab: "profile", cta: "Edit Profile" },
+                    { step: "2", text: "Set your availability so families know if you're accepting", tab: "features", cta: "Set Availability" },
+                    { step: "3", text: "Check your listing details — add sessions, gallery & more", tab: "features", cta: "View Details" },
+                  ].map((item) => (
+                    <button
+                      key={item.step}
+                      onClick={() => { setActiveTab(item.tab); dismissWelcome(); }}
+                      className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-white/60 transition-colors"
+                    >
+                      <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ background: "#c87060" }}>{item.step}</span>
+                      <p className="flex-1 text-xs text-foreground/70">{item.text}</p>
+                      <span className="text-xs font-semibold shrink-0" style={{ color: "#c87060" }}>{item.cta} →</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Priority strip */}
             {priorityItems.length > 0 ? (
               <div className="space-y-2">
@@ -1112,7 +1149,10 @@ const ProviderDashboard = () => {
                         )}
                       </div>
                     </button>
-                    {isOpen && enabled && (
+                    <div
+                      className="overflow-hidden transition-all duration-200 ease-in-out"
+                      style={{ maxHeight: isOpen && enabled ? "2000px" : "0px", opacity: isOpen && enabled ? 1 : 0 }}
+                    >
                       <div className="px-5 py-4 border-t border-border/20">
                         {section.key === "enquiries" ? (
                           renderEnquiriesPanel()
@@ -1120,7 +1160,7 @@ const ProviderDashboard = () => {
                           renderSectionContent(section.key, profile, moduleProfile, testimonials, handleAvailabilityChange, ctx)
                         )}
                       </div>
-                    )}
+                    </div>
                   </div>
                 );
               })}
@@ -1150,7 +1190,10 @@ const ProviderDashboard = () => {
                     )}
                   </div>
                 </button>
-                {openSections.has("ehcp") && isPaidPlan && (
+                <div
+                  className="overflow-hidden transition-all duration-200 ease-in-out"
+                  style={{ maxHeight: openSections.has("ehcp") && isPaidPlan ? "600px" : "0px", opacity: openSections.has("ehcp") && isPaidPlan ? 1 : 0 }}
+                >
                   <div className="px-5 py-4 border-t border-border/20">
                     <div className="space-y-4">
                       <p className="text-sm text-muted-foreground leading-relaxed">
@@ -1182,7 +1225,7 @@ const ProviderDashboard = () => {
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             )}
 
@@ -1208,7 +1251,10 @@ const ProviderDashboard = () => {
                   )}
                 </div>
               </button>
-              {openSections.has("referral_notes") && hasReferralNotes && (
+              <div
+                className="overflow-hidden transition-all duration-200 ease-in-out"
+                style={{ maxHeight: openSections.has("referral_notes") && hasReferralNotes ? "300px" : "0px", opacity: openSections.has("referral_notes") && hasReferralNotes ? 1 : 0 }}
+              >
                 <div className="px-5 py-4 border-t border-border/20">
                   <div className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
@@ -1218,7 +1264,7 @@ const ProviderDashboard = () => {
                     </p>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         );
@@ -1653,6 +1699,13 @@ function renderSectionContent(
     case "certifications":
       return (
         <div className="space-y-2">
+          {(profile.credentials ?? []).length === 0 && (
+            <div className="flex flex-col items-center text-center py-4 pb-3">
+              <CheckCircle className="h-7 w-7 mb-2 text-muted-foreground/20" />
+              <p className="text-sm font-medium text-foreground/60">No certifications added yet</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Adding credentials builds trust with families searching for qualified providers</p>
+            </div>
+          )}
           {(profile.credentials ?? []).map((c: string) => (
             <div key={c} className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
@@ -1693,7 +1746,11 @@ function renderSectionContent(
 
     case "testimonials":
       return testimonials.length === 0 ? (
-        <p className="text-muted-foreground">No testimonials yet.</p>
+        <div className="flex flex-col items-center text-center py-5">
+          <Star className="h-7 w-7 mb-2 text-muted-foreground/20" />
+          <p className="text-sm font-medium text-foreground/60">No testimonials yet</p>
+          <p className="text-xs text-muted-foreground mt-0.5 max-w-xs">Families who message you can leave reviews — they'll appear here once submitted</p>
+        </div>
       ) : (
         <div className="space-y-3">
           {testimonials.map((t) => (
@@ -1714,6 +1771,13 @@ function renderSectionContent(
     case "timetable":
       return (
         <div className="space-y-2">
+          {(profile.timetable ?? []).length === 0 && (
+            <div className="flex flex-col items-center text-center py-4 pb-3">
+              <Clock className="h-7 w-7 mb-2 text-muted-foreground/20" />
+              <p className="text-sm font-medium text-foreground/60">No sessions added yet</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Add your weekly schedule so families know when you run sessions</p>
+            </div>
+          )}
           {(profile.timetable ?? []).map((t: any, i: number) => (
             <div key={i} className="flex items-center gap-3 text-sm">
               <Clock className="h-4 w-4 shrink-0" style={{ color: "#c87060" }} />
@@ -1815,6 +1879,13 @@ function renderSectionContent(
     case "case_studies":
       return (
         <div className="space-y-3">
+          {(profile.caseStudies ?? []).length === 0 && (
+            <div className="flex flex-col items-center text-center py-4 pb-3">
+              <FileText className="h-7 w-7 mb-2 text-muted-foreground/20" />
+              <p className="text-sm font-medium text-foreground/60">No case studies yet</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Share anonymised stories of how you've supported children — they help families understand your approach</p>
+            </div>
+          )}
           {(profile.caseStudies ?? []).map((cs: any, i: number) => (
             <div key={i} className="rounded-xl border border-border/60 p-3 text-sm">
               <div className="flex items-start justify-between gap-2">
@@ -2075,9 +2146,15 @@ function renderSectionContent(
     case "session_types":
       return (
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            List the session types you offer so families know what to expect.
-          </p>
+          {(profile.sessionTypes ?? []).length === 0 ? (
+            <div className="flex flex-col items-center text-center py-4 pb-2">
+              <Users className="h-7 w-7 mb-2 text-muted-foreground/20" />
+              <p className="text-sm font-medium text-foreground/60">No session types added yet</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Add your session types so families know what to expect and how much to budget</p>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">List the session types you offer so families know what to expect.</p>
+          )}
           {(profile.sessionTypes ?? []).map((s: any, i: number) => (
             <div
               key={i}
