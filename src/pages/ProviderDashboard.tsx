@@ -1291,28 +1291,32 @@ const ProviderDashboard = () => {
               )}
             </div>
           </div>
-          {/* Tab bar — horizontally scrollable, no visible scrollbar */}
+          {/* Tab bar — raised panel style, horizontally scrollable */}
           <div className="mt-4 -mx-4 sm:-mx-6 relative">
-            {/* Mobile scroll hint: fade + arrow on right edge */}
+            {/* Mobile scroll hint */}
             <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 sm:hidden z-10 flex items-center justify-end pr-1"
-              style={{ background: "linear-gradient(to right, transparent, hsl(var(--card)) 80%)" }}>
-              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
+              style={{ background: "linear-gradient(to right, transparent, hsl(247 37% 17%) 80%)" }}>
+              <ChevronRight className="h-3.5 w-3.5" style={{ color: "rgba(246,243,238,0.35)" }} />
             </div>
-            <div className="px-4 sm:px-6 overflow-x-auto scrollbar-hide">
-              <div className="flex min-w-max border-b border-border/40">
+            <div className="overflow-x-auto scrollbar-hide" style={{ background: "hsl(247 37% 17%)" }}>
+              <div className="flex min-w-max px-4 sm:px-6 pt-2 gap-0.5">
                 {TABS.map((tab) => {
                   const isActive = activeTab === tab.id;
                   return (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className="flex items-center gap-1.5 px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-all relative"
-                      style={{
-                        borderBottomColor: isActive ? "#c87060" : "transparent",
-                        color: isActive ? "#c87060" : undefined,
+                      className="flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium whitespace-nowrap transition-all relative rounded-t-lg"
+                      style={isActive ? {
+                        background: "hsl(var(--card))",
+                        color: "#c87060",
+                        boxShadow: "0 -1px 3px rgba(0,0,0,0.08)",
+                      } : {
+                        background: "transparent",
+                        color: "rgba(246,243,238,0.55)",
                       }}
                     >
-                      <tab.icon className={`h-3.5 w-3.5 shrink-0 ${isActive ? "" : "opacity-50"}`} />
+                      <tab.icon className="h-3.5 w-3.5 shrink-0" style={isActive ? { color: "#c87060" } : { color: "rgba(246,243,238,0.45)" }} />
                       <span>{tab.label}</span>
                       {tab.id === "enquiries" && newEnquiryCount > 0 && (
                         <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-white text-[10px] font-bold leading-none" style={{ background: "#c87060" }}>
