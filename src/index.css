@@ -151,6 +151,13 @@
     @apply text-xs font-semibold tracking-[2px] uppercase;
     color: hsl(20 60% 63%);
   }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* ── Hero animations ── */
