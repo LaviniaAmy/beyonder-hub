@@ -687,7 +687,6 @@ const ProviderDashboard = () => {
         const completionPct = Math.round((completedCount / completionFields.length) * 100);
         const missingSuggestions = completionFields.filter((f) => !f.done).slice(0, 3);
 
-        const hasAvailabilitySection = sections.some((s) => s.key === "availability");
         const overviewStats = [
           {
             label: "Enquiries",
@@ -703,15 +702,13 @@ const ProviderDashboard = () => {
             accent: "#d4805a",
             tab: "plan",
           },
-          ...(hasAvailabilitySection
-            ? [{
-                label: "Availability",
-                value: avail.label.split(" ")[0],
-                sub: avail.label,
-                accent: avail.dot,
-                tab: "features",
-              }]
-            : []),
+          {
+            label: "Availability",
+            value: avail.label.split(" ")[0],
+            sub: avail.label,
+            accent: avail.dot,
+            tab: "features",
+          },
           {
             label: "Category",
             value: profile.category_type ?? "—",
@@ -724,7 +721,7 @@ const ProviderDashboard = () => {
         return (
           <div className="space-y-5">
             {/* Stat cards */}
-            <div className={`grid gap-3 ${overviewStats.length === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"}`}>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {overviewStats.map((stat) => (
                 <button
                   key={stat.label}
@@ -1279,12 +1276,9 @@ const ProviderDashboard = () => {
               <p className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground/50 mb-1">Provider Dashboard</p>
               <h1 className="text-base sm:text-lg font-bold text-foreground leading-tight truncate">{profile.businessName}</h1>
               <div className="flex items-center gap-2 mt-0.5">
-                {sections.some((s) => s.key === "availability") && (
-                  <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: avail.dot }} />
-                )}
+                <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: avail.dot }} />
                 <p className="text-xs text-muted-foreground truncate">
-                  {sections.some((s) => s.key === "availability") ? `${avail.label} · ` : ""}
-                  {profile.typeBadge ?? ""}{profile.location ? ` · ${profile.location}` : ""}
+                  {avail.label}{profile.typeBadge ? ` · ${profile.typeBadge}` : ""}{profile.location ? ` · ${profile.location}` : ""}
                 </p>
               </div>
             </div>

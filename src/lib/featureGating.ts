@@ -93,6 +93,7 @@ export const categorySections: Record<CategoryType, SectionDef[]> = {
   ],
   club: [
     { key: "enquiries", label: "Enquiries", featureKey: "enquiries" },
+    { key: "availability", label: "Availability Status", featureKey: "availability" },
     { key: "timetable", label: "Timetable", featureKey: "timetable" },
     { key: "session_capacity", label: "Session Capacity", featureKey: "session_capacity" },
     { key: "term_programme", label: "Term Programme", featureKey: "term_programme" },
@@ -103,6 +104,7 @@ export const categorySections: Record<CategoryType, SectionDef[]> = {
   ],
   education: [
     { key: "enquiries", label: "Enquiries", featureKey: "enquiries" },
+    { key: "availability", label: "Availability Status", featureKey: "availability" },
     { key: "open_days", label: "Open Days", featureKey: "open_days" },
     { key: "ehcp_admissions", label: "EHCP & Admissions", featureKey: "ehcp_admissions" },
     { key: "staff_profiles", label: "Staff Profiles", featureKey: "staff_profiles" },
@@ -115,6 +117,7 @@ export const categorySections: Record<CategoryType, SectionDef[]> = {
   ],
   charity: [
     { key: "enquiries", label: "Enquiries", featureKey: "enquiries" },
+    { key: "availability", label: "Availability Status", featureKey: "availability" },
     { key: "events", label: "Events", featureKey: "events" },
     { key: "volunteer_info", label: "Volunteer Info", featureKey: "volunteer_info" },
     { key: "gallery", label: "Gallery", featureKey: "gallery" },
@@ -124,6 +127,7 @@ export const categorySections: Record<CategoryType, SectionDef[]> = {
   ],
   product: [
     { key: "enquiries", label: "Enquiries", featureKey: "enquiries" },
+    { key: "availability", label: "Availability Status", featureKey: "availability" },
     { key: "products", label: "Products", featureKey: "products" },
     { key: "store_link", label: "Store Link", featureKey: "store_link" },
     { key: "gallery", label: "Gallery", featureKey: "gallery" },
