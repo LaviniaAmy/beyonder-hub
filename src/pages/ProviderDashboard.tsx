@@ -687,43 +687,48 @@ const ProviderDashboard = () => {
         const completionPct = Math.round((completedCount / completionFields.length) * 100);
         const missingSuggestions = completionFields.filter((f) => !f.done).slice(0, 3);
 
+        const hasAvailabilitySection = sections.some((s) => s.key === "availability");
+        const overviewStats = [
+          {
+            label: "Enquiries",
+            value: providerEnquiries.length.toString(),
+            sub: newEnquiryCount > 0 ? `${newEnquiryCount} new` : "none new",
+            accent: "#c87060",
+            tab: "enquiries",
+          },
+          {
+            label: "Plan",
+            value: profile.plan_type ?? "free",
+            sub: profile.plan_status ?? "active",
+            accent: "#d4805a",
+            tab: "plan",
+          },
+          ...(hasAvailabilitySection
+            ? [{
+                label: "Availability",
+                value: avail.label.split(" ")[0],
+                sub: avail.label,
+                accent: avail.dot,
+                tab: "features",
+              }]
+            : []),
+          {
+            label: "Category",
+            value: profile.category_type ?? "—",
+            sub: profile.typeBadge ?? "",
+            accent: "#f0a070",
+            tab: null as string | null,
+          },
+        ];
+
         return (
           <div className="space-y-5">
             {/* Stat cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {[
-                {
-                  label: "Enquiries",
-                  value: providerEnquiries.length.toString(),
-                  sub: newEnquiryCount > 0 ? `${newEnquiryCount} new` : "none new",
-                  accent: "#c87060",
-                  tab: "enquiries",
-                },
-                {
-                  label: "Plan",
-                  value: profile.plan_type ?? "free",
-                  sub: profile.plan_status ?? "active",
-                  accent: "#d4805a",
-                  tab: "plan",
-                },
-                {
-                  label: "Availability",
-                  value: avail.label.split(" ")[0],
-                  sub: avail.label,
-                  accent: avail.dot,
-                  tab: "features",
-                },
-                {
-                  label: "Category",
-                  value: profile.category_type ?? "—",
-                  sub: profile.typeBadge ?? "",
-                  accent: "#f0a070",
-                  tab: null,
-                },
-              ].map((stat) => (
+            <div className={`grid gap-3 ${overviewStats.length === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"}`}>
+              {overviewStats.map((stat) => (
                 <button
                   key={stat.label}
-                  onClick={() => stat.tab && setActiveTab(stat.tab)}
+                  onClick={() => { if (stat.tab) setActiveTab(stat.tab); }}
                   className={`rounded-xl border border-border/50 bg-card px-4 py-3.5 text-left transition-all ${stat.tab ? "hover:border-[#c87060]/30 cursor-pointer" : "cursor-default"}`}
                 >
                   <p className="text-xs text-muted-foreground mb-1">{stat.label}</p>
@@ -1290,37 +1295,37 @@ const ProviderDashboard = () => {
             </div>
           </div>
           {/* Tab bar — horizontally scrollable, no visible scrollbar */}
-          <div className="mt-4 -mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide">
-            <div className="flex min-w-max border-b border-border/40">
-              {TABS.map((tab) => {
-                const isActive = activeTab === tab.id;
-                const shortLabels: Record<string, string> = {
-                  overview: "Overview",
-                  profile: "Profile",
-                  enquiries: "Enquiries",
-                  features: "Listing",
-                  plan: "Plan",
-                };
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className="flex items-center gap-1.5 px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-all relative"
-                    style={{
-                      borderBottomColor: isActive ? "#c87060" : "transparent",
-                      color: isActive ? "#c87060" : undefined,
-                    }}
-                  >
-                    <tab.icon className={`h-3.5 w-3.5 shrink-0 ${isActive ? "" : "opacity-50"}`} />
-                    <span>{shortLabels[tab.id]}</span>
-                    {tab.id === "enquiries" && newEnquiryCount > 0 && (
-                      <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-white text-[10px] font-bold leading-none" style={{ background: "#c87060" }}>
-                        {newEnquiryCount}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+          <div className="mt-4 -mx-4 sm:-mx-6 relative">
+            {/* Mobile scroll hint: fade + arrow on right edge */}
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 sm:hidden z-10 flex items-center justify-end pr-1"
+              style={{ background: "linear-gradient(to right, transparent, hsl(var(--card)) 80%)" }}>
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
+            </div>
+            <div className="px-4 sm:px-6 overflow-x-auto scrollbar-hide">
+              <div className="flex min-w-max border-b border-border/40">
+                {TABS.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className="flex items-center gap-1.5 px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-all relative"
+                      style={{
+                        borderBottomColor: isActive ? "#c87060" : "transparent",
+                        color: isActive ? "#c87060" : undefined,
+                      }}
+                    >
+                      <tab.icon className={`h-3.5 w-3.5 shrink-0 ${isActive ? "" : "opacity-50"}`} />
+                      <span>{tab.label}</span>
+                      {tab.id === "enquiries" && newEnquiryCount > 0 && (
+                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-white text-[10px] font-bold leading-none" style={{ background: "#c87060" }}>
+                          {newEnquiryCount}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
