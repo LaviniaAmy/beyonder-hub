@@ -1138,7 +1138,7 @@ const ProviderDashboard = () => {
                     >
                       <div className="flex items-center gap-2.5">
                         <span style={{ color: "#1E1B3A" }}>{getSectionIcon(section.key)}</span>
-                        <span className="font-semibold text-sm text-foreground">{section.label}</span>
+                        <span className="font-semibold text-sm" style={{ color: "#c87060" }}>{section.label}</span>
                         {!enabled && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
