@@ -766,11 +766,11 @@ const ProviderDashboard = () => {
                     key={i}
                     onClick={() => setActiveTab(item.tab)}
                     className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-all hover:brightness-95"
-                    style={{ background: "#FDE8E3", border: "1px solid #c87060" }}
+                    style={{ background: "#FFBFAD", border: "2px solid #c87060" }}
                   >
-                    <span style={{ color: "#c87060" }}>{item.icon}</span>
-                    <p className="flex-1 text-xs leading-snug font-medium" style={{ color: "#a0503e" }}>{item.text}</p>
-                    <span className="text-xs font-bold shrink-0" style={{ color: "#c87060" }}>{item.action} →</span>
+                    <span style={{ color: "#8B3620" }}>{item.icon}</span>
+                    <p className="flex-1 text-xs leading-snug font-semibold" style={{ color: "#8B3620" }}>{item.text}</p>
+                    <span className="text-xs font-bold shrink-0" style={{ color: "#8B3620" }}>{item.action} →</span>
                   </button>
                 ))}
               </div>
@@ -778,13 +778,13 @@ const ProviderDashboard = () => {
               <button
                 onClick={() => setActiveTab("profile")}
                 className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-all hover:brightness-95"
-                style={{ background: "rgba(30,27,58,0.05)", border: "1px solid #2B4C7E" }}
+                style={{ background: "#C8DCF5", border: "2px solid #1A3A6B" }}
               >
-                <Building2 className="h-3.5 w-3.5 shrink-0" style={{ color: "#2B4C7E" }} />
-                <p className="flex-1 text-xs font-medium leading-snug" style={{ color: "#2B4C7E" }}>
+                <Building2 className="h-3.5 w-3.5 shrink-0" style={{ color: "#1A3A6B" }} />
+                <p className="flex-1 text-xs font-semibold leading-snug" style={{ color: "#1A3A6B" }}>
                   Looking good — a few optional fields remain to complete your profile
                 </p>
-                <span className="text-xs font-bold shrink-0" style={{ color: "#2B4C7E" }}>Finish →</span>
+                <span className="text-xs font-bold shrink-0" style={{ color: "#1A3A6B" }}>Finish →</span>
               </button>
             ) : (
               <div className="flex items-center gap-2.5 rounded-xl px-4 py-3" style={{ background: "rgba(74,222,128,0.08)", border: "1px solid rgba(74,222,128,0.2)" }}>
