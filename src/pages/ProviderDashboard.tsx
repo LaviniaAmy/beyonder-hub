@@ -1295,10 +1295,10 @@ const ProviderDashboard = () => {
           <div className="mt-4 -mx-4 sm:-mx-6 relative">
             {/* Mobile scroll hint */}
             <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 sm:hidden z-10 flex items-center justify-end pr-1"
-              style={{ background: "linear-gradient(to right, transparent, hsl(36 38% 95%) 80%)" }}>
+              style={{ background: "linear-gradient(to right, transparent, #ffffff 80%)" }}>
               <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
             </div>
-            <div className="overflow-x-auto scrollbar-hide" style={{ background: "hsl(36 38% 95%)" }}>
+            <div className="overflow-x-auto scrollbar-hide" style={{ background: "#ffffff" }}>
               <div className="flex min-w-max px-4 sm:px-6 pt-3 gap-1">
                 {TABS.map((tab) => {
                   const isActive = activeTab === tab.id;
@@ -1310,9 +1310,9 @@ const ProviderDashboard = () => {
                       style={isActive ? {
                         background: "#ffffff",
                         color: "#c87060",
-                        boxShadow: "0 -2px 6px rgba(0,0,0,0.06), 2px 0 4px rgba(0,0,0,0.03), -2px 0 4px rgba(0,0,0,0.03)",
+                        boxShadow: "0 -2px 6px rgba(0,0,0,0.07), 2px 0 4px rgba(0,0,0,0.04), -2px 0 4px rgba(0,0,0,0.04)",
                       } : {
-                        background: "hsl(36 30% 92%)",
+                        background: "hsl(36 20% 94%)",
                         color: "hsl(215 14% 44%)",
                       }}
                     >
