@@ -1291,15 +1291,15 @@ const ProviderDashboard = () => {
               )}
             </div>
           </div>
-          {/* Tab bar — raised panel style, horizontally scrollable */}
+          {/* Tab bar — cream raised tabs */}
           <div className="mt-4 -mx-4 sm:-mx-6 relative">
             {/* Mobile scroll hint */}
             <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 sm:hidden z-10 flex items-center justify-end pr-1"
-              style={{ background: "linear-gradient(to right, transparent, hsl(247 37% 17%) 80%)" }}>
-              <ChevronRight className="h-3.5 w-3.5" style={{ color: "rgba(246,243,238,0.35)" }} />
+              style={{ background: "linear-gradient(to right, transparent, hsl(36 38% 95%) 80%)" }}>
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
             </div>
-            <div className="overflow-x-auto scrollbar-hide" style={{ background: "hsl(247 37% 17%)" }}>
-              <div className="flex min-w-max px-4 sm:px-6 pt-2 gap-0.5">
+            <div className="overflow-x-auto scrollbar-hide" style={{ background: "hsl(36 38% 95%)" }}>
+              <div className="flex min-w-max px-4 sm:px-6 pt-3 gap-1">
                 {TABS.map((tab) => {
                   const isActive = activeTab === tab.id;
                   return (
@@ -1308,15 +1308,15 @@ const ProviderDashboard = () => {
                       onClick={() => setActiveTab(tab.id)}
                       className="flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium whitespace-nowrap transition-all relative rounded-t-lg"
                       style={isActive ? {
-                        background: "hsl(var(--card))",
+                        background: "#ffffff",
                         color: "#c87060",
-                        boxShadow: "0 -1px 3px rgba(0,0,0,0.08)",
+                        boxShadow: "0 -2px 6px rgba(0,0,0,0.06), 2px 0 4px rgba(0,0,0,0.03), -2px 0 4px rgba(0,0,0,0.03)",
                       } : {
-                        background: "transparent",
-                        color: "rgba(246,243,238,0.55)",
+                        background: "hsl(36 30% 92%)",
+                        color: "hsl(215 14% 44%)",
                       }}
                     >
-                      <tab.icon className="h-3.5 w-3.5 shrink-0" style={isActive ? { color: "#c87060" } : { color: "rgba(246,243,238,0.45)" }} />
+                      <tab.icon className="h-3.5 w-3.5 shrink-0" style={isActive ? { color: "#c87060" } : { color: "hsl(215 14% 55%)" }} />
                       <span>{tab.label}</span>
                       {tab.id === "enquiries" && newEnquiryCount > 0 && (
                         <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-white text-[10px] font-bold leading-none" style={{ background: "#c87060" }}>
