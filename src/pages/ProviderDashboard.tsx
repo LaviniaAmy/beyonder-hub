@@ -90,7 +90,7 @@ const TABS = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "profile", label: "Profile", icon: Building2 },
   { id: "enquiries", label: "Enquiries", icon: MessageSquare },
-  { id: "features", label: "Features", icon: Settings },
+  { id: "features", label: "Listing Details", icon: Settings },
   { id: "plan", label: "Plan", icon: CreditCard },
 ];
 
@@ -491,13 +491,13 @@ const ProviderDashboard = () => {
       const remaining = messagesRemainingForProvider(selectedEnquiry);
 
       return (
-        <Card className="mb-6 border-0 shadow-card">
-          <CardHeader className="flex-row items-center justify-between pb-3">
+        <Card className="mb-6 border border-border/40 shadow-none bg-card">
+          <CardHeader className="flex-row items-center justify-between pb-3 border-b border-border/30">
             <div>
-              <CardTitle className="text-lg">{selectedEnquiry.parentName}</CardTitle>
+              <CardTitle className="text-base font-semibold text-foreground">{selectedEnquiry.parentName}</CardTitle>
               <div className="flex flex-wrap gap-x-3 text-xs text-muted-foreground mt-0.5">
                 <span>Age: {selectedEnquiry.childAge}</span>
-                {selectedEnquiry.childName && <span>Name: {selectedEnquiry.childName}</span>}
+                {selectedEnquiry.childName && <span>Child: {selectedEnquiry.childName}</span>}
                 {selectedEnquiry.needs && <span>Needs: {selectedEnquiry.needs}</span>}
                 <span>{selectedEnquiry.createdAt}</span>
               </div>
@@ -505,6 +505,7 @@ const ProviderDashboard = () => {
             <Button
               size="sm"
               variant="outline"
+              className="border-border/50 text-muted-foreground hover:text-foreground"
               onClick={() => {
                 setSelectedEnquiryId(null);
                 setReplyText("");
@@ -515,17 +516,18 @@ const ProviderDashboard = () => {
             </Button>
           </CardHeader>
 
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 pt-4">
             {/* Thread messages */}
             {selectedEnquiry.messages.map((msg) => (
               <div
                 key={msg.messageId}
-                className={`rounded-xl p-4 ${msg.senderId === "parent" ? "bg-muted/30 border border-border/40 mr-8 break-words" : "bg-teal-500/[0.06] border border-teal-500/20 ml-8 break-words"}`}
+                className={`rounded-xl p-3.5 ${msg.senderId === "parent" ? "bg-muted/25 border border-border/30 mr-10 break-words" : "border break-words ml-10"}`}
+                style={msg.senderId !== "parent" ? { background: "rgba(200,112,96,0.06)", borderColor: "rgba(200,112,96,0.2)" } : {}}
               >
-                <p className={`text-xs mb-1 ${msg.senderId === "parent" ? "text-muted-foreground" : "text-teal-500"}`}>
-                  {msg.senderId === "parent" ? selectedEnquiry.parentName : "You"} · {msg.sentAt}
+                <p className="text-xs mb-1.5 font-medium" style={{ color: msg.senderId === "parent" ? undefined : "#c87060" }} >
+                  {msg.senderId === "parent" ? selectedEnquiry.parentName : "You"} <span className="font-normal text-muted-foreground">· {msg.sentAt}</span>
                 </p>
-                <p className="text-sm leading-relaxed text-gray-300">{msg.text}</p>
+                <p className="text-sm leading-relaxed text-foreground/80">{msg.text}</p>
               </div>
             ))}
 
@@ -564,7 +566,8 @@ const ProviderDashboard = () => {
                 </span>
                 <Button
                   size="sm"
-                  className="bg-teal-500 hover:bg-teal-400"
+                  style={{ background: "#c87060" }}
+                  className="hover:opacity-90 text-white border-0"
                   disabled={!replyText.trim()}
                   onClick={handleSendReply}
                 >
@@ -605,36 +608,40 @@ const ProviderDashboard = () => {
     }
 
     return providerEnquiries.length === 0 ? (
-      <div className="py-12 text-center">
-        <MessageSquare className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
-        <p className="text-muted-foreground text-sm">No enquiries yet.</p>
-        <p className="text-xs text-muted-foreground/60 mt-1">When families message you, they'll appear here.</p>
+      <div className="py-16 text-center rounded-xl border border-border/40 bg-card">
+        <MessageSquare className="h-8 w-8 text-muted-foreground/20 mx-auto mb-3" />
+        <p className="text-sm font-medium text-foreground">No enquiries yet</p>
+        <p className="text-xs text-muted-foreground mt-1">When families message you, they'll appear here.</p>
       </div>
     ) : (
-      <div className="space-y-2">
+      <div className="rounded-xl border border-border/40 bg-card overflow-hidden divide-y divide-border/30">
         {providerEnquiries.map((e) => (
           <div
             key={e.enquiryId}
-            className="flex items-center justify-between rounded-xl border border-border/60 p-4 cursor-pointer hover:bg-muted/10 transition-colors"
+            className="flex items-center gap-3 px-4 py-3.5 cursor-pointer hover:bg-muted/10 transition-colors"
             onClick={() => {
               setSelectedEnquiryId(e.enquiryId);
               setReplyText("");
               setNotesText(e.providerNotes ?? "");
             }}
           >
-            <div className="min-w-0 flex-1">
-              <p className="font-medium truncate">{e.parentName}</p>
-              <div className="flex gap-2 text-xs text-muted-foreground mt-0.5">
-                {e.childName && <span>{e.childName}</span>}
-                {e.needs && <span className="truncate max-w-[140px]">{e.needs}</span>}
-                {!e.childName && !e.needs && <span className="truncate">{e.message}</span>}
-              </div>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm font-semibold text-white" style={{ background: e.statusForProvider === "new" ? "#c87060" : "#94a3b8" }}>
+              {e.parentName.charAt(0).toUpperCase()}
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant={e.statusForProvider === "new" ? "destructive" : "secondary"}>
-                {e.statusForProvider === "new" ? "New" : "Replied"}
-              </Badge>
-              <ChevronRight className="h-4 w-4 text-muted-foreground/40" />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <p className={`text-sm truncate ${e.statusForProvider === "new" ? "font-semibold text-foreground" : "font-medium text-foreground/80"}`}>{e.parentName}</p>
+                {e.statusForProvider === "new" && (
+                  <span className="inline-flex items-center rounded-full px-1.5 py-0.5 text-xs font-semibold shrink-0" style={{ background: "rgba(200,112,96,0.12)", color: "#c87060" }}>New</span>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground truncate mt-0.5">
+                {e.childName ? `${e.childName} · ` : ""}{e.needs || e.message}
+              </p>
+            </div>
+            <div className="flex items-center gap-1 shrink-0">
+              <span className="text-xs text-muted-foreground hidden sm:block">{e.createdAt}</span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground/30" />
             </div>
           </div>
         ))}
@@ -645,50 +652,116 @@ const ProviderDashboard = () => {
   // ── Tab content renderer ────────────────────────────────
   const renderTab = () => {
     switch (activeTab) {
-      case "overview":
+      case "overview": {
+        // Profile completion calculation
+        const completionFields: { key: string; label: string; done: boolean }[] = [
+          { key: "businessName", label: "Business name", done: !!profile.businessName?.trim() },
+          { key: "description", label: "Description", done: !!profile.description?.trim() },
+          { key: "location", label: "Location", done: !!profile.location?.trim() },
+          { key: "coverageArea", label: "Coverage area", done: !!profile.coverageArea?.trim() },
+          { key: "ageRange", label: "Age range", done: !!profile.ageRange?.trim() },
+          { key: "deliveryFormat", label: "Delivery type", done: !!profile.deliveryFormat },
+          { key: "website", label: "Website", done: !!profile.website?.trim() },
+          { key: "needsSupported", label: "Needs supported", done: (profile.needsSupported ?? []).length > 0 },
+          { key: "credentials", label: "Certifications", done: (profile.credentials ?? []).length > 0 },
+          { key: "sessionTypes", label: "Session types", done: (profile.sessionTypes ?? []).length > 0 },
+          { key: "testimonials", label: "Testimonials", done: testimonials.length > 0 },
+          { key: "gallery", label: "Gallery", done: (profile.gallery ?? []).length > 0 },
+        ];
+        const completedCount = completionFields.filter((f) => f.done).length;
+        const completionPct = Math.round((completedCount / completionFields.length) * 100);
+        const missingSuggestions = completionFields.filter((f) => !f.done).slice(0, 3);
+
         return (
           <div className="space-y-5">
-            <div
-              className="flex flex-wrap gap-x-6 gap-y-2 rounded-xl px-5 py-4 bg-card border-b border-teal-500/10"
-            >
+            {/* Stat cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 {
                   label: "Enquiries",
-                  value: `${providerEnquiries.length} total · ${newEnquiryCount} new`,
-                  accent: C.teal,
+                  value: providerEnquiries.length.toString(),
+                  sub: newEnquiryCount > 0 ? `${newEnquiryCount} new` : "none new",
+                  accent: "#c87060",
+                  tab: "enquiries",
                 },
                 {
                   label: "Plan",
-                  value: `${profile.plan_type} · ${profile.plan_status}`,
-                  accent: C.tealLight,
+                  value: profile.plan_type ?? "free",
+                  sub: profile.plan_status ?? "active",
+                  accent: "#d4805a",
+                  tab: "plan",
                 },
                 {
                   label: "Availability",
-                  value: avail.label,
+                  value: avail.label.split(" ")[0],
+                  sub: avail.label,
                   accent: avail.dot,
+                  tab: "features",
                 },
                 {
                   label: "Category",
-                  value: `${profile.category_type}${profile.typeBadge ? ` · ${profile.typeBadge}` : ""}`,
-                  accent: C.orange,
+                  value: profile.category_type ?? "—",
+                  sub: profile.typeBadge ?? "",
+                  accent: "#f0a070",
+                  tab: null,
                 },
               ].map((stat) => (
-                <div key={stat.label} className="flex items-center gap-2 py-1">
-                  <span
-                    className="h-2 w-2 rounded-full flex-shrink-0"
-                    style={{ background: stat.accent }}
-                  />
-                  <span className="text-xs font-medium uppercase tracking-wide text-foreground/50">
-                    {stat.label}:
-                  </span>
-                  <span className="text-sm capitalize text-foreground">
-                    {stat.value}
-                  </span>
-                </div>
+                <button
+                  key={stat.label}
+                  onClick={() => stat.tab && setActiveTab(stat.tab)}
+                  className={`rounded-xl border border-border/50 bg-card px-4 py-3.5 text-left transition-all ${stat.tab ? "hover:border-[#c87060]/30 cursor-pointer" : "cursor-default"}`}
+                >
+                  <p className="text-xs text-muted-foreground mb-1">{stat.label}</p>
+                  <p className="text-base font-bold text-foreground capitalize leading-tight truncate">{stat.value}</p>
+                  <p className="text-xs mt-0.5 capitalize truncate" style={{ color: stat.accent }}>{stat.sub}</p>
+                </button>
               ))}
             </div>
+
+            {/* Profile completion */}
+            <div className="rounded-xl border border-border/50 bg-card p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Profile Completion</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{completedCount} of {completionFields.length} fields complete</p>
+                </div>
+                <span className="text-2xl font-bold" style={{ color: completionPct >= 80 ? "#4ade80" : "#c87060" }}>
+                  {completionPct}%
+                </span>
+              </div>
+              <div className="w-full h-1.5 rounded-full bg-border/40 mb-3">
+                <div
+                  className="h-1.5 rounded-full transition-all"
+                  style={{ width: `${completionPct}%`, background: completionPct >= 80 ? "#4ade80" : "#c87060" }}
+                />
+              </div>
+              {missingSuggestions.length > 0 && (
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1.5">Suggested next steps:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {missingSuggestions.map((f) => (
+                      <button
+                        key={f.key}
+                        onClick={() => setActiveTab(["website", "description", "location", "coverageArea", "ageRange", "deliveryFormat", "needsSupported"].includes(f.key) ? "profile" : "features")}
+                        className="flex items-center gap-1 rounded-full border border-[#c87060]/30 bg-[#c87060]/8 px-2.5 py-1 text-xs text-[#c87060] hover:bg-[#c87060]/15 transition-colors"
+                        style={{ backgroundColor: "rgba(200,112,96,0.06)" }}
+                      >
+                        + Add {f.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {missingSuggestions.length === 0 && (
+                <p className="text-xs text-emerald-400 flex items-center gap-1">
+                  <CheckCircle className="h-3.5 w-3.5" /> Profile is complete
+                </p>
+              )}
+            </div>
+
+            {/* Quick actions */}
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide mb-3 text-foreground/50">
+              <p className="text-xs font-semibold uppercase tracking-wide mb-2.5 text-muted-foreground">
                 Quick Actions
               </p>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -710,7 +783,7 @@ const ProviderDashboard = () => {
                     badge: newEnquiryCount > 0 ? newEnquiryCount : null,
                   },
                   {
-                    label: "Manage features",
+                    label: "Listing Details",
                     sub: "Availability, sessions, gallery and more",
                     tab: "features",
                     icon: Settings,
@@ -720,10 +793,10 @@ const ProviderDashboard = () => {
                   <button
                     key={action.tab}
                     onClick={() => setActiveTab(action.tab)}
-                    className="flex items-center gap-4 rounded-xl border border-teal-500/20 bg-card p-4 text-left hover:border-teal-500/40 transition-all group"
+                    className="flex items-center gap-3 rounded-xl border border-border/50 bg-card p-3.5 text-left hover:border-[#c87060]/30 transition-all group"
                   >
-                    <div className="w-9 h-9 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shrink-0">
-                      <action.icon className="h-4 w-4 text-teal-500" />
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(200,112,96,0.1)" }}>
+                      <action.icon className="h-4 w-4" style={{ color: "#c87060" }} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -731,29 +804,31 @@ const ProviderDashboard = () => {
                           {action.label}
                         </p>
                         {action.badge && (
-                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold">
+                          <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-white text-xs font-bold" style={{ background: "#c87060" }}>
                             {action.badge}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs mt-0.5 text-foreground/50">
+                      <p className="text-xs mt-0.5 text-muted-foreground">
                         {action.sub}
                       </p>
                     </div>
-                    <ChevronRight className="h-4 w-4 transition-colors group-hover:text-teal-400 text-foreground/30" />
+                    <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-[#c87060] transition-colors" />
                   </button>
                 ))}
               </div>
             </div>
+
+            {/* Recent enquiries */}
             {providerEnquiries.length > 0 && (
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-foreground/50">
+                <div className="flex items-center justify-between mb-2.5">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Recent Enquiries
                   </p>
                   <button
                     onClick={() => setActiveTab("enquiries")}
-                    className="text-xs hover:text-teal-300 text-teal-500"
+                    className="text-xs text-[#c87060] hover:opacity-75 transition-opacity"
                   >
                     View all →
                   </button>
@@ -762,7 +837,7 @@ const ProviderDashboard = () => {
                   {providerEnquiries.slice(0, 3).map((e) => (
                     <div
                       key={e.enquiryId}
-                      className="flex items-center justify-between rounded-xl border border-teal-500/20 bg-card px-4 py-3 cursor-pointer hover:border-teal-500/30 transition-colors"
+                      className="flex items-center justify-between rounded-xl border border-border/50 bg-card px-4 py-3 cursor-pointer hover:border-[#c87060]/25 transition-colors"
                       onClick={() => {
                         setActiveTab("enquiries");
                         setSelectedEnquiryId(e.enquiryId);
@@ -770,20 +845,19 @@ const ProviderDashboard = () => {
                         setNotesText(e.providerNotes ?? "");
                       }}
                     >
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium truncate text-foreground">
                           {e.parentName}
                         </p>
-                        <p className="text-xs truncate max-w-[160px] sm:max-w-[200px] text-foreground/50">
+                        <p className="text-xs truncate max-w-[200px] text-muted-foreground mt-0.5">
                           {e.message}
                         </p>
                       </div>
-                      <Badge
-                        variant={e.statusForProvider === "new" ? "destructive" : "secondary"}
-                        className="shrink-0 ml-2"
-                      >
-                        {e.statusForProvider === "new" ? "New" : "Replied"}
-                      </Badge>
+                      {e.statusForProvider === "new" ? (
+                        <span className="shrink-0 ml-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: "rgba(200,112,96,0.12)", color: "#c87060" }}>New</span>
+                      ) : (
+                        <span className="shrink-0 ml-2 inline-flex items-center rounded-full border border-border/50 px-2 py-0.5 text-xs font-medium text-muted-foreground">Replied</span>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -791,6 +865,7 @@ const ProviderDashboard = () => {
             )}
           </div>
         );
+      }
 
       case "profile":
         return (
@@ -804,11 +879,11 @@ const ProviderDashboard = () => {
                   {profile.typeBadge}
                 </p>
               </div>
-              <Button size="sm" onClick={() => setEditOpen(true)} className="bg-teal-500 hover:bg-teal-400 text-white">
+              <Button size="sm" onClick={() => setEditOpen(true)} style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0">
                 Edit Profile
               </Button>
             </div>
-            <div className="rounded-xl border border-teal-500/20 bg-card overflow-hidden">
+            <div className="rounded-xl border border-border/50 bg-card overflow-hidden">
               {[
                 { label: "Location", value: profile.location },
                 { label: "Coverage Area", value: profile.coverageArea },
@@ -822,14 +897,14 @@ const ProviderDashboard = () => {
                 .map((row, i, arr) => (
                   <div
                     key={row!.label}
-                    className={`flex items-center justify-between px-5 py-3.5 ${i < arr.length - 1 ? "border-b border-border/30" : ""}`}
+                    className={`flex items-center justify-between px-5 py-3 ${i < arr.length - 1 ? "border-b border-border/25" : ""}`}
                   >
-                    <span className="text-xs font-semibold uppercase tracking-wide w-28 shrink-0 text-foreground/50">
+                    <span className="text-xs font-medium text-muted-foreground w-28 shrink-0">
                       {row!.label}
                     </span>
-                    <span className="text-sm text-right text-foreground">
+                    <span className="text-sm text-right text-foreground capitalize">
                       {row!.value || (
-                        <span className="italic text-foreground/30">
+                        <span className="italic text-muted-foreground/40 normal-case">
                           Not set
                         </span>
                       )}
@@ -839,14 +914,15 @@ const ProviderDashboard = () => {
             </div>
             {(profile.needsSupported ?? []).length > 0 && (
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide mb-2 text-foreground/50">
+                <p className="text-xs font-medium text-muted-foreground mb-2">
                   Needs Supported
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {profile.needsSupported.map((n: string) => (
                     <span
                       key={n}
-                      className="rounded-full border border-teal-500/30 bg-teal-500/10 px-3 py-1 text-xs text-teal-400"
+                      className="rounded-full border px-2.5 py-0.5 text-xs"
+                      style={{ borderColor: "rgba(200,112,96,0.3)", background: "rgba(200,112,96,0.08)", color: "#c87060" }}
                     >
                       {n}
                     </span>
@@ -856,10 +932,10 @@ const ProviderDashboard = () => {
             )}
             {profile.description && (
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide mb-2 text-foreground/50">
+                <p className="text-xs font-medium text-muted-foreground mb-2">
                   Description
                 </p>
-                <div className="rounded-xl border border-teal-500/20 bg-card p-4">
+                <div className="rounded-xl border border-border/50 bg-card p-4">
                   <p className="text-sm leading-relaxed text-foreground/80">
                     {profile.description}
                   </p>
@@ -874,9 +950,17 @@ const ProviderDashboard = () => {
           <div>
             {!selectedEnquiry && (
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm text-foreground/50">
-                  {providerEnquiries.length} total · {newEnquiryCount} new
-                </p>
+                <div>
+                  <h2 className="text-sm font-semibold text-foreground">Inbox</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {providerEnquiries.length} conversation{providerEnquiries.length !== 1 ? "s" : ""}
+                    {newEnquiryCount > 0 && (
+                      <span className="ml-1.5 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: "rgba(200,112,96,0.12)", color: "#c87060" }}>
+                        {newEnquiryCount} new
+                      </span>
+                    )}
+                  </p>
+                </div>
               </div>
             )}
             {renderEnquiriesPanel()}
@@ -896,10 +980,11 @@ const ProviderDashboard = () => {
                     className={`rounded-xl border overflow-hidden transition-opacity bg-card ${!enabled ? "opacity-60 border-border" : "border-teal-500/20"}`}
                   >
                     <div
-                      className={`flex items-center justify-between px-5 py-4 border-b border-border/30 ${enabled ? "border-l-[3px] border-l-teal-600" : "border-l-[3px] border-l-white/[0.08]"}`}
+                      className="flex items-center justify-between px-5 py-4 border-b border-border/30"
+                      style={{ borderLeft: `3px solid ${enabled ? "#c87060" : "rgba(255,255,255,0.06)"}` }}
                     >
                       <div className="flex items-center gap-2.5">
-                        <span className="text-teal-500">{getSectionIcon(section.key)}</span>
+                        <span style={{ color: "#c87060" }}>{getSectionIcon(section.key)}</span>
                         <span className="font-semibold text-sm text-foreground">
                           {section.label}
                         </span>
@@ -937,10 +1022,11 @@ const ProviderDashboard = () => {
 
             {isTherapist && (
               <div
-                className={`rounded-xl border overflow-hidden bg-card ${!isPaidPlan ? "opacity-60 border-border" : "border-orange-500/20"}`}
+                className={`rounded-xl border overflow-hidden bg-card ${!isPaidPlan ? "opacity-60 border-border/50" : "border-border/50"}`}
               >
                 <div
-                  className={`flex items-center justify-between px-5 py-4 border-b border-border/30 ${isPaidPlan ? "border-l-[3px] border-l-orange-500" : "border-l-[3px] border-l-white/[0.08]"}`}
+                  className="flex items-center justify-between px-5 py-4 border-b border-border/30"
+                  style={{ borderLeft: `3px solid ${isPaidPlan ? "#c87060" : "rgba(255,255,255,0.06)"}` }}
                 >
                   <div className="flex items-center gap-2.5">
                     <ShieldCheck className="h-4 w-4 text-orange-400" />
@@ -1000,10 +1086,11 @@ const ProviderDashboard = () => {
             )}
 
             <div
-              className={`rounded-xl border overflow-hidden bg-card ${!hasReferralNotes ? "opacity-60 border-border" : "border-teal-500/20"}`}
+              className={`rounded-xl border overflow-hidden bg-card ${!hasReferralNotes ? "opacity-60 border-border/50" : "border-border/50"}`}
             >
               <div
-                className={`flex items-center justify-between px-5 py-4 border-b border-border/30 ${hasReferralNotes ? "border-l-[3px] border-l-teal-600" : "border-l-[3px] border-l-white/[0.08]"}`}
+                className="flex items-center justify-between px-5 py-4 border-b border-border/30"
+                style={{ borderLeft: `3px solid ${hasReferralNotes ? "#c87060" : "rgba(255,255,255,0.06)"}` }}
               >
                 <div className="flex items-center gap-2.5">
                   <NotebookPen className="h-4 w-4 text-teal-500" />
@@ -1048,11 +1135,11 @@ const ProviderDashboard = () => {
               : "Free Plan";
         return (
           <div className="space-y-5">
-            <div className="rounded-xl border border-teal-500/20 bg-card overflow-hidden">
-              <div className="px-5 py-5 border-b border-border/30 border-l-[3px] border-l-teal-600">
+            <div className="rounded-xl border border-border/50 bg-card overflow-hidden">
+              <div className="px-5 py-5 border-b border-border/30" style={{ borderLeft: "3px solid #c87060" }}>
                 <div className="flex items-center gap-3 mb-1">
-                  <Badge className="bg-teal-500/20 text-teal-400 border-0">{planLabel}</Badge>
-                  <Badge className="bg-emerald-500/15 text-emerald-400 border-0">Active</Badge>
+                  <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" style={{ background: "rgba(200,112,96,0.12)", color: "#c87060" }}>{planLabel}</span>
+                  <Badge className="bg-emerald-500/15 text-emerald-400 border-0 text-xs">Active</Badge>
                 </div>
                 <p className="text-sm leading-relaxed mt-2 text-foreground/60">
                   {livePlanType === "founder"
@@ -1115,8 +1202,8 @@ const ProviderDashboard = () => {
   return (
     <div className="bg-background min-h-screen">
       <PageBanner title="Provider dashboard" />
-      <div className="bg-card border-b border-teal-500/15">
-        <div className="container max-w-3xl px-4 sm:px-6 py-5 sm:py-6">
+      <div className="bg-card border-b border-border/40">
+        <div className="container max-w-3xl px-4 sm:px-6 py-3 sm:py-4">
           {isSuspended && (
             <div className="mb-4 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/[0.08] p-4">
               <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
@@ -1156,43 +1243,51 @@ const ProviderDashboard = () => {
             </div>
           )}
           {savedMsg && (
-            <div className="mb-4 rounded-xl bg-teal-500/10 border border-teal-500/25 px-4 py-2 text-sm text-teal-400">
+            <div className="mb-3 rounded-xl px-4 py-2 text-sm font-medium" style={{ background: "rgba(200,112,96,0.1)", color: "#c87060", border: "1px solid rgba(200,112,96,0.25)" }}>
               {savedMsg}
             </div>
           )}
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-2 h-2 rounded-full" style={{ background: avail.dot }} />
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: avail.dot }} />
                 <span className="text-xs text-muted-foreground">{avail.label}</span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground leading-tight">{profile.businessName}</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                {profile.typeBadge} · {profile.location}
+              <h1 className="text-lg sm:text-xl font-bold text-foreground leading-tight truncate">{profile.businessName}</h1>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                {profile.typeBadge}{profile.location ? ` · ${profile.location}` : ""}
               </p>
             </div>
-            <div className="flex flex-col items-end gap-2 shrink-0">
-              <Badge className="bg-teal-500/20 text-teal-400 border-0 capitalize">{profile.plan_type} plan</Badge>
+            <div className="flex items-center gap-2 shrink-0">
+              <Badge className="bg-[#c87060]/15 text-[#c87060] border-0 capitalize text-xs">{profile.plan_type}</Badge>
               {profile.isVerified && (
-                <Badge className="bg-teal-500/20 text-teal-400 border-0 text-xs gap-1">
+                <Badge className="bg-[#c87060]/15 text-[#c87060] border-0 text-xs gap-1">
                   <ShieldCheck className="h-3 w-3" /> Verified
                 </Badge>
               )}
             </div>
           </div>
-          <div className="mt-5 flex gap-0 overflow-x-auto scrollbar-hide -mb-px">
+          <div className="mt-3 flex gap-0 overflow-x-auto scrollbar-hide -mb-px">
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id;
+              const shortLabels: Record<string, string> = {
+                overview: "Overview",
+                profile: "Profile",
+                enquiries: "Enquiries",
+                features: "Listing",
+                plan: "Plan",
+              };
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors relative ${isActive ? "border-b-teal-600 text-teal-500" : "border-b-transparent text-foreground/40"}`}
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-4 py-2 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 transition-colors relative ${isActive ? "border-b-[#c87060] text-[#c87060]" : "border-b-transparent text-foreground/40 hover:text-foreground/60"}`}
                 >
-                  <tab.icon className="h-4 w-4 sm:h-3.5 sm:w-3.5 shrink-0" />
+                  <tab.icon className="h-3.5 w-3.5 shrink-0" />
+                  <span className="sm:hidden">{shortLabels[tab.id]}</span>
                   <span className="hidden sm:inline">{tab.label}</span>
                   {tab.id === "enquiries" && newEnquiryCount > 0 && (
-                    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-red-500 text-white text-xs font-bold leading-none">
+                    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#c87060] text-white text-xs font-bold leading-none">
                       {newEnquiryCount}
                     </span>
                   )}
@@ -1202,7 +1297,7 @@ const ProviderDashboard = () => {
           </div>
         </div>
       </div>
-      <div className="container max-w-3xl px-4 sm:px-6 py-5 sm:py-6 animate-fade-in">{renderTab()}</div>
+      <div className="container max-w-3xl px-4 sm:px-6 py-5 sm:py-6 pb-24 sm:pb-8 animate-fade-in">{renderTab()}</div>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-y-auto">
@@ -1296,7 +1391,8 @@ const ProviderDashboard = () => {
                     key={need}
                     type="button"
                     onClick={() => toggleNeed(need)}
-                    className={`rounded-full px-3 py-1 text-xs border transition-colors ${editFields.needsSupported.includes(need) ? "bg-teal-500/20 border-teal-500/50 text-teal-400" : "border-border/60 text-muted-foreground"}`}
+                    className={`rounded-full px-3 py-1 text-xs border transition-colors ${editFields.needsSupported.includes(need) ? "border-[#c87060]/50 text-[#c87060]" : "border-border/60 text-muted-foreground"}`}
+                      style={editFields.needsSupported.includes(need) ? { background: "rgba(200,112,96,0.12)" } : {}}
                   >
                     {need}
                   </button>
@@ -1307,7 +1403,7 @@ const ProviderDashboard = () => {
               <Button variant="outline" className="flex-1" onClick={() => setEditOpen(false)}>
                 Cancel
               </Button>
-              <Button className="flex-1 bg-teal-500 hover:bg-teal-400" onClick={handleSaveProfile}>
+              <Button style={{ background: "#c87060" }} className="flex-1 hover:opacity-90 text-white border-0" onClick={handleSaveProfile}>
                 Save Profile
               </Button>
             </div>
@@ -1452,7 +1548,7 @@ function renderSectionContent(
           {(profile.credentials ?? []).map((c: string) => (
             <div key={c} className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-teal-500" />
+                <CheckCircle className="h-4 w-4" style={{ color: "#c87060" }} />
                 {c}
               </div>
               <Button
@@ -1472,7 +1568,7 @@ function renderSectionContent(
             <Input placeholder="e.g. HCPC Registered" value={newCert} onChange={(e) => setNewCert(e.target.value)} />
             <Button
               size="sm"
-              className="bg-teal-500 hover:bg-teal-400 shrink-0"
+              style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0 shrink-0"
               onClick={() => {
                 if (!newCert.trim()) return;
                 updateProvider(providerId, { credentials: [...(profile.credentials ?? []), newCert.trim()] });
@@ -1512,7 +1608,7 @@ function renderSectionContent(
         <div className="space-y-2">
           {(profile.timetable ?? []).map((t: any, i: number) => (
             <div key={i} className="flex items-center gap-3 text-sm">
-              <Clock className="h-4 w-4 text-teal-500 shrink-0" />
+              <Clock className="h-4 w-4 shrink-0" style={{ color: "#c87060" }} />
               <span className="font-medium w-24">{t.day}</span>
               <span className="text-muted-foreground">{t.time}</span>
               <span className="flex-1">{t.activity}</span>
@@ -1550,7 +1646,7 @@ function renderSectionContent(
           </div>
           <Button
             size="sm"
-            className="bg-teal-500 hover:bg-teal-400"
+            style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
             onClick={() => {
               if (!newTimetable.day || !newTimetable.time || !newTimetable.activity) return;
               updateProvider(providerId, { timetable: [...(profile.timetable ?? []), newTimetable] });
@@ -1592,7 +1688,7 @@ function renderSectionContent(
               htmlFor="galleryUpload"
               className="flex flex-col items-center justify-center w-full rounded-xl border border-dashed border-border/60 bg-muted/30 px-4 py-6 cursor-pointer hover:bg-muted/50 transition-colors text-center"
             >
-              <Image className="h-6 w-6 text-teal-500 mb-2" />
+              <Image className="h-6 w-6 mb-2" style={{ color: "#c87060" }} />
               <span className="text-sm font-medium text-foreground">Click to upload an image</span>
               <span className="text-xs text-muted-foreground mt-1">PNG or JPEG only · Max 2MB</span>
               <input
@@ -1648,7 +1744,7 @@ function renderSectionContent(
             />
             <Button
               size="sm"
-              className="bg-teal-500 hover:bg-teal-400"
+              style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
               onClick={() => {
                 if (!newCaseStudy.title || !newCaseStudy.description) return;
                 updateProvider(providerId, { caseStudies: [...(profile.caseStudies ?? []), newCaseStudy] });
@@ -1677,7 +1773,7 @@ function renderSectionContent(
           />
           <Button
             size="sm"
-            className="bg-teal-500 hover:bg-teal-400"
+            style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
             onClick={() => {
               updateProvider(providerId, { spotlightMessage: spotlightMsg });
               forceUpdate((n: number) => n + 1);
@@ -1695,7 +1791,7 @@ function renderSectionContent(
           <Input placeholder="https://yourstore.co.uk" value={storeUrl} onChange={(e) => setStoreUrl(e.target.value)} />
           <Button
             size="sm"
-            className="bg-teal-500 hover:bg-teal-400"
+            style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
             onClick={() => {
               updateProvider(providerId, { storeUrl });
               forceUpdate((n: number) => n + 1);
@@ -1717,7 +1813,7 @@ function renderSectionContent(
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <span className="font-medium text-sm">{p.name}</span>
-                    <span className="text-teal-500 ml-2 text-sm">{p.price}</span>
+                    <span className="ml-2 text-sm" style={{ color: "#c87060" }}>{p.price}</span>
                   </div>
                   <Button
                     size="sm"
@@ -1754,7 +1850,7 @@ function renderSectionContent(
                       htmlFor={`product-img-${i}`}
                       className="flex items-center gap-2 cursor-pointer rounded-lg border border-dashed border-border/60 bg-muted/30 px-3 py-2 hover:bg-muted/50 transition-colors"
                     >
-                      <Upload className="h-3.5 w-3.5 text-teal-500 shrink-0" />
+                      <Upload className="h-3.5 w-3.5 shrink-0" style={{ color: "#c87060" }} />
                       <span className="text-xs text-muted-foreground">
                         {hasImage ? "Change image" : "Add image"} · PNG/JPEG · Max 1MB
                       </span>
@@ -1820,7 +1916,7 @@ function renderSectionContent(
                   htmlFor="new-product-img"
                   className="flex items-center gap-2 cursor-pointer rounded-lg border border-dashed border-border/60 bg-muted/30 px-3 py-2 hover:bg-muted/50 transition-colors flex-1"
                 >
-                  <Upload className="h-3.5 w-3.5 text-teal-500 shrink-0" />
+                  <Upload className="h-3.5 w-3.5 shrink-0" style={{ color: "#c87060" }} />
                   <span className="text-xs text-muted-foreground">
                     {newProduct.image && newProduct.image !== "/placeholder.svg" ? "Change image" : "Add product image"}{" "}
                     · PNG/JPEG · Max 1MB
@@ -1853,7 +1949,7 @@ function renderSectionContent(
             </div>
             <Button
               size="sm"
-              className="bg-teal-500 hover:bg-teal-400"
+              style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
               onClick={() => {
                 if (!newProduct.name || !newProduct.price) return;
                 updateProvider(providerId, { products: [...(profile.products ?? []), { ...newProduct }] });
@@ -1882,7 +1978,7 @@ function renderSectionContent(
               <div className="flex gap-4">
                 <span className="font-medium">{s.name}</span>
                 <span className="text-muted-foreground">{s.duration}</span>
-                <span className="text-teal-500">{s.price}</span>
+                <span style={{ color: "#c87060" }}>{s.price}</span>
               </div>
               <Button
                 size="sm"
@@ -1918,7 +2014,7 @@ function renderSectionContent(
           </div>
           <Button
             size="sm"
-            className="bg-teal-500 hover:bg-teal-400"
+            style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
             onClick={() => {
               if (!newSessionType.name || !newSessionType.duration || !newSessionType.price) return;
               updateProvider(providerId, { sessionTypes: [...(profile.sessionTypes ?? []), newSessionType] });
@@ -1943,7 +2039,8 @@ function renderSectionContent(
               {profile.availabilityDates.map((d: string, i: number) => (
                 <div
                   key={i}
-                  className="flex items-center gap-1 rounded-full border border-teal-500/40 bg-teal-500/10 px-3 py-1 text-xs text-teal-400"
+                  className="flex items-center gap-1 rounded-full border px-3 py-1 text-xs"
+                  style={{ borderColor: "rgba(200,112,96,0.4)", background: "rgba(200,112,96,0.08)", color: "#c87060" }}
                 >
                   {new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                   <button
@@ -1970,7 +2067,7 @@ function renderSectionContent(
             />
             <Button
               size="sm"
-              className="bg-teal-500 hover:bg-teal-400"
+              style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
               disabled={!newAvailDate || (profile.availabilityDates ?? []).includes(newAvailDate)}
               onClick={() => {
                 updateProvider(providerId, {
@@ -2037,7 +2134,7 @@ function renderSectionContent(
           </div>
           <Button
             size="sm"
-            className="bg-teal-500 hover:bg-teal-400"
+            style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
             onClick={() => {
               if (!newCapacity.session || !newCapacity.capacity || !newCapacity.spotsLeft) return;
               updateProvider(providerId, { sessionCapacity: [...(profile.sessionCapacity ?? []), newCapacity] });
@@ -2093,7 +2190,7 @@ function renderSectionContent(
           </div>
           <Button
             size="sm"
-            className="bg-teal-500 hover:bg-teal-400"
+            style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
             onClick={() => {
               if (!newTerm.term || !newTerm.details) return;
               updateProvider(providerId, { termProgramme: [...(profile.termProgramme ?? []), newTerm] });
@@ -2132,7 +2229,7 @@ function renderSectionContent(
                       href={o.rsvpLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-teal-400 text-xs underline"
+                      className="text-xs underline" style={{ color: "#c87060" }}
                     >
                       RSVP Link
                     </a>
@@ -2181,7 +2278,7 @@ function renderSectionContent(
           </div>
           <Button
             size="sm"
-            className="bg-teal-500 hover:bg-teal-400"
+            style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
             onClick={() => {
               if (!newOpenDay.title || !newOpenDay.date) return;
               updateProvider(providerId, { openDays: [...(profile.openDays ?? []), newOpenDay] });
@@ -2209,7 +2306,7 @@ function renderSectionContent(
           />
           <Button
             size="sm"
-            className="bg-teal-500 hover:bg-teal-400"
+            style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
             onClick={() => {
               updateProvider(providerId, { ehcpAdmissionsInfo: ehcpAdmissionsText });
               forceUpdate((n: number) => n + 1);
@@ -2232,7 +2329,7 @@ function renderSectionContent(
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="font-medium">{s.name}</p>
-                  <p className="text-xs text-teal-400 mt-0.5">{s.role}</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#c87060" }}>{s.role}</p>
                   <p className="text-muted-foreground mt-1 leading-relaxed">{s.bio}</p>
                 </div>
                 <Button
@@ -2273,7 +2370,7 @@ function renderSectionContent(
           </div>
           <Button
             size="sm"
-            className="bg-teal-500 hover:bg-teal-400"
+            style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
             onClick={() => {
               if (!newStaff.name || !newStaff.role) return;
               updateProvider(providerId, { staffProfiles: [...(profile.staffProfiles ?? []), newStaff] });
@@ -2298,7 +2395,8 @@ function renderSectionContent(
                   <div className="flex items-center gap-2">
                     <p className="font-medium">{ev.title}</p>
                     <span
-                      className={`text-xs px-2 py-0.5 rounded-full border ${ev.type === "online" ? "border-teal-500/40 text-teal-400" : "border-orange-400/40 text-orange-400"}`}
+                      className={`text-xs px-2 py-0.5 rounded-full border`}
+                      style={ev.type === "online" ? { borderColor: "rgba(200,112,96,0.4)", color: "#c87060" } : { borderColor: "rgba(200,112,96,0.3)", color: "#d4805a" }}
                     >
                       {ev.type}
                     </span>
@@ -2353,7 +2451,8 @@ function renderSectionContent(
               <button
                 type="button"
                 onClick={() => setNewEvent((ev: any) => ({ ...ev, type: "online" }))}
-                className={`rounded-full px-3 py-1 text-xs border transition-colors ${newEvent.type === "online" ? "bg-teal-500/15 border-teal-500/50 text-teal-400" : "border-border/60 text-muted-foreground"}`}
+                className={`rounded-full px-3 py-1 text-xs border transition-colors ${newEvent.type === "online" ? "border-border/60" : "border-border/60 text-muted-foreground"}`}
+                style={newEvent.type === "online" ? { background: "rgba(200,112,96,0.12)", borderColor: "rgba(200,112,96,0.4)", color: "#c87060" } : {}}
               >
                 Online
               </button>
@@ -2367,7 +2466,7 @@ function renderSectionContent(
           </div>
           <Button
             size="sm"
-            className="bg-teal-500 hover:bg-teal-400"
+            style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
             onClick={() => {
               if (!newEvent.title || !newEvent.date) return;
               updateProvider(providerId, { events: [...(profile.events ?? []), newEvent] });
@@ -2395,7 +2494,7 @@ function renderSectionContent(
           />
           <Button
             size="sm"
-            className="bg-teal-500 hover:bg-teal-400"
+            style={{ background: "#c87060" }} className="hover:opacity-90 text-white border-0"
             onClick={() => {
               updateProvider(providerId, { volunteerInfo: volunteerText });
               forceUpdate((n: number) => n + 1);
