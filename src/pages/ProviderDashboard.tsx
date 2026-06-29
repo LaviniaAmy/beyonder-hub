@@ -727,7 +727,7 @@ const ProviderDashboard = () => {
           },
         ];
 
-        // Priority strip items
+        // Priority strip items — peach = action needed
         const priorityItems: { icon: React.ReactNode; text: string; action: string; tab: string }[] = [];
         if (newEnquiryCount > 0) {
           priorityItems.push({
@@ -753,6 +753,8 @@ const ProviderDashboard = () => {
             tab: "features",
           });
         }
+        // Soft nudge — profile 80–99%, no urgent actions
+        const showSoftNudge = priorityItems.length === 0 && completionPct >= 80 && completionPct < 100;
 
         return (
           <div className="space-y-5">
@@ -763,15 +765,27 @@ const ProviderDashboard = () => {
                   <button
                     key={i}
                     onClick={() => setActiveTab(item.tab)}
-                    className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-all hover:opacity-90"
-                    style={{ background: "rgba(200,112,96,0.08)", border: "1px solid rgba(200,112,96,0.2)" }}
+                    className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-all hover:brightness-95"
+                    style={{ background: "#FDE8E3", border: "1px solid #c87060" }}
                   >
                     <span style={{ color: "#c87060" }}>{item.icon}</span>
-                    <p className="flex-1 text-xs text-foreground/80 leading-snug">{item.text}</p>
-                    <span className="text-xs font-semibold shrink-0" style={{ color: "#c87060" }}>{item.action} →</span>
+                    <p className="flex-1 text-xs leading-snug font-medium" style={{ color: "#a0503e" }}>{item.text}</p>
+                    <span className="text-xs font-bold shrink-0" style={{ color: "#c87060" }}>{item.action} →</span>
                   </button>
                 ))}
               </div>
+            ) : showSoftNudge ? (
+              <button
+                onClick={() => setActiveTab("profile")}
+                className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-all hover:brightness-95"
+                style={{ background: "rgba(30,27,58,0.05)", border: "1px solid #2B4C7E" }}
+              >
+                <Building2 className="h-3.5 w-3.5 shrink-0" style={{ color: "#2B4C7E" }} />
+                <p className="flex-1 text-xs font-medium leading-snug" style={{ color: "#2B4C7E" }}>
+                  Looking good — a few optional fields remain to complete your profile
+                </p>
+                <span className="text-xs font-bold shrink-0" style={{ color: "#2B4C7E" }}>Finish →</span>
+              </button>
             ) : (
               <div className="flex items-center gap-2.5 rounded-xl px-4 py-3" style={{ background: "rgba(74,222,128,0.08)", border: "1px solid rgba(74,222,128,0.2)" }}>
                 <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0" />
