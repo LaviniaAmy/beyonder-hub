@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   CheckCircle,
@@ -194,6 +194,15 @@ const ProviderDashboard = () => {
     type: "online" | "in-person";
     description: string;
   }>({ title: "", date: "", type: "in-person", description: "" });
+  const [expandMissing, setExpandMissing] = useState(false);
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set());
+  const toggleSection = useCallback((key: string) => {
+    setOpenSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  }, []);
 
   const profile =
     storeProfile ??
@@ -691,7 +700,7 @@ const ProviderDashboard = () => {
           {
             label: "Enquiries",
             value: providerEnquiries.length.toString(),
-            sub: newEnquiryCount > 0 ? `${newEnquiryCount} new` : "none new",
+            sub: newEnquiryCount > 0 ? `${newEnquiryCount} awaiting reply` : providerEnquiries.length > 0 ? "all replied" : "none yet",
             accent: "#c87060",
             tab: "enquiries",
           },
@@ -718,8 +727,58 @@ const ProviderDashboard = () => {
           },
         ];
 
+        // Priority strip items
+        const priorityItems: { icon: React.ReactNode; text: string; action: string; tab: string }[] = [];
+        if (newEnquiryCount > 0) {
+          priorityItems.push({
+            icon: <MessageSquare className="h-3.5 w-3.5 shrink-0" />,
+            text: `${newEnquiryCount} enquir${newEnquiryCount !== 1 ? "ies" : "y"} awaiting your reply`,
+            action: "Reply now",
+            tab: "enquiries",
+          });
+        }
+        if (completionPct < 80) {
+          priorityItems.push({
+            icon: <Building2 className="h-3.5 w-3.5 shrink-0" />,
+            text: `Profile is ${completionPct}% complete — add ${missingSuggestions[0]?.label.toLowerCase() ?? "missing fields"} to improve visibility`,
+            action: "Complete profile",
+            tab: "profile",
+          });
+        }
+        if (profile.availabilityStatus === "closed") {
+          priorityItems.push({
+            icon: <Clock className="h-3.5 w-3.5 shrink-0" />,
+            text: "Your listing is set to Closed — families cannot enquire",
+            action: "Update",
+            tab: "features",
+          });
+        }
+
         return (
           <div className="space-y-5">
+            {/* Priority strip */}
+            {priorityItems.length > 0 ? (
+              <div className="space-y-2">
+                {priorityItems.map((item, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveTab(item.tab)}
+                    className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-all hover:opacity-90"
+                    style={{ background: "rgba(200,112,96,0.08)", border: "1px solid rgba(200,112,96,0.2)" }}
+                  >
+                    <span style={{ color: "#c87060" }}>{item.icon}</span>
+                    <p className="flex-1 text-xs text-foreground/80 leading-snug">{item.text}</p>
+                    <span className="text-xs font-semibold shrink-0" style={{ color: "#c87060" }}>{item.action} →</span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2.5 rounded-xl px-4 py-3" style={{ background: "rgba(74,222,128,0.08)", border: "1px solid rgba(74,222,128,0.2)" }}>
+                <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0" />
+                <p className="text-xs text-emerald-600 font-medium">All caught up — nothing needs your attention right now</p>
+              </div>
+            )}
+
             {/* Stat cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {overviewStats.map((stat) => (
@@ -752,28 +811,41 @@ const ProviderDashboard = () => {
                   style={{ width: `${completionPct}%`, background: completionPct >= 80 ? "#4ade80" : "#c87060" }}
                 />
               </div>
-              {missingSuggestions.length > 0 && (
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1.5">Suggested next steps:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {missingSuggestions.map((f) => (
-                      <button
-                        key={f.key}
-                        onClick={() => setActiveTab(["website", "description", "location", "coverageArea", "ageRange", "deliveryFormat", "needsSupported"].includes(f.key) ? "profile" : "features")}
-                        className="flex items-center gap-1 rounded-full border border-[#c87060]/30 bg-[#c87060]/8 px-2.5 py-1 text-xs text-[#c87060] hover:bg-[#c87060]/15 transition-colors"
-                        style={{ backgroundColor: "rgba(200,112,96,0.06)" }}
-                      >
-                        + Add {f.label}
-                      </button>
-                    ))}
+              {(() => {
+                const allMissing = completionFields.filter((f) => !f.done);
+                if (allMissing.length === 0) return (
+                  <p className="text-xs text-emerald-400 flex items-center gap-1">
+                    <CheckCircle className="h-3.5 w-3.5" /> Profile is complete
+                  </p>
+                );
+                const profileKeys = ["website", "description", "location", "coverageArea", "ageRange", "deliveryFormat", "needsSupported"];
+                const shown = expandMissing ? allMissing : allMissing.slice(0, 3);
+                return (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1.5">Missing fields:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {shown.map((f) => (
+                        <button
+                          key={f.key}
+                          onClick={() => setActiveTab(profileKeys.includes(f.key) ? "profile" : "features")}
+                          className="flex items-center gap-1 rounded-full border border-[#c87060]/30 px-2.5 py-1 text-xs text-[#c87060] hover:opacity-80 transition-opacity"
+                          style={{ backgroundColor: "rgba(200,112,96,0.06)" }}
+                        >
+                          + Add {f.label}
+                        </button>
+                      ))}
+                      {allMissing.length > 3 && (
+                        <button
+                          onClick={() => setExpandMissing((v) => !v)}
+                          className="rounded-full border border-border/50 px-2.5 py-1 text-xs text-muted-foreground hover:border-[#c87060]/30 transition-colors"
+                        >
+                          {expandMissing ? "Show less" : `+${allMissing.length - 3} more`}
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
-              {missingSuggestions.length === 0 && (
-                <p className="text-xs text-emerald-400 flex items-center gap-1">
-                  <CheckCircle className="h-3.5 w-3.5" /> Profile is complete
-                </p>
-              )}
+                );
+              })()}
             </div>
 
             {/* Quick actions */}
@@ -979,11 +1051,13 @@ const ProviderDashboard = () => {
                   <h2 className="text-sm font-semibold text-foreground">Inbox</h2>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {providerEnquiries.length} conversation{providerEnquiries.length !== 1 ? "s" : ""}
-                    {newEnquiryCount > 0 && (
+                    {newEnquiryCount > 0 ? (
                       <span className="ml-1.5 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: "rgba(200,112,96,0.12)", color: "#c87060" }}>
-                        {newEnquiryCount} new
+                        {newEnquiryCount} awaiting reply
                       </span>
-                    )}
+                    ) : providerEnquiries.length > 0 ? (
+                      <span className="ml-1.5 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-500/10 text-emerald-500">all replied</span>
+                    ) : null}
                   </p>
                 </div>
               </div>
@@ -999,79 +1073,71 @@ const ProviderDashboard = () => {
               .filter((s) => s.key !== "referral_notes" && s.key !== "enquiries")
               .map((section) => {
                 const enabled = isFeatureEnabled(section.featureKey);
+                const isOpen = openSections.has(section.key);
                 return (
                   <div
                     key={section.key}
-                    className={`rounded-xl border overflow-hidden transition-opacity bg-card ${!enabled ? "opacity-60 border-border" : "border-teal-500/20"}`}
+                    className={`rounded-xl border overflow-hidden transition-opacity bg-card ${!enabled ? "opacity-60 border-border" : "border-border/40"}`}
                   >
-                    <div
-                      className="flex items-center justify-between px-5 py-4 border-b border-border/30"
-                      style={{ borderLeft: `3px solid ${enabled ? "#c87060" : "rgba(255,255,255,0.06)"}` }}
+                    <button
+                      type="button"
+                      onClick={() => enabled && toggleSection(section.key)}
+                      className="w-full flex items-center justify-between px-5 py-4 text-left transition-colors hover:bg-muted/10"
+                      style={{ borderLeft: `3px solid ${enabled ? "#c87060" : "rgba(0,0,0,0.06)"}` }}
                     >
                       <div className="flex items-center gap-2.5">
                         <span style={{ color: "#c87060" }}>{getSectionIcon(section.key)}</span>
-                        <span className="font-semibold text-sm text-foreground">
-                          {section.label}
-                        </span>
+                        <span className="font-semibold text-sm text-foreground">{section.label}</span>
                         {!enabled && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
                       </div>
-                      {!enabled && (
-                        <Badge variant="outline" className="text-xs text-muted-foreground/60 border-border/40">
-                          Upgrade to unlock
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="px-5 py-4">
-                      {enabled ? (
-                        section.key === "enquiries" ? (
+                      <div className="flex items-center gap-2 shrink-0">
+                        {!enabled ? (
+                          <Badge variant="outline" className="text-xs text-muted-foreground/60 border-border/40">Upgrade to unlock</Badge>
+                        ) : (
+                          <ChevronRight className={`h-4 w-4 text-muted-foreground/40 transition-transform ${isOpen ? "rotate-90" : ""}`} />
+                        )}
+                      </div>
+                    </button>
+                    {isOpen && enabled && (
+                      <div className="px-5 py-4 border-t border-border/20">
+                        {section.key === "enquiries" ? (
                           renderEnquiriesPanel()
                         ) : (
-                          renderSectionContent(
-                            section.key,
-                            profile,
-                            moduleProfile,
-                            testimonials,
-                            handleAvailabilityChange,
-                            ctx,
-                          )
-                        )
-                      ) : (
-                        <p className="text-sm text-muted-foreground">
-                          Upgrade to access {section.label.toLowerCase()}.
-                        </p>
-                      )}
-                    </div>
+                          renderSectionContent(section.key, profile, moduleProfile, testimonials, handleAvailabilityChange, ctx)
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })}
 
             {isTherapist && (
               <div
-                className={`rounded-xl border overflow-hidden bg-card ${!isPaidPlan ? "opacity-60 border-border/50" : "border-border/50"}`}
+                className={`rounded-xl border overflow-hidden bg-card ${!isPaidPlan ? "opacity-60 border-border/50" : "border-border/40"}`}
               >
-                <div
-                  className="flex items-center justify-between px-5 py-4 border-b border-border/30"
-                  style={{ borderLeft: `3px solid ${isPaidPlan ? "#c87060" : "rgba(255,255,255,0.06)"}` }}
+                <button
+                  type="button"
+                  onClick={() => isPaidPlan && toggleSection("ehcp")}
+                  className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-muted/10 transition-colors"
+                  style={{ borderLeft: `3px solid ${isPaidPlan ? "#c87060" : "rgba(0,0,0,0.06)"}` }}
                 >
                   <div className="flex items-center gap-2.5">
                     <ShieldCheck className="h-4 w-4 text-orange-400" />
                     <span className="font-semibold text-sm text-foreground">EHCP Support</span>
                     {!isPaidPlan && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
                   </div>
-                  {!isPaidPlan ? (
-                    <Badge variant="outline" className="text-xs text-muted-foreground/60 border-border/40">
-                      Upgrade to unlock
-                    </Badge>
-                  ) : profile.ehcpSupport ? (
-                    <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs">Active</Badge>
-                  ) : (
-                    <Badge variant="outline" className="text-muted-foreground text-xs">
-                      Inactive
-                    </Badge>
-                  )}
-                </div>
-                <div className="px-5 py-4">
-                  {isPaidPlan ? (
+                  <div className="flex items-center gap-2 shrink-0">
+                    {!isPaidPlan ? (
+                      <Badge variant="outline" className="text-xs text-muted-foreground/60 border-border/40">Upgrade to unlock</Badge>
+                    ) : profile.ehcpSupport ? (
+                      <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs">Active</Badge>
+                    ) : (
+                      <ChevronRight className={`h-4 w-4 text-muted-foreground/40 transition-transform ${openSections.has("ehcp") ? "rotate-90" : ""}`} />
+                    )}
+                  </div>
+                </button>
+                {openSections.has("ehcp") && isPaidPlan && (
+                  <div className="px-5 py-4 border-t border-border/20">
                     <div className="space-y-4">
                       <p className="text-sm text-muted-foreground leading-relaxed">
                         Enabling EHCP support adds an orange badge to your profile, helping families with Education,
@@ -1101,37 +1167,35 @@ const ProviderDashboard = () => {
                         </button>
                       </div>
                     </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      Upgrade to founder or professional to display the EHCP Supported badge.
-                    </p>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             )}
 
             <div
-              className={`rounded-xl border overflow-hidden bg-card ${!hasReferralNotes ? "opacity-60 border-border/50" : "border-border/50"}`}
+              className={`rounded-xl border overflow-hidden bg-card ${!hasReferralNotes ? "opacity-60 border-border/50" : "border-border/40"}`}
             >
-              <div
-                className="flex items-center justify-between px-5 py-4 border-b border-border/30"
-                style={{ borderLeft: `3px solid ${hasReferralNotes ? "#c87060" : "rgba(255,255,255,0.06)"}` }}
+              <button
+                type="button"
+                onClick={() => hasReferralNotes && toggleSection("referral_notes")}
+                className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-muted/10 transition-colors"
+                style={{ borderLeft: `3px solid ${hasReferralNotes ? "#c87060" : "rgba(0,0,0,0.06)"}` }}
               >
                 <div className="flex items-center gap-2.5">
-                  <NotebookPen className="h-4 w-4 text-teal-500" />
+                  <NotebookPen className="h-4 w-4" style={{ color: "#c87060" }} />
                   <span className="font-semibold text-sm text-foreground">Referral Notes</span>
                   {!hasReferralNotes && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
                 </div>
-                {!hasReferralNotes ? (
-                  <Badge variant="outline" className="text-xs text-muted-foreground/60 border-border/40">
-                    Upgrade to unlock
-                  </Badge>
-                ) : (
-                  <Badge className="bg-emerald-500/15 text-emerald-400 border-0 text-xs">Active</Badge>
-                )}
-              </div>
-              <div className="px-5 py-4">
-                {hasReferralNotes ? (
+                <div className="flex items-center gap-2 shrink-0">
+                  {!hasReferralNotes ? (
+                    <Badge variant="outline" className="text-xs text-muted-foreground/60 border-border/40">Upgrade to unlock</Badge>
+                  ) : (
+                    <ChevronRight className={`h-4 w-4 text-muted-foreground/40 transition-transform ${openSections.has("referral_notes") ? "rotate-90" : ""}`} />
+                  )}
+                </div>
+              </button>
+              {openSections.has("referral_notes") && hasReferralNotes && (
+                <div className="px-5 py-4 border-t border-border/20">
                   <div className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
                     <p className="text-sm text-muted-foreground leading-relaxed">
@@ -1139,12 +1203,8 @@ const ProviderDashboard = () => {
                       these are never visible to families.
                     </p>
                   </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    Upgrade to founder or professional to add private referral notes to your enquiry threads.
-                  </p>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         );
