@@ -61,6 +61,16 @@ as a side-effect of another change.
 
 ---
 
+## Mock data field naming convention
+
+All new fields added to mock data, stores, or interfaces must use **snake_case** to match future Supabase column names (e.g. `business_name`, `short_description`, `delivery_format`).
+
+- Do **not** introduce new camelCase field names
+- Existing camelCase fields (e.g. `businessName`, `reviewCount`) will be migrated during the Supabase integration phase — do not rename them now as it would break the whole app
+- When in doubt, ask before adding a new field
+
+---
+
 ## Pending work — do not forget
 
 These items were agreed but not yet built. Raise them with the user at the start of
