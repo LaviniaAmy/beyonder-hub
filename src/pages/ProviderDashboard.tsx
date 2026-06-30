@@ -623,10 +623,25 @@ const ProviderDashboard = () => {
     }
 
     return providerEnquiries.length === 0 ? (
-      <div className="py-16 text-center rounded-xl border border-border/40 bg-card">
+      <div className="py-14 text-center rounded-xl border border-border/40 bg-card px-6">
         <MessageSquare className="h-8 w-8 text-muted-foreground/20 mx-auto mb-3" />
         <p className="text-sm font-medium text-foreground">No enquiries yet</p>
-        <p className="text-xs text-muted-foreground mt-1">When families message you, they'll appear here.</p>
+        <p className="text-xs text-muted-foreground mt-1 mb-5">Share your listing so families can find and contact you.</p>
+        <button
+          type="button"
+          onClick={() => {
+            const url = `${window.location.origin}/providers/${providerId}`;
+            navigator.clipboard.writeText(url).then(() => {
+              const btn = document.getElementById("copy-link-btn");
+              if (btn) { btn.textContent = "Copied!"; setTimeout(() => { btn.textContent = "Copy listing link"; }, 2000); }
+            });
+          }}
+          id="copy-link-btn"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          style={{ background: "rgba(200,112,96,0.10)", color: "#c87060", border: "1px solid rgba(200,112,96,0.35)" }}
+        >
+          Copy listing link
+        </button>
       </div>
     ) : (
       <div className="rounded-xl border border-border/40 bg-card overflow-hidden divide-y divide-border/25">
@@ -1177,7 +1192,7 @@ const ProviderDashboard = () => {
                 >
                   <div className="flex items-center gap-2.5">
                     <ShieldCheck className="h-4 w-4" style={{ color: "#1E1B3A" }} />
-                    <span className="font-semibold text-sm text-foreground">EHCP Support</span>
+                    <span className="font-semibold text-sm" style={{ color: "#c87060" }}>EHCP Support</span>
                     {!isPaidPlan && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -1240,7 +1255,7 @@ const ProviderDashboard = () => {
               >
                 <div className="flex items-center gap-2.5">
                   <NotebookPen className="h-4 w-4" style={{ color: "#1E1B3A" }} />
-                  <span className="font-semibold text-sm text-foreground">Referral Notes</span>
+                  <span className="font-semibold text-sm" style={{ color: "#c87060" }}>Referral Notes</span>
                   {!hasReferralNotes && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
