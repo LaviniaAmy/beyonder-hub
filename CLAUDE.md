@@ -61,6 +61,20 @@ as a side-effect of another change.
 
 ---
 
+## Supabase schema coordination
+
+A colleague is integrating Supabase in a parallel branch. **Before coding any change that requires a new database field, always flag it to the user** so it can be coordinated with the schema design. Do not proceed with mock-only stubs for new fields without explicit confirmation.
+
+### Fields already identified as needed in the Supabase schema
+
+| Field | Table | Type | Notes |
+|---|---|---|---|
+| `welcomed_at` | `providers` | `timestamptz` (nullable) | Set when provider dismisses the first-visit welcome banner. Currently stored in localStorage keyed to `beyonder_welcomed_${providerId}` — must move to DB so dismissal is account-bound, not browser-bound. |
+
+When new fields are identified during development, add them to this table before or immediately after flagging to the user.
+
+---
+
 ## Pending work — do not forget
 
 These items were agreed but not yet built. Raise them with the user at the start of
