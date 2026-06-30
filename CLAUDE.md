@@ -68,6 +68,7 @@ All new fields added to mock data, stores, or interfaces must use **snake_case**
 - Do **not** introduce new camelCase field names
 - Existing camelCase fields (e.g. `businessName`, `reviewCount`) will be migrated during the Supabase integration phase — do not rename them now as it would break the whole app
 - When in doubt, ask before adding a new field
+- Do **not** duplicate field names across stores or interfaces. If a field already exists in another store or data file, reference that store rather than re-defining the field. Duplicate fields with different names for the same data will create extra Supabase columns and complicate the integration.
 
 ---
 
