@@ -26,6 +26,7 @@ import CommunityPage from "./pages/CommunityPage";
 import NotFound from "./pages/NotFound";
 import TestGuidePage from "./pages/TestGuidePage";
 import ClaimInvitePage from "./pages/ClaimInvitePage";
+import StartPage from "./pages/StartPage";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
           <Layout>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/start" element={<StartPage />} />
               <Route path="/explore" element={<ExploreServices />} />
               <Route path="/providers" element={<ProviderDirectory />} />
               <Route path="/provider/:id" element={<ProviderPage />} />

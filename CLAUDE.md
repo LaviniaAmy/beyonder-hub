@@ -7,31 +7,28 @@ unless the user explicitly asks to edit a specific named element.
 
 ### Files
 - `src/components/BirdCanvas.tsx` — **fully locked**
-- `src/pages/Index.tsx` — the hero section and ecosystem intro (detailed below) are **locked**
+- `src/pages/Index.tsx` — the ecosystem intro (detailed below) is **locked**
 
 ---
 
-### Locked: Hero section (`src/pages/Index.tsx`)
+### Homepage structure (changed with the hero redesign — reference: branch `snapshot/pre-hero-redesign`)
 
-Everything inside the `<section className="min-h-[345px] md:h-[500px]" ...>` block, including:
-
-- **Sky gradient background** — canvas colours, stops, overlay
-- **Legibility overlay** — the semi-transparent dark gradient over the canvas
-- **Bird murmuration** (`<BirdCanvas />`) — size, speed, flutter, count, positions
-- **Logo** — "Beyonder" wordmark + terra dot, font, size, position (desktop `top: 69` + mobile `pt-14`)
-- **Horizon line** — width, opacity, position (`top: 180`)
-- **Tagline** — "One place for everything SEND", font size, colour, position (`top: 196` desktop / above search card mobile)
-- **Search bar** — desktop two-field bar (`top: 245`) and mobile glass card, all styling and layout
-- **Hint chips** — desktop (`top: 307`) and mobile chips, all labels and styling
-- **Desktop 3-step strip** — absolute at bottom of hero, all three steps, icons, text, sizing
-- **Mobile 3-step strip** — the `md:hidden grid grid-cols-3` block immediately below the hero `</section>`
-- **Hero section height** — `min-h-[345px] md:h-[500px]`
+- **Mobile (< md):** `/` renders `<BeyonderApp />` (`src/components/beyonder-app/`) — a single-screen,
+  no-scroll app (home → questions → consult / region map → results → enquiry → sent, plus profile).
+  The site header, footer and bottom nav are hidden on `/` on mobile (see `Layout.tsx`); the app shows its
+  own bottom bar only on the Consult, Find and Profile screens. The murmuration is `<BirdCanvas />`.
+  Its behaviour must match the prototype the user supplied — do not change the functionality.
+- **Desktop (md+):** hero keeps `<BirdCanvas />`, the legibility overlay, section height and the 3-step strip.
+  The old wordmark, tagline, search bar and hint chips were replaced by the headline, the
+  "Live consultation" / "Find local support" buttons (→ `/start`) and the "How Beyonder works" sheet.
+  All sections below the hero are unchanged.
+- **`/start`:** the same app screens framed inside the normal page layout (desktop destination).
 
 ---
 
-### Locked: Ecosystem intro (`src/pages/Index.tsx`)
+### Locked: Ecosystem intro (`src/pages/Index.tsx`, desktop)
 
-The section immediately after the mobile steps strip:
+The section immediately after the hero:
 
 - **"The Beyonder Ecosystem"** eyebrow label
 - **"Everything your family needs, together"** heading
@@ -54,14 +51,23 @@ implement for both breakpoints.
 
 ### Rule
 
-When making any change to `src/pages/Index.tsx` or `src/components/BirdCanvas.tsx`,
-only touch the specific element the user has asked about.
+When making any change to `src/pages/Index.tsx`, `src/components/BirdCanvas.tsx` or
+`src/components/beyonder-app/`, only touch the specific element the user has asked about.
 Do not adjust spacing, positioning, sizing, colours, or structure of any locked element
 as a side-effect of another change.
 
 ---
 
 ## Pending work — do not forget
+
+### Beyonder app (mobile homepage / `/start`) — follow-ups agreed but not built
+
+- Specialists, time slots and booking are **sample data** (`beyonder-app/data.ts`); "Request booking" and
+  "Send enquiry" only show the confirmation screen — nothing is saved or sent yet.
+- Find results use the prototype's **sample providers**, not the real provider listings / enquiry store.
+- "Use my location" picks South East / Southampton (prototype behaviour) — no real geolocation yet.
+- The map has 12 regions (incl. Yorkshire and the Humber, East of England); `mockData.ts` `regions` has 10 +
+  "Online Only". Reconcile when the app is wired to real providers.
 
 These items were agreed but not yet built. Raise them with the user at the start of
 the relevant phase so they aren't lost.
