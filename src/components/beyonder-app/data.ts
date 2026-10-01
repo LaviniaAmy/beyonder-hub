@@ -1,5 +1,5 @@
-// Content and sample data for the Beyonder app flow (mobile home + /start).
-// Specialists and providers here are samples, as in the prototype.
+// Content and data for the Beyonder app flow (mobile home + /start).
+// Specialists are samples, as in the prototype. Local support uses the real directory (providerStore).
 import TherapistsIcon from "@/assets/icons/Therapists_Icon.svg";
 import ClubsIcon from "@/assets/icons/Clubs_Icon.svg";
 import ShoppingIcon from "@/assets/icons/Shopping_Icon.svg";
@@ -28,10 +28,9 @@ export const Q: Record<QKey, Question> = {
 export type Path = "consult" | "find";
 export const FLOW: Record<Path, QKey[]> = { consult: ["age", "needs", "help"], find: ["age", "needs"] };
 
-// [full name, short map label]
+// England regions on the map: [full name, short map label]
 export const REGIONS: Record<string, [string, string]> = {
-  sc: ["Scotland", "Scotland"], ni: ["Northern Ireland", "N. Ireland"], nw: ["North West", "North West"],
-  ne: ["North East", "North East"], yh: ["Yorkshire and the Humber", "Yorkshire"], wa: ["Wales", "Wales"],
+  nw: ["North West", "North West"], ne: ["North East", "North East"], yh: ["Yorkshire and the Humber", "Yorkshire"],
   wm: ["West Midlands", "W. Midlands"], em: ["East Midlands", "E. Midlands"], ee: ["East of England", "East"],
   sw: ["South West", "South West"], lo: ["London", "London"], se: ["South East", "South East"],
 };
@@ -61,13 +60,24 @@ export const CATS: Record<string, string> = {
   all: "All", therapy: "Therapy", clubs: "Clubs and activities", education: "Education", products: "Products", charities: "Charities",
 };
 
-export interface SampleProvider { id: string; first: string; name: string; cat: string; type: string; where: string; about: string; tags: string[] }
-export const PROVS: SampleProvider[] = [
-  { id: "hp", first: "Harbour Play OT", name: "Harbour Play OT", cat: "therapy", type: "Occupational therapy", where: "Southampton, 1.4 miles", about: "Sensory integration room, plus school and home visits.", tags: ["sensory", "movement", "learning"] },
-  { id: "tw", first: "Tidewell Sensory Swim", name: "Tidewell Sensory Swim", cat: "clubs", type: "Inclusive club", where: "Southampton, 2.1 miles", about: "Quiet-hour swimming lessons in small groups, with a private changing space.", tags: ["sensory", "movement"] },
-  { id: "lv", first: "Little Voices", name: "Little Voices Speech Clinic", cat: "therapy", type: "Speech and language therapy", where: "Eastleigh, 4.3 miles", about: "Clinic sessions and home visits. Short waiting list for under fives.", tags: ["speech", "social"] },
-  { id: "fs", first: "Forest Steps", name: "Forest Steps", cat: "clubs", type: "Outdoor club", where: "New Forest, 9.8 miles", about: "Saturday woodland sessions with one adult for every three children.", tags: ["social", "behaviour"] },
-  { id: "mt", first: "Meridian Tutoring", name: "Meridian Tutoring", cat: "education", type: "Specialist tutoring", where: "Winchester and online", about: "Dyslexia and dyscalculia support from qualified teachers.", tags: ["learning", "school"] },
-  { id: "cf", first: "Compass Family Advice", name: "Compass Family Advice", cat: "charities", type: "Charity", where: "Across Hampshire", about: "Free, independent advice on EHCPs and school placements.", tags: ["school", "unsure"] },
-  { id: "sk", first: "Softkit Sensory", name: "Softkit Sensory", cat: "products", type: "Products and equipment", where: "Delivers across the UK", about: "Weighted blankets, ear defenders and chewables, with a trial period.", tags: ["sensory"] },
-];
+// App category keys → directory provider types (see mockData categories).
+export const CAT_TYPE: Record<string, string> = {
+  therapy: "therapist", clubs: "activity", products: "product", education: "education", charities: "charity",
+};
+
+// Map region keys → directory region names (mockData `regions`).
+export const REGION_DIRECTORY_NAME: Record<string, string> = {
+  ne: "North East England", nw: "North West England", yh: "Yorkshire and the Humber", em: "East Midlands",
+  wm: "West Midlands", ee: "East of England", lo: "London", se: "South East England", sw: "South West England",
+};
+
+// Words in a provider's needs, tags and descriptions that match each answer — used to put best matches first.
+export const NEED_KEYWORDS: Record<string, string[]> = {
+  speech: ["speech", "language", "communication"],
+  sensory: ["sensory"],
+  behaviour: ["behaviour", "emotion", "anxiety", "adhd"],
+  learning: ["learning", "dyslexia", "dyscalculia"],
+  social: ["social", "autism", "friend"],
+  movement: ["movement", "dyspraxia", "physical", "motor", "coordination"],
+  school: ["ehcp", "school", "education"],
+};

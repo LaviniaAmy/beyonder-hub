@@ -1,24 +1,18 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
 import FooterImage from "@/assets/footer/footer-image.svg";
-import NavHome      from "@/assets/icons/nav/nav-home.svg";
-import NavSearch    from "@/assets/icons/nav/nav-search.svg";
-import NavCommunity from "@/assets/icons/nav/nav-community.svg";
-import NavConsult   from "@/assets/icons/nav/nav-consult.svg";
-import NavProfile   from "@/assets/icons/nav/nav-profile.svg";
 import { useIsMobileLayout } from "@/hooks/useIsMobileLayout";
+import AppNav, { type Tab } from "@/components/beyonder-app/AppNav";
+import MenuSheet from "@/components/beyonder-app/MenuSheet";
+import AboutSheet from "@/components/beyonder-app/AboutSheet";
 
-// ── Mobile bottom-nav config ──────────────────────────────────────────────────
-const BOTTOM_NAV = [
-  { icon: NavHome,      label: "Home",      to: "/"              },
-  { icon: NavConsult,   label: "Consult",   to: "/?tab=consult"  },
-  { icon: NavSearch,    label: "Find",      to: "/explore"       },
-  { icon: NavCommunity, label: "Community", to: "/community"     },
-  { icon: NavProfile,   label: "Profile",   to: "__profile"      },
-] as const;
+// ── Mobile bottom bar (same as the homepage app) ──────────────────────────────
+const TAB_ROUTES: Record<Tab, string> = {
+  home: "/", consult: "/?tab=consult", find: "/?tab=find", community: "/community", profile: "/?tab=profile",
+};
 
 const C = {
   navy:       "#111827",
@@ -84,7 +78,10 @@ const navLinks = [
 ];
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const closeMenu  = useCallback(() => setMenuOpen(false), []);
+  const closeAbout = useCallback(() => setAboutOpen(false), []);
   const location  = useLocation();
   const navigate  = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
@@ -100,8 +97,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const handleLogout = () => {
     logout();
     navigate("/");
-    setMobileOpen(false);
   };
+
+  const activeTab: Tab | null =
+    location.pathname.startsWith("/community") ? "community" :
+    location.pathname === "/explore" || location.pathname.startsWith("/providers") || location.pathname.startsWith("/provider/") ? "find" :
+    null;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -223,127 +224,18 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           {/* Mobile hamburger */}
           <button
             className="md:hidden"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
             style={{ background: "transparent", border: "none", cursor: "pointer", color: "rgba(232,244,255,0.70)", padding: 4 }}
           >
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+            <Menu size={24} />
           </button>
         </div>
 
-        {/* Mobile menu */}
-        {mobileOpen && (
-          <div
-            className="md:hidden"
-            style={{
-              position:    "absolute",
-              top:         58,
-              left:        0,
-              right:       0,
-              background:  "rgba(8,12,24,0.98)",
-              borderTop:   "1px solid rgba(43,76,126,0.25)",
-              padding:     16,
-              zIndex:      200,
-            }}
-          >
-            <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setMobileOpen(false)}
-                  style={{
-                    padding:        "10px 12px",
-                    borderRadius:   8,
-                    fontSize:       "0.88rem",
-                    color:          location.pathname === link.to ? C.ice : "rgba(232,244,255,0.65)",
-                    textDecoration: "none",
-                  }}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
-                {isAuthenticated ? (
-                  <>
-                    <Link
-                      to={dashboardLink}
-                      onClick={() => setMobileOpen(false)}
-                      style={{
-                        padding:        "10px 12px",
-                        borderRadius:   8,
-                        fontSize:       "0.88rem",
-                        color:          "rgba(232,244,255,0.65)",
-                        textDecoration: "none",
-                        border:         "1px solid rgba(232,244,255,0.15)",
-                        textAlign:      "center",
-                      }}
-                    >
-                      Dashboard
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      style={{
-                        padding:     "10px 12px",
-                        borderRadius: 8,
-                        fontSize:    "0.88rem",
-                        color:       "rgba(255,245,238,0.65)",
-                        background:  "transparent",
-                        border:      "1px solid rgba(255,245,238,0.15)",
-                        cursor:      "pointer",
-                        fontFamily:  "'Nunito Sans', sans-serif",
-                        display:     "flex",
-                        alignItems:  "center",
-                        justifyContent: "center",
-                        gap:         8,
-                      }}
-                    >
-                      <LogOut size={14} /> Log Out
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      to="/login"
-                      onClick={() => setMobileOpen(false)}
-                      style={{
-                        padding:        "10px 12px",
-                        borderRadius:   8,
-                        fontSize:       "0.88rem",
-                        color:          "rgba(232,244,255,0.65)",
-                        textDecoration: "none",
-                        border:         "1px solid rgba(232,244,255,0.15)",
-                        textAlign:      "center",
-                      }}
-                    >
-                      Log in
-                    </Link>
-                    <Link
-                      to="/signup"
-                      onClick={() => setMobileOpen(false)}
-                      style={{
-                        padding:        "10px 12px",
-                        borderRadius:   8,
-                        fontSize:       "0.88rem",
-                        fontWeight:     600,
-                        color:          C.warmWhite,
-                        textDecoration: "none",
-                        background:     `linear-gradient(135deg, ${C.peachLight}, ${C.peach})`,
-                        textAlign:      "center",
-                      }}
-                    >
-                      Join now
-                    </Link>
-                  </>
-                )}
-              </div>
-            </nav>
-          </div>
-        )}
       </header>}
 
       <main
-        className={appHome ? "flex-1" : "flex-1 bg-background pb-[72px] md:pb-0"}
+        className={appHome ? "flex-1" : "flex-1 bg-background pb-[96px] md:pb-0"}
         style={{ paddingTop: appHome ? 0 : 58, background: appHome ? "#080C18" : "#F6F3EE" }}
       >
         {children}
@@ -357,65 +249,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
       <Footer />
 
-      {/* ── Mobile bottom navigation (md and above: hidden) ── */}
-      <nav
-        className="md:hidden flex"
-        style={{
-          position: "fixed",
-          bottom: 0, left: 0, right: 0,
-          zIndex: 200,
-          background: "rgba(255,255,255,0.65)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderTop: "1px solid rgba(255,255,255,0.55)",
-          borderRadius: "18px 18px 0 0",
-          padding: "6px 0 10px",
-          boxShadow: "0 -4px 24px rgba(0,0,0,0.10)",
-        }}
-      >
-        {BOTTOM_NAV.map((item) => {
-          const href = item.to === "__profile"
-            ? (isAuthenticated ? dashboardLink : "/login")
-            : item.to;
-
-          const active =
-            href === "/"
-              ? location.pathname === "/"
-              : href.startsWith("/?")
-                ? false
-                : href === "/explore"
-                ? location.pathname === "/explore" || location.pathname.startsWith("/providers")
-                : location.pathname.startsWith(href);
-
-          return (
-            <Link
-              key={item.label}
-              to={href}
-              style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 4,
-                textDecoration: "none",
-              }}
-            >
-              <img src={item.icon} alt={item.label} style={{ width: 29, height: 29, objectFit: "contain", opacity: active ? 1 : 0.70 }} />
-              <span
-                style={{
-                  fontSize: "0.57rem",
-                  color: active ? "#D98A6A" : "#7C7C8A",
-                  letterSpacing: "0.04em",
-                  fontWeight: active ? 600 : 400,
-                  fontFamily: "'Nunito Sans', sans-serif",
-                }}
-              >
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
-      </nav>
+      {/* ── Mobile bottom bar + menu — same components as the homepage app ── */}
+      {isMobile && (
+        <>
+          <AppNav fixed active={activeTab} onTab={(t) => navigate(TAB_ROUTES[t])} />
+          <MenuSheet fixed open={menuOpen} onClose={closeMenu}
+            onProfile={() => navigate(TAB_ROUTES.profile)} onAbout={() => setAboutOpen(true)} />
+          <AboutSheet fixed open={aboutOpen} onClose={closeAbout} />
+        </>
+      )}
       </>}
     </div>
   );
