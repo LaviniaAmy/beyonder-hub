@@ -12,7 +12,7 @@
   and the speech bubbles, and seeks every CSS animation (in-phone UI states) to the same time.
   render.mjs calls renderAt() frame by frame to make the GIF/MP4; opening the file in a browser plays it live.
 
-  The sky colours, starling silhouette and flock motion are copied from src/components/BirdCanvas.tsx
+  The sky colours and starling silhouette are copied from src/components/BirdCanvas.tsx
   (that file is locked and is not imported or changed). App colours/type follow beyonderApp.css.
 -->
 <link href="fonts/fonts.css" rel="stylesheet">
@@ -58,7 +58,7 @@
 
   /* ── Sky scenes (intro + outro) — the homepage hero sky ── */
   #sky { z-index: 3; }
-  .sky-bg { position: absolute; inset: -20px; transform-origin: 50% 30%;
+  .sky-bg { position: absolute; inset: 0;
     background:
       radial-gradient(ellipse 66% 40% at 50% 38%, rgba(80,160,220,.18) 0%, rgba(40,100,160,.08) 30%, rgba(20,60,120,0) 100%),
       linear-gradient(180deg, #0e152a 0%, #13244e 20%, #20447f 44%, #2f6ca2 66%, #72b3cf 88%, #72b3cf 100%); }
@@ -89,7 +89,6 @@
 
   /* ── Steps scene ── */
   #steps { z-index: 1; background: var(--cream); }
-  .wire { position: absolute; left: 0; top: 0; width: 600px; height: 200px; z-index: 8; pointer-events: none; }
   #cam { position: absolute; inset: 0; transform-origin: 0 0; z-index: 2; }
   .phone { position: absolute; left: 148px; top: 186px; width: 304px; height: 560px;
     border-radius: 44px; background: var(--ink); padding: 9px;
@@ -102,16 +101,19 @@
     background: radial-gradient(ellipse 70% 60% at 50% 62%, rgba(246,243,238,0) 55%, rgba(246,243,238,.85) 100%); }
 
   /* Speech bubbles + guide starling */
-  .bubble { position: absolute; left: 132px; right: 24px; top: 26px; z-index: 10; padding: 16px 22px 18px; border-radius: 22px; background: #fff;
-    box-shadow: 0 10px 30px rgba(27,26,53,.16), 0 1px 3px rgba(27,26,53,.08); transform-origin: 0% 90%; opacity: 0; }
-  .bubble::after { content: ""; position: absolute; left: -12px; bottom: 22px; width: 26px; height: 22px; background: #fff;
-    clip-path: polygon(100% 0, 0 70%, 100% 100%); }
+  .bubble { position: absolute; left: 92px; right: 24px; top: 26px; z-index: 10; padding: 16px 22px 18px; border-radius: 22px; background: #fff;
+    box-shadow: 0 10px 30px rgba(27,26,53,.16), 0 1px 3px rgba(27,26,53,.08); transform-origin: 0% 20%; opacity: 0; }
+  .bubble::after { content: ""; position: absolute; left: -12px; top: 18px; width: 26px; height: 22px; background: #fff;
+    clip-path: polygon(100% 0, 0 30%, 100% 100%); }
+  .avatar { position: absolute; left: 24px; top: 26px; width: 54px; height: 54px; border-radius: 50%; z-index: 11; opacity: 0;
+    background: var(--indigo); box-shadow: 0 6px 18px rgba(27,26,53,.22); display: grid; place-items: center; }
+  .avatar svg { width: 34px; height: 34px; transform: rotate(62deg); }
+  .avatar i { position: absolute; right: 2px; bottom: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--terra); border: 2px solid var(--cream); }
   .bubble .k { font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--terra-d); }
   .bubble .k em { font-style: normal; color: var(--muted); letter-spacing: .1em; }
-  .bubble .t { font-family: var(--head); font-size: 27px; line-height: 1.12; margin-top: 6px; min-height: 60px; }
+  .bubble .t { font-family: var(--head); font-size: 27px; line-height: 1.12; margin-top: 6px; }
   .bubble .t .ghost { color: transparent; }
   .bubble .caret { display: inline-block; width: 2px; height: 24px; background: var(--terra); vertical-align: -3px; margin-left: 2px; }
-  #perch { position: absolute; left: 34px; top: 92px; width: 84px; height: 62px; z-index: 11; transform-origin: 50% 100%; opacity: 0; }
 
   /* App pieces, scaled from the real app styles */
   .bar { display: flex; align-items: center; gap: 10px; padding: 40px 18px 14px; background: rgba(8,12,24,.97); color: #fff; }
@@ -342,24 +344,8 @@
     </div>
     <div class="vignette" id="vig"></div>
 
-    <!-- A wire for the starling to perch on -->
-    <svg class="wire" viewBox="0 0 600 200"><path d="M-10 150 Q 300 170 610 150" fill="none" stroke="#1B1A35" stroke-opacity=".55" stroke-width="1.6"/></svg>
 
-    <!-- The guide starling, perched (side profile, speckled like a real starling) -->
-    <svg id="perch" viewBox="0 0 84 62">
-      <g fill="#04080e">
-        <path d="M6 40 L20 33 C24 22 36 16 50 17 C54 10 62 8 68 12 C71 14 72 16 73 18 L83 20.5 L72.5 22.5 C72 30 66 38 56 41 L40 44 L22 46 Z"/>
-        <path d="M44 43 L42 54 M42 54 L38 56 M42 54 L45 56 M53 41 L54 54 M54 54 L50 56 M54 54 L57 56" stroke="#04080e" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-      </g>
-      <path d="M24 34 C32 27 44 25 54 28 C48 33 38 37 26 38 Z" fill="#1d2440"/>
-      <g fill="#E8E2D6" opacity=".7">
-        <circle cx="34" cy="26" r="1"/><circle cx="41" cy="23" r="1"/><circle cx="47" cy="27" r="1"/><circle cx="38" cy="31" r="1"/>
-        <circle cx="56" cy="22" r=".9"/><circle cx="60" cy="30" r=".9"/><circle cx="52" cy="35" r="1"/><circle cx="45" cy="38" r=".9"/><circle cx="30" cy="35" r=".9"/>
-      </g>
-      <circle cx="66" cy="15.5" r="1.7" fill="#F6F3EE"/>
-      <path d="M73 18 L83 20.5 L72.5 22.5 Z" fill="#E0B341"/>
-    </svg>
-
+    <div class="avatar" id="avatar"><svg viewBox="0 0 610 395"><path id="avpath" fill="#fff"/></svg><i></i></div>
     <div class="bubble" id="b1"><div class="k">Step 1 <em>of 4</em></div><div class="t" data-text="Choose when you’re available"></div></div>
     <div class="bubble" id="b2"><div class="k">Step 2 <em>of 4</em></div><div class="t" data-text="Set your consultation options"></div></div>
     <div class="bubble" id="b3"><div class="k">Step 3 <em>of 4</em></div><div class="t" data-text="Parents find you and book a time"></div></div>
@@ -369,7 +355,6 @@
   <!-- ═══ SKY SCENE (intro + outro) — the homepage hero sky ═══ -->
   <div class="layer" id="sky">
     <div class="sky-bg" id="skybg"></div>
-    <canvas class="full" id="back"></canvas>
     <div class="sky-shade"></div>
     <div class="logo"><span class="dot"><b id="ripple"></b><i id="dot"></i></span>Beyonder</div>
 
@@ -397,7 +382,7 @@
     </div>
   </div>
 
-  <!-- Birds in front of everything (front of flock, the lone starling, transitions, confetti, guide in flight) -->
+  <!-- The flying starling and the bird confetti, in front of everything -->
   <canvas class="full" id="front" style="z-index:20"></canvas>
 </div>
 
@@ -431,8 +416,9 @@ let seed = 7;
 const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
 const TAU = Math.PI * 2;
 
-// ── Starling silhouette + flock motion (from BirdCanvas.tsx) ─────
-const BIRD = new Path2D("M26.28,117.8c25.58,8.49,56.17,16.47,91.11,21.44,58.55,8.33,109.28,5.37,147.38,0-2.98-15.96-.87-27.27,1.79-34.84,2.13-6.06,5.07-11,4.91-18.76-.17-8.16-3.67-14.79-6.7-19.2,6.4,4.61,12.8,9.23,19.2,13.84,3.87-.3,10.52-.23,17.42,3.13,8.96,4.37,13.42,11.9,16.08,16.52,6.7,11.67,4.46,18.31,12.95,31.71,1.73,2.73,3.35,4.86,4.47,6.25,33.62.14,77.36-2.93,126.84-15.18,59.24-14.68,105.75-37.33,138-56.27-.13,13.98-2.12,35.95-12.95,59.4-15.34,33.2-40.66,50.28-90.66,83.07-65.12,42.71-92.35,42.87-102.27,42.43-17.73-.79-31.99-5.81-41.09-9.83-.3,6.7-.6,13.4-.89,20.1,16.52,12.8,33.05,25.61,49.57,38.41.03,5.69-.7,13.78-4.47,22.33-14.88,33.78-61.55,39.07-68.78,39.75-53.26,5.03-91.07-38.82-95.57-44.21,14.59-15.48,29.18-30.97,43.77-46.45-1.34-8.19-2.68-16.38-4.02-24.56-2.74,3.55-7.48,8.69-14.74,12.06-14.99,6.96-30.8,1.75-39.75-1.34-52.74-18.2-79.12-27.3-97.36-39.3-49.38-32.49-78.61-73.76-94.23-100.49Z");
+// ── Starling silhouette (from BirdCanvas.tsx) ─────
+const BIRD_D = "M26.28,117.8c25.58,8.49,56.17,16.47,91.11,21.44,58.55,8.33,109.28,5.37,147.38,0-2.98-15.96-.87-27.27,1.79-34.84,2.13-6.06,5.07-11,4.91-18.76-.17-8.16-3.67-14.79-6.7-19.2,6.4,4.61,12.8,9.23,19.2,13.84,3.87-.3,10.52-.23,17.42,3.13,8.96,4.37,13.42,11.9,16.08,16.52,6.7,11.67,4.46,18.31,12.95,31.71,1.73,2.73,3.35,4.86,4.47,6.25,33.62.14,77.36-2.93,126.84-15.18,59.24-14.68,105.75-37.33,138-56.27-.13,13.98-2.12,35.95-12.95,59.4-15.34,33.2-40.66,50.28-90.66,83.07-65.12,42.71-92.35,42.87-102.27,42.43-17.73-.79-31.99-5.81-41.09-9.83-.3,6.7-.6,13.4-.89,20.1,16.52,12.8,33.05,25.61,49.57,38.41.03,5.69-.7,13.78-4.47,22.33-14.88,33.78-61.55,39.07-68.78,39.75-53.26,5.03-91.07-38.82-95.57-44.21,14.59-15.48,29.18-30.97,43.77-46.45-1.34-8.19-2.68-16.38-4.02-24.56-2.74,3.55-7.48,8.69-14.74,12.06-14.99,6.96-30.8,1.75-39.75-1.34-52.74-18.2-79.12-27.3-97.36-39.3-49.38-32.49-78.61-73.76-94.23-100.49Z";
+const BIRD = new Path2D(BIRD_D);
 const SVG_W = 609.94, SVG_H = 394.73, BCX = 300, BCY = 180;
 function drawBird(ctx, x, y, heading, size, flap, alpha, color = "#04080e") {
   const sx = (size / SVG_W) * flap, sy = (size * (SVG_H / SVG_W)) / SVG_H;
@@ -443,63 +429,11 @@ function drawBird(ctx, x, y, heading, size, flap, alpha, color = "#04080e") {
   ctx.fill(BIRD); ctx.restore();
 }
 
-const LOGO_Y = 0.23;
-const groups = [[0.25, LOGO_Y], [0.75, LOGO_Y], [0.5, LOGO_Y - 0.12], [0.5, LOGO_Y + 0.11], [0.5, LOGO_Y]].map(([bx, by]) => ({
-  bx, by,
-  wx1: 4e-5 + rnd() * 3e-5, wx2: 2.5e-5 + rnd() * 2e-5, wy1: 3.5e-5 + rnd() * 3e-5, wy2: 2e-5 + rnd() * 1.5e-5,
-  px1: rnd() * TAU, px2: rnd() * TAU, py1: rnd() * TAU, py2: rnd() * TAU,
-  ax1: 0.10 + rnd() * 0.06, ax2: 0.05 + rnd() * 0.04, ay1: 0.05 + rnd() * 0.03, ay2: 0.025 + rnd() * 0.02,
-}));
-const NUM = 230;
-const birds = Array.from({ length: NUM }, () => ({
-  gi: Math.floor(rnd() * 5), oa: rnd() * TAU, or: Math.pow(rnd(), 0.4),
-  sx: 0.12 + rnd() * 0.08, sy: 0.06 + rnd() * 0.04,
-  df: 6e-5 + rnd() * 8e-5, da: 0.015 + rnd() * 0.018, dph: rnd() * TAU,
-  df2: 9e-5 + rnd() * 7e-5, da2: 0.010 + rnd() * 0.012, dp2: rnd() * TAU,
-  of_: 3e-5 + rnd() * 4e-5, oph: rnd() * TAU,
-  bs: (8 + rnd() * 8) * 0.96, ds: 0.7 + rnd() * 0.25, dop: 0.6 + rnd() * 0.4,
-  ff: 0.006 + rnd() * 0.005, fp: rnd() * TAU, fa: 0.25 + rnd() * 0.35,
-  front: rnd() < 0.12, lag: rnd(),
-}));
-// The site's clock runs at 0.15 units/ms; the email version runs ~3x faster so the flock visibly swirls in a short clip.
-const FT = 450;
-function flockPos(b, ft, tight) {
-  const g = groups[b.gi];
-  const gx = (g.bx + g.ax1 * Math.sin(ft * g.wx1 * TAU + g.px1) + g.ax2 * Math.sin(ft * g.wx2 * TAU + g.px2)) * W;
-  const gy = (g.by + g.ay1 * Math.sin(ft * g.wy1 * TAU + g.py1) + g.ay2 * Math.sin(ft * g.wy2 * TAU + g.py2)) * H;
-  const a = b.oa + ft * b.of_ * TAU + b.oph, r = b.or * tight;
-  return [
-    gx + Math.cos(a) * b.sx * W * r + b.da * W * Math.sin(ft * b.df * TAU + b.dph),
-    gy + Math.sin(a) * b.sy * H * r + b.da2 * H * Math.sin(ft * b.df2 * TAU + b.dp2),
-  ];
-}
-
 // ── Canvases ─────────────────────────────────────────────────────
 const DPR = window.devicePixelRatio || 1;
-const backC = document.getElementById("back"), frontC = document.getElementById("front");
-[backC, frontC].forEach((c) => { c.width = W * DPR; c.height = H * DPR; });
-const bctx = backC.getContext("2d"), fctx = frontC.getContext("2d");
-
-// Flock for the sky scenes. `shift` pushes the whole flock sideways for the scene transitions.
-function drawFlock(t, ft, tight, shift, allFront) {
-  const sizeMul = 0.92;
-  birds.forEach((b) => {
-    const s = shift * (0.75 + b.lag * 0.5);                // staggered so the flock streams, not slides
-    const swirl = Math.abs(shift) > 1 ? Math.sin(b.oa * 3 + t * 2) * 30 * Math.min(1, Math.abs(shift) / 200) : 0;
-    const [x0, y0] = flockPos(b, ft, tight);
-    const [x1, y1] = flockPos(b, ft - 6, tight);
-    const x = x0 + s, y = y0 + swirl;
-    if (x < -40 || x > W + 40 || y < -40 || y > H + 40) return;
-    const moving = Math.abs(shift) > 1 ? -Math.sign(shift) * 0 : 0;
-    const heading = Math.abs(shift) > 60 ? (shift < 0 ? Math.PI : 0) + Math.sin(b.oa) * .3 : Math.atan2(y0 - y1, x0 - x1) + moving;
-    const edge = clamp(Math.min(x / (W * 0.06), (W - x) / (W * 0.06), y / (H * 0.05), 1));
-    const yCeil = Math.abs(shift) > 60 ? 1 : clamp(1 - (y - H * 0.50) / (H * 0.10));
-    const size = b.bs * b.ds * sizeMul * (Math.abs(shift) > 60 ? 1.25 : 1);
-    const flap = 1 - b.fa * Math.abs(Math.sin(ft * b.ff * TAU * 0.33 + b.fp));
-    const ctx = allFront || b.front ? fctx : bctx;
-    drawBird(ctx, x * DPR, y * DPR, heading, size * DPR, flap, b.dop * edge * yCeil);
-  });
-}
+const frontC = document.getElementById("front");
+frontC.width = W * DPR; frontC.height = H * DPR;
+const fctx = frontC.getContext("2d");
 
 // Cubic bezier point + tangent
 function bez(p0, p1, p2, p3, u) {
@@ -525,7 +459,8 @@ const confetti = Array.from({ length: 34 }, () => ({
 
 // ── DOM refs ─────────────────────────────────────────────────────
 const $ = (id) => document.getElementById(id);
-const sky = $("sky"), skybg = $("skybg"), steps = $("steps"), cam = $("cam"), vig = $("vig"), perch = $("perch");
+const sky = $("sky"), steps = $("steps"), cam = $("cam"), vig = $("vig"), avatar = $("avatar");
+$("avpath").setAttribute("d", BIRD_D);
 const words = [...document.querySelectorAll("#headline .w")];
 const bubbles = [1, 2, 3, 4].map((i) => $("b" + i));
 bubbles.forEach((b) => { const t = b.querySelector(".t"); t.dataset.n = -1; });
@@ -545,27 +480,13 @@ const CAM = [
 function renderAt(ms) {
   const t = (ms / 1000) % LOOP;
   document.getAnimations().forEach((a) => { a.currentTime = t * 1000; });
-  bctx.clearRect(0, 0, W * DPR, H * DPR);
   fctx.clearRect(0, 0, W * DPR, H * DPR);
 
-  // Scene wipes. Intro out: the flock streams left and the sky is pulled away behind it (4.8–6.0s).
-  // Outro in: the flock streams in from the right with the sky following (25.3–26.4s).
-  const out = eio(prog(t, 4.8, 6.0)), back = eio(prog(t, 25.3, 26.4));
-  let clip = "none";
-  if (t < 6.1) clip = `inset(0 ${(out * 112).toFixed(2)}% 0 0)`;
-  else if (t < 25.3) clip = "inset(0 0 0 100%)";
-  else clip = `inset(0 0 0 ${((1 - back) * 112).toFixed(2)}%)`;
-  sky.style.clipPath = clip;
-  sky.style.visibility = t >= 6.1 && t < 25.3 ? "hidden" : "visible";
-  skybg.style.transform = `scale(${(1 + 0.05 * (t < 15 ? t / 6 : (t - 25.3) / 4.7)).toFixed(4)})`;
-
-  // Flock: time continues smoothly across the loop seam (outro uses t - LOOP).
-  if (t < 6.1 || t >= 25.3) {
-    const ft = (t >= 25.3 ? t - LOOP : t) * FT;
-    const tight = 1 - 0.28 * bump(t, 2.2, 2.9, 3.4, 4.6);
-    const shift = t < 6.1 ? -out * W * 1.5 : (1 - eout(prog(t, 25.3, 26.6))) * W * 1.4;
-    drawFlock(t, ft, tight, shift, (t > 4.9 && t < 6.1) || (t > 25.3 && t < 26.4));
-  }
+  // Scene changes: the sky lifts away to reveal the phone (4.8–5.9s) and drops back for the ending (25.3–26.2s).
+  const out = eio(prog(t, 4.8, 5.9)), back = eio(prog(t, 25.3, 26.2));
+  const skyY = t < 15 ? -out * 100 : (back - 1) * 100;
+  sky.style.transform = `translateY(${skyY.toFixed(2)}%)`;
+  sky.style.visibility = t >= 5.95 && t < 25.3 ? "hidden" : "visible";
 
   // Intro text: words rise out of a blur; "extra income" catches the light.
   words.forEach((w, i) => {
@@ -580,24 +501,24 @@ function renderAt(ms) {
   hl.style.textShadow = `0 0 ${(6 + 22 * g).toFixed(1)}px rgba(232,160,128,${(0.25 + 0.6 * g).toFixed(2)})`;
   const fade = (el, a) => { const p = eout(prog(t, a, a + 0.7)); el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * 14}px)`; };
   fade($("ieb"), 0.35); fade($("ip1"), 2.55); fade($("ip2"), 2.95);
-  $("intro").style.transform = `translateX(${(-out * 160).toFixed(1)}px)`;
-  $("intro").style.opacity = 1 - out;
+  $("intro").style.opacity = 1 - out * 0.6;
   $("outro").style.opacity = t < 25 ? 0 : 1 - prog(t, 29.45, 29.95);
 
   // Beyonder dot: pops as the lone starling passes it, then sends out a ripple.
-  const dp = prog(t, 1.15, 1.75), ds = t < 1.15 ? 0.25 : t < 1.45 ? lerp(0.25, 1.9, eout(prog(t, 1.15, 1.45))) : lerp(1.9, 1, eback(prog(t, 1.45, 1.75)));
+  const ds = t < 1.55 ? 0.25 : t < 1.85 ? lerp(0.25, 1.9, eout(prog(t, 1.55, 1.85))) : lerp(1.9, 1, eback(prog(t, 1.85, 2.2)));
   $("dot").style.transform = `scale(${ds.toFixed(3)})`;
-  const rp = prog(t, 1.4, 2.4);
-  $("ripple").style.opacity = t < 1.4 || t > 2.4 ? 0 : (1 - rp) * 0.9;
+  const rp = prog(t, 1.8, 2.8);
+  $("ripple").style.opacity = t < 1.8 || t > 2.8 ? 0 : (1 - rp) * 0.9;
   $("ripple").style.transform = `scale(${(1 + rp * 3.2).toFixed(2)})`;
   // Outro dot pop too
   if (t > 25.3) {
-    const op = prog(t, 26.3, 26.8);
+    const op = prog(t, 26.2, 26.7);
     $("dot").style.transform = `scale(${(op < .5 ? lerp(1, 1.8, eout(op * 2)) : lerp(1.8, 1, eback((op - .5) * 2))).toFixed(3)})`;
   }
 
-  // The lone starling: flies in close to camera from bottom-left, past the logo, and joins the flock.
-  flyer(fctx, t, 0.15, 2.5, [[-110, 660], [60, 320], [110, 20], [330, 170]], 170, 13);
+  // A single starling glides in close to the camera, sweeps up past the logo (the dot pops) and leaves.
+  flyer(fctx, t, 0.2, 2.4, [[690, 330], [330, 250], [150, 260], [10, 20]], 120, 70);
+  flyer(fctx, t, 2.4, 2.9, [[10, 20], [-10, -10], [-40, -40], [-80, -80]], 70, 60);
 
   // Steps scene
   steps.style.visibility = t >= 4.7 && t < 26.5 ? "visible" : "hidden";
@@ -606,17 +527,11 @@ function renderAt(ms) {
   const [s, fx, fy] = track(t, CAM);
   cam.style.transform = `translate(${(VIEW[0] - fx * s).toFixed(2)}px, ${(VIEW[1] - fy * s).toFixed(2)}px) scale(${s.toFixed(4)})`;
   vig.style.opacity = 0;
-  document.querySelector(".wire").style.opacity = (1 - clamp((s - 1) / 0.4) * 0.85).toFixed(2);
 
-  // Guide starling: flies in at step 1, perches on the wire, hops at each new bubble, then leaves with the confetti.
-  const landed = t >= 6.75 && t < 24.55;
-  flyer(fctx, t, 6.05, 6.75, [[660, -40], [480, 10], [180, 40], [76, 128]], 64, 50);
-  let hop = 0;
-  [11.35, 16.55, 21.4].forEach((h) => { const p = prog(t, h - 0.3, h + 0.05); if (p > 0 && p < 1) hop = Math.sin(p * Math.PI) * 16; });
-  const settle = t < 6.95 ? eback(prog(t, 6.75, 6.95)) : 1;
-  perch.style.opacity = landed ? 1 : 0;
-  perch.style.transform = `translateY(${(-hop).toFixed(1)}px) scaleY(${(0.85 + 0.15 * settle).toFixed(3)})`;
-  flyer(fctx, t, 24.55, 25.5, [[76, 128], [140, 40], [380, -10], [700, -90]], 50, 70);
+  // Bubble avatar (the starling) pops in with step 1 and stays until the earnings moment.
+  const ain = t < 6.8 ? 0 : eback(prog(t, 6.8, 7.2)), aout = ein(prog(t, 24.3, 24.6));
+  avatar.style.opacity = t >= 6.8 && t < 24.6 ? Math.min(1, ain * 1.4) * (1 - aout) : 0;
+  avatar.style.transform = `scale(${(0.3 + 0.7 * ain).toFixed(3)})`;
 
   // Bubbles: pop from the tail, type the words, shrink back.
   bubbles.forEach((b, i) => {
