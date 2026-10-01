@@ -12,6 +12,7 @@ import { MAP } from "./ukMap";
 import AboutSheet from "./AboutSheet";
 import MenuSheet from "./MenuSheet";
 import AppNav, { type Tab } from "./AppNav";
+import StarlingTip from "./StarlingTip";
 import "./beyonderApp.css";
 
 type ScreenId = "home" | "q" | "consult" | "areas" | "find" | "enquiry" | "sent" | "profile";
@@ -88,6 +89,7 @@ const BeyonderApp = ({ embedded = false }: Props) => {
   const qBodyRef = useRef<HTMLDivElement>(null);
   const areasScroll = useRef<HTMLDivElement>(null);
   const catsecRef = useRef<HTMLDivElement>(null);
+  const mapBoxRef = useRef<HTMLDivElement>(null);
   const shareRef = useRef<HTMLInputElement>(null);
   const saveRef = useRef<HTMLInputElement>(null);
 
@@ -177,7 +179,8 @@ const BeyonderApp = ({ embedded = false }: Props) => {
   function start(path: Path, instant = false) {
     S.path = path; S.step = 0; S.editKey = null; update();
     const push = (id: ScreenId) => { hist.current.push(id); syncHistory(); show(id, 1, instant); };
-    if (path === "find") { push("areas"); return; }
+    // The map always opens with nothing selected.
+    if (path === "find") { S.region = null; S.area = ""; update(); push("areas"); return; }
     if (answered(path)) { push(path); return; }
     push("q");
   }
@@ -523,7 +526,7 @@ const BeyonderApp = ({ embedded = false }: Props) => {
         <div className="ba-scroll" ref={areasScroll}><div className="ba-pad">
           <div className="ba-mapview">
             <div className="ba-lead"><h2>Where are you looking?</h2></div>
-            <div className="ba-mapbox">
+            <div className="ba-mapbox" ref={mapBoxRef}>
               <svg viewBox={`${MAP.box.x * SX - 4} ${MAP.box.y - 4} ${MAP.box.w * SX + 8} ${MAP.box.h + 8}`} role="group" aria-label="Map of England regions">
                 <g transform={`scale(${SX} 1)`}>
                 {Object.keys(MAP.d).map((rk) => (
@@ -556,6 +559,9 @@ const BeyonderApp = ({ embedded = false }: Props) => {
                 Use my location
               </button>
             </div>
+            <button className="ba-allengland" onClick={() => { S.region = null; S.area = ""; S.cat = "all"; update(); go("find"); }}>
+              Show all of England
+            </button>
             <button className="ba-more" onClick={() => glideTo(catsecRef.current)}>
               Choose the kind of support
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
@@ -580,6 +586,10 @@ const BeyonderApp = ({ embedded = false }: Props) => {
             <p className="ba-credit">Map contains National Statistics data © Crown copyright and database right.</p>
           </div>
         </div></div>
+        <StarlingTip
+          id="map" text="Choose your location — tap your area on the map." active={active === "areas" && !S.region}
+          container={() => screens.current.areas ?? null} target={() => mapBoxRef.current} yAt={0.32} dismissKey={S.region}
+        />
       </section>
 
       {/* FIND RESULTS */}
@@ -594,8 +604,13 @@ const BeyonderApp = ({ embedded = false }: Props) => {
               else { hist.current = ["home", "areas"]; syncHistory(); show("areas", -1); }
             }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 21s-6-5.5-6-11a6 6 0 1112 0c0 5.5-6 11-6 11z" /><circle cx="12" cy="10" r="2" /></svg>
-              <span>{S.area.trim() || (S.region ? REGIONS[S.region][1] : "Region")}</span>
+              <span>{S.area.trim() || (S.region ? REGIONS[S.region][1] : "All England")}</span>
             </button>
+            {(S.region || S.area.trim()) && (
+              <button className="ba-region-clear" aria-label="Clear region and show all of England" onClick={() => { S.region = null; S.area = ""; update(); }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+              </button>
+            )}
           </div>
         </div>
         <div className="ba-scroll"><div className="ba-pad" style={{ paddingTop: 4 }}>
@@ -606,7 +621,7 @@ const BeyonderApp = ({ embedded = false }: Props) => {
           </div>
           <div className="ba-lead" style={{ marginBottom: 16 }}>
             <h2 style={{ fontSize: 23 }}>
-              {S.cat !== "all" ? CATS[S.cat] + " " : "Support "}{where ? `${S.area.trim() ? "near" : "in"} ${where}` : "across the UK"}
+              {S.cat !== "all" ? CATS[S.cat] + " " : "Support "}{where ? `${S.area.trim() ? "near" : "in"} ${where}` : "across England"}
             </h2>
             {nt && <p>Best matches for {nt} first.</p>}
           </div>
@@ -630,6 +645,13 @@ const BeyonderApp = ({ embedded = false }: Props) => {
             )) : <div className="ba-empty">Nothing listed here yet. Try another type of support or region.</div>}
           </div>
         </div></div>
+        {provList.length > 0 && (
+          <StarlingTip
+            id="provider-name" text="Tap a name to see their full profile." active={active === "find"} align="start"
+            container={() => screens.current.find ?? null}
+            target={() => screens.current.find?.querySelector<HTMLElement>(".ba-prov-name") ?? null}
+          />
+        )}
       </section>
 
       {/* ENQUIRY / BOOKING */}
