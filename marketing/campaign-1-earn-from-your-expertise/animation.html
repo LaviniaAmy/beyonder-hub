@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Earn From Your Expertise</title>
+<!--
+  Campaign 1 — "Earn From Your Expertise" (provider recruitment).
+  A 30-second looping animation, 600 x 760.
+
+  Everything runs off one clock: renderAt(ms) draws the murmuration, moves the camera, the guide starling
+  and the speech bubbles, and seeks every CSS animation (in-phone UI states) to the same time.
+  render.mjs calls renderAt() frame by frame to make the GIF/MP4; opening the file in a browser plays it live.
+
+  The sky colours and starling silhouette are copied from src/components/BirdCanvas.tsx
+  (that file is locked and is not imported or changed). App colours/type follow beyonderApp.css.
+-->
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+  :root {
+    --navy: #111827; --indigo: #1E1B3A; --deep: #2B4C7E; --dusk: #4E6E8E;
+    --mist: #B9C7D6; --mist-l: #E8F4FF;
+    --terra: #D98A6A; --sienna: #E8A080; --terra-d: #C4714F; --terra-l: #FBEDE6;
+    --terra-grad: linear-gradient(135deg, #E8A080, #D98A6A);
+    --cream: #F6F3EE; --sand: #EAE6DF; --ink: #1B1A35; --muted: #4B5563;
+    --head: 'Josefin Sans', system-ui, sans-serif;
+    --body: 'Nunito Sans', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--cream); }
+  body { display: grid; place-items: center; min-height: 100vh; font-family: var(--body); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+  #stage { position: relative; width: 600px; height: 760px; overflow: hidden; background: var(--cream); }
+  .layer { position: absolute; inset: 0; }
+  canvas.full { position: absolute; inset: 0; width: 600px; height: 760px; pointer-events: none; }
+
+  /* ── CSS keyframes for in-phone UI states (seeked by renderAt) ── */
+  .winf { animation: winf var(--d) linear var(--s) both; }
+  @keyframes winf { 0% { opacity: 0; } 8% { opacity: 1; } 92% { opacity: 1; } 100% { opacity: 0; } }
+  .on   { animation: on .35s ease var(--s) both; }
+  @keyframes on { from { opacity: 0; } to { opacity: 1; } }
+  .rise { animation: rise .7s cubic-bezier(.33,0,.2,1) var(--s) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  .drop { animation: drop .55s cubic-bezier(.2,.9,.3,1.15) var(--s) both; }
+  @keyframes drop { from { opacity: 0; transform: translateY(-110%); } to { opacity: 1; transform: none; } }
+  .pop  { animation: pop .55s cubic-bezier(.2,.9,.3,1.35) var(--s) both; }
+  @keyframes pop { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
+  .press { animation: press .4s ease var(--s) both; }
+  @keyframes press { 0%, 100% { transform: none; } 45% { transform: scale(.93); } }
+  .slideup { animation: slideup .6s cubic-bezier(.2,.9,.3,1.1) var(--s) both; }
+  @keyframes slideup { from { transform: translateY(120%); } to { transform: none; } }
+  .tap { position: absolute; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%;
+    background: rgba(217,138,106,.35); border: 2px solid var(--terra); pointer-events: none;
+    animation: tap .7s ease-out var(--s) both; z-index: 20; }
+  @keyframes tap { 0% { opacity: 0; transform: scale(.3); } 25% { opacity: 1; transform: scale(.8); } 100% { opacity: 0; transform: scale(1.5); } }
+  .glow { animation: glow 1.6s ease-in-out var(--s) infinite; }
+  @keyframes glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(217,138,106,.6); } 50% { box-shadow: 0 0 0 16px rgba(217,138,106,0); } }
+
+  /* ── Sky scenes (intro + outro) — the homepage hero sky ── */
+  #sky { z-index: 3; }
+  .sky-bg { position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 66% 40% at 50% 38%, rgba(80,160,220,.18) 0%, rgba(40,100,160,.08) 30%, rgba(20,60,120,0) 100%),
+      linear-gradient(180deg, #0e152a 0%, #13244e 20%, #20447f 44%, #2f6ca2 66%, #72b3cf 88%, #72b3cf 100%); }
+  .sky-shade { position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(8,12,24,.10) 0%, rgba(8,12,24,.06) 35%, rgba(8,12,24,.38) 62%, rgba(8,12,24,.62) 100%); }
+  .logo { position: absolute; top: 34px; left: 34px; display: flex; align-items: center; gap: 10px; font-family: var(--head); font-size: 26px; color: #fff; z-index: 6; }
+  .logo .dot { position: relative; width: 11px; height: 11px; margin-top: -4px; }
+  .logo .dot i { position: absolute; inset: 0; border-radius: 50%; background: var(--terra); }
+  .logo .dot b { position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--sienna); opacity: 0; }
+
+  .intro-text { position: absolute; left: 34px; right: 34px; bottom: 36px; color: #fff; z-index: 5; }
+  .eyebrow { font-size: 13px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--sienna); }
+  .intro-text h1 { font-family: var(--head); font-weight: 300; font-size: 50px; line-height: 1.06; margin: 14px 0 18px; }
+  .intro-text h1 .w { display: inline-block; white-space: pre; }
+  .intro-text h1 .hl { display: inline-block; }
+  .intro-text p { font-size: 19px; line-height: 1.45; color: rgba(255,255,255,.88); }
+  .intro-text p.small { font-size: 15px; color: rgba(255,255,255,.72); margin-top: 12px; max-width: 46ch; }
+
+  .outro-text { position: absolute; left: 34px; right: 34px; bottom: 34px; color: #fff; text-align: center; z-index: 5; }
+  .outro-text h2 { font-family: var(--head); font-weight: 300; font-size: 46px; line-height: 1.08; margin: 12px 0 0; }
+  .points { display: inline-flex; flex-direction: column; gap: 9px; margin: 22px 0 26px; text-align: left; }
+  .points div { display: flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 700; }
+  .points i { width: 24px; height: 24px; border-radius: 50%; background: rgba(232,160,128,.28); display: grid; place-items: center; flex-shrink: 0; }
+  .points i svg { width: 14px; height: 14px; color: #F5C2A8; }
+  .cta { display: inline-flex; align-items: center; gap: 12px; padding: 19px 30px; border-radius: 14px; background: var(--terra-grad); font-family: var(--head); font-weight: 600; font-size: 24px; color: #fff; }
+  .cta svg { width: 22px; height: 22px; }
+  .outro-text .note { margin-top: 16px; font-size: 15px; color: rgba(255,255,255,.75); }
+
+  /* ── Steps scene ── */
+  #steps { z-index: 1; background: var(--cream); }
+  #cam { position: absolute; inset: 0; transform-origin: 0 0; z-index: 2; }
+  .phone { position: absolute; left: 148px; top: 186px; width: 304px; height: 560px;
+    border-radius: 44px; background: var(--ink); padding: 9px;
+    box-shadow: 0 18px 40px rgba(27,26,53,.2), 0 2px 6px rgba(27,26,53,.1); }
+  .screen-wrap { position: relative; width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: var(--cream); }
+  .notch { position: absolute; top: 9px; left: 50%; width: 84px; height: 22px; margin-left: -42px; border-radius: 12px; background: var(--ink); z-index: 30; }
+  .screen { position: absolute; inset: 0; background: var(--cream); }
+  /* Soft focus around the zoomed area */
+  .vignette { position: absolute; inset: 0; z-index: 7; pointer-events: none; opacity: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 62%, rgba(246,243,238,0) 55%, rgba(246,243,238,.85) 100%); }
+
+  /* Speech bubbles + guide starling */
+  .bubble { position: absolute; left: 92px; right: 24px; top: 26px; z-index: 10; padding: 16px 22px 18px; border-radius: 22px; background: #fff;
+    box-shadow: 0 10px 30px rgba(27,26,53,.16), 0 1px 3px rgba(27,26,53,.08); transform-origin: 0% 20%; opacity: 0; }
+  .bubble::after { content: ""; position: absolute; left: -12px; top: 18px; width: 26px; height: 22px; background: #fff;
+    clip-path: polygon(100% 0, 0 30%, 100% 100%); }
+  .avatar { position: absolute; left: 24px; top: 26px; width: 54px; height: 54px; border-radius: 50%; z-index: 11; opacity: 0;
+    background: var(--indigo); box-shadow: 0 6px 18px rgba(27,26,53,.22); display: grid; place-items: center; }
+  .avatar svg { width: 34px; height: 34px; transform: rotate(62deg); }
+  .avatar i { position: absolute; right: 2px; bottom: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--terra); border: 2px solid var(--cream); }
+  .bubble .k { font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--terra-d); }
+  .bubble .k em { font-style: normal; color: var(--muted); letter-spacing: .1em; }
+  .bubble .t { font-family: var(--head); font-size: 27px; line-height: 1.12; margin-top: 6px; }
+  .bubble .t .ghost { color: transparent; }
+  .bubble .caret { display: inline-block; width: 2px; height: 24px; background: var(--terra); vertical-align: -3px; margin-left: 2px; }
+
+  /* App pieces, scaled from the real app styles */
+  .bar { display: flex; align-items: center; gap: 10px; padding: 40px 18px 14px; background: rgba(8,12,24,.97); color: #fff; }
+  .bar svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .bar span { font-family: var(--head); font-size: 17px; padding-top: 2px; }
+  .pad { padding: 14px 16px; }
+  .label { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 9px; }
+  .card { background: #fff; border-radius: 18px; border: 1px solid var(--sand); }
+  .btn { display: flex; align-items: center; justify-content: center; min-height: 40px; border-radius: 8px; font-weight: 700; font-size: 14px; padding: 0 14px; }
+  .btn-primary { background: var(--terra-grad); color: #fff; }
+
+  /* Step 1 — availability */
+  .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding: 10px 10px; margin-bottom: 12px; }
+  .day { text-align: center; font-size: 11px; font-weight: 700; color: var(--muted); }
+  .day b { position: relative; display: grid; place-items: center; width: 28px; height: 28px; margin: 5px auto 0; border-radius: 50%; font-size: 13px; color: var(--ink); background: var(--cream); }
+  .day b i { position: absolute; inset: 0; border-radius: 50%; background: var(--terra-grad); color: #fff; display: grid; place-items: center; font-style: normal; }
+  .slot { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; margin-bottom: 7px; }
+  .slot div b { display: block; font-size: 14px; }
+  .slot div span { font-size: 12px; color: var(--muted); }
+  .pill { position: relative; width: 92px; height: 32px; }
+  .pill > * { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  .pill .off { border: 1.5px solid var(--terra); color: var(--terra-d); }
+  .pill .yes { background: var(--ink); color: #fff; }
+  .pill .yes::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--terra); display: inline-block; margin-right: 6px; }
+  .summary { position: relative; height: 40px; margin-top: 4px; }
+  .summary > * { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; border-radius: 10px; }
+  .summary .a { color: var(--muted); }
+  .summary .b { background: var(--terra-l); color: var(--terra-d); }
+
+  /* Step 2 — options */
+  .opt { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--sand); font-size: 14px; font-weight: 700; }
+  .opt:last-of-type { border-bottom: 0; }
+  .opt .ic { display: flex; align-items: center; gap: 10px; }
+  .opt svg { width: 18px; height: 18px; color: var(--deep); }
+  .switch { position: relative; width: 40px; height: 24px; border-radius: 999px; background: var(--sand); }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+  .switch i { position: absolute; z-index: 1; inset: 0; border-radius: 999px; background: var(--terra); }
+  .switch i::after { content: ""; position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; }
+  .seg { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); padding: 4px; border-radius: 12px; background: #fff; border: 1px solid var(--sand); }
+  .seg span:not(.tap) { position: relative; z-index: 1; text-align: center; padding: 8px 0; font-size: 13px; font-weight: 700; }
+  .seg .hl { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 3); border-radius: 9px; background: var(--terra-l); border: 1.5px solid var(--terra);
+    animation: segmove .45s cubic-bezier(.4,0,.2,1) var(--s) both; }
+  @keyframes segmove { from { transform: translateX(0); } to { transform: translateX(100%); } }
+  .price { display: flex; align-items: center; justify-content: space-between; padding: 14px; }
+  .price .amt { position: relative; width: 84px; height: 40px; font-family: var(--head); font-size: 34px; font-weight: 600; }
+  .price .amt span { position: absolute; left: 0; top: 2px; }
+  .price small { display: block; font-size: 12px; color: var(--muted); font-weight: 600; }
+  .stepper { display: flex; gap: 6px; }
+  .stepper span { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--sand); display: grid; place-items: center; font-weight: 800; font-size: 16px; color: var(--muted); }
+  .stepper .plus { border-color: var(--terra); color: var(--terra-d); }
+
+  /* Step 3 — booking (mirrors .ba-spec in the app) */
+  .chips { display: flex; gap: 6px; padding: 12px 16px 2px; }
+  .chip { padding: 6px 11px; border-radius: 999px; border: 1px solid var(--sand); background: #fff; font-size: 12px; font-weight: 700; }
+  .chip.sel { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .chip.sel::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--terra); margin-right: 6px; vertical-align: 1px; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--deep); background: var(--mist-l); padding: 4px 9px; border-radius: 999px; margin: 14px 16px 8px; }
+  .spec { margin: 0 16px; padding: 15px; border-radius: 20px; }
+  .spec-top { display: flex; gap: 12px; align-items: flex-start; }
+  .av { width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center; font-family: var(--head); font-size: 16px; color: var(--deep);
+    background: radial-gradient(circle at 70% 30%, #F6D5C5 0 30%, var(--mist-l) 31%); }
+  .spec h3 { font-family: var(--head); font-weight: 400; font-size: 17px; padding-top: 3px; margin-bottom: 2px; }
+  .role { font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .focus { font-size: 12.5px; line-height: 1.45; margin-top: 10px; }
+  .fit { display: inline-block; margin-top: 8px; font-size: 12px; font-weight: 700; color: var(--terra-d); }
+  .slotrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--sand); }
+  .slotrow b { display: block; font-size: 12px; white-space: nowrap; }
+  .slotrow span { font-size: 11.5px; color: var(--muted); }
+  .bookbtn { position: relative; width: 102px; height: 38px; flex-shrink: 0; }
+  .bookbtn > * { position: absolute; inset: 0; font-size: 12.5px; min-height: 0; padding: 0; white-space: nowrap; }
+  .bookbtn .done { background: var(--ink); color: #fff; }
+  .notif { position: absolute; left: 10px; right: 10px; top: 38px; z-index: 25; padding: 12px 14px; border-radius: 18px; background: #fff;
+    box-shadow: 0 10px 28px rgba(27,26,53,.22); display: flex; gap: 11px; align-items: center; }
+  .notif .bi { width: 34px; height: 34px; border-radius: 10px; background: var(--indigo); display: grid; place-items: center; flex-shrink: 0; }
+  .notif .bi i { width: 8px; height: 8px; border-radius: 50%; background: var(--terra); }
+  .notif b { display: block; font-size: 13px; }
+  .notif span { font-size: 12px; color: var(--muted); }
+
+  /* Step 4 — video call + earnings */
+  .call { position: absolute; inset: 0; background: #0e152a; }
+  .call .them { position: absolute; inset: 0; display: grid; place-items: center; background: linear-gradient(180deg, #2B4C7E, #1E1B3A); }
+  .call .them .face { width: 110px; height: 110px; border-radius: 50%; display: grid; place-items: center; font-family: var(--head); font-size: 34px; color: var(--deep);
+    background: radial-gradient(circle at 70% 30%, #F6D5C5 0 30%, var(--mist-l) 31%); margin-top: -60px; }
+  .call .who { position: absolute; left: 16px; top: 44px; color: #fff; font-size: 13px; font-weight: 700; }
+  .call .who span { display: block; font-weight: 600; color: rgba(255,255,255,.7); font-size: 12px; }
+  .call .me { position: absolute; right: 14px; top: 44px; width: 74px; height: 100px; border-radius: 14px; background: #3a3f5c; border: 2px solid rgba(255,255,255,.25);
+    display: grid; place-items: center; color: #fff; font-size: 12px; font-weight: 700; }
+  .call .me i { display: block; width: 34px; height: 34px; border-radius: 50%; background: var(--terra-grad); margin: 0 auto 6px; }
+  .call .ctrls { position: absolute; left: 0; right: 0; bottom: 26px; display: flex; justify-content: center; gap: 14px; }
+  .call .ctrls span { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.16); display: grid; place-items: center; }
+  .call .ctrls span svg { width: 20px; height: 20px; color: #fff; }
+  .call .ctrls .end { background: #E0534A; }
+  .call .timer { position: absolute; left: 0; right: 0; bottom: 84px; text-align: center; color: rgba(255,255,255,.85); font-size: 13px; font-weight: 700; }
+  .call .timer span { position: absolute; left: 0; right: 0; }
+  .loc { position: absolute; left: 16px; bottom: 140px; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.14); color: #fff; font-size: 11.5px; font-weight: 700; }
+  .earn { position: absolute; left: 12px; right: 12px; bottom: 14px; z-index: 5; padding: 18px 16px; border-radius: 22px; background: #fff; text-align: center;
+    box-shadow: 0 -6px 30px rgba(0,0,0,.25); }
+  .earn .ok { width: 40px; height: 40px; border-radius: 50%; margin: 0 auto 8px; background: var(--terra-l); display: grid; place-items: center; }
+  .earn .ok svg { width: 20px; height: 20px; color: var(--terra-d); }
+  .earn b { display: block; font-size: 14px; }
+  .earn .big { font-family: var(--head); font-size: 40px; font-weight: 600; margin: 6px 0 2px; color: var(--ink); }
+  .earn span { font-size: 12px; color: var(--muted); }
+  .earn .free { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--sand); font-size: 12px; color: var(--terra-d); font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- ═══ STEPS SCENE (cream) ═══ -->
+  <div class="layer" id="steps">
+    <div id="cam">
+      <div class="phone" id="phone">
+        <div class="screen-wrap">
+          <div class="notch"></div>
+
+          <!-- Screen 1: availability -->
+          <div class="screen winf" style="--s:4.6s; --d:6.7s">
+            <div class="bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg><span>Your availability</span></div>
+            <div class="pad">
+              <div class="label">This week</div>
+              <div class="card week">
+                <div class="day">M<b>6<i class="on" style="--s:8.75s">6</i></b></div>
+                <div class="day">T<b>7</b></div>
+                <div class="day">W<b>8<i class="on" style="--s:9.35s">8</i></b></div>
+                <div class="day">T<b>9</b></div>
+                <div class="day">F<b>10</b></div>
+                <div class="day">S<b>11<i class="on" style="--s:9.95s">11</i></b></div>
+                <div class="day">S<b>12</b></div>
+              </div>
+              <div class="label">Evenings and weekends</div>
+              <div class="card slot"><div><b>Monday</b><span>7:00pm – 9:00pm</span></div>
+                <div class="pill"><div class="off">Add</div><div class="yes on" style="--s:8.7s">Available</div></div>
+                <span class="tap" style="--s:8.5s; left:226px; top:25px"></span></div>
+              <div class="card slot"><div><b>Wednesday</b><span>8:00pm – 9:30pm</span></div>
+                <div class="pill"><div class="off">Add</div><div class="yes on" style="--s:9.3s">Available</div></div>
+                <span class="tap" style="--s:9.1s; left:226px; top:25px"></span></div>
+              <div class="card slot"><div><b>Saturday</b><span>10:00am – 12:00pm</span></div>
+                <div class="pill"><div class="off">Add</div><div class="yes on" style="--s:9.9s">Available</div></div>
+                <span class="tap" style="--s:9.7s; left:226px; top:25px"></span></div>
+              <div class="card slot"><div><b>Sunday</b><span>4:00pm – 5:00pm</span></div>
+                <div class="pill"><div class="off">Add</div></div></div>
+              <div class="summary"><div class="a">Pick any times that suit you</div><div class="b on" style="--s:10.35s">3 sessions open this week</div></div>
+            </div>
+          </div>
+
+          <!-- Screen 2: consultation options -->
+          <div class="screen winf" style="--s:11.0s; --d:5.4s">
+            <div class="bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg><span>Consultation options</span></div>
+            <div class="pad">
+              <div class="label">How you’ll talk</div>
+              <div class="card" style="margin-bottom:16px; position:relative">
+                <div class="opt"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg>Video call</div><div class="switch"><i class="on" style="--s:12.65s"></i></div></div>
+                <div class="opt"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg>Phone</div><div class="switch"><i class="on" style="--s:13.05s"></i></div></div>
+                <div class="opt"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Chat</div><div class="switch"><i class="on" style="--s:13.45s"></i></div></div>
+                <span class="tap" style="--s:12.45s; left:232px; top:24px"></span>
+                <span class="tap" style="--s:12.85s; left:232px; top:72px"></span>
+                <span class="tap" style="--s:13.25s; left:232px; top:120px"></span>
+              </div>
+              <div class="label">Session length</div>
+              <div class="seg" style="margin-bottom:16px">
+                <div class="hl" style="--s:14.45s"></div>
+                <span>15 min</span><span>30 min</span><span>60 min</span>
+                <span class="tap" style="--s:14.25s; left:135px; top:20px"></span>
+              </div>
+              <div class="label">Your price</div>
+              <div class="card price" style="position:relative">
+                <div><div class="amt">
+                  <span class="winf" style="--s:11.0s; --d:3.9s">£30</span>
+                  <span class="winf" style="--s:14.85s; --d:0.55s">£40</span>
+                  <span class="on" style="--s:15.35s">£45</span>
+                </div><small>per 30 min · you decide</small></div>
+                <div class="stepper"><span>−</span><span class="plus">+</span></div>
+                <span class="tap" style="--s:14.7s; left:240px; top:42px"></span>
+                <span class="tap" style="--s:15.2s; left:240px; top:42px"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 3: parents book (the app's specialist card) -->
+          <div class="screen winf" style="--s:16.2s; --d:5.2s">
+            <div class="bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg><span>Live consultations</span></div>
+            <div class="chips"><span class="chip sel">Video</span><span class="chip">Phone</span><span class="chip">Chat</span></div>
+            <span class="tag">How parents see you</span>
+            <article class="card spec">
+              <div class="spec-top"><div class="av">RL</div><div><h3>Ruth Levene</h3><p class="role">Occupational therapist, HCPC registered</p></div></div>
+              <p class="focus">Sensory processing, daily routines, handwriting and fine motor skills.</p>
+              <span class="fit">Good fit for sensory</span>
+              <div class="slotrow">
+                <div><b>Next free: Mon 7pm</b><span>£45 for 30 minutes</span></div>
+                <div class="bookbtn press" style="--s:18.35s">
+                  <div class="btn btn-primary">Book this time</div>
+                  <div class="btn done on" style="--s:18.6s">Requested ✓</div>
+                  <span class="tap" style="--s:18.25s; left:51px; top:19px"></span>
+                </div>
+              </div>
+            </article>
+            <div class="notif drop" style="--s:19.2s">
+              <div class="bi"><i></i></div>
+              <div><b>New booking request</b><span>Mon 7pm · Video · 30 min · £45</span></div>
+            </div>
+          </div>
+
+          <!-- Screen 4: consult from anywhere, get paid -->
+          <div class="screen on" style="--s:21.1s">
+            <div class="call">
+              <div class="them"><div class="face">SK</div></div>
+              <div class="who">Sam’s mum<span>Sensory routines</span></div>
+              <div class="me"><div><i></i>You</div></div>
+              <div class="loc">From your kitchen table</div>
+              <div class="timer"><span class="winf" style="--s:21.1s; --d:1.0s">00:12</span><span class="winf" style="--s:22.0s; --d:0.85s">14:36</span><span class="on" style="--s:22.8s">29:58</span></div>
+              <div class="ctrls">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg></span>
+                <span class="end press" style="--s:23.0s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 15c4-4 12-4 16 0l-2 2.5-3-1.5v-2.5a10 10 0 00-6 0V16l-3 1.5z"/></svg></span>
+              </div>
+              <span class="tap" style="--s:22.9s; left:201px; top:493px"></span>
+            </div>
+            <div class="earn slideup" id="earn" style="--s:23.3s">
+              <div class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+              <b>Consultation complete</b>
+              <div class="big" id="amount">£0</div>
+              <span>Added to your earnings</span>
+              <div class="free">No upfront cost · Beyonder only earns when you earn</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="vignette" id="vig"></div>
+
+
+    <div class="avatar" id="avatar"><svg viewBox="0 0 610 395"><path id="avpath" fill="#fff"/></svg><i></i></div>
+    <div class="bubble" id="b1"><div class="k">Step 1 <em>of 4</em></div><div class="t" data-text="Choose when you’re available"></div></div>
+    <div class="bubble" id="b2"><div class="k">Step 2 <em>of 4</em></div><div class="t" data-text="Set your consultation options"></div></div>
+    <div class="bubble" id="b3"><div class="k">Step 3 <em>of 4</em></div><div class="t" data-text="Parents find you and book a time"></div></div>
+    <div class="bubble" id="b4"><div class="k">Step 4 <em>of 4</em></div><div class="t" data-text="Work remotely, around your existing commitments"></div></div>
+  </div>
+
+  <!-- ═══ SKY SCENE (intro + outro) — the homepage hero sky ═══ -->
+  <div class="layer" id="sky">
+    <div class="sky-bg" id="skybg"></div>
+    <div class="sky-shade"></div>
+    <div class="logo"><span class="dot"><b id="ripple"></b><i id="dot"></i></span>Beyonder</div>
+
+    <div class="intro-text" id="intro">
+      <div class="eyebrow" id="ieb">For SEND professionals</div>
+      <h1 id="headline"><span class="w">Your </span><span class="w">SEND </span><span class="w">expertise </span><span class="w">could </span><span class="w">earn </span><span class="w">you </span><span class="hl" id="hl"><span class="w">extra </span><span class="w">income.</span></span></h1>
+      <p id="ip1">You already have the expertise families need.</p>
+      <p class="small" id="ip2">Beyonder is creating a new way for SEND professionals to offer paid online consultations to parents looking for personalised support.</p>
+    </div>
+
+    <div class="outro-text" id="outro">
+      <div class="eyebrow rise" style="--s:26.5s">Founding places now open</div>
+      <h2 class="rise" style="--s:26.65s">Earn from your expertise</h2>
+      <div class="points">
+        <div class="rise" style="--s:26.95s"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Choose when you’re available</div>
+        <div class="rise" style="--s:27.15s"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Set your consultation options</div>
+        <div class="rise" style="--s:27.35s"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Work remotely, around your commitments</div>
+        <div class="rise" style="--s:27.55s"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>No upfront cost</div>
+      </div>
+      <div><div class="pop" style="--s:27.9s; display:inline-block">
+        <div class="cta glow" style="--s:28.5s">Become a Founding Specialist
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      </div></div>
+      <p class="note rise" style="--s:28.2s">Beyonder only earns when you earn.</p>
+    </div>
+  </div>
+
+  <!-- The flying starling and the bird confetti, in front of everything -->
+  <canvas class="full" id="front" style="z-index:20"></canvas>
+</div>
+
+<script>
+const LOOP = 30;
+const W = 600, H = 760;
+
+// ── Timeline helpers ─────────────────────────────────────────────
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const eio = (p) => (p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+const eout = (p) => 1 - Math.pow(1 - p, 3);
+const ein = (p) => p * p * p;
+const eback = (p) => { const c = 1.7; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+const lerp = (a, b, p) => a + (b - a) * p;
+// keys: [[t, v0, v1, ...], ...] — eased (in-out) between consecutive keys, held outside.
+function track(t, keys) {
+  if (t <= keys[0][0]) return keys[0].slice(1);
+  for (let i = 1; i < keys.length; i++) {
+    if (t <= keys[i][0]) {
+      const p = eio(prog(t, keys[i - 1][0], keys[i][0]));
+      return keys[i].slice(1).map((v, j) => lerp(keys[i - 1][j + 1], v, p));
+    }
+  }
+  return keys[keys.length - 1].slice(1);
+}
+const bump = (t, a, b, c, d) => (t < b ? eio(prog(t, a, b)) : 1 - eio(prog(t, c, d)));
+
+// ── Seeded randomness so every render is identical ───────────────
+let seed = 7;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+const TAU = Math.PI * 2;
+
+// ── Starling silhouette (from BirdCanvas.tsx) ─────
+const BIRD_D = "M26.28,117.8c25.58,8.49,56.17,16.47,91.11,21.44,58.55,8.33,109.28,5.37,147.38,0-2.98-15.96-.87-27.27,1.79-34.84,2.13-6.06,5.07-11,4.91-18.76-.17-8.16-3.67-14.79-6.7-19.2,6.4,4.61,12.8,9.23,19.2,13.84,3.87-.3,10.52-.23,17.42,3.13,8.96,4.37,13.42,11.9,16.08,16.52,6.7,11.67,4.46,18.31,12.95,31.71,1.73,2.73,3.35,4.86,4.47,6.25,33.62.14,77.36-2.93,126.84-15.18,59.24-14.68,105.75-37.33,138-56.27-.13,13.98-2.12,35.95-12.95,59.4-15.34,33.2-40.66,50.28-90.66,83.07-65.12,42.71-92.35,42.87-102.27,42.43-17.73-.79-31.99-5.81-41.09-9.83-.3,6.7-.6,13.4-.89,20.1,16.52,12.8,33.05,25.61,49.57,38.41.03,5.69-.7,13.78-4.47,22.33-14.88,33.78-61.55,39.07-68.78,39.75-53.26,5.03-91.07-38.82-95.57-44.21,14.59-15.48,29.18-30.97,43.77-46.45-1.34-8.19-2.68-16.38-4.02-24.56-2.74,3.55-7.48,8.69-14.74,12.06-14.99,6.96-30.8,1.75-39.75-1.34-52.74-18.2-79.12-27.3-97.36-39.3-49.38-32.49-78.61-73.76-94.23-100.49Z";
+const BIRD = new Path2D(BIRD_D);
+const SVG_W = 609.94, SVG_H = 394.73, BCX = 300, BCY = 180;
+function drawBird(ctx, x, y, heading, size, flap, alpha, color = "#04080e") {
+  const sx = (size / SVG_W) * flap, sy = (size * (SVG_H / SVG_W)) / SVG_H;
+  ctx.save();
+  ctx.translate(x, y); ctx.rotate(heading + Math.PI / 2);
+  ctx.globalAlpha = alpha; ctx.fillStyle = color;
+  ctx.translate(-BCX * sx, -BCY * sy); ctx.scale(sx, sy);
+  ctx.fill(BIRD); ctx.restore();
+}
+
+// ── Canvases ─────────────────────────────────────────────────────
+const DPR = window.devicePixelRatio || 1;
+const frontC = document.getElementById("front");
+frontC.width = W * DPR; frontC.height = H * DPR;
+const fctx = frontC.getContext("2d");
+
+// Cubic bezier point + tangent
+function bez(p0, p1, p2, p3, u) {
+  const m = 1 - u;
+  const x = m * m * m * p0[0] + 3 * m * m * u * p1[0] + 3 * m * u * u * p2[0] + u * u * u * p3[0];
+  const y = m * m * m * p0[1] + 3 * m * m * u * p1[1] + 3 * m * u * u * p2[1] + u * u * u * p3[1];
+  const dx = 3 * m * m * (p1[0] - p0[0]) + 6 * m * u * (p2[0] - p1[0]) + 3 * u * u * (p3[0] - p2[0]);
+  const dy = 3 * m * m * (p1[1] - p0[1]) + 6 * m * u * (p2[1] - p1[1]) + 3 * u * u * (p3[1] - p2[1]);
+  return [x, y, Math.atan2(dy, dx)];
+}
+function flyer(ctx, t, t0, t1, pts, s0, s1, alpha = 1) {
+  if (t < t0 || t > t1) return;
+  const u = eio(prog(t, t0, t1));
+  const [x, y, h] = bez(...pts, u);
+  const flap = 1 - 0.45 * Math.abs(Math.sin(t * 13));
+  drawBird(ctx, x * DPR, y * DPR, h, lerp(s0, s1, u) * DPR, flap, alpha);
+}
+
+// Bird confetti from the earnings card
+const confetti = Array.from({ length: 34 }, () => ({
+  vx: (rnd() - 0.5) * 380, vy: -(220 + rnd() * 320), size: 9 + rnd() * 12, ph: rnd() * TAU, d: rnd() * 0.25,
+}));
+
+// ── DOM refs ─────────────────────────────────────────────────────
+const $ = (id) => document.getElementById(id);
+const sky = $("sky"), steps = $("steps"), cam = $("cam"), vig = $("vig"), avatar = $("avatar");
+$("avpath").setAttribute("d", BIRD_D);
+const words = [...document.querySelectorAll("#headline .w")];
+const bubbles = [1, 2, 3, 4].map((i) => $("b" + i));
+bubbles.forEach((b) => { const t = b.querySelector(".t"); t.dataset.n = -1; });
+
+// Step bubble windows [pop, out] and the time the text finishes typing
+const BUB = [[6.9, 10.95], [11.35, 16.15], [16.55, 21.0], [21.4, 24.55]];
+// Camera: [t, scale, focusX, focusY] — focus is a stage point (at scale 1) that is brought to the view centre.
+const VIEW = [300, 455];
+const CAM = [
+  [6.0, 1, 300, 470], [7.8, 1, 300, 470], [8.35, 1.7, 300, 448], [10.55, 1.7, 300, 448], [11.05, 1, 300, 470],
+  [11.9, 1, 300, 470], [12.4, 1.85, 300, 305], [13.6, 1.85, 300, 305], [14.05, 1.85, 300, 555], [15.75, 1.85, 300, 555], [16.25, 1, 300, 470],
+  [17.0, 1, 300, 470], [17.55, 1.75, 300, 490], [18.85, 1.75, 300, 490], [19.3, 1.75, 300, 345], [20.35, 1.75, 300, 345], [20.85, 1, 300, 470],
+  [23.35, 1, 300, 470], [23.9, 1.6, 300, 625], [30, 1.6, 300, 625],
+];
+
+// ── Main render ──────────────────────────────────────────────────
+function renderAt(ms) {
+  const t = (ms / 1000) % LOOP;
+  document.getAnimations().forEach((a) => { a.currentTime = t * 1000; });
+  fctx.clearRect(0, 0, W * DPR, H * DPR);
+
+  // Scene changes: the sky lifts away to reveal the phone (4.8–5.9s) and drops back for the ending (25.3–26.2s).
+  const out = eio(prog(t, 4.8, 5.9)), back = eio(prog(t, 25.3, 26.2));
+  const skyY = t < 15 ? -out * 100 : (back - 1) * 100;
+  sky.style.transform = `translateY(${skyY.toFixed(2)}%)`;
+  sky.style.visibility = t >= 5.95 && t < 25.3 ? "hidden" : "visible";
+
+  // Intro text: words rise out of a blur; "extra income" catches the light.
+  words.forEach((w, i) => {
+    const p = eout(prog(t, 0.75 + i * 0.13, 1.45 + i * 0.13));
+    w.style.opacity = p.toFixed(3);
+    w.style.transform = `translateY(${((1 - p) * 22).toFixed(1)}px)`;
+    w.style.filter = p < 1 ? `blur(${((1 - p) * 8).toFixed(1)}px)` : "none";
+  });
+  const g = bump(t, 2.3, 2.8, 3.1, 4.2), warm = prog(t, 2.3, 2.8);
+  const hl = $("hl");
+  hl.style.color = `rgb(${Math.round(lerp(255, 245, warm))},${Math.round(lerp(255, 184, warm))},${Math.round(lerp(255, 152, warm))})`;
+  hl.style.textShadow = `0 0 ${(6 + 22 * g).toFixed(1)}px rgba(232,160,128,${(0.25 + 0.6 * g).toFixed(2)})`;
+  const fade = (el, a) => { const p = eout(prog(t, a, a + 0.7)); el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * 14}px)`; };
+  fade($("ieb"), 0.35); fade($("ip1"), 2.55); fade($("ip2"), 2.95);
+  $("intro").style.opacity = t < 6 ? 1 - out * 0.6 : 0;
+  $("outro").style.opacity = t < 25 ? 0 : 1 - prog(t, 29.45, 29.95);
+
+  // Beyonder dot: pops as the lone starling passes it, then sends out a ripple.
+  const ds = t < 1.55 ? 0.25 : t < 1.85 ? lerp(0.25, 1.9, eout(prog(t, 1.55, 1.85))) : lerp(1.9, 1, eback(prog(t, 1.85, 2.2)));
+  $("dot").style.transform = `scale(${ds.toFixed(3)})`;
+  const rp = prog(t, 1.8, 2.8);
+  $("ripple").style.opacity = t < 1.8 || t > 2.8 ? 0 : (1 - rp) * 0.9;
+  $("ripple").style.transform = `scale(${(1 + rp * 3.2).toFixed(2)})`;
+  // Outro dot pop too
+  if (t > 25.3) {
+    const op = prog(t, 26.2, 26.7);
+    $("dot").style.transform = `scale(${(op < .5 ? lerp(1, 1.8, eout(op * 2)) : lerp(1.8, 1, eback((op - .5) * 2))).toFixed(3)})`;
+  }
+
+  // A single starling glides in close to the camera, sweeps up past the logo (the dot pops) and leaves.
+  flyer(fctx, t, 0.2, 2.4, [[690, 330], [330, 250], [150, 260], [10, 20]], 120, 70);
+  flyer(fctx, t, 2.4, 2.9, [[10, 20], [-10, -10], [-40, -40], [-80, -80]], 70, 60);
+
+  // Steps scene
+  steps.style.visibility = t >= 4.7 && t < 26.5 ? "visible" : "hidden";
+  const rise = eout(prog(t, 5.3, 6.3));
+  $("phone").style.transform = `translateY(${((1 - rise) * 560).toFixed(1)}px)`;
+  const [s, fx, fy] = track(t, CAM);
+  cam.style.transform = `translate(${(VIEW[0] - fx * s).toFixed(2)}px, ${(VIEW[1] - fy * s).toFixed(2)}px) scale(${s.toFixed(4)})`;
+  vig.style.opacity = 0;
+
+  // Bubble avatar (the starling) pops in with step 1 and stays until the earnings moment.
+  const ain = t < 6.8 ? 0 : eback(prog(t, 6.8, 7.2)), aout = ein(prog(t, 24.3, 24.6));
+  avatar.style.opacity = t >= 6.8 && t < 24.6 ? Math.min(1, ain * 1.4) * (1 - aout) : 0;
+  avatar.style.transform = `scale(${(0.3 + 0.7 * ain).toFixed(3)})`;
+
+  // Bubbles: pop from the tail, type the words, shrink back.
+  bubbles.forEach((b, i) => {
+    const [a, z] = BUB[i];
+    const pin = t < a ? 0 : eback(prog(t, a, a + 0.4)), pout = ein(prog(t, z - 0.35, z));
+    const v = t >= a && t < z;
+    b.style.opacity = v ? Math.min(1, pin * 1.5) * (1 - pout) : 0;
+    b.style.transform = `scale(${(v ? (0.4 + 0.6 * pin) * (1 - 0.3 * pout) : 0.4).toFixed(3)})`;
+    const el = b.querySelector(".t"), full = el.dataset.text;
+    const n = Math.round(full.length * prog(t, a + 0.25, a + 0.25 + full.length * 0.028));
+    if (+el.dataset.n !== n) {
+      el.dataset.n = n;
+      el.innerHTML = full.slice(0, n) + (n < full.length ? '<span class="caret"></span>' : "") + `<span class="ghost">${full.slice(n)}</span>`;
+    }
+  });
+
+  // Earnings count-up
+  const cp = eout(prog(t, 23.75, 24.6));
+  $("amount").textContent = "£" + Math.round(45 * cp);
+  $("amount").style.transform = `scale(${(1 + 0.12 * bump(t, 24.45, 24.6, 24.6, 24.9)).toFixed(3)})`;
+
+  // Bird confetti bursting off the earnings card
+  if (t > 24.5 && t < 26.6) {
+    const r = $("amount").getBoundingClientRect(), st = $("stage").getBoundingClientRect();
+    const ox = r.left - st.left + r.width / 2, oy = r.top - st.top + r.height / 2;
+    confetti.forEach((c) => {
+      const dt = t - 24.55 - c.d;
+      if (dt <= 0) return;
+      const x = ox + c.vx * dt, y = oy + c.vy * dt + 40 * dt * dt * (c.vy > -300 ? 1 : 0.3) - 60 * dt * dt;
+      const h = Math.atan2(c.vy - 120 * dt, c.vx);
+      const flap = 1 - 0.5 * Math.abs(Math.sin(dt * 16 + c.ph));
+      drawBird(fctx, x * DPR, y * DPR, h, c.size * (1 + dt * 0.6) * DPR, flap, clamp(1.6 - dt * 0.7), "#1B1A35");
+    });
+  }
+}
+window.renderAt = renderAt;
+
+// Live preview: play on a loop. render.mjs passes ?render and drives renderAt itself.
+document.fonts.ready.then(() => {
+  document.getAnimations().forEach((a) => a.pause());
+  if (location.search.includes("render")) { renderAt(0); return; }
+  const t0 = performance.now();
+  const tick = (now) => { renderAt(now - t0); requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+});
+</script>
+</body>
+</html>
