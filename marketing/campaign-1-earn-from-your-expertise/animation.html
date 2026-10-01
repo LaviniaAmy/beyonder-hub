@@ -501,7 +501,7 @@ function renderAt(ms) {
   hl.style.textShadow = `0 0 ${(6 + 22 * g).toFixed(1)}px rgba(232,160,128,${(0.25 + 0.6 * g).toFixed(2)})`;
   const fade = (el, a) => { const p = eout(prog(t, a, a + 0.7)); el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * 14}px)`; };
   fade($("ieb"), 0.35); fade($("ip1"), 2.55); fade($("ip2"), 2.95);
-  $("intro").style.opacity = 1 - out * 0.6;
+  $("intro").style.opacity = t < 6 ? 1 - out * 0.6 : 0;
   $("outro").style.opacity = t < 25 ? 0 : 1 - prog(t, 29.45, 29.95);
 
   // Beyonder dot: pops as the lone starling passes it, then sends out a ripple.

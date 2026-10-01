@@ -12,12 +12,15 @@ const { chromium } = createRequire(import.meta.url)('playwright');
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const LOOP = 30, FPS = 30, SCALE = 2;
+// Bump VERSION for each new cut: a new file name stops browsers, GitHub and email tools showing a cached old copy.
+const VERSION = 'v3';
+const NAME = `earn-from-your-expertise-${VERSION}`;
 const tmp = process.env.FRAMES_DIR || path.join(here, '.render');
 rmSync(tmp, { recursive: true, force: true });
 mkdirSync(tmp, { recursive: true });
 const sh = (c) => execSync(c, { stdio: 'inherit' });
-const mp4 = path.join(here, 'earn-from-your-expertise.mp4');
-const gif = path.join(here, 'earn-from-your-expertise.gif');
+const mp4 = path.join(here, `${NAME}.mp4`);
+const gif = path.join(here, `${NAME}.gif`);
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 600, height: 760 }, deviceScaleFactor: SCALE });
@@ -49,7 +52,7 @@ sh(`ffmpeg -y -loglevel error -i ${mp4} -vf "${vf},palettegen=max_colors=96:stat
 sh(`ffmpeg -y -loglevel error -i ${mp4} -i ${tmp}/palette.png -lavfi "${vf} [x]; [x][1:v] paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" -loop 0 ${tmp}/raw.gif`);
 sh(`gifsicle -O3 --lossy=40 ${tmp}/raw.gif -o ${gif}`);
 // Still of the finished opening shot (4.3s): the Outlook fallback image (see email-snippet.html).
-sh(`ffmpeg -y -loglevel error -i ${tmp}/still.png -vf scale=600:-1:flags=lanczos ${path.join(here, 'earn-from-your-expertise-still.png')}`);
+sh(`ffmpeg -y -loglevel error -i ${tmp}/still.png -vf scale=600:-1:flags=lanczos ${path.join(here, `${NAME}-still.png`)}`);
 rmSync(tmp, { recursive: true, force: true });
 
 // Check both files run the full loop — a truncated GIF otherwise slips through unnoticed.
