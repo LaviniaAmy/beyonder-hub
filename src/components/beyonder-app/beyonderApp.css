@@ -145,7 +145,7 @@
 .ba-mapbox { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: center; padding: 6px 0 2px; margin: 0 -8px; }
 .ba-mapbox svg { width: 100%; height: 100%; overflow: visible; }
 .ba-rg { fill: var(--c); stroke: #F6F3EE; stroke-width: .8; stroke-linejoin: round; cursor: pointer; transition: fill .2s; }
-.ba-rg:hover { fill: #6F89A8; }
+@media (hover: hover) { .ba-rg:hover { fill: #6F89A8; } }
 .ba-rg[aria-pressed="true"] { fill: var(--ba-terra); }
 .ba-rg:focus { outline: none; }
 .ba-rg:focus-visible { stroke: var(--ba-ink); stroke-width: 2; }
@@ -200,7 +200,7 @@ textarea.ba-field { min-height: 150px; resize: vertical; line-height: 1.5; font-
 .ba-stack { display: grid; gap: 10px; }
 
 /* Bottom nav — a floating white bar that lifts off the cream background */
-.ba-nav { position: absolute; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 5; display: grid; grid-template-columns: repeat(5, 1fr);
+.ba-nav { position: absolute; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 5; display: grid; grid-template-columns: repeat(4, 1fr);
   background: #fff; border: 1px solid rgba(27,26,53,.06); border-radius: 22px; padding: 7px 4px 6px;
   box-shadow: 0 12px 32px rgba(14,21,42,.16), 0 2px 8px rgba(14,21,42,.08); transition: transform .6s cubic-bezier(.4,0,.2,1); }
 .ba-nav.ba-nav-fixed { position: fixed; z-index: 200; max-width: 520px; margin: 0 auto; }
@@ -211,6 +211,19 @@ textarea.ba-field { min-height: 150px; resize: vertical; line-height: 1.5; font-
 .ba-nav button[aria-current="page"] { color: var(--ba-ink); font-weight: 700; }
 .ba-nav button[aria-current="page"] .ba-nav-icon { background: var(--ba-terra-l); }
 .ba-nav button[aria-current="page"] img { opacity: 1; }
+
+/* Starling tips — one-off explainer bubbles */
+.ba-tip { position: absolute; z-index: 6; background: #fff; color: var(--ba-ink); border-radius: 16px; padding: 14px 16px 13px;
+  box-shadow: 0 10px 28px rgba(14,21,42,.18), 0 2px 6px rgba(14,21,42,.08); opacity: 0; transform: translateY(6px);
+  transition: opacity .35s ease, transform .35s ease; pointer-events: none; cursor: pointer; }
+.ba-tip.ba-tip-on { opacity: 1; transform: none; pointer-events: auto; }
+.ba-tip::after { content: ""; position: absolute; bottom: -6px; left: calc(var(--arrow) - 7px); width: 14px; height: 14px; background: #fff;
+  transform: rotate(45deg); border-radius: 0 0 3px 0; box-shadow: 4px 4px 6px rgba(14,21,42,.06); }
+.ba-tip p { font-size: 15px; font-weight: 600; line-height: 1.4; margin: 0; padding-right: 30px; position: relative; z-index: 1; }
+.ba-tip .ba-starling { position: absolute; top: -25px; right: 14px; }
+.ba-region-clear { width: 30px; height: 30px; display: grid !important; place-items: center; border-radius: 50%; color: var(--ba-muted); flex-shrink: 0; margin-left: -4px; }
+.ba-region-clear svg { width: 15px; height: 15px; }
+.ba-allengland { display: block !important; margin: 0 auto; font-size: 14px; font-weight: 700; color: var(--ba-terra-d) !important; text-decoration: underline; text-underline-offset: 3px; padding: 2px 8px !important; }
 
 /* Sheets */
 .ba-veil { position: absolute; inset: 0; z-index: 10; background: rgba(14,18,32,.45); opacity: 0; visibility: hidden; transition: opacity .5s, visibility .5s; }
@@ -244,4 +257,5 @@ textarea.ba-field { min-height: 150px; resize: vertical; line-height: 1.5; font-
 @media (prefers-reduced-motion: reduce) {
   .ba-screen, .ba-sheet, .ba-veil, .ba-nav, .ba-choice { transition: none !important; }
   .ba-choices.ba-intro .ba-choice, .ba-more svg { animation: none !important; }
+  .ba-tip { transition: opacity .2s linear !important; transform: none !important; }
 }

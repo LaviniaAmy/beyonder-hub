@@ -18,6 +18,10 @@ unless the user explicitly asks to edit a specific named element.
   The site header, footer and bottom nav are hidden on `/` on mobile (see `Layout.tsx`); the app shows its
   own bottom bar only on the Consult, Find and Profile screens. The murmuration is `<BirdCanvas />`.
   Every other mobile page uses the same bottom bar (`AppNav`) and menu (`MenuSheet`) via `Layout.tsx`.
+  Bottom bar has 4 tabs (Home · Consult · Find · Profile); Community is in the menu.
+  "Starling tips" (`StarlingTip.tsx`): one-off explainer bubbles with a perched starling, shown once per
+  device (localStorage `beyonder-tip-<id>`). Currently: map ("Choose your location") and provider results
+  ("Tap a name to see their full profile"). Keep them few.
   Its behaviour must match the prototype the user supplied — do not change the functionality.
 - **Desktop (md+):** hero keeps `<BirdCanvas />`, the legibility overlay, section height and the 3-step strip.
   The old wordmark, tagline, search bar and hint chips were replaced by the headline, the
