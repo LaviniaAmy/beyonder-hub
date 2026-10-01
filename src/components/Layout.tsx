@@ -7,16 +7,17 @@ import FooterImage from "@/assets/footer/footer-image.svg";
 import NavHome      from "@/assets/icons/nav/nav-home.svg";
 import NavSearch    from "@/assets/icons/nav/nav-search.svg";
 import NavCommunity from "@/assets/icons/nav/nav-community.svg";
-import NavNews      from "@/assets/icons/nav/nav-news.svg";
+import NavConsult   from "@/assets/icons/nav/nav-consult.svg";
 import NavProfile   from "@/assets/icons/nav/nav-profile.svg";
+import { useIsMobileLayout } from "@/hooks/useIsMobileLayout";
 
 // ── Mobile bottom-nav config ──────────────────────────────────────────────────
 const BOTTOM_NAV = [
-  { icon: NavHome,      label: "Home",      to: "/"          },
-  { icon: NavSearch,    label: "Find",      to: "/explore"   },
-  { icon: NavCommunity, label: "Community", to: "/community" },
-  { icon: NavNews,      label: "News",      to: "/news"      },
-  { icon: NavProfile,   label: "Profile",   to: "__profile"  },
+  { icon: NavHome,      label: "Home",      to: "/"              },
+  { icon: NavConsult,   label: "Consult",   to: "/?tab=consult"  },
+  { icon: NavSearch,    label: "Find",      to: "/explore"       },
+  { icon: NavCommunity, label: "Community", to: "/community"     },
+  { icon: NavProfile,   label: "Profile",   to: "__profile"      },
 ] as const;
 
 const C = {
@@ -87,6 +88,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const location  = useLocation();
   const navigate  = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const isMobile  = useIsMobileLayout();
+  // On phones the homepage is a full-screen app with its own header and bottom bar.
+  const appHome   = isMobile && location.pathname === "/";
 
   const dashboardLink =
     user?.role === "admin"    ? "/admin" :
@@ -102,7 +106,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex min-h-screen flex-col">
       {/* ── NAV ── */}
-      <header
+      {!appHome && <header
         style={{
           position:          "fixed",
           top:               0,
@@ -336,15 +340,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </nav>
           </div>
         )}
-      </header>
+      </header>}
 
       <main
-        className="flex-1 bg-background pb-[72px] md:pb-0"
-        style={{ paddingTop: 58, background: "#F6F3EE" }}
+        className={appHome ? "flex-1" : "flex-1 bg-background pb-[72px] md:pb-0"}
+        style={{ paddingTop: appHome ? 0 : 58, background: appHome ? "#080C18" : "#F6F3EE" }}
       >
         {children}
       </main>
 
+      {!appHome && <>
       {/* Footer image — sits above footer on every page */}
       <div style={{ background: "#F6F3EE", display: "flex", justifyContent: "center", padding: "0 20px" }}>
         <img src={FooterImage} alt="" aria-hidden="true" style={{ width: "84%", maxWidth: 924, display: "block", pointerEvents: "none" }} />
@@ -376,7 +381,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           const active =
             href === "/"
               ? location.pathname === "/"
-              : href === "/explore"
+              : href.startsWith("/?")
+                ? false
+                : href === "/explore"
                 ? location.pathname === "/explore" || location.pathname.startsWith("/providers")
                 : location.pathname.startsWith(href);
 
@@ -409,6 +416,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           );
         })}
       </nav>
+      </>}
     </div>
   );
 };

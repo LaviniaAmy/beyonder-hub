@@ -1,6 +1,8 @@
 import BirdCanvas from "@/components/BirdCanvas";
-import { useState, useEffect, useRef } from "react";
-import { MapPin } from "lucide-react";
+import BeyonderApp from "@/components/beyonder-app/BeyonderApp";
+import AboutSheet from "@/components/beyonder-app/AboutSheet";
+import { useIsMobileLayout } from "@/hooks/useIsMobileLayout";
+import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import FamilyPortrait from "@/assets/family-portrait.svg";
 
@@ -72,33 +74,6 @@ const newsOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
   e.currentTarget.style.borderColor = C.creamDark;
 };
 
-const chipIn = (e: React.MouseEvent<HTMLButtonElement>) => {
-  e.currentTarget.style.borderColor = "rgba(217,138,106,0.80)";
-  e.currentTarget.style.background = "rgba(217,138,106,0.16)";
-  e.currentTarget.style.color = C.warmWhite;
-  e.currentTarget.style.transform = "scale(1.04)";
-};
-const chipOut = (e: React.MouseEvent<HTMLButtonElement>) => {
-  e.currentTarget.style.borderColor = "rgba(217,138,106,0.32)";
-  e.currentTarget.style.background = "rgba(217,138,106,0.06)";
-  e.currentTarget.style.color = "rgba(232,244,255,0.45)";
-  e.currentTarget.style.transform = "none";
-};
-
-// ── Region list ───────────────────────────────────────────────────────────────
-const REGIONS = [
-  "South East England",
-  "South West England",
-  "North East England",
-  "North West England",
-  "East Midlands",
-  "West Midlands",
-  "London",
-  "Wales",
-  "Scotland",
-  "Northern Ireland",
-  "Online Only",
-];
 
 // ═════════════════════════════════════════════════════════════════════════════
 // CONTENT DATA — defined once, shared by mobile and desktop layouts
@@ -178,40 +153,19 @@ const NEWS = [
 // Component
 // ═════════════════════════════════════════════════════════════════════════════
 const Index = () => {
-  const [region, setRegion] = useState("");
-  const [support, setSupport] = useState("");
-  const [regionOpen, setRegionOpen] = useState(false);
-  const [mobileRegionOpen, setMobileRegionOpen] = useState(false);
+  const isMobile = useIsMobileLayout();
+  const [aboutOpen, setAboutOpen] = useState(false);
   const navigate = useNavigate();
+  const closeAbout = useCallback(() => setAboutOpen(false), []);
 
-  const regionRef       = useRef<HTMLDivElement>(null);
-  const mobileRegionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (regionRef.current       && !regionRef.current.contains(e.target as Node))       setRegionOpen(false);
-      if (mobileRegionRef.current && !mobileRegionRef.current.contains(e.target as Node)) setMobileRegionOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  const filteredRegions = REGIONS.filter((r) => r.toLowerCase().includes(region.toLowerCase()));
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const params = new URLSearchParams();
-    if (region.trim())  params.set("region", region.trim());
-    if (support.trim()) params.set("support", support.trim());
-    navigate(params.toString() ? `/providers?${params.toString()}` : "/providers");
-  };
-
-  const hints = [
-    { label: "Speech & Language",     to: "/providers?category=therapists&support=speech-language-therapy" },
-    { label: "Occupational Therapy",  to: "/providers?support=occupational-therapy" },
-    { label: "Autism-friendly clubs", to: "/providers?category=activities&needs=autism" },
-    { label: "EHCP support",          to: "/providers?category=education&support=ehcp" },
-  ];
+  // Mobile: the homepage is the single-screen app (no page scroll).
+  if (isMobile) {
+    return (
+      <div style={{ background: "#080C18", minHeight: "100dvh" }}>
+        <BeyonderApp />
+      </div>
+    );
+  }
 
   // ── Shared style tokens ──────────────────────────────────────────────────
   const sectionPad  = "clamp(36px, 5vw, 56px) clamp(20px, 5vw, 60px)";
@@ -224,8 +178,7 @@ const Index = () => {
     <div style={{ fontFamily: "'Nunito Sans', sans-serif", background: C.cream }}>
 
       {/* ══════════════════════════════════════════════════════════════════
-          HERO — Desktop: every element independently absolute-positioned
-                 Mobile: original content column untouched
+          HERO — desktop only. Mobile renders <BeyonderApp /> instead (see above).
       ══════════════════════════════════════════════════════════════════ */}
       <section
         className="min-h-[345px] md:h-[500px]"
@@ -245,280 +198,22 @@ const Index = () => {
           background: "linear-gradient(180deg, rgba(8,12,24,0.18) 0%, rgba(8,12,24,0.12) 35%, rgba(8,12,24,0.32) 75%, rgba(8,12,24,0.52) 100%)",
         }} />
 
-        {/* ── DESKTOP ONLY: Logo — independent ── */}
-        <div className="hidden md:flex"
-          style={{
-            position: "absolute", top: 69, left: 0, right: 0,
-            justifyContent: "center", alignItems: "center",
-            gap: "clamp(10px, 1.5vw, 18px)", zIndex: 3,
-          }}
-        >
-          <div style={{
-            width: "clamp(11px, 1.8vw, 22px)", height: "clamp(11px, 1.8vw, 22px)",
-            borderRadius: "50%", background: C.terra,
-          }} />
-          <span style={{
-            fontFamily: "'Josefin Sans', sans-serif",
-            fontSize: "clamp(2.9rem, 8vw, 7rem)",
-            fontWeight: 300, color: "#ffffff",
-            letterSpacing: "clamp(1px, 0.3vw, 2px)", lineHeight: 1,
-          }}>
-            Beyonder
-          </span>
-        </div>
-
-        {/* ── DESKTOP ONLY: Horizon line — fully independent ── */}
-        <div className="hidden md:flex"
-          style={{
-            position: "absolute", top: 180, left: 0, right: 0,
-            justifyContent: "center", zIndex: 3, pointerEvents: "none",
-          }}
-        >
-          <div style={{
-            width: "clamp(140px, 40vw, 480px)", height: 1,
-            background: "linear-gradient(to right, transparent, rgba(120,200,255,0.22), transparent)",
-          }} />
-        </div>
-
-        {/* ── DESKTOP ONLY: Tagline — independent ── */}
-        <div className="hidden md:flex"
-          style={{
-            position: "absolute", top: 196, left: 0, right: 0,
-            justifyContent: "center", zIndex: 3,
-          }}
-        >
-          <p style={{
-            fontSize: "clamp(0.75rem, 2vw, 1rem)",
-            color: "rgba(232,244,255,0.50)", fontWeight: 300, margin: 0,
-          }}>
-            One place for everything SEND
-          </p>
-        </div>
-
-        {/* ── DESKTOP ONLY: Search bar — independent ── */}
-        <div className="hidden md:flex"
-          style={{
-            position: "absolute", top: 245, left: 0, right: 0,
-            justifyContent: "center", zIndex: 3,
-          }}
-        >
-          <form
-            onSubmit={handleSearch}
-            style={{
-              display: "flex", width: "min(580px, 92vw)", height: 52,
-              background: "#ffffff", border: "none",
-              borderRadius: 12, overflow: "visible",
-              boxShadow: "0 4px 24px rgba(0,0,0,0.22)",
-              position: "relative", zIndex: 3,
-            }}
-          >
-            {/* Region field */}
-            <div
-              ref={regionRef}
-              style={{
-                flex: 1, display: "flex", flexDirection: "column", justifyContent: "center",
-                padding: "7px 16px", borderRight: "1px solid #E8E3DC",
-                position: "relative", cursor: "pointer",
-              }}
-              onClick={() => setRegionOpen((o) => !o)}
-            >
-              <span style={{ fontSize: "0.56rem", fontWeight: 600, color: C.terra, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 1 }}>
-                Region
-              </span>
-              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <input
-                  type="text" value={region}
-                  onChange={(e) => { setRegion(e.target.value); setRegionOpen(true); }}
-                  placeholder="Select a region"
-                  onClick={(e) => { e.stopPropagation(); setRegionOpen(true); }}
-                  style={{
-                    fontSize: "0.8rem", color: C.textDark, fontWeight: 300,
-                    background: "transparent", border: "none", outline: "none",
-                    fontFamily: "'Nunito Sans', sans-serif", flex: 1, minWidth: 0, cursor: "pointer",
-                  }}
-                />
-                <svg width="10" height="10" viewBox="0 0 10 10" style={{ flexShrink: 0, opacity: 0.35, marginRight: 2 }}>
-                  <path d="M2 3.5 L5 6.5 L8 3.5" stroke="#1B1A35" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              {regionOpen && filteredRegions.length > 0 && (
-                <div style={{
-                  position: "absolute", top: "calc(100% + 6px)", left: 0, width: "100%",
-                  background: "rgba(232,244,255,0.99)", borderRadius: 10,
-                  boxShadow: "0 8px 24px rgba(27,26,53,0.18)",
-                  zIndex: 9999, overflowY: "auto", overflowX: "hidden", maxHeight: "234px",
-                  border: "1px solid #DDD8D0",
-                }}>
-                  {filteredRegions.map((r, i) => (
-                    <div key={r}
-                      style={{
-                        padding: "9px 16px", fontSize: "0.80rem",
-                        color: r === region ? C.terra : C.textDark,
-                        fontWeight: r === region ? 600 : 300,
-                        fontFamily: "'Nunito Sans', sans-serif", cursor: "pointer",
-                        borderTop: i > 0 ? "1px solid #E8E3DC" : "none", background: "transparent",
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(217,138,106,0.06)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                      onMouseDown={(e) => { e.preventDefault(); setRegion(r); setRegionOpen(false); }}
-                    >
-                      {r}
-                    </div>
-                  ))}
-                </div>
-              )}
+        {/* ── DESKTOP: headline + the two starting points (logo lives in the site header) ── */}
+        <div className="ba-root ba-desk-hero">
+          <div className="ba-desk-hero-inner">
+            <h1>Talk to someone who understands.</h1>
+            <p>SEND specialists by video, phone or chat, and trusted support close to home.</p>
+            <div className="ba-choices">
+              <button className="ba-choice ba-choice-main" onClick={() => navigate("/start?start=consult")}>
+                <span><strong>Live consultation</strong><small>Speak to a specialist at a time that suits you</small></span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+              </button>
+              <button className="ba-choice ba-choice-alt" onClick={() => navigate("/start?start=find")}>
+                <span><strong>Find local support</strong><small>Therapists, clubs and services near you</small></span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+              </button>
             </div>
-
-            {/* Type of support field */}
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "7px 16px" }}>
-              <span style={{ fontSize: "0.56rem", fontWeight: 600, color: C.terra, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 1 }}>
-                Type of support
-              </span>
-              <input
-                type="text" value={support}
-                onChange={(e) => setSupport(e.target.value)}
-                placeholder="e.g. OT, Speech therapy, Clubs"
-                style={{
-                  fontSize: "0.8rem", color: C.textDark, fontWeight: 300,
-                  background: "transparent", border: "none", outline: "none",
-                  fontFamily: "'Nunito Sans', sans-serif",
-                }}
-              />
-            </div>
-
-            {/* Submit button */}
-            <button
-              type="submit"
-              style={{
-                width: 110, flexShrink: 0,
-                background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`,
-                border: "none", color: C.warmWhite,
-                fontSize: "0.85rem", fontWeight: 600,
-                fontFamily: "'Nunito Sans', sans-serif",
-                cursor: "pointer", borderRadius: "0 12px 12px 0",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-            >
-              Find Support
-            </button>
-          </form>
-        </div>
-
-        {/* ── DESKTOP ONLY: Hint chips — independent ── */}
-        <div className="hidden md:flex"
-          style={{
-            position: "absolute", top: 307, left: 0, right: 0,
-            justifyContent: "center", gap: 7, flexWrap: "wrap", zIndex: 3,
-          }}
-        >
-          <span style={{ fontSize: "0.65rem", color: "rgba(232,244,255,0.25)", alignSelf: "center" }}>Try:</span>
-          {hints.map((h) => (
-            <button key={h.label}
-              style={{
-                padding: "4px 11px", borderRadius: 14,
-                border: "1px solid rgba(217,138,106,0.32)",
-                fontSize: "0.68rem", color: "rgba(232,244,255,0.45)",
-                background: "rgba(217,138,106,0.06)", cursor: "pointer",
-                fontFamily: "'Nunito Sans', sans-serif",
-              }}
-              onMouseEnter={chipIn} onMouseLeave={chipOut}
-              onClick={() => navigate(h.to)}
-            >
-              {h.label}
-            </button>
-          ))}
-        </div>
-
-        {/* ══════════════════════════════════════════════════════════════════
-            MOBILE CONTENT COLUMN — original code, completely untouched.
-            Hidden on desktop (md:hidden). Mobile layout unchanged.
-        ══════════════════════════════════════════════════════════════════ */}
-        <div className="mobile-hero-col" style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column", flex: 1 }}>
-
-          {/* ── Logo (mobile only) ── */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}
-               className="pt-14 px-5">
-            <div style={{ display: "flex", alignItems: "center", gap: "clamp(10px, 1.5vw, 18px)", marginBottom: 8 }}>
-              <div style={{
-                width: "clamp(11px, 1.8vw, 22px)", height: "clamp(11px, 1.8vw, 22px)",
-                borderRadius: "50%", background: C.terra,
-              }} />
-              <span style={{
-                fontFamily: "'Josefin Sans', sans-serif",
-                fontSize: "clamp(2.9rem, 8vw, 7rem)",
-                fontWeight: 300, color: "#ffffff",
-                letterSpacing: "clamp(1px, 0.3vw, 2px)", lineHeight: 1,
-              }}>
-                Beyonder
-              </span>
-            </div>
-            <div style={{
-              width: "clamp(140px, 40vw, 480px)", height: 1,
-              background: "linear-gradient(to right, transparent, rgba(120,200,255,0.22), transparent)",
-            }} />
-          </div>
-
-          {/* Flex spacer — grows to push mobile search card to bottom */}
-          <div className="flex-1" />
-
-          {/* ── Tagline — sits just above search card ── */}
-          <p style={{
-            fontSize: "clamp(0.75rem, 3.5vw, 1rem)",
-            color: "rgba(232,244,255,0.50)", fontWeight: 300,
-            margin: "0 0 10px 0", textAlign: "center", padding: "0 20px",
-          }}>
-            One place for everything SEND
-          </p>
-
-          {/* ── Mobile search card (glass outer, single white bar inside) ── */}
-          <div
-            className="md:hidden mx-4"
-            style={{
-              background: "rgba(255,255,255,0.13)",
-              backdropFilter: "blur(22px)", WebkitBackdropFilter: "blur(22px)",
-              border: "1px solid rgba(255,255,255,0.24)",
-              borderRadius: "20px 20px 0 0",
-              boxShadow: "0 -14px 40px rgba(0,0,0,0.22)",
-              padding: "14px 14px 18px",
-            }}
-          >
-            {/* Single search bar: [icon] [text input] [Region pill] [arrow] */}
-            <div style={{ position: "relative", marginBottom: 12 }}>
-              <div style={{
-                display: "flex", alignItems: "center",
-                background: "#ffffff", borderRadius: 12,
-                padding: "0 6px 0 12px", height: 48,
-              }}>
-                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, opacity: 0.30, marginRight: 8 }}>
-                  <circle cx="7" cy="7" r="5" stroke={C.textDark} strokeWidth="1.6"/>
-                  <path d="M11 11L14 14" stroke={C.textDark} strokeWidth="1.6" strokeLinecap="round"/>
-                </svg>
-                <input type="text" value={support} onChange={(e) => setSupport(e.target.value)} placeholder="OT, Speech therapy, Clubs..." style={{ flex: 1, fontSize: "0.85rem", color: C.textDark, fontWeight: 300, background: "transparent", border: "none", outline: "none", fontFamily: "'Nunito Sans', sans-serif", minWidth: 0 }} />
-                <div ref={mobileRegionRef} style={{ position: "relative", flexShrink: 0 }}>
-                  <button style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(27,26,53,0.09)", borderRadius: 8, padding: "6px 10px", border: "none", cursor: "pointer", fontSize: "0.73rem", fontWeight: 600, color: C.textDark, fontFamily: "'Nunito Sans', sans-serif", whiteSpace: "nowrap", marginRight: 6 }} onClick={() => setMobileRegionOpen((o) => !o)}>
-                    <MapPin size={11} />
-                    {region || "Region"}
-                  </button>
-                  {mobileRegionOpen && filteredRegions.length > 0 && (
-                    <div style={{ position: "absolute", bottom: "calc(100% + 6px)", right: 0, background: "rgba(232,244,255,0.99)", borderRadius: 10, boxShadow: "0 8px 24px rgba(27,26,53,0.18)", zIndex: 9999, overflowY: "auto", maxHeight: "200px", border: "1px solid #DDD8D0", minWidth: 180 }}>
-                      {filteredRegions.map((r, i) => (
-                        <div key={r} style={{ padding: "10px 14px", fontSize: "0.85rem", color: r === region ? C.terra : C.textDark, fontWeight: r === region ? 600 : 300, fontFamily: "'Nunito Sans', sans-serif", cursor: "pointer", borderTop: i > 0 ? "1px solid #E8E3DC" : "none" }} onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(217,138,106,0.06)")} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")} onMouseDown={(e) => { e.preventDefault(); setRegion(r); setMobileRegionOpen(false); }}>{r}</div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <button onClick={() => { const params = new URLSearchParams(); if (region.trim()) params.set("region", region.trim()); if (support.trim()) params.set("support", support.trim()); navigate(params.toString() ? `/providers?${params.toString()}` : "/providers"); }} style={{ width: 36, height: 36, borderRadius: 9, flexShrink: 0, background: `linear-gradient(135deg, ${C.sienna}, ${C.terra})`, border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-              </div>
-            </div>
-            {/* Mobile hint chips — white */}
-            <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
-              {hints.map((h) => (
-                <button key={h.label} style={{ padding: "5px 12px", borderRadius: 100, border: "1px solid rgba(255,255,255,0.45)", fontSize: "0.72rem", color: "#ffffff", background: "rgba(255,255,255,0.12)", cursor: "pointer", fontFamily: "'Nunito Sans', sans-serif" }} onClick={() => navigate(h.to)}>{h.label}</button>
-              ))}
-            </div>
+            <button className="ba-howlink" onClick={() => setAboutOpen(true)}>Built by SEND parents. See how Beyonder works</button>
           </div>
         </div>
 
@@ -551,30 +246,6 @@ const Index = () => {
           ))}
         </div>
       </section>
-
-      {/* ── Mobile steps strip — shown below hero ── */}
-      <div
-        className="md:hidden grid grid-cols-3"
-        style={{ background: "#F6F3EE", borderTop: "1px solid rgba(27,26,53,0.08)" }}
-      >
-        {STEPS.map((step, i) => (
-          <div key={step.t}
-            style={{
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 5,
-              padding: "14px 6px", textAlign: "center",
-              borderRight: i < 2 ? "1px solid rgba(27,26,53,0.07)" : "none",
-            }}
-          >
-            <div style={{ width: 44, height: 44, flexShrink: 0 }}>
-              <img src={step.icon} alt={step.t} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-            </div>
-            <div>
-              <div style={{ fontSize: "0.68rem", fontWeight: 600, color: C.textDark, marginBottom: 1, lineHeight: 1.3 }}>{step.t}</div>
-              <div style={{ fontSize: "0.57rem", color: C.textLight, fontWeight: 300, lineHeight: 1.4 }}>{step.s}</div>
-            </div>
-          </div>
-        ))}
-      </div>
 
       {/* ══════════════════════════════════════════════════════════════════
           2. ECOSYSTEM INTRO + CATEGORIES
@@ -1022,6 +693,7 @@ const Index = () => {
         </div>
       </section>
 
+      <AboutSheet open={aboutOpen} onClose={closeAbout} fixed />
     </div>
   );
 };
