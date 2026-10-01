@@ -70,22 +70,25 @@
   .logo .dot b { position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--sienna); opacity: 0; }
 
   .intro-text { position: absolute; left: 34px; right: 34px; bottom: 36px; color: #fff; z-index: 5; }
-  .eyebrow { font-size: 13px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--sienna); }
-  .intro-text h1 { font-family: var(--head); font-weight: 300; font-size: 50px; line-height: 1.06; margin: 14px 0 18px; }
+  .eyebrow { font-size: 15px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--sienna); }
+  .intro-text h1 { font-family: var(--head); font-weight: 300; font-size: 54px; line-height: 1.04; margin: 18px 0 18px; }
+  .badge { display: inline-flex; align-items: center; gap: 10px; padding: 9px 16px 8px; border-radius: 999px; background: rgba(232,160,128,.18);
+    border: 1.5px solid rgba(232,160,128,.6); color: #F8CDB8; font-size: 15px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  .badge i { width: 8px; height: 8px; border-radius: 50%; background: var(--sienna); }
   .intro-text h1 .w { display: inline-block; white-space: pre; }
   .intro-text h1 .hl { display: inline-block; }
-  .intro-text p { font-size: 19px; line-height: 1.45; color: rgba(255,255,255,.88); }
-  .intro-text p.small { font-size: 15px; color: rgba(255,255,255,.72); margin-top: 12px; max-width: 46ch; }
+  .intro-text p { font-size: 23px; line-height: 1.4; color: rgba(255,255,255,.88); }
+  .intro-text p.small { font-size: 19px; color: rgba(255,255,255,.82); margin-top: 12px; max-width: 34ch; }
 
   .outro-text { position: absolute; left: 34px; right: 34px; bottom: 34px; color: #fff; text-align: center; z-index: 5; }
-  .outro-text h2 { font-family: var(--head); font-weight: 300; font-size: 46px; line-height: 1.08; margin: 12px 0 0; }
-  .points { display: inline-flex; flex-direction: column; gap: 9px; margin: 22px 0 26px; text-align: left; }
-  .points div { display: flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 700; }
-  .points i { width: 24px; height: 24px; border-radius: 50%; background: rgba(232,160,128,.28); display: grid; place-items: center; flex-shrink: 0; }
+  .outro-text h2 { font-family: var(--head); font-weight: 300; font-size: 50px; line-height: 1.06; margin: 12px 0 0; }
+  .points { display: inline-flex; flex-direction: column; gap: 11px; margin: 22px 0 26px; text-align: left; }
+  .points div { display: flex; align-items: center; gap: 12px; font-size: 21px; font-weight: 700; }
+  .points i { width: 28px; height: 28px; border-radius: 50%; background: rgba(232,160,128,.28); display: grid; place-items: center; flex-shrink: 0; }
   .points i svg { width: 14px; height: 14px; color: #F5C2A8; }
   .cta { display: inline-flex; align-items: center; gap: 12px; padding: 19px 30px; border-radius: 14px; background: var(--terra-grad); font-family: var(--head); font-weight: 600; font-size: 24px; color: #fff; }
   .cta svg { width: 22px; height: 22px; }
-  .outro-text .note { margin-top: 16px; font-size: 15px; color: rgba(255,255,255,.75); }
+  .outro-text .note { margin-top: 16px; font-size: 19px; color: rgba(255,255,255,.85); }
 
   /* ── Steps scene ── */
   #steps { z-index: 1; background: var(--cream); }
@@ -105,10 +108,9 @@
     box-shadow: 0 10px 30px rgba(27,26,53,.16), 0 1px 3px rgba(27,26,53,.08); transform-origin: 0% 20%; opacity: 0; }
   .bubble::after { content: ""; position: absolute; left: -12px; top: 18px; width: 26px; height: 22px; background: #fff;
     clip-path: polygon(100% 0, 0 30%, 100% 100%); }
-  .avatar { position: absolute; left: 24px; top: 26px; width: 54px; height: 54px; border-radius: 50%; z-index: 11; opacity: 0;
-    background: var(--indigo); box-shadow: 0 6px 18px rgba(27,26,53,.22); display: grid; place-items: center; }
-  .avatar svg { width: 34px; height: 34px; transform: rotate(62deg); }
-  .avatar i { position: absolute; right: 2px; bottom: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--terra); border: 2px solid var(--cream); }
+  .avatar { position: absolute; left: 22px; top: 24px; width: 60px; height: 60px; border-radius: 50%; z-index: 11; opacity: 0;
+    background: #FBE3D6; border: 1.5px solid #F2C9B4; box-shadow: 0 6px 18px rgba(27,26,53,.12); display: grid; place-items: center; }
+  .avatar svg { width: 44px; height: 38px; margin: -2px 0 0 -2px; overflow: visible; }
   .bubble .k { font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--terra-d); }
   .bubble .k em { font-style: normal; color: var(--muted); letter-spacing: .1em; }
   .bubble .t { font-family: var(--head); font-size: 27px; line-height: 1.12; margin-top: 6px; }
@@ -345,7 +347,8 @@
     <div class="vignette" id="vig"></div>
 
 
-    <div class="avatar" id="avatar"><svg viewBox="0 0 610 395"><path id="avpath" fill="#fff"/></svg><i></i></div>
+    <!-- The bird from the Products category card (Shopping_Icon.svg), with its fluttering wing -->
+    <div class="avatar" id="avatar"><svg viewBox="62 8 30 25"><path d="M78.01,14.73c.02-.41.16-1.99,1.44-3.2.26-.25,1.52-1.44,3.07-1.22.89.13,1.62.68,2,.97.39.3.68.6.88.83.59.11,1.08.16,1.41.19.39.04.64.04,1.01.12.41.08.74.2.95.29-.09.03-.22.08-.39.12-.74.19-1.03.04-1.82.15-.38.05-.72.1-1.11.32-.11.06-.42.25-.72.61-.2.24-.42.52-.46.91-.03.3.05.53.17.85.14.4.32.66.37.74.45.73.31,1.81.24,2.36-.07.59-.28,1.48-1.05,2.68-1.64,2.57-4.52,4.47-5.48,5.07.03.18.04.43,0,.73-.04.25-.11.46-.17.61.95.93,1.9,1.87,2.85,2.8.35.08.71.18,1.1.29.53.16,1.02.34,1.46.53l-4.65.23c.1-.14.24-.33.46-.49.09-.06.23-.16.42-.24.15-.06.28-.1.39-.12-.94-.9-1.87-1.8-2.81-2.7-.06-.02-.45-.18-.62-.61-.16-.39-.03-.73,0-.8-.27.02-.54.04-.82.06v.75c.44.66.92,1.36,1.48,2.13.26.36.54.75,1.04.94.3.12.6.14.83.15.48.03.77.05,1.11-.05.06-.02.11-.04.13-.02.04.06-.32.56-.87.71-.56.16-1.04-.11-1.15-.17-1.21.04-2.42.08-3.62.12.09-.16.24-.37.49-.49.19-.09.32-.07.73-.1.64-.04,1.02-.07,1.11-.27.07-.15-.06-.35-.12-.44-.57-.86-1.68-2.23-1.89-2.49-.09-.04-.21-.11-.33-.24-.19-.21-.25-.43-.27-.54-.22.05-.57.13-.98.27-1.72.6-2.83,1.65-3.69,2.48-.42.41-1,1.01-1.61,1.81-.23.16-.53.16-.73,0-.22-.18-.22-.46-.22-.49.74-1.04,1.49-2.07,2.23-3.11-1.14.38-2.35.74-2.41.58-.05-.11.57-.44,1.13-.84,1.16-.83,1.8-1.81,2.6-3.11,2.14-3.51,2.31-4.31,3.44-5.92.67-.96,1.75-2.33,3.45-3.75Z" fill="#1B1A35"/><path id="avwing" d="M67.03,27.33c.57-.34,1.43-.89,2.34-1.72,1.95-1.77,2.48-3.23,5.07-6.94,1.97-2.83,2.6-3.32,3.42-3.43,1.72-.23,3.36,1.34,3.44,1.42.37.36.91.9,1.06,1.68.29,1.48-.99,2.86-1.61,3.52-3.24,3.48-12.27,5.2-13.71,5.47Z" fill="#1B1A35"/></svg></div>
     <div class="bubble" id="b1"><div class="k">Step 1 <em>of 4</em></div><div class="t" data-text="Choose when you’re available"></div></div>
     <div class="bubble" id="b2"><div class="k">Step 2 <em>of 4</em></div><div class="t" data-text="Set your consultation options"></div></div>
     <div class="bubble" id="b3"><div class="k">Step 3 <em>of 4</em></div><div class="t" data-text="Parents find you and book a time"></div></div>
@@ -359,14 +362,14 @@
     <div class="logo"><span class="dot"><b id="ripple"></b><i id="dot"></i></span>Beyonder</div>
 
     <div class="intro-text" id="intro">
-      <div class="eyebrow" id="ieb">For SEND professionals</div>
-      <h1 id="headline"><span class="w">Your </span><span class="w">SEND </span><span class="w">expertise </span><span class="w">could </span><span class="w">earn </span><span class="w">you </span><span class="hl" id="hl"><span class="w">extra </span><span class="w">income.</span></span></h1>
-      <p id="ip1">You already have the expertise families need.</p>
-      <p class="small" id="ip2">Beyonder is creating a new way for SEND professionals to offer paid online consultations to parents looking for personalised support.</p>
+      <div class="badge" id="ieb"><i></i>Founding Specialists wanted</div>
+      <h1 id="headline"><span class="w">Turn </span><span class="w">your </span><span class="w">SEND </span><span class="w">expertise </span><span class="w">into </span><span class="hl" id="hl"><span class="w">extra </span><span class="w">income.</span></span></h1>
+      <p id="ip1">Paid online consultations with parents, on your schedule.</p>
+      <p class="small" id="ip2">For SENCOs, therapists, psychologists and SEND advisors.</p>
     </div>
 
     <div class="outro-text" id="outro">
-      <div class="eyebrow rise" style="--s:26.5s">Founding places now open</div>
+      <div class="badge rise" style="--s:26.5s"><i></i>Founding places now open</div>
       <h2 class="rise" style="--s:26.65s">Earn from your expertise</h2>
       <div class="points">
         <div class="rise" style="--s:26.95s"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Choose when you’re available</div>
@@ -387,7 +390,8 @@
 </div>
 
 <script>
-const LOOP = 30;
+const LOOP = 30;       // timeline length, in timeline seconds
+const SLOW = 1.5;      // playback is 1.5x slower: the real loop is LOOP * SLOW = 45s
 const W = 600, H = 760;
 
 // ── Timeline helpers ─────────────────────────────────────────────
@@ -459,8 +463,7 @@ const confetti = Array.from({ length: 34 }, () => ({
 
 // ── DOM refs ─────────────────────────────────────────────────────
 const $ = (id) => document.getElementById(id);
-const sky = $("sky"), steps = $("steps"), cam = $("cam"), vig = $("vig"), avatar = $("avatar");
-$("avpath").setAttribute("d", BIRD_D);
+const sky = $("sky"), steps = $("steps"), cam = $("cam"), vig = $("vig"), avatar = $("avatar"), avwing = $("avwing");
 const words = [...document.querySelectorAll("#headline .w")];
 const bubbles = [1, 2, 3, 4].map((i) => $("b" + i));
 bubbles.forEach((b) => { const t = b.querySelector(".t"); t.dataset.n = -1; });
@@ -478,7 +481,7 @@ const CAM = [
 
 // ── Main render ──────────────────────────────────────────────────
 function renderAt(ms) {
-  const t = (ms / 1000) % LOOP;
+  const t = (ms / 1000 / SLOW) % LOOP;
   document.getAnimations().forEach((a) => { a.currentTime = t * 1000; });
   fctx.clearRect(0, 0, W * DPR, H * DPR);
 
@@ -490,17 +493,17 @@ function renderAt(ms) {
 
   // Intro text: words rise out of a blur; "extra income" catches the light.
   words.forEach((w, i) => {
-    const p = eout(prog(t, 0.75 + i * 0.13, 1.45 + i * 0.13));
+    const p = eout(prog(t, 0.3 + i * 0.14, 1.0 + i * 0.14));
     w.style.opacity = p.toFixed(3);
     w.style.transform = `translateY(${((1 - p) * 22).toFixed(1)}px)`;
     w.style.filter = p < 1 ? `blur(${((1 - p) * 8).toFixed(1)}px)` : "none";
   });
-  const g = bump(t, 2.3, 2.8, 3.1, 4.2), warm = prog(t, 2.3, 2.8);
+  const g = bump(t, 1.6, 2.1, 2.5, 3.6), warm = prog(t, 1.6, 2.1);
   const hl = $("hl");
   hl.style.color = `rgb(${Math.round(lerp(255, 245, warm))},${Math.round(lerp(255, 184, warm))},${Math.round(lerp(255, 152, warm))})`;
   hl.style.textShadow = `0 0 ${(6 + 22 * g).toFixed(1)}px rgba(232,160,128,${(0.25 + 0.6 * g).toFixed(2)})`;
   const fade = (el, a) => { const p = eout(prog(t, a, a + 0.7)); el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * 14}px)`; };
-  fade($("ieb"), 0.35); fade($("ip1"), 2.55); fade($("ip2"), 2.95);
+  fade($("ieb"), 0); fade($("ip1"), 1.9); fade($("ip2"), 2.4);
   $("intro").style.opacity = t < 6 ? 1 - out * 0.6 : 0;
   $("outro").style.opacity = t < 25 ? 0 : 1 - prog(t, 29.45, 29.95);
 
@@ -529,9 +532,19 @@ function renderAt(ms) {
   vig.style.opacity = 0;
 
   // Bubble avatar (the starling) pops in with step 1 and stays until the earnings moment.
-  const ain = t < 6.8 ? 0 : eback(prog(t, 6.8, 7.2)), aout = ein(prog(t, 24.3, 24.6));
-  avatar.style.opacity = t >= 6.8 && t < 24.6 ? Math.min(1, ain * 1.4) * (1 - aout) : 0;
+  const ain = t < 5.9 ? 0 : eback(prog(t, 5.9, 6.3)), aout = ein(prog(t, 24.3, 24.6));
+  avatar.style.opacity = t >= 5.9 && t < 24.6 ? Math.min(1, ain * 1.4) * (1 - aout) : 0;
   avatar.style.transform = `scale(${(0.3 + 0.7 * ain).toFixed(3)})`;
+  // Same flutter as the Products card (0° → 30° → 18° → 25° → 0°), played twice before each bubble.
+  let wingA = 0;
+  BUB.forEach(([a]) => {
+    const p = prog(t, a - 0.85, a - 0.05);
+    if (p > 0 && p < 1) {
+      const q = (p * 2) % 1, k = [0, 30, 18, 25, 0], seg = Math.min(3, Math.floor(q * 4));
+      wingA = lerp(k[seg], k[seg + 1], eio(q * 4 - seg));
+    }
+  });
+  avwing.setAttribute("transform", `rotate(${wingA.toFixed(2)} 80.2 16.8)`);
 
   // Bubbles: pop from the tail, type the words, shrink back.
   bubbles.forEach((b, i) => {
@@ -574,7 +587,7 @@ document.fonts.ready.then(() => {
   document.getAnimations().forEach((a) => a.pause());
   if (location.search.includes("render")) { renderAt(0); return; }
   const t0 = performance.now();
-  const tick = (now) => { renderAt(now - t0); requestAnimationFrame(tick); };
+  const tick = (now) => { renderAt(now - t0); requestAnimationFrame(tick); };  // ms of real time
   requestAnimationFrame(tick);
 });
 </script>

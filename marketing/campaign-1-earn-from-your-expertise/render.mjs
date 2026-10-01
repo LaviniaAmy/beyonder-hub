@@ -11,9 +11,9 @@ import { createRequire } from 'node:module';
 const { chromium } = createRequire(import.meta.url)('playwright');
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const LOOP = 30, FPS = 30, SCALE = 2;
+const LOOP = 45, FPS = 30, SCALE = 2;   // LOOP = real seconds (animation.html plays its 30s timeline 1.5x slower)
 // Bump VERSION for each new cut: a new file name stops browsers, GitHub and email tools showing a cached old copy.
-const VERSION = 'v3';
+const VERSION = 'v4';
 const NAME = `earn-from-your-expertise-${VERSION}`;
 const tmp = process.env.FRAMES_DIR || path.join(here, '.render');
 rmSync(tmp, { recursive: true, force: true });
@@ -34,7 +34,7 @@ const stage = await page.$('#stage');
 const enc = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-',
   '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '16', '-movflags', '+faststart', mp4], { stdio: ['pipe', 'inherit', 'inherit'] });
 const done = new Promise((res, rej) => enc.on('close', (c) => (c === 0 ? res() : rej(new Error('ffmpeg exited ' + c)))));
-const STILL = Math.round(4.3 * FPS);
+const STILL = Math.round(6.6 * FPS);   // the finished opening shot
 const total = LOOP * FPS;
 for (let i = 0; i < total; i++) {
   await page.evaluate((ms) => window.renderAt(ms), (i * 1000) / FPS);
@@ -51,7 +51,7 @@ const vf = 'fps=12,scale=600:-1:flags=lanczos';
 sh(`ffmpeg -y -loglevel error -i ${mp4} -vf "${vf},palettegen=max_colors=96:stats_mode=diff" ${tmp}/palette.png`);
 sh(`ffmpeg -y -loglevel error -i ${mp4} -i ${tmp}/palette.png -lavfi "${vf} [x]; [x][1:v] paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" -loop 0 ${tmp}/raw.gif`);
 sh(`gifsicle -O3 --lossy=40 ${tmp}/raw.gif -o ${gif}`);
-// Still of the finished opening shot (4.3s): the Outlook fallback image (see email-snippet.html).
+// Still of the finished opening shot (6.6s): the Outlook fallback image (see email-snippet.html).
 sh(`ffmpeg -y -loglevel error -i ${tmp}/still.png -vf scale=600:-1:flags=lanczos ${path.join(here, `${NAME}-still.png`)}`);
 rmSync(tmp, { recursive: true, force: true });
 
