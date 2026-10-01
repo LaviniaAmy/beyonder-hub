@@ -2,21 +2,19 @@ import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom";
 import BirdCanvas from "@/components/BirdCanvas";
 import { useAuth } from "@/context/AuthContext";
-import NavHome from "@/assets/icons/nav/nav-home.svg";
-import NavConsult from "@/assets/icons/nav/nav-consult.svg";
-import NavSearch from "@/assets/icons/nav/nav-search.svg";
-import NavCommunity from "@/assets/icons/nav/nav-community.svg";
-import NavProfile from "@/assets/icons/nav/nav-profile.svg";
+import { getActiveProviders, getProvider, type EditableProvider } from "@/data/providerStore";
+import { addEnquiry } from "@/data/enquiryStore";
 import {
-  AGES, NEEDS, HELP, Q, FLOW, REGIONS, CATCARDS, SPECS, CATS, PROVS,
-  type QKey, type Path, type Fmt,
+  AGES, NEEDS, HELP, Q, FLOW, REGIONS, CATCARDS, SPECS, CATS, CAT_TYPE, REGION_DIRECTORY_NAME, NEED_KEYWORDS,
+  type QKey, type Path, type Fmt, type Specialist,
 } from "./data";
 import { MAP } from "./ukMap";
 import AboutSheet from "./AboutSheet";
+import MenuSheet from "./MenuSheet";
+import AppNav, { type Tab } from "./AppNav";
 import "./beyonderApp.css";
 
 type ScreenId = "home" | "q" | "consult" | "areas" | "find" | "enquiry" | "sent" | "profile";
-type Tab = "home" | "consult" | "find" | "community" | "profile";
 
 interface State {
   path: Path; step: number; editKey: QKey | null;
@@ -33,10 +31,20 @@ const freshState = (): State => ({
 });
 // Answers are kept for this browser tab so leaving (e.g. to Community) and coming back keeps them.
 const loadState = (): State => {
-  try { const raw = sessionStorage.getItem(STORE_KEY); if (raw) return { ...freshState(), ...JSON.parse(raw) }; } catch { /* unavailable */ }
+  try {
+    const raw = sessionStorage.getItem(STORE_KEY);
+    if (raw) {
+      const s: State = { ...freshState(), ...JSON.parse(raw) };
+      if (s.region && !REGIONS[s.region]) s.region = null; // map is England only
+      return s;
+    }
+  } catch { /* unavailable */ }
   return freshState();
 };
 const saveState = (s: State) => { try { sessionStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch { /* unavailable */ } };
+
+// The England map is stretched slightly wider so it fills the phone screen.
+const SX = 1.12;
 
 const listText = (a: string[]) => (a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1]);
 const reduce = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -57,6 +65,7 @@ const BeyonderApp = ({ embedded = false }: Props) => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const { isAuthenticated, user } = useAuth();
+  const [findQ, setFindQ] = useState("");
 
   const S = useRef<State>(loadState()).current;
   const [, force] = useReducer((x: number) => x + 1, 0);
@@ -204,6 +213,10 @@ const BeyonderApp = ({ embedded = false }: Props) => {
   // ── Shared helpers ─────────────────────────────────────────────────────
   const needText = () => listText(S.needs.filter((n) => n !== "unsure").map((n) => NEEDS[n].toLowerCase()));
   const score = (p: { tags: string[] }) => p.tags.filter((t) => S.needs.includes(t)).length;
+  const providerScore = (p: EditableProvider) => {
+    const text = [...p.needsSupported, ...p.searchTags, p.description, p.shortDescription, p.typeBadge].join(" ").toLowerCase();
+    return S.needs.filter((n) => (NEED_KEYWORDS[n] || []).some((w) => text.includes(w))).length;
+  };
   const placeName = () => S.area.trim() || (S.region ? REGIONS[S.region][0] : "");
   const toggleNeed = (n: string) => {
     S.needs = S.needs.filter((x) => x !== "unsure");
@@ -216,20 +229,30 @@ const BeyonderApp = ({ embedded = false }: Props) => {
     const sc = areasScroll.current; if (!sc || !el) return;
     const from = sc.scrollTop, to = el.offsetTop - sc.offsetTop, dist = to - from;
     if (reduce || !dist) { sc.scrollTop = to; return; }
-    const dur = 1600, t0 = performance.now();
-    const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    // Short ease-out: moves immediately, settles gently.
+    const dur = 420, t0 = performance.now();
+    const ease = (t: number) => 1 - Math.pow(1 - t, 3);
     const step = (now: number) => { const t = Math.min(1, (now - t0) / dur); sc.scrollTop = from + dist * ease(t); if (t < 1) requestAnimationFrame(step); };
     step(t0);
   }
   function pickRegion(k: string) {
     S.region = k; S.area = ""; update();
-    setTimeout(() => glideTo(catsecRef.current), reduce ? 0 : 800);
+    requestAnimationFrame(() => glideTo(catsecRef.current));
   }
 
   // ── Enquiry ────────────────────────────────────────────────────────────
-  const target = () => (S.target?.kind === "book" ? SPECS.find((s) => s.id === S.target!.id)! : PROVS.find((p) => p.id === S.target!.id)!);
+  type Target = { first: string; name: string; spec?: Specialist; prov?: EditableProvider };
+  const target = (): Target | null => {
+    if (!S.target) return null;
+    if (S.target.kind === "book") {
+      const spec = SPECS.find((sp) => sp.id === S.target!.id);
+      return spec ? { first: spec.first, name: spec.name, spec } : null;
+    }
+    const prov = getProvider(S.target.id);
+    return prov ? { first: prov.businessName, name: prov.businessName, prov } : null;
+  };
   function draftMsg() {
-    const t = target(), who = S.child.trim() || "my child", nt = needText();
+    const t = target()!, who = S.child.trim() || "my child", nt = needText();
     let m = `Hi ${t.first},\n\nI’m looking for support for ${who}${S.age ? `, who is ${AGES[S.age].toLowerCase()}` : ""}.`;
     if (nt) m += ` The main areas we’re finding hard at the moment are ${S.needs.filter((n) => n !== "unsure").map((n) => NEEDS[n].toLowerCase()).join(", ")}.`;
     else if (S.needs.includes("unsure")) m += ` We’re not sure yet what’s behind the difficulties.`;
@@ -241,13 +264,46 @@ const BeyonderApp = ({ embedded = false }: Props) => {
     S.target = { kind, id }; S.msgEdited = false; update(); renderEnquiry(); go("enquiry");
   }
   function send() {
-    const t = target(), book = S.target?.kind === "book";
+    const t = target()!, book = S.target?.kind === "book";
+    // Enquiries go to the real provider, so they follow the directory's rules: parents only, signed in.
+    if (!book && !isAuthenticated) {
+      setEnqErr("Please sign in with your parent account to send this enquiry. Your answers will be kept.");
+      return;
+    }
+    if (!book && user?.role !== "parent") {
+      setEnqErr("Enquiries are for families. Provider and admin accounts can’t send enquiries.");
+      return;
+    }
     if (!shareRef.current?.checked) {
       setEnqErr(`Tick the first box to share these details with ${t.first}, then ${book ? "request the booking" : "send"} again.`);
       return;
     }
     S.saved = !!saveRef.current?.checked; update();
-    const slot = "slot" in t ? t.slot : "";
+    if (!book && t.prov) {
+      const today = new Date().toISOString().split("T")[0];
+      const ageText = S.age ? AGES[S.age] : "";
+      addEnquiry({
+        enquiryId: crypto.randomUUID(),
+        providerId: t.prov.id,
+        providerName: t.prov.businessName,
+        parentId: user?.id ?? "parent-test",
+        parentName: user?.name ?? "Guest",
+        childAge: ageText,
+        childName: S.child.trim(),
+        needs: S.needs.map((n) => NEEDS[n]).join(", "),
+        message: S.msg.trim(),
+        reply: null,
+        messages: [{ messageId: crypto.randomUUID(), senderId: "parent", senderName: user?.name ?? "Guest", text: S.msg.trim(), sentAt: today }],
+        statusForParent: "sent",
+        statusForProvider: "new",
+        createdAt: today,
+        isUnlocked: false,
+        messageCount: 1,
+        providerNotes: "",
+        customAnswers: [],
+      });
+    }
+    const slot = t.spec?.slot ?? "";
     setSent({
       book,
       title: book ? "Booking requested" : "Enquiry sent",
@@ -259,7 +315,6 @@ const BeyonderApp = ({ embedded = false }: Props) => {
   // ── Sheets ─────────────────────────────────────────────────────────────
   const openSheet = (n: "about" | "menu") => setSheet(n);
   const closeSheets = () => setSheet(null);
-  const menuGo = (to: string) => { closeSheets(); navigate(to); };
 
   // ── Effects ────────────────────────────────────────────────────────────
   useLayoutEffect(() => {
@@ -311,26 +366,29 @@ const BeyonderApp = ({ embedded = false }: Props) => {
   const specList = SPECS.filter((s) => s.fmt.includes(S.fmt)).sort((a, b) => score(b) - score(a));
 
   // Find results
-  const provList = PROVS.filter((p) => S.cat === "all" || p.cat === S.cat).sort((a, b) => score(b) - score(a));
+  // Same rules as the directory (ProviderDirectory): region match, but online services and product sellers
+  // show everywhere; category by provider type; search across name, type, needs and descriptions.
+  const regionName = S.region ? REGION_DIRECTORY_NAME[S.region].toLowerCase() : "";
+  const fq = findQ.trim().toLowerCase();
+  const provList = getActiveProviders()
+    .filter((p) => !regionName || p.category_type === "product" || p.deliveryFormat === "online" || !!p.region?.toLowerCase().includes(regionName))
+    .filter((p) => S.cat === "all" || p.type === CAT_TYPE[S.cat])
+    .filter((p) => !fq || [p.businessName, p.description, p.shortDescription, p.typeBadge, ...p.needsSupported, ...p.searchTags]
+      .some((x) => x.toLowerCase().includes(fq)))
+    .map((p, i) => ({ p, i, sc: providerScore(p) }))
+    .sort((a, b) => b.sc - a.sc || a.i - b.i)
+    .map((x) => x.p);
   const where = placeName();
 
   // Enquiry
-  const hasTarget = !!S.target;
-  const t = hasTarget ? target() : null;
+  const t = target();
+  const hasTarget = !!t;
   const book = S.target?.kind === "book";
   if (hasTarget && !S.msgEdited) S.msg = draftMsg();
   const enqRows: [string, string, string][] = [
     ["age", "Age", S.age ? AGES[S.age] : "Not added"],
     ["needs", "Finding hard", S.needs.length ? S.needs.map((n) => NEEDS[n]).join(", ") : "Not added"],
     book ? ["help", "Looking for", S.help ? HELP[S.help] : "Not added"] : ["", "Area", placeName() || "Not added"],
-  ];
-
-  const NAV: { tab: Tab; label: string; icon: string }[] = [
-    { tab: "home", label: "Home", icon: NavHome },
-    { tab: "consult", label: "Consult", icon: NavConsult },
-    { tab: "find", label: "Find", icon: NavSearch },
-    { tab: "community", label: "Community", icon: NavCommunity },
-    { tab: "profile", label: "Profile", icon: NavProfile },
   ];
 
   return (
@@ -466,7 +524,8 @@ const BeyonderApp = ({ embedded = false }: Props) => {
           <div className="ba-mapview">
             <div className="ba-lead"><h2>Where are you looking?</h2></div>
             <div className="ba-mapbox">
-              <svg viewBox={`-4 -4 ${MAP.w + 8} ${MAP.h + 8}`} role="group" aria-label="Map of UK regions">
+              <svg viewBox={`${MAP.box.x * SX - 4} ${MAP.box.y - 4} ${MAP.box.w * SX + 8} ${MAP.box.h + 8}`} role="group" aria-label="Map of England regions">
+                <g transform={`scale(${SX} 1)`}>
                 {Object.keys(MAP.d).map((rk) => (
                   <path
                     key={rk} className="ba-rg" d={MAP.d[rk]} style={{ ["--c" as string]: MAP.tone[rk] }}
@@ -476,10 +535,11 @@ const BeyonderApp = ({ embedded = false }: Props) => {
                   />
                 ))}
                 <circle cx="245" cy="409" r="6" fill="transparent" style={{ cursor: "pointer" }} aria-hidden="true" onClick={() => pickRegion("lo")} />
+                </g>
                 {Object.keys(MAP.d).map((rk) => {
                   const [x, y] = MAP.lab[rk];
                   return (
-                    <text key={rk} className={`ba-mlabel${S.region === rk ? " ba-on" : ""}`} x={x} y={y}
+                    <text key={rk} className={`ba-mlabel${S.region === rk ? " ba-on" : ""}`} x={x * SX} y={y}
                       {...(rk === "lo" ? { textAnchor: "start", style: { textAnchor: "start" } } : {})}>
                       {REGIONS[rk][1]}
                     </text>
@@ -504,13 +564,8 @@ const BeyonderApp = ({ embedded = false }: Props) => {
           <div className="ba-catsec" ref={catsecRef}>
             <div className="ba-lead">
               <h2 style={{ fontSize: 23 }}>What kind of support?</h2>
-              {S.region && <p>Looking in {REGIONS[S.region][0]}. Add a town to narrow it down.</p>}
+              {S.region && <p>Looking in {REGIONS[S.region][0]}.</p>}
             </div>
-            {S.region && (
-              <input className="ba-field" placeholder="Town or postcode (optional)" value={S.area}
-                aria-label="Town or postcode" autoComplete="postal-code"
-                onChange={(e) => { S.area = e.target.value; update(); }} />
-            )}
             <div className="ba-cats">
               {CATCARDS.map((c) => (
                 <button key={c.k} className={`ba-cat${c.wide ? " ba-wide" : ""}`} onClick={() => { S.cat = c.k; update(); go("find"); }}>
@@ -533,7 +588,7 @@ const BeyonderApp = ({ embedded = false }: Props) => {
         <div className="ba-searchhead">
           <div className="ba-sbox">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M20 20l-4-4" /></svg>
-            <input type="search" placeholder="OT, speech therapy, clubs" aria-label="Search support" />
+            <input type="search" placeholder="OT, speech therapy, clubs" aria-label="Search support" value={findQ} onChange={(e) => setFindQ(e.target.value)} />
             <button className="ba-region" onClick={() => {
               if (hist.current[hist.current.length - 2] === "areas") back();
               else { hist.current = ["home", "areas"]; syncHistory(); show("areas", -1); }
@@ -564,10 +619,15 @@ const BeyonderApp = ({ embedded = false }: Props) => {
           <div className="ba-list">
             {provList.length ? provList.map((p) => (
               <article key={p.id} className="ba-prov">
-                <p className="ba-prov-type">{p.type}</p><h3>{p.name}</h3><p>{p.about}</p>
-                <div className="ba-meta"><span>{p.where}</span><button className="ba-btn ba-btn-outline" onClick={() => openTarget("enq", p.id)}>Enquire</button></div>
+                <p className="ba-prov-type">{p.typeBadge}</p>
+                <h3><button className="ba-prov-name" onClick={() => navigate(`/provider/${p.id}`)}>{p.businessName}</button></h3>
+                <p>{p.shortDescription}</p>
+                <div className="ba-meta">
+                  <span>{p.deliveryFormat === "online" ? "Online" : p.location}</span>
+                  <button className="ba-btn ba-btn-outline" onClick={() => openTarget("enq", p.id)}>Enquire</button>
+                </div>
               </article>
-            )) : <div className="ba-empty">Nothing listed here yet. Try another type of support.</div>}
+            )) : <div className="ba-empty">Nothing listed here yet. Try another type of support or region.</div>}
           </div>
         </div></div>
       </section>
@@ -581,11 +641,11 @@ const BeyonderApp = ({ embedded = false }: Props) => {
         <div className="ba-scroll"><div className="ba-pad" style={{ paddingBottom: 40 }} key={enqKey}>
           {t && (
             <>
-              {book && "slot" in t && (
+              {book && t.spec && (
                 <div className="ba-card" style={{ padding: "16px 18px" }}>
                   <dt className="ba-role">Your call</dt>
-                  <dd style={{ fontWeight: 700, marginTop: 3, marginLeft: 0 }}>{t.slot}, by {S.fmt}</dd>
-                  <p className="ba-role" style={{ marginTop: 3 }}>{t.price}</p>
+                  <dd style={{ fontWeight: 700, marginTop: 3, marginLeft: 0 }}>{t.spec.slot}, by {S.fmt}</dd>
+                  <p className="ba-role" style={{ marginTop: 3 }}>{t.spec.price}</p>
                 </div>
               )}
               <div className="ba-card"><h3>About your child</h3><dl>
@@ -606,6 +666,9 @@ const BeyonderApp = ({ embedded = false }: Props) => {
               <label className="ba-consent"><input type="checkbox" ref={shareRef} /><span>Share these details with {t.first} so they can reply.</span></label>
               <label className="ba-consent"><input type="checkbox" ref={saveRef} defaultChecked={S.saved} /><span>Save my child’s details to my Beyonder profile so I don’t have to type them again. You can delete them at any time.</span></label>
               <p className="ba-err" role="alert">{enqErr}</p>
+              {enqErr && !isAuthenticated && (
+                <button className="ba-btn ba-btn-ghost" style={{ marginTop: 8 }} onClick={() => navigate("/login?redirect=%2F%3Ftab%3Dfind")}>Sign in</button>
+              )}
               <button className="ba-btn ba-btn-primary" style={{ marginTop: 8 }} onClick={send}>{book ? "Request booking" : "Send enquiry"}</button>
             </>
           )}
@@ -673,50 +736,17 @@ const BeyonderApp = ({ embedded = false }: Props) => {
         </div></div>
       </section>
 
-      <nav className={`ba-nav${navShown ? "" : " ba-hide"}`} aria-label="Main">
-        {NAV.map((n) => (
-          <button key={n.tab} aria-current={n.tab === tabId ? "page" : undefined} onClick={() => tab(n.tab)}>
-            <img src={n.icon} alt="" />{n.label}
-          </button>
-        ))}
-      </nav>
+      <AppNav active={tabId as Tab} hidden={!navShown} onTab={(n) => tab(n)} />
 
       {/* SHEETS */}
       <AboutSheet open={sheet === "about"} onClose={closeSheets} />
 
-      <div className={`ba-veil${sheet === "menu" ? " ba-open" : ""}`} role="dialog" aria-modal="true" aria-label="Menu"
-        onClick={(e) => { if (e.target === e.currentTarget) closeSheets(); }}>
-        <MenuSheetBody
-          open={sheet === "menu"}
-          onProfile={() => { closeSheets(); tab("profile"); }}
-          onAbout={() => { closeSheets(); openSheet("about"); }}
-          onGo={menuGo}
-          signedInLabel={isAuthenticated ? "Your dashboard" : "Sign in"}
-          signedInTo={isAuthenticated ? (user?.role === "admin" ? "/admin" : user?.role === "provider" ? "/provider-dashboard" : "/dashboard") : "/login"}
-        />
-      </div>
-    </div>
-  );
-};
-
-const MenuSheetBody = ({ open, onProfile, onAbout, onGo, signedInLabel, signedInTo }: {
-  open: boolean; onProfile: () => void; onAbout: () => void; onGo: (to: string) => void; signedInLabel: string; signedInTo: string;
-}) => {
-  const firstBtn = useRef<HTMLButtonElement>(null);
-  useEffect(() => { if (open) { const id = setTimeout(() => firstBtn.current?.focus(), 50); return () => clearTimeout(id); } }, [open]);
-  return (
-    <div className="ba-sheet">
-      <div className="ba-grab" />
-      <ul className="ba-menu">
-        <li><button ref={firstBtn} onClick={onProfile}>Your child’s profile</button></li>
-        <li><button onClick={() => onGo("/community")}>Community <small>Forums and meetups</small></button></li>
-        <li><button onClick={() => onGo("/news")}>News and guides</button></li>
-        <li><button onClick={onAbout}>About Beyonder</button></li>
-        <li><button onClick={() => onGo("/help")}>Help centre</button></li>
-        <li><button onClick={() => onGo("/for-providers")}>For providers <small>List your service</small></button></li>
-        <li><button onClick={() => onGo(signedInTo)}>{signedInLabel}</button></li>
-      </ul>
-      <p className="ba-proto">Specialists and providers shown are samples.</p>
+      <MenuSheet
+        open={sheet === "menu"}
+        onClose={closeSheets}
+        onProfile={() => tab("profile")}
+        onAbout={() => openSheet("about")}
+      />
     </div>
   );
 };
