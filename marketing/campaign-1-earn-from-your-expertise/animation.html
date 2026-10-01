@@ -58,12 +58,10 @@
 
   /* ── Sky scenes (intro + outro) — the homepage hero sky ── */
   #sky { z-index: 3; }
+  /* The hero's navy-to-blue, as one simple vertical sweep: no pale-blue end, glow or shade layer,
+     so the GIF can hold it without visible banding. */
   .sky-bg { position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 66% 40% at 50% 38%, rgba(80,160,220,.18) 0%, rgba(40,100,160,.08) 30%, rgba(20,60,120,0) 100%),
-      linear-gradient(180deg, #0e152a 0%, #13244e 20%, #20447f 44%, #2f6ca2 66%, #72b3cf 88%, #72b3cf 100%); }
-  .sky-shade { position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(8,12,24,.10) 0%, rgba(8,12,24,.06) 35%, rgba(8,12,24,.38) 62%, rgba(8,12,24,.62) 100%); }
+    background: linear-gradient(180deg, #0e152a 0%, #13244e 28%, #1b3a6d 58%, #22487c 82%, #26507f 100%); }
   .logo { position: absolute; top: 34px; left: 34px; display: flex; align-items: center; gap: 10px; font-family: var(--head); font-size: 26px; color: #fff; z-index: 6; }
   .logo .dot { position: relative; width: 11px; height: 11px; margin-top: -4px; }
   .logo .dot i { position: absolute; inset: 0; border-radius: 50%; background: var(--terra); }
@@ -109,7 +107,7 @@
   .bubble::after { content: ""; position: absolute; left: -12px; top: 18px; width: 26px; height: 22px; background: #fff;
     clip-path: polygon(100% 0, 0 30%, 100% 100%); }
   .avatar { position: absolute; left: 22px; top: 24px; width: 60px; height: 60px; border-radius: 50%; z-index: 11; opacity: 0;
-    background: #FBE3D6; border: 1.5px solid #F2C9B4; box-shadow: 0 6px 18px rgba(27,26,53,.12); display: grid; place-items: center; }
+    background: #F4B08C; border: 2px solid #E8946C; box-shadow: 0 6px 18px rgba(27,26,53,.12); display: grid; place-items: center; }
   .avatar svg { width: 44px; height: 38px; margin: -2px 0 0 -2px; overflow: visible; }
   .bubble .k { font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--terra-d); }
   .bubble .k em { font-style: normal; color: var(--muted); letter-spacing: .1em; }
@@ -358,7 +356,6 @@
   <!-- ═══ SKY SCENE (intro + outro) — the homepage hero sky ═══ -->
   <div class="layer" id="sky">
     <div class="sky-bg" id="skybg"></div>
-    <div class="sky-shade"></div>
     <div class="logo"><span class="dot"><b id="ripple"></b><i id="dot"></i></span>Beyonder</div>
 
     <div class="intro-text" id="intro">

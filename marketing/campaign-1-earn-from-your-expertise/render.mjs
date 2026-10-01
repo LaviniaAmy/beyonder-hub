@@ -13,7 +13,7 @@ const { chromium } = createRequire(import.meta.url)('playwright');
 const here = path.dirname(fileURLToPath(import.meta.url));
 const LOOP = 45, FPS = 30, SCALE = 2;   // LOOP = real seconds (animation.html plays its 30s timeline 1.5x slower)
 // Bump VERSION for each new cut: a new file name stops browsers, GitHub and email tools showing a cached old copy.
-const VERSION = 'v4';
+const VERSION = 'v5';
 const NAME = `earn-from-your-expertise-${VERSION}`;
 const tmp = process.env.FRAMES_DIR || path.join(here, '.render');
 rmSync(tmp, { recursive: true, force: true });
