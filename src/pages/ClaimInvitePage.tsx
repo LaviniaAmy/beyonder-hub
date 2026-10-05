@@ -53,16 +53,21 @@ const ClaimInvitePage = () => {
 
     setState("submitting");
 
-    login(email, password, "provider");
-
-    // Redeem token — bypasses domain matching entirely
-    redeemToken(token, email);
-
-    // Register the claim in the founder store as auto-approved
+    // Register the claim as auto-approved — invite links bypass domain matching
+    // by passing the claimant's own domain as the listing domain.
     if (record) {
       const domain = email.toLowerCase().split("@")[1] ?? "";
-      attemptClaim(`invited-user-${Date.now()}`, email, record.providerId, record.providerName, domain);
+      const result = attemptClaim(`invited-user-${Date.now()}`, email, record.providerId, record.providerName, domain);
+      if (result.outcome === "already_claimed") {
+        setFormError("This listing has already been claimed. Please contact Beyonder if you think this is wrong.");
+        setState("form");
+        return;
+      }
     }
+
+    redeemToken(token, email);
+    // Log in after the claim exists so the account is linked to this listing.
+    login(email, password, "provider");
 
     setState("success");
     setTimeout(() => navigate("/provider-dashboard"), 2000);

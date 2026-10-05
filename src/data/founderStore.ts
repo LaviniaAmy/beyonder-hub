@@ -1,5 +1,7 @@
 // ── Founder & claiming store ────────────────────────────────
 // Shared singleton for claim state, founder logic, admin settings
+// Saved in this browser (see persist.ts) until Supabase.
+import { loadSaved, save } from "@/data/persist";
 
 export interface AdminSettings {
   founderLimit: number;
@@ -48,6 +50,25 @@ export const planOverrides: Record<
   }
 > = {};
 
+// ── Persistence ──
+const STORAGE_KEY = "beyonder_claims_v1";
+interface SavedClaims {
+  founderLimit: number;
+  claimRecords: ClaimRecord[];
+  pendingClaims: PendingClaim[];
+  planOverrides: typeof planOverrides;
+}
+const saved = loadSaved<SavedClaims>(STORAGE_KEY);
+if (saved) {
+  if (typeof saved.founderLimit === "number") adminSettings.founderLimit = saved.founderLimit;
+  claimRecords.push(...(saved.claimRecords ?? []));
+  pendingClaims.push(...(saved.pendingClaims ?? []));
+  Object.assign(planOverrides, saved.planOverrides ?? {});
+}
+function persist() {
+  save(STORAGE_KEY, { founderLimit: adminSettings.founderLimit, claimRecords, pendingClaims, planOverrides });
+}
+
 // ── Helpers ────────────────────────────────────────────────
 
 export function extractDomain(email: string): string {
@@ -68,10 +89,12 @@ export function getClaimForProvider(providerId: string): ClaimRecord | undefined
 
 export function updateAdminSettings(newLimit: number) {
   adminSettings.founderLimit = newLimit;
+  persist();
 }
 
 export function applyPlanOverride(providerId: string, planType: string, planStatus: string, categoryType: string) {
   planOverrides[providerId] = { planType, planStatus, categoryType };
+  persist();
 }
 
 // ── Core claim logic ────────────────────────────────────────
@@ -89,6 +112,7 @@ function _assignPlan(userId: string, providerId: string, email: string): ClaimRe
     claimedAt: new Date().toISOString().split("T")[0],
   };
   claimRecords.push(record);
+  persist();
   console.log("[Beyonder Founder Logic]", {
     founderLimit: adminSettings.founderLimit,
     founderCount,
@@ -149,6 +173,7 @@ export function attemptClaim(
       submittedAt: new Date().toISOString().split("T")[0],
     };
     pendingClaims.push(pending);
+    persist();
     return { outcome: "pending_review", pending };
   }
 }
@@ -166,6 +191,7 @@ export function approvePendingClaim(pendingId: string): ClaimRecord | null {
 export function rejectPendingClaim(pendingId: string) {
   const pending = pendingClaims.find((p) => p.id === pendingId);
   if (pending) pending.status = "rejected";
+  persist();
 }
 
 /** Legacy helper — used by ProviderDashboard plan copy */

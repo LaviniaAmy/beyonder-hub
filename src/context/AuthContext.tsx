@@ -93,6 +93,27 @@ function resolveUser(email: string): { role: UserRole; id: string; name: string;
   return { role: "parent", id: `parent-${lower}`, name: lower.split("@")[0] };
 }
 
+/**
+ * Which listing a provider account may manage. Decided from the email every time,
+ * so an account without an approved claim never lands on someone else's listing.
+ */
+export type ProviderAccess =
+  | { status: "owner"; providerId: string }
+  | { status: "pending"; providerId: string }
+  | { status: "none" };
+
+export function getProviderAccess(email: string | undefined): ProviderAccess {
+  const lower = (email ?? "").toLowerCase().trim();
+  if (!lower) return { status: "none" };
+  const mapped = EMAIL_MAP[lower]?.provider_id;
+  if (mapped) return { status: "owner", providerId: mapped };
+  const approved = claimRecords.find((r) => r.claimantEmail.toLowerCase() === lower);
+  if (approved) return { status: "owner", providerId: approved.providerId };
+  const pending = pendingClaims.find((p) => p.claimantEmail.toLowerCase() === lower && p.status === "pending_review");
+  if (pending) return { status: "pending", providerId: pending.providerId };
+  return { status: "none" };
+}
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(() => {
     try {

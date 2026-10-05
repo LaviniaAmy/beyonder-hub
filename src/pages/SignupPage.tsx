@@ -8,9 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth, UserRole } from "@/context/AuthContext";
 import { attemptClaim } from "@/data/founderStore";
-import { providers } from "@/data/mockData";
-
-const STORAGE_KEY = "beyonder_user";
+import { getProvider } from "@/data/providerStore";
 
 const SignupPage = () => {
   const [searchParams] = useSearchParams();
@@ -32,33 +30,21 @@ const SignupPage = () => {
     // Pass role explicitly so provider signups aren't downgraded to parent
     login(email, password, role);
 
-    // If provider signup with a claim intent — attempt the claim now
+    // If provider signup with a claim intent — attempt the claim now.
+    // The dashboard links the account to the listing from the claim (by email),
+    // so a pending or refused claim never gives access to the listing.
     if (role === "provider" && claimProviderId) {
-      try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          const user = JSON.parse(stored);
-          const provider = providers.find((p) => p.id === claimProviderId);
-          const result = attemptClaim(
-            user.id,
-            user.email,
-            claimProviderId,
-            provider?.name ?? "",
-            provider?.websiteDomain ?? "",
-          );
-
-          // Write the correct provider_id back into localStorage so the
-          // dashboard loads the right profile regardless of claim outcome
-          const updatedUser = { ...user, provider_id: claimProviderId };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedUser));
-
-          if (result.outcome === "pending_review") {
-            navigate("/provider-dashboard?claimStatus=pending_review");
-            return;
-          }
-        }
-      } catch {
-        // silent fail — claim can be retried from provider page
+      const provider = getProvider(claimProviderId);
+      const result = attemptClaim(
+        `claim-${claimProviderId}`,
+        email,
+        claimProviderId,
+        provider?.businessName ?? "",
+        provider?.websiteDomain ?? "",
+      );
+      if (result.outcome === "pending_review") {
+        navigate("/provider-dashboard?claimStatus=pending_review");
+        return;
       }
       navigate("/provider-dashboard");
       return;

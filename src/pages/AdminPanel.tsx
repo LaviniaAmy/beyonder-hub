@@ -21,9 +21,10 @@ import {
   rejectPendingClaim,
   PendingClaim,
 } from "@/data/founderStore";
-import { getAllProviders, updateProvider, importProvider } from "@/data/providerStore";
+import { getAllProviders, updateProvider, importProvider, publishProvider, mergeIntoProvider } from "@/data/providerStore";
 import { createInviteToken, getInviteStatus, getTokenForProvider, inviteTokens } from "@/data/inviteTokenStore";
 import { parseCSV, generateCSVTemplate, ParsedProviderRow } from "@/data/csvImport";
+import { findDuplicates, type DupLevel, type DupMatch } from "@/data/duplicateCheck";
 import type { PlanType, PlanStatus, CategoryType } from "@/lib/featureGating";
 
 const mockParents = [
@@ -31,20 +32,20 @@ const mockParents = [
   { id: "p2", name: "Mark Johnson", email: "mark@example.com", status: "active" },
 ];
 
-const defaultStrings: Record<string, string> = {
-  heroCta: "Explore Services",
-  paywallTitle: "Unlock Provider Responses",
-  paywallBody: "To read responses from providers, choose a plan that works for you.",
-  emptyEnquiries: "You haven't sent any enquiries yet.",
-  confirmationMessage: "Your message has been sent. They'll get back to you soon.",
+type RowDecision = "import" | "skip" | "merge";
+const DUP_STYLE: Record<DupLevel, { label: string; box: string; badge: string }> = {
+  definite: { label: "Definite duplicate", box: "border-red-500/30 bg-red-500/5", badge: "bg-red-500/15 text-red-500" },
+  likely: { label: "Likely duplicate", box: "border-orange-500/30 bg-orange-500/5", badge: "bg-orange-500/15 text-orange-500" },
+  possible: { label: "Possible duplicate", box: "border-yellow-500/30 bg-yellow-500/5", badge: "bg-yellow-500/15 text-yellow-600" },
 };
+// Definite and likely matches are skipped unless the admin chooses otherwise.
+const defaultDecision = (m: DupMatch | null): RowDecision => (m && m.level !== "possible" ? "skip" : "import");
 
 const planTypes: PlanType[] = ["free", "founder", "professional"];
 const planStatuses: PlanStatus[] = ["active", "trial", "expired"];
 const categoryTypes: CategoryType[] = ["therapist", "club", "education", "charity", "product"];
 
 const AdminPanel = () => {
-  const [strings, setStrings] = useState(defaultStrings);
   const [founderLimit, setFounderLimit] = useState(adminSettings.founderLimit);
   const [limitSaved, setLimitSaved] = useState(false);
 
@@ -101,7 +102,8 @@ const AdminPanel = () => {
   const [csvFileName, setCsvFileName] = useState("");
   const [parsedRows, setParsedRows] = useState<ParsedProviderRow[] | null>(null);
   const [importDone, setImportDone] = useState(false);
-  const [importCount, setImportCount] = useState(0);
+  const [importSummary, setImportSummary] = useState({ imported: 0, merged: 0, skipped: 0 });
+  const [rowDecisions, setRowDecisions] = useState<Record<number, RowDecision>>({});
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState<Record<string, string>>({});
   const [inviteState, setInviteState] = useState<Record<string, "idle" | "generated">>({});
@@ -219,22 +221,64 @@ const AdminPanel = () => {
       const text = ev.target?.result as string;
       setCsvText(text);
       setParsedRows(parseCSV(text));
+      setRowDecisions({});
     };
     reader.readAsText(file);
     // Reset input so the same file can be re-uploaded if needed
     e.target.value = "";
   };
 
+  // Duplicate check: each row against every listing on the site (drafts and suspended included)
+  // and against earlier rows of the same file.
+  const dupMatches = useMemo(() => {
+    if (!parsedRows) return [];
+    const existing = providerList.map((p) => ({
+      id: p.id,
+      name: p.businessName,
+      location: p.location,
+      region: p.region,
+      contactText: [p.website, p.websiteDomain, p.email, p.phone, p.contactLinks].filter(Boolean).join(" | "),
+    }));
+    return findDuplicates(
+      parsedRows.map((r) => ({ name: r.businessName, location: r.location, region: r.region, contactText: r.contactLinks })),
+      existing,
+    );
+  }, [parsedRows, providerList]);
+  const decisionFor = (i: number) => rowDecisions[i] ?? defaultDecision(dupMatches[i] ?? null);
+  const validIdx = (parsedRows ?? []).map((r, i) => (r.errors.length === 0 ? i : -1)).filter((i) => i >= 0);
+  const importPlan = {
+    imported: validIdx.filter((i) => decisionFor(i) === "import").length,
+    merged: validIdx.filter((i) => decisionFor(i) === "merge").length,
+    skipped: validIdx.filter((i) => decisionFor(i) === "skip").length,
+    flagged: validIdx.filter((i) => dupMatches[i]).length,
+  };
+
   const handleConfirmImport = () => {
     if (!parsedRows) return;
-    const valid = parsedRows.filter((r) => r.errors.length === 0);
-    valid.forEach((r) => importProvider(r));
-    setImportCount(valid.length);
+    const added: Record<string, { planType: string; planStatus: string; categoryType: string }> = {};
+    validIdx.forEach((i) => {
+      const r = parsedRows[i];
+      const d = decisionFor(i);
+      const m = dupMatches[i];
+      if (d === "merge" && m?.source === "existing") mergeIntoProvider(m.targetId, r);
+      else if (d === "import") {
+        const rec = importProvider(r);
+        added[rec.id] = { planType: rec.plan_type, planStatus: rec.plan_status, categoryType: rec.category_type };
+      }
+    });
+    setProviderPlans((prev) => ({ ...prev, ...added }));
+    setImportSummary({ imported: importPlan.imported, merged: importPlan.merged, skipped: importPlan.skipped });
     setImportDone(true);
     setParsedRows(null);
+    setRowDecisions({});
     setCsvText("");
     setCsvFileName("");
-    setProviderList(getAllProviders());
+    setProviderList([...getAllProviders()]);
+  };
+
+  const handlePublish = (id: string) => {
+    publishProvider(id);
+    setProviderList([...getAllProviders()]);
   };
 
   const handleDownloadTemplate = () => {
@@ -295,6 +339,7 @@ const AdminPanel = () => {
         if (filterRegion !== "all" && p.region !== filterRegion) return false;
         if (filterStatus === "active" && moderationState[p.id] === "suspended") return false;
         if (filterStatus === "suspended" && moderationState[p.id] !== "suspended") return false;
+        if (filterStatus === "draft" && p.draftStatus !== "draft") return false;
         if (filterPlan !== "all" && providerPlans[p.id]?.planType !== filterPlan) return false;
         if (filterMessage === "pending" && !["sent", "acknowledged"].includes(changeRequestState[p.id]?.status)) return false;
         return true;
@@ -324,7 +369,6 @@ const AdminPanel = () => {
                     ? ` (${claimList.filter((c) => c.status === "pending_review").length})`
                     : ""}
                 </SelectItem>
-                <SelectItem value="content">Content Strings</SelectItem>
                 <SelectItem value="import">Import & Invites</SelectItem>
               </SelectContent>
             </Select>
@@ -368,12 +412,6 @@ const AdminPanel = () => {
               )}
             </TabsTrigger>
             <TabsTrigger
-              value="content"
-              className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
-            >
-              Content Strings
-            </TabsTrigger>
-            <TabsTrigger
               value="import"
               className="data-[state=active]:bg-teal-500 data-[state=active]:text-primary-foreground"
             >
@@ -411,6 +449,7 @@ const AdminPanel = () => {
                   <SelectItem value="all">All statuses</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="suspended">Suspended</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={filterPlan} onValueChange={setFilterPlan}>
@@ -467,7 +506,7 @@ const AdminPanel = () => {
                             <td className="py-2 px-3 max-w-[180px]">
                               <div className="flex items-center gap-1.5">
                                 <Link
-                                  to={`/providers/${p.id}`}
+                                  to={`/provider/${p.id}`}
                                   className="font-medium hover:text-teal-400 transition-colors truncate max-w-[140px] block"
                                   title={p.businessName}
                                 >
@@ -516,7 +555,14 @@ const AdminPanel = () => {
                             </td>
                             {/* Status */}
                             <td className="py-2 px-3">
-                              {isSuspended
+                              {p.draftStatus === "draft" ? (
+                                <div className="flex flex-col items-start gap-1">
+                                  <Badge className="bg-muted text-muted-foreground border-0 text-xs">Draft</Badge>
+                                  <Button size="sm" className="h-6 px-2 text-xs bg-teal-500 hover:bg-teal-400" onClick={() => handlePublish(p.id)}>
+                                    Publish
+                                  </Button>
+                                </div>
+                              ) : isSuspended
                                 ? <Badge className="bg-red-500/15 text-red-400 border-0 text-xs">Suspended</Badge>
                                 : <Badge className="bg-emerald-500/15 text-emerald-600 border-0 text-xs">Active</Badge>}
                             </td>
@@ -803,27 +849,6 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
-          {/* ── Content Strings ── */}
-          <TabsContent value="content" className="mt-6">
-            <Card className="border-0 shadow-card">
-              <CardHeader>
-                <CardTitle>Content Strings</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {Object.entries(strings).map(([key, value]) => (
-                  <div key={key}>
-                    <Label className="capitalize">{key.replace(/([A-Z])/g, " $1")}</Label>
-                    {value.length > 60 ? (
-                      <Textarea value={value} onChange={(e) => setStrings((s) => ({ ...s, [key]: e.target.value }))} />
-                    ) : (
-                      <Input value={value} onChange={(e) => setStrings((s) => ({ ...s, [key]: e.target.value }))} />
-                    )}
-                  </div>
-                ))}
-                <Button className="bg-teal-500 hover:bg-teal-400">Save Changes</Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
           {/* ── Import & Invites ── */}
           <TabsContent value="import" className="mt-6 space-y-6">
 
@@ -873,7 +898,10 @@ const AdminPanel = () => {
                 {importDone && (
                   <div className="flex items-center gap-2 rounded-lg bg-teal-500/10 border border-teal-500/20 px-4 py-3 text-sm text-teal-400">
                     <Check className="h-4 w-4 shrink-0" />
-                    {importCount} provider{importCount !== 1 ? "s" : ""} imported successfully. They are in Draft status.
+                    {importSummary.imported} provider{importSummary.imported !== 1 ? "s" : ""} imported as drafts
+                    {importSummary.merged > 0 && `, ${importSummary.merged} merged into existing listings`}
+                    {importSummary.skipped > 0 && `, ${importSummary.skipped} skipped as duplicates`}
+                    . Drafts aren't visible to families until you publish them from the Providers tab.
                   </div>
                 )}
 
@@ -888,14 +916,18 @@ const AdminPanel = () => {
                             · {parsedRows.filter((r) => r.errors.length > 0).length} with errors
                           </span>
                         )}
+                        {importPlan.flagged > 0 && (
+                          <span className="text-orange-500 ml-1">· {importPlan.flagged} flagged as duplicate{importPlan.flagged !== 1 ? "s" : ""}</span>
+                        )}
                       </p>
                       <Button
                         size="sm"
                         className="bg-teal-500 hover:bg-teal-400"
-                        disabled={parsedRows.filter((r) => r.errors.length === 0).length === 0}
+                        disabled={importPlan.imported + importPlan.merged === 0}
                         onClick={handleConfirmImport}
                       >
-                        Confirm Import ({parsedRows.filter((r) => r.errors.length === 0).length} valid)
+                        Confirm: {importPlan.imported} new{importPlan.merged > 0 ? `, ${importPlan.merged} merge` : ""}
+                        {importPlan.skipped > 0 ? `, ${importPlan.skipped} skip` : ""}
                       </Button>
                     </div>
                     <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
@@ -928,6 +960,46 @@ const AdminPanel = () => {
                               )}
                             </div>
                           </div>
+                          {/* Duplicate check */}
+                          {row.errors.length === 0 && dupMatches[i] && (() => {
+                            const m = dupMatches[i]!;
+                            const st = DUP_STYLE[m.level];
+                            const d = decisionFor(i);
+                            const options: { value: RowDecision; label: string }[] = [
+                              { value: "skip", label: "Skip" },
+                              ...(m.source === "existing" ? [{ value: "merge" as const, label: "Merge (fill gaps only)" }] : []),
+                              { value: "import", label: "Import anyway" },
+                            ];
+                            return (
+                              <div className={`mt-2 rounded-md border px-3 py-2 space-y-1.5 ${st.box}`}>
+                                <div className="flex items-center gap-2 flex-wrap text-xs">
+                                  <Badge className={`border-0 text-xs ${st.badge}`}>{st.label}</Badge>
+                                  <span className="text-muted-foreground">of</span>
+                                  {m.source === "existing" ? (
+                                    <Link to={`/provider/${m.targetId}`} target="_blank" className="font-medium underline">
+                                      {m.targetName}
+                                    </Link>
+                                  ) : (
+                                    <span className="font-medium">{m.targetName}</span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-muted-foreground">{m.reasons.join(" · ")}</p>
+                                <div className="flex gap-1.5 flex-wrap">
+                                  {options.map((o) => (
+                                    <Button
+                                      key={o.value}
+                                      size="sm"
+                                      variant={d === o.value ? "default" : "outline"}
+                                      className={`h-6 px-2 text-xs ${d === o.value ? "bg-teal-500 hover:bg-teal-400" : ""}`}
+                                      onClick={() => setRowDecisions((prev) => ({ ...prev, [i]: o.value }))}
+                                    >
+                                      {o.label}
+                                    </Button>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })()}
                           {/* Contact method summary */}
                           {(row.contactMethodType !== "unknown" || row.contactLinks) && (
                             <div className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">

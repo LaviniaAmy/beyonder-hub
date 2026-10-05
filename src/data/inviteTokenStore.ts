@@ -1,3 +1,7 @@
+// Saved in this browser (see persist.ts) until Supabase — so an invite link only
+// validates in the browser that generated it.
+import { loadSaved, save } from "@/data/persist";
+
 export type InviteStatus = "pending" | "claimed" | "expired";
 
 export interface InviteToken {
@@ -26,7 +30,9 @@ function addDays(days: number): string {
   return d.toISOString();
 }
 
-export const inviteTokens: InviteToken[] = [];
+const STORAGE_KEY = "beyonder_invites_v1";
+export const inviteTokens: InviteToken[] = loadSaved<InviteToken[]>(STORAGE_KEY) ?? [];
+const persist = () => save(STORAGE_KEY, inviteTokens);
 
 export function createInviteToken(providerId: string, providerName: string, email: string): InviteToken {
   // Invalidate any existing pending token for this provider
@@ -47,6 +53,7 @@ export function createInviteToken(providerId: string, providerName: string, emai
   };
 
   inviteTokens.push(token);
+  persist();
   return token;
 }
 
@@ -56,6 +63,7 @@ export function validateToken(token: string): { valid: boolean; record?: InviteT
   if (record.status === "claimed") return { valid: false, reason: "This invite link has already been used.", record };
   if (record.status === "expired" || new Date() > new Date(record.expiresAt)) {
     record.status = "expired";
+    persist();
     return { valid: false, reason: "This invite link has expired. Please contact Beyonder for a new one.", record };
   }
   return { valid: true, record };
@@ -67,6 +75,7 @@ export function redeemToken(token: string, claimedByEmail: string): boolean {
   record.status = "claimed";
   record.claimedAt = new Date().toISOString();
   record.claimedByEmail = claimedByEmail;
+  persist();
   return true;
 }
 
@@ -83,6 +92,7 @@ export function getInviteStatus(providerId: string): "none" | InviteStatus {
   // Sync expiry
   if (token.status === "pending" && new Date() > new Date(token.expiresAt)) {
     token.status = "expired";
+    persist();
   }
   return token.status;
 }

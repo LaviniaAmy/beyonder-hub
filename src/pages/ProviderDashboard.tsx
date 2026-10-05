@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   CheckCircle,
   Lock,
@@ -33,7 +33,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { providers } from "@/data/mockData";
 import { hasFeature, categorySections } from "@/lib/featureGating";
 import { getModuleProfile, providerTestimonials } from "@/data/providerModules";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, getProviderAccess } from "@/context/AuthContext";
 import {
   getEnquiriesForProvider,
   replyToEnquiry,
@@ -105,15 +105,9 @@ const ProviderDashboard = () => {
   const claimStatus = searchParams.get("claimStatus");
   const [activeTab, setActiveTab] = useState("overview");
 
-  const resolvedUser = (() => {
-    try {
-      const stored = localStorage.getItem("beyonder_user");
-      return stored ? JSON.parse(stored) : user;
-    } catch {
-      return user;
-    }
-  })();
-  const providerId = resolvedUser?.provider_id ?? providers[0]?.id;
+  // Only the listing this account owns (or has a claim pending on) — never a fallback.
+  const access = getProviderAccess(user?.email);
+  const providerId = access.status === "none" ? "" : access.providerId;
 
   const [tick, forceUpdate] = useState(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -253,12 +247,32 @@ const ProviderDashboard = () => {
 
   if (!profile)
     return (
-      <div className="container py-20 text-center">
-        <h1 className="text-2xl font-bold">Provider not found</h1>
+      <div className="bg-background min-h-screen py-10">
+        <div className="container max-w-xl animate-fade-in">
+          <h1 className="mb-6 text-3xl font-bold text-foreground">Provider Dashboard</h1>
+          <div className="rounded-xl border border-border/60 bg-card p-6 text-center space-y-4">
+            <div className="flex justify-center">
+              <Building2 className="h-10 w-10 text-muted-foreground" />
+            </div>
+            <h2 className="text-xl font-semibold text-foreground">You don't have a listing yet</h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Your account isn't linked to a listing. If your service is already in the directory, open its page and
+              choose "Claim this profile". If it isn't listed, get in touch and we'll set it up with you.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <Button asChild className="bg-teal-500 hover:bg-teal-400">
+                <Link to="/providers">Find your listing</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <a href="mailto:hello@beyonderhub.co.uk">Contact us</a>
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     );
 
-  if (claimStatus === "pending_review") {
+  if (claimStatus === "pending_review" || access.status === "pending") {
     return (
       <div className="bg-background min-h-screen py-10">
         <div className="container max-w-xl animate-fade-in">
@@ -630,7 +644,7 @@ const ProviderDashboard = () => {
         <button
           type="button"
           onClick={() => {
-            const url = `${window.location.origin}/providers/${providerId}`;
+            const url = `${window.location.origin}/provider/${providerId}`;
             navigator.clipboard.writeText(url).then(() => {
               const btn = document.getElementById("copy-link-btn");
               if (btn) { btn.textContent = "Copied!"; setTimeout(() => { btn.textContent = "Copy listing link"; }, 2000); }
