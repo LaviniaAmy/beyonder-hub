@@ -22,7 +22,8 @@ import {
   PendingClaim,
 } from "@/data/founderStore";
 import { getAllProviders, updateProvider, importProvider, publishProvider, mergeIntoProvider } from "@/data/providerStore";
-import { createInviteToken, getInviteStatus, getTokenForProvider, inviteTokens } from "@/data/inviteTokenStore";
+import { createInviteToken } from "@/data/inviteTokenStore";
+import { getOutreachStatus, OUTREACH_LABEL, formatOutreachDate, type OutreachState } from "@/data/outreach";
 import { parseCSV, generateCSVTemplate, ParsedProviderRow } from "@/data/csvImport";
 import { findDuplicates, type DupLevel, type DupMatch } from "@/data/duplicateCheck";
 import type { PlanType, PlanStatus, CategoryType } from "@/lib/featureGating";
@@ -40,6 +41,14 @@ const DUP_STYLE: Record<DupLevel, { label: string; box: string; badge: string }>
 };
 // Definite and likely matches are skipped unless the admin chooses otherwise.
 const defaultDecision = (m: DupMatch | null): RowDecision => (m && m.level !== "possible" ? "skip" : "import");
+
+const OUTREACH_BADGE: Record<OutreachState, string> = {
+  not_contacted: "bg-muted text-muted-foreground",
+  invite_sent: "bg-orange-500/15 text-orange-500",
+  invite_expired: "bg-red-500/15 text-red-500",
+  claim_pending: "bg-yellow-500/15 text-yellow-600",
+  claimed: "bg-teal-500/15 text-teal-500",
+};
 
 const planTypes: PlanType[] = ["free", "founder", "professional"];
 const planStatuses: PlanStatus[] = ["active", "trial", "expired"];
@@ -109,6 +118,8 @@ const AdminPanel = () => {
   const [inviteState, setInviteState] = useState<Record<string, "idle" | "generated">>({});
   const [generatedLinks, setGeneratedLinks] = useState<Record<string, string>>({});
   const [providerList, setProviderList] = useState(getAllProviders());
+  const [outreachFilter, setOutreachFilter] = useState<"all" | OutreachState>("all");
+  const [outreachSearch, setOutreachSearch] = useState("");
 
   // ── Provider list filters ──
   const [filterSearch, setFilterSearch] = useState("");
@@ -278,6 +289,13 @@ const AdminPanel = () => {
 
   const handlePublish = (id: string) => {
     publishProvider(id);
+    setProviderList([...getAllProviders()]);
+  };
+
+  const draftIds = providerList.filter((p) => p.draftStatus === "draft").map((p) => p.id);
+  const handlePublishAllDrafts = () => {
+    if (!window.confirm(`Publish all ${draftIds.length} draft listing${draftIds.length !== 1 ? "s" : ""}? Families will be able to see them straight away.`)) return;
+    draftIds.forEach((id) => publishProvider(id));
     setProviderList([...getAllProviders()]);
   };
 
@@ -466,6 +484,11 @@ const AdminPanel = () => {
                   <SelectItem value="pending">Pending message</SelectItem>
                 </SelectContent>
               </Select>
+              {draftIds.length > 0 && (
+                <Button size="sm" className="h-8 text-xs bg-teal-500 hover:bg-teal-400" onClick={handlePublishAllDrafts}>
+                  Publish all drafts ({draftIds.length})
+                </Button>
+              )}
               <span className="ml-auto text-xs text-muted-foreground">
                 {filteredProviders.length} / {getAllProviders().length}
               </span>
@@ -1030,17 +1053,52 @@ const AdminPanel = () => {
             <Card className="border-0 shadow-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Link2 className="h-4 w-4 text-teal-400" /> Provider Invite Links
+                  <Link2 className="h-4 w-4 text-teal-400" /> Outreach & Invite Links
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Generate a personalised invite link for each provider. The link auto-approves their profile claim — no domain verification needed.
+                  Every provider's outreach status in one place, whether they claimed through an invite link or directly from
+                  their profile. Generate a personalised invite link for anyone not yet claimed — it auto-approves their claim,
+                  no domain verification needed.
                 </p>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                {(() => {
+                  const counts = providerList.reduce<Record<string, number>>((acc, p) => {
+                    const st = getOutreachStatus(p.id).state;
+                    acc[st] = (acc[st] ?? 0) + 1;
+                    return acc;
+                  }, {});
+                  const chips: ("all" | OutreachState)[] = ["all", "not_contacted", "invite_sent", "invite_expired", "claim_pending", "claimed"];
+                  return (
+                    <div className="flex flex-wrap items-center gap-2">
+                      {chips.map((c) => (
+                        <Button
+                          key={c}
+                          size="sm"
+                          variant={outreachFilter === c ? "default" : "outline"}
+                          className={`h-7 px-2.5 text-xs ${outreachFilter === c ? "bg-teal-500 hover:bg-teal-400" : ""}`}
+                          onClick={() => setOutreachFilter(c)}
+                        >
+                          {c === "all" ? "All" : OUTREACH_LABEL[c]} ({c === "all" ? providerList.length : counts[c] ?? 0})
+                        </Button>
+                      ))}
+                      <Input
+                        placeholder="Search provider…"
+                        value={outreachSearch}
+                        onChange={(e) => setOutreachSearch(e.target.value)}
+                        className="h-8 text-xs w-full sm:w-48 sm:ml-auto"
+                      />
+                    </div>
+                  );
+                })()}
                 <div className="space-y-3">
-                  {providerList.map((p) => {
-                    const status = getInviteStatus(p.id);
-                    const tokenRecord = getTokenForProvider(p.id);
+                  {providerList.filter((p) => {
+                    if (outreachFilter !== "all" && getOutreachStatus(p.id).state !== outreachFilter) return false;
+                    const q = outreachSearch.trim().toLowerCase();
+                    return !q || p.businessName.toLowerCase().includes(q) || (p.contactName ?? "").toLowerCase().includes(q);
+                  }).map((p) => {
+                    const outreach = getOutreachStatus(p.id);
+                    const canInvite = outreach.state !== "claimed" && outreach.state !== "claim_pending";
                     const isGenerated = inviteState[p.id] === "generated";
                     const link = generatedLinks[p.id];
 
@@ -1051,28 +1109,23 @@ const AdminPanel = () => {
                             <p className="font-medium">{p.businessName}</p>
                             <p className="text-xs text-muted-foreground">{p.typeBadge} · {p.location}</p>
                           </div>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            {/* Claim/invite status badge */}
-                            {status === "none" && (
-                              <Badge className="bg-muted text-muted-foreground border-0 text-xs">No invite sent</Badge>
-                            )}
-                            {status === "pending" && tokenRecord && (
-                              <Badge className="bg-orange-500/15 text-orange-400 border-0 text-xs">
-                                Invited · {new Date(tokenRecord.createdAt).toLocaleDateString("en-GB")}
-                              </Badge>
-                            )}
-                            {status === "claimed" && tokenRecord && (
-                              <Badge className="bg-teal-500/15 text-teal-400 border-0 text-xs">
-                                Claimed · {tokenRecord.claimedAt ? new Date(tokenRecord.claimedAt).toLocaleDateString("en-GB") : ""}
-                              </Badge>
-                            )}
-                            {status === "expired" && (
-                              <Badge className="bg-red-500/15 text-red-400 border-0 text-xs">Expired</Badge>
-                            )}
+                          <div className="flex flex-col items-start sm:items-end gap-0.5">
+                            {/* Unified outreach status — invite links and direct claims */}
+                            <Badge className={`border-0 text-xs ${OUTREACH_BADGE[outreach.state]}`}>
+                              {OUTREACH_LABEL[outreach.state]}
+                              {outreach.date ? ` · ${formatOutreachDate(outreach.date)}` : ""}
+                            </Badge>
+                            {outreach.detail && <span className="text-xs text-muted-foreground">{outreach.detail}</span>}
                           </div>
                         </div>
 
-                        {!isGenerated ? (
+                        {!canInvite ? (
+                          <p className="text-xs text-muted-foreground">
+                            {outreach.state === "claimed"
+                              ? "This listing has been claimed — no invite needed."
+                              : "A claim is waiting for review in the Claim Requests tab."}
+                          </p>
+                        ) : !isGenerated ? (
                           <div className="flex flex-col sm:flex-row gap-2">
                             <Input
                               placeholder="Provider email address (optional)"

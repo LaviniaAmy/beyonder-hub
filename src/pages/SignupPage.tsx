@@ -14,6 +14,8 @@ const SignupPage = () => {
   const [searchParams] = useSearchParams();
   const claimProviderId = searchParams.get("claimProviderId");
   const defaultRole = searchParams.get("role") === "provider" ? "provider" : "parent";
+  const rawRedirect = searchParams.get("redirect");
+  const redirectTo = rawRedirect && rawRedirect.startsWith("/") && !rawRedirect.startsWith("//") ? rawRedirect : null;
 
   const [tab, setTab] = useState<"parent" | "provider">(defaultRole as "parent" | "provider");
   const [name, setName] = useState("");
@@ -50,7 +52,7 @@ const SignupPage = () => {
       return;
     }
 
-    navigate(role === "provider" ? "/provider-dashboard" : "/dashboard");
+    navigate(role === "provider" ? "/provider-dashboard" : (redirectTo ?? "/dashboard"));
   };
 
   return (
@@ -187,7 +189,10 @@ const SignupPage = () => {
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link to="/login" className="text-teal-500 hover:underline">
+            <Link
+              to={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"}
+              className="text-teal-500 hover:underline"
+            >
               Log in
             </Link>
           </p>

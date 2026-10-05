@@ -27,6 +27,8 @@ import NotFound from "./pages/NotFound";
 import TestGuidePage from "./pages/TestGuidePage";
 import ClaimInvitePage from "./pages/ClaimInvitePage";
 import StartPage from "./pages/StartPage";
+import ArticlePage from "./pages/ArticlePage";
+import LegalPage from "./pages/LegalPage";
 
 const queryClient = new QueryClient();
 
@@ -76,7 +78,12 @@ const App = () => (
               <Route path="/about" element={<AboutPage />} />
               <Route path="/help" element={<HelpCentre />} />
               <Route path="/guides" element={<GuidesPage />} />
+              <Route path="/guides/:slug" element={<ArticlePage kind="guide" />} />
               <Route path="/news" element={<NewsPage />} />
+              <Route path="/news/:slug" element={<ArticlePage kind="news" />} />
+              <Route path="/privacy" element={<LegalPage doc="privacy" />} />
+              <Route path="/terms" element={<LegalPage doc="terms" />} />
+              <Route path="/cookies" element={<LegalPage doc="cookies" />} />
               <Route path="/community" element={<CommunityPage />} />
               <Route path="/claim" element={<ClaimInvitePage />} />
               <Route path="/test-guide" element={<TestGuidePage />} />

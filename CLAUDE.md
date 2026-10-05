@@ -85,13 +85,13 @@ the relevant phase so they aren't lost.
   that generated them, and nothing is shared between devices. Replace these with Supabase tables in Phase 5.
 - Enquiries (`enquiryStore`) are still in memory only.
 
-### Phase 1B — before starting the onboarding wizard
+## ⚠️ Before go-live — must be done
 
-- **Outreach status tracker** (Admin → Import & Invites tab)
-  A unified column/status for every provider showing one of:
-  `Not contacted` · `Invite sent` (date) · `Claimed` (date)
-  — regardless of whether they claimed via invite token or directly via the domain-match claim flow.
-  Currently the two flows are tracked separately (inviteTokenStore vs founderStore/pendingClaims) and
-  there is no single view. This needs to be reconciled so the admin can see at a glance who has been
-  reached out to and who has claimed, without checking two tabs.
-
+- **Real articles.** Every news item and guide in `src/data/articles.ts` is a placeholder (`placeholder: true`,
+  the page says "The full article is being written…"). Write the real text into `body` and set `placeholder: false`.
+  The homepage news cards link to the first three news articles.
+- **Legal pages.** `/privacy`, `/terms` and `/cookies` (`src/data/legal.ts`) are drafts with a visible "draft" notice.
+  Fill in every `[To be confirmed]` (company details, lawful basis for child/health data, processors, retention,
+  payments, liability), get them reviewed, then set `draft: false` and the `lastUpdated` date.
+- **Test logins.** The "Pilot test logins" buttons on `/login` are kept on purpose while testing — the user has asked
+  for them to stay. Decide what to do with them before launch (anyone can use them to log in as admin).

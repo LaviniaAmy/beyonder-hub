@@ -71,9 +71,12 @@ const terraBtnOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
 };
 
 const navLinks = [
-  { label: "Home",          to: "/" },
-  { label: "About Us",      to: "/about" },
+  // `wide` links only show on large screens — on tablets the logo and footer cover them.
+  { label: "Home",          to: "/", wide: true },
+  { label: "Find Support",  to: "/explore" },
+  { label: "News & Guides", to: "/news" },
   { label: "Get Connected", to: "/community" },
+  { label: "About Us",      to: "/about", wide: true },
   { label: "For Providers", to: "/for-providers" },
 ];
 
@@ -151,11 +154,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </Link>
 
           {/* Desktop links */}
-          <nav className="hidden md:flex" style={{ gap: 30, alignItems: "center" }}>
+          <nav className="hidden md:flex ml-3 gap-4 lg:gap-[30px]" style={{ alignItems: "center", whiteSpace: "nowrap" }}>
             {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
+                className={"wide" in link && link.wide ? "hidden lg:inline" : undefined}
                 style={{
                   color:
                     link.label === "For Providers"
@@ -167,7 +171,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   fontSize:       "0.85rem",
                   fontWeight:     400,
                   borderLeft:     link.label === "For Providers" ? "1px solid rgba(255,245,238,0.10)" : "none",
-                  paddingLeft:    link.label === "For Providers" ? 30 : 0,
+                  paddingLeft:    link.label === "For Providers" ? 20 : 0,
                   transition:     "none",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = C.ice)}
@@ -186,7 +190,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </nav>
 
           {/* Desktop auth */}
-          <div className="hidden md:flex" style={{ gap: 10, alignItems: "center" }}>
+          <div className="hidden md:flex" style={{ gap: 10, alignItems: "center", whiteSpace: "nowrap", flexShrink: 0 }}>
             {isAuthenticated ? (
               <>
                 <Link to={dashboardLink} style={ghostBtn} onMouseEnter={ghostBtnHoverIn} onMouseLeave={ghostBtnHoverOut}>

@@ -127,6 +127,7 @@ const THREADS = [
 
 const NEWS = [
   {
+    slug: "early-salt-intervention-study",
     tag: "Research",      featured: true,
     bg: "linear-gradient(160deg, #233a52 0%, #1a3050 55%, #2a4560 100%)",
     title: "Early SaLT intervention reduces communication difficulties by up to 60% at age 7",
@@ -134,6 +135,7 @@ const NEWS = [
     date: "2 June 2026",   img: NewsSLTPhoto,
   },
   {
+    slug: "send-code-of-practice-2026",
     tag: "Legislation",   featured: false,
     bg: "linear-gradient(160deg, #3a2a22 0%, #52362a 60%, #3d2618 100%)",
     title: "SEND Code of Practice 2026: what changes for families",
@@ -141,6 +143,7 @@ const NEWS = [
     date: "24 March 2026", img: NewsSENDPhoto,
   },
   {
+    slug: "sensory-integration-therapy-evidence",
     tag: "Therapy",       featured: false,
     bg: "linear-gradient(160deg, #1e301e 0%, #2a4430 60%, #1c2e1c 100%)",
     title: "Sensory integration therapy: the evidence and what parents should know",
@@ -655,7 +658,7 @@ const Index = () => {
             {NEWS.map((n) => (
               <Link
                 key={n.title}
-                to="/news"
+                to={`/news/${n.slug}`}
                 className="news-card"
                 style={{
                   background: C.white, borderRadius: 18, overflow: "hidden",
