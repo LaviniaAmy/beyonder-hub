@@ -24,7 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reviews } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
 import { isProviderClaimed } from "@/data/founderStore";
-import { getProvider } from "@/data/providerStore";
+import { getProvider, isPublished } from "@/data/providerStore";
 import { hasFeature } from "@/lib/featureGating";
 import type { AvailabilityStatus } from "@/data/providerStore";
 
@@ -73,7 +73,10 @@ const ProviderPage = () => {
   // Shown when a logged-in user tries to claim
   const [claimBlocked, setClaimBlocked] = useState(false);
 
-  const provider = getProvider(id ?? "");
+  const found = getProvider(id ?? "");
+  const isAdmin = user?.role === "admin";
+  // Unpublished (draft) listings are only visible to admins, as a preview.
+  const provider = found && (isPublished(found) || isAdmin) ? found : undefined;
   const providerReviews = reviews.filter((r) => r.providerId === id);
 
   if (!provider) {
@@ -120,6 +123,14 @@ const ProviderPage = () => {
         }}
       >
         <div className="container animate-fade-in">
+          {!isPublished(provider) && (
+            <div className="flex items-center gap-3 rounded-xl border border-orange-500/25 bg-orange-500/10 p-4 mb-6">
+              <AlertTriangle className="h-5 w-5 text-orange-400 shrink-0" />
+              <p className="text-sm text-orange-300">
+                Draft preview — this listing isn't visible to families until it's published in the admin panel.
+              </p>
+            </div>
+          )}
           {isSuspended && (
             <div className="flex items-center gap-3 rounded-xl border border-red-500/25 bg-red-500/10 p-4 mb-6">
               <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />

@@ -78,6 +78,13 @@ as a side-effect of another change.
 These items were agreed but not yet built. Raise them with the user at the start of
 the relevant phase so they aren't lost.
 
+### Interim data saving (until Supabase)
+
+- `providerStore`, `founderStore` (claims) and `inviteTokenStore` save to the browser's localStorage via
+  `src/data/persist.ts`. It survives refreshes but is **per browser** — invite links only validate in the browser
+  that generated them, and nothing is shared between devices. Replace these with Supabase tables in Phase 5.
+- Enquiries (`enquiryStore`) are still in memory only.
+
 ### Phase 1B — before starting the onboarding wizard
 
 - **Outreach status tracker** (Admin → Import & Invites tab)

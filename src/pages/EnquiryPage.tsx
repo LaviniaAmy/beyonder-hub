@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Lock } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { addEnquiry } from "@/data/enquiryStore";
-import { getProvider } from "@/data/providerStore";
+import { getProvider, isPublished } from "@/data/providerStore";
 
 const MIN_CHARS = 20;
 const MAX_CHARS = 800;
@@ -19,7 +19,8 @@ const EnquiryPage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
 
-  const provider = getProvider(id ?? "");
+  const found = getProvider(id ?? "");
+  const provider = found && isPublished(found) ? found : undefined;
 
   const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState("");

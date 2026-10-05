@@ -1,8 +1,11 @@
 // ── Provider profile store ──────────────────────────────────
-// In-memory editable provider records. Seeded from mockData.
+// Editable provider records. Seeded from mockData, plus imported listings.
 // ProviderPage, ProviderDirectory, and ProviderDashboard all
 // read from here so edits appear immediately everywhere.
+// Edits and imports are saved in this browser (see persist.ts) until Supabase.
 import { providers as mockProviders } from "@/data/mockData";
+import { loadSaved, save } from "@/data/persist";
+import { extractContacts } from "@/data/duplicateCheck";
 
 export interface ChangeRequest {
   message: string;
@@ -145,6 +148,24 @@ export const providerStore: EditableProvider[] = mockProviders.map((p) => ({
   contactMethod: p.contactMethod,
 }));
 
+// ── Persistence: edits to seeded listings + whole imported listings ──
+const STORAGE_KEY = "beyonder_providers_v1";
+interface SavedProviders { edits: Record<string, Partial<EditableProvider>>; imported: EditableProvider[] }
+const seedIds = new Set(providerStore.map((p) => p.id));
+const saved = loadSaved<SavedProviders>(STORAGE_KEY) ?? { edits: {}, imported: [] };
+const edits: Record<string, Partial<EditableProvider>> = saved.edits ?? {};
+providerStore.forEach((p, i) => { if (edits[p.id]) providerStore[i] = { ...p, ...edits[p.id] }; });
+(saved.imported ?? []).forEach((p) => { if (!seedIds.has(p.id)) providerStore.push(p); });
+
+function persist() {
+  save(STORAGE_KEY, { edits, imported: providerStore.filter((p) => !seedIds.has(p.id)) });
+}
+
+/** Listings families can see. Imported listings stay hidden until an admin publishes them. */
+export function isPublished(p: EditableProvider): boolean {
+  return (p.draftStatus ?? "live") === "live";
+}
+
 export function getProvider(id: string): EditableProvider | undefined {
   return providerStore.find((p) => p.id === id);
 }
@@ -153,7 +174,13 @@ export function updateProvider(id: string, updates: Partial<EditableProvider>): 
   const idx = providerStore.findIndex((p) => p.id === id);
   if (idx === -1) return false;
   providerStore[idx] = { ...providerStore[idx], ...updates };
+  if (seedIds.has(id)) edits[id] = { ...edits[id], ...updates };
+  persist();
   return true;
+}
+
+export function publishProvider(id: string): boolean {
+  return updateProvider(id, { draftStatus: "live" });
 }
 
 export function getAllProviders(): EditableProvider[] {
@@ -173,9 +200,6 @@ export function importProvider(data: {
   needsSupported: string[];
   ageRange: string;
   deliveryFormat: "in-person" | "online" | "hybrid";
-  email: string;
-  phone: string;
-  website: string;
   contactName?: string;
   contactMethodType?: "email" | "phone" | "online_form" | "social_only" | "unknown";
   contactLinks?: string;
@@ -189,6 +213,10 @@ export function importProvider(data: {
     product: "Product & Equipment",
   };
 
+  // Spreadsheets hold all contact details in one cell — pick out the first of each kind.
+  const found = extractContacts(data.contactLinks ?? "");
+  const website = found.domains[0] ? `https://${found.domains[0]}` : "";
+
   const record: EditableProvider = {
     id,
     businessName: data.businessName,
@@ -197,10 +225,10 @@ export function importProvider(data: {
     location: data.location,
     region: data.region,
     coverageArea: data.coverageArea,
-    email: data.email,
-    phone: data.phone,
-    website: data.website,
-    websiteDomain: data.website.replace(/^https?:\/\//, "").split("/")[0],
+    email: found.emails[0] ?? "",
+    phone: found.phones[0] ?? "",
+    website,
+    websiteDomain: found.domains[0] ?? "",
     ageRange: data.ageRange,
     deliveryFormat: data.deliveryFormat,
     needsSupported: data.needsSupported,
@@ -242,16 +270,54 @@ export function importProvider(data: {
     plan_status: "active",
     plan_expires_at: null,
     search_boost: 0,
-    contactMethod: data.email,
-    draftStatus: "draft" as ProviderDraftStatus,
-  } as EditableProvider & { draftStatus: ProviderDraftStatus };
+    contactMethod: found.emails[0] ?? "",
+    draftStatus: "draft",
+  };
 
   providerStore.push(record);
+  persist();
   return record;
 }
 
+/**
+ * Merge an imported row into an existing listing: only fills fields that are empty,
+ * and adds any new contact details. Never overwrites what is already there.
+ */
+export function mergeIntoProvider(id: string, data: Parameters<typeof importProvider>[0]): boolean {
+  const p = getProvider(id);
+  if (!p) return false;
+  const found = extractContacts(data.contactLinks ?? "");
+  const updates: Partial<EditableProvider> = {};
+  const fill = <K extends keyof EditableProvider>(key: K, value: EditableProvider[K] | undefined) => {
+    const cur = p[key];
+    const empty = cur == null || cur === "" || (Array.isArray(cur) && cur.length === 0);
+    const has = value != null && value !== "" && !(Array.isArray(value) && value.length === 0);
+    if (empty && has) updates[key] = value;
+  };
+  fill("description", data.description);
+  fill("shortDescription", data.shortDescription);
+  fill("location", data.location);
+  fill("region", data.region);
+  fill("coverageArea", data.coverageArea);
+  fill("ageRange", data.ageRange);
+  fill("needsSupported", data.needsSupported);
+  fill("contactName", data.contactName);
+  fill("email", found.emails[0]);
+  fill("phone", found.phones[0]);
+  if (!p.website && found.domains[0]) {
+    updates.website = `https://${found.domains[0]}`;
+    updates.websiteDomain = found.domains[0];
+  }
+  const links = data.contactLinks?.trim();
+  if (links && !(p.contactLinks ?? "").includes(links)) {
+    updates.contactLinks = p.contactLinks ? `${p.contactLinks} | ${links}` : links;
+  }
+  if (p.contactMethodType === "unknown" || !p.contactMethodType) fill("contactMethodType", data.contactMethodType);
+  return Object.keys(updates).length ? updateProvider(id, updates) : true;
+}
+
 export function getActiveProviders(): EditableProvider[] {
-  const active = providerStore.filter((p) => p.moderationStatus !== "suspended");
+  const active = providerStore.filter((p) => p.moderationStatus !== "suspended" && isPublished(p));
   // 1.2 — Featured providers sorted to top
   return [...active].sort((a, b) => {
     if (a.isFeatured && !b.isFeatured) return -1;
