@@ -132,7 +132,7 @@ const ParentDashboard = () => {
                   >
                     {msg.senderId === "parent" ? "You" : selectedRecord.providerName} · {msg.sentAt}
                   </p>
-                  <p className="text-sm leading-relaxed break-words text-gray-300">{msg.text}</p>
+                  <p className="text-sm leading-relaxed break-words text-foreground">{msg.text}</p>
                 </div>
               ))}
 

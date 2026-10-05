@@ -689,7 +689,7 @@ const BeyonderApp = ({ embedded = false }: Props) => {
               <label className="ba-consent"><input type="checkbox" ref={saveRef} defaultChecked={S.saved} /><span>Save my child’s details to my Beyonder profile so I don’t have to type them again. You can delete them at any time.</span></label>
               <p className="ba-err" role="alert">{enqErr}</p>
               {enqErr && !isAuthenticated && (
-                <button className="ba-btn ba-btn-ghost" style={{ marginTop: 8 }} onClick={() => navigate("/login?redirect=%2F%3Ftab%3Dfind")}>Sign in</button>
+                <button className="ba-btn ba-btn-ghost" style={{ marginTop: 8 }} onClick={() => navigate(`/login?redirect=${encodeURIComponent(embedded ? "/start?tab=find" : "/?tab=find")}`)}>Sign in</button>
               )}
               <button className="ba-btn ba-btn-primary" style={{ marginTop: 8 }} onClick={send}>{book ? "Request booking" : "Send enquiry"}</button>
             </>

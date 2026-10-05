@@ -24,7 +24,9 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirect");
+  // Only follow redirects within this site (a path, not "//other-site").
+  const rawRedirect = searchParams.get("redirect");
+  const redirectTo = rawRedirect && rawRedirect.startsWith("/") && !rawRedirect.startsWith("//") ? rawRedirect : null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,13 +39,13 @@ const LoginPage = () => {
     const lower = emailToUse.toLowerCase().trim();
 
     if (lower === "admin@beyonder.com" || lower === "test@admin.com") {
-      navigate("/admin");
+      navigate(redirectTo ?? "/admin");
       return;
     }
 
     const approvedClaim = claimRecords.find((r) => r.claimantEmail.toLowerCase() === lower);
     if (approvedClaim) {
-      navigate("/provider-dashboard");
+      navigate(redirectTo ?? "/provider-dashboard");
       return;
     }
 
@@ -56,7 +58,7 @@ const LoginPage = () => {
     }
 
     if (lower.endsWith("@beyonder.test")) {
-      navigate("/provider-dashboard");
+      navigate(redirectTo ?? "/provider-dashboard");
       return;
     }
 
@@ -110,7 +112,10 @@ const LoginPage = () => {
             </Button>
             <p className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-teal-500 hover:underline">
+              <Link
+                to={redirectTo ? `/signup?redirect=${encodeURIComponent(redirectTo)}` : "/signup"}
+                className="text-teal-500 hover:underline"
+              >
                 Sign up
               </Link>
             </p>
