@@ -78,12 +78,22 @@ as a side-effect of another change.
 These items were agreed but not yet built. Raise them with the user at the start of
 the relevant phase so they aren't lost.
 
-### Interim data saving (until Supabase)
+### 📌 For Yash — everything that must move to / be built on Supabase
 
-- `providerStore`, `founderStore` (claims) and `inviteTokenStore` save to the browser's localStorage via
-  `src/data/persist.ts`. It survives refreshes but is **per browser** — invite links only validate in the browser
-  that generated them, and nothing is shared between devices. Replace these with Supabase tables in Phase 5.
-- Enquiries (`enquiryStore`) are still in memory only.
+**Standing rule:** whenever a feature stores data, needs login, files or emails, add it to this list so Yash
+can integrate it. Keep this list up to date in every change.
+
+- **Providers, claims, invite links** — `providerStore`, `founderStore`, `inviteTokenStore` currently save to the
+  browser's localStorage via `src/data/persist.ts` (per browser only; invite links only work in the browser that
+  made them). Replace with Supabase tables.
+- **Enquiries and messages** — `enquiryStore` is in memory only (lost on refresh).
+- **Login** — `AuthContext` is fake (any password works). Replace with Supabase Auth; plug in the email provider
+  (Brevo or Resend) as custom SMTP for sign-up and password-reset emails.
+- **Child's profile (planned, not built yet)** — profile details, per-provider sharing choices, consent records
+  and uploaded documents (diagnosis letters, reports). Contains a child's health/special category data:
+  needs a UK/EU-region project, row-level security so only the parent (and providers they share with) can read
+  it, a private storage bucket with short-lived signed links, consent records with date/time and wording version,
+  an access log, and full deletion when the parent deletes a child or their account.
 
 ## ⚠️ Before go-live — must be done
 
