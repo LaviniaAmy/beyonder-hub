@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import { mockParent } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
+import ChildCards from "@/components/child-profile/ChildCards";
 import {
   enquiryStore,
   getEnquiriesForParent,
@@ -89,6 +90,11 @@ const ParentDashboard = () => {
     <div className="bg-background min-h-screen">
       <PageBanner title="My dashboard" />
       <div className="container max-w-3xl animate-fade-in py-10">
+        <section className="mb-10" aria-label="Your children">
+          <h2 className="mb-3 text-xl font-bold text-foreground">Your children</h2>
+          <ChildCards parentId={parentId} />
+        </section>
+
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-xl font-bold text-foreground">Your Enquiries</h1>
           <Badge className="bg-muted text-foreground border-0">

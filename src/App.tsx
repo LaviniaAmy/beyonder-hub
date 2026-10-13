@@ -29,6 +29,8 @@ import ClaimInvitePage from "./pages/ClaimInvitePage";
 import StartPage from "./pages/StartPage";
 import ArticlePage from "./pages/ArticlePage";
 import LegalPage from "./pages/LegalPage";
+import ChildSetupPage from "./pages/ChildSetupPage";
+import ChildProfilePage from "./pages/ChildProfilePage";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +55,22 @@ const App = () => (
                 element={
                   <ProtectedRoute allowedRoles={["parent"]}>
                     <ParentDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/child/new"
+                element={
+                  <ProtectedRoute allowedRoles={["parent"]}>
+                    <ChildSetupPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/child/:id"
+                element={
+                  <ProtectedRoute allowedRoles={["parent"]}>
+                    <ChildProfilePage />
                   </ProtectedRoute>
                 }
               />

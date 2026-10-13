@@ -52,7 +52,7 @@ const SignupPage = () => {
       return;
     }
 
-    navigate(role === "provider" ? "/provider-dashboard" : (redirectTo ?? "/dashboard"));
+    navigate(role === "provider" ? "/provider-dashboard" : (redirectTo ?? "/dashboard/child/new"));
   };
 
   return (

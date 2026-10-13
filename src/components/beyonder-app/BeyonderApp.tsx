@@ -4,6 +4,7 @@ import BirdCanvas from "@/components/BirdCanvas";
 import { useAuth } from "@/context/AuthContext";
 import { getActiveProviders, getProvider, type EditableProvider } from "@/data/providerStore";
 import { addEnquiry } from "@/data/enquiryStore";
+import { getChildren } from "@/data/childProfileStore";
 import {
   AGES, NEEDS, HELP, Q, FLOW, REGIONS, CATCARDS, SPECS, CATS, CAT_TYPE, REGION_DIRECTORY_NAME, NEED_KEYWORDS,
   type QKey, type Path, type Fmt, type Specialist,
@@ -84,7 +85,6 @@ const BeyonderApp = ({ embedded = false }: Props) => {
   const [enqKey, setEnqKey] = useState(0);
   const [enqErr, setEnqErr] = useState("");
   const [sent, setSent] = useState<{ book: boolean; title: string; body: string } | null>(null);
-  const [addChildLabel, setAddChildLabel] = useState("Add another child");
 
   const qBodyRef = useRef<HTMLDivElement>(null);
   const areasScroll = useRef<HTMLDivElement>(null);
@@ -170,7 +170,6 @@ const BeyonderApp = ({ embedded = false }: Props) => {
     if (embedded && id === "home") { navigate("/"); return; }
     if (id === "home") { hist.current = ["home"]; syncHistory(); show("home", -1, instant); return; }
     if (id === "find" && !S.region) { hist.current = ["home", "areas"]; syncHistory(); show("areas", 1, instant); return; }
-    if (id === "profile") setAddChildLabel("Add another child");
     hist.current = ["home", id]; syncHistory(); show(id, 1, instant);
   }
 
@@ -351,6 +350,27 @@ const BeyonderApp = ({ embedded = false }: Props) => {
     return () => { window.removeEventListener("popstate", onPop); document.removeEventListener("keydown", onKey); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ── Full child profile (parent dashboard) ─────────────────────────────
+  const isParent = isAuthenticated && user?.role === "parent";
+  const kids = isParent && user ? getChildren(user.id) : [];
+  const newChildProfile = () => navigate(isParent ? "/dashboard/child/new" : `/signup?redirect=${encodeURIComponent("/dashboard/child/new")}`);
+  const profileCta = isParent ? (
+    <div className="ba-nudge">
+      <p>{kids.length ? "Your full profiles live on your dashboard." : "Save these answers to a full profile you can share with providers when you choose."}</p>
+      <div className="ba-stack">
+        {kids.map((k) => (
+          <button key={k.id} className="ba-btn ba-btn-primary ba-btn-small" onClick={() => navigate(`/dashboard/child/${k.id}`)}>Open {k.firstName}’s profile</button>
+        ))}
+        {!kids.length && <button className="ba-btn ba-btn-primary ba-btn-small" onClick={newChildProfile}>Set up your child’s profile</button>}
+      </div>
+    </div>
+  ) : !isAuthenticated ? (
+    <div className="ba-nudge">
+      <p>Create a free account to save your child’s profile, so you only have to explain once.</p>
+      <button className="ba-btn ba-btn-primary ba-btn-small" onClick={newChildProfile}>Create a free account</button>
+    </div>
+  ) : null;
 
   // ── Render pieces ──────────────────────────────────────────────────────
   const tabId = active === "areas" ? "find" : active;
@@ -728,6 +748,7 @@ const BeyonderApp = ({ embedded = false }: Props) => {
             <h2>Your child’s profile</h2>
             <p>We use this to show the right support first and to fill in enquiries for you.</p>
           </div>
+          {profileCta}
           {!(S.age || S.needs.length) ? (
             <div className="ba-empty">
               Nothing here yet. Answer three short questions and we’ll remember them for your next enquiry.<br /><br />
@@ -747,10 +768,10 @@ const BeyonderApp = ({ embedded = false }: Props) => {
               </p>
               <div className="ba-stack">
                 <button className="ba-btn ba-btn-ghost" onClick={() => { closeSheets(); S.path = "consult"; S.step = 0; S.editKey = null; update(); go("q"); }}>Update answers</button>
-                <button className="ba-btn ba-btn-ghost" onClick={() => setAddChildLabel("Adding more children is coming next")}>{addChildLabel}</button>
+                <button className="ba-btn ba-btn-ghost" onClick={newChildProfile}>Add another child</button>
                 <button className="ba-change" style={{ margin: "8px auto 0", color: "#A6412A" }} onClick={() => {
                   Object.assign(S, { age: null, needs: [], help: null, area: "", region: null, child: "", saved: false, msgEdited: false });
-                  setAddChildLabel("Add another child"); update();
+                  update();
                 }}>Delete this profile</button>
               </div>
             </>
