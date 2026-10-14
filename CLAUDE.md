@@ -100,8 +100,16 @@ can integrate it. Keep this list up to date in every change.
 - **Providers, claims, invite links** — `providerStore`, `founderStore`, `inviteTokenStore` currently save to the
   browser's localStorage via `src/data/persist.ts` (per browser only; invite links only work in the browser that
   made them). Replace with Supabase tables.
-- **Enquiries and messages** — `enquiryStore` is in memory only (lost on refresh).
-- **Login** — `AuthContext` is fake (any password works). Replace with Supabase Auth; plug in the email provider
+- **Enquiries and messages** — `enquiryStore` now saves to localStorage (`beyonder_enquiries_v1`), per browser only.
+  Each enquiry can carry `sharedProfile` (a snapshot of the child-profile sections the parent ticked). On Supabase the
+  provider must only ever see that snapshot (never the live profile), and email the parent when a provider replies.
+- **Call bookings** — `src/data/bookingStore.ts` (`beyonder_bookings_v1`, localStorage) holds "Request booking" from the
+  homepage app; shown as "Your calls" on the parent dashboard. Specialists/slots are still sample data. Needs a bookings
+  table, specialist accounts to confirm/decline, payments (Stripe) and confirmation emails.
+- **Login** — `AuthContext` is fake (any password works). Names given at sign-up are kept in localStorage
+  (`beyonder_account_names_v1`). The "Create a free account to send" panel (`src/components/account/AccountSheet.tsx`,
+  used by both enquiry forms) calls `login(email, password, "parent", name)` — on Supabase it must create a real
+  account (sign-up + welcome/verification email) and then send the enquiry or booking. Replace with Supabase Auth; plug in the email provider
   (Brevo or Resend) as custom SMTP for sign-up and password-reset emails.
 - **Child's profile (Phase 1 built — test version)** — `src/data/childProfileStore.ts` saves to localStorage
   (`beyonder_children_v1`); pick lists are in `src/data/childProfileOptions.ts`. Routes `/dashboard/child/new`
@@ -117,6 +125,10 @@ can integrate it. Keep this list up to date in every change.
   - "Download my data" and "Delete this profile" must also cover server copies; deleting a parent account
     deletes their children.
   - Monthly research reminder: `researchReminder` (lastDismissedAt / neverAsk) — keep the same rules.
+- **Child profile ↔ enquiries** — both enquiry forms (`EnquiryPage.tsx`, the app's Enquire/Book screen) let a parent pick
+  a child and tick which sections to share (`src/data/enquiryProfile.ts`; Diagnosis and Safety start unticked).
+  Sending records the choice in the child's `sharing` and stores the snapshot on the enquiry/booking. The app's "Save my
+  child's details" box now creates a real child profile, storing its own consent wording (`APP_SAVE_CONSENT_TEXT`).
 - **Child's documents (Phase 3, not built)** — diagnosis letters, reports, EHCPs: private storage bucket,
   short-lived signed links, virus scanning, PDF/JPG/PNG ≤ 10MB, per-document sharing (off by default), separate
   consent at first upload, two-step login before viewing or uploading.

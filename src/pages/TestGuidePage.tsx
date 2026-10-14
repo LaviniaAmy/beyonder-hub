@@ -217,12 +217,13 @@ const TestGuidePage = () => (
     <div className="page-break" />
     <h2>7. Enquiry Page <code>/enquiry/:id</code></h2>
     <ul>
-      <li><strong>Auth required:</strong> Redirects to <code>/login?redirect=…</code> if not logged in</li>
+      <li><strong>Account needed to send:</strong> Visitors can fill in the form; pressing Send opens "Create a free account" (name, email, password) or "Sign in", then sends</li>
+      <li><strong>Child profile:</strong> Signed-in parents see "Sending as …", pick which child it's about (or "Someone else"), and the form fills in from the profile. "What would you like to share" ticks which profile sections go to the provider (Diagnosis and Safety start unticked)</li>
       <li><strong>Parent only:</strong> Provider/Admin accounts see a "this is for families" block</li>
       <li><strong>Form fields:</strong> Child's Age (required), Child's Name (optional), Needs/Diagnosis (optional), Message (20–800 chars)</li>
       <li><strong>Message guidance:</strong> On focus, shows a teal info box explaining enquiry etiquette and message limits</li>
       <li><strong>On submit:</strong> Shows confirmation with ✓ icon and "Go to Dashboard" button</li>
-      <li>Enquiry is added to the in-memory store and appears in both parent and provider dashboards</li>
+      <li>Enquiry is saved (this browser) and appears in both parent and provider dashboards; shared profile sections show on both</li>
     </ul>
 
     {/* ════════════════════════════════════════════════════════ */}

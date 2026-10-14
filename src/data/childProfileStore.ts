@@ -90,6 +90,8 @@ export function createChild(data: {
   avatar: AvatarLook;
   answers?: ChildAnswers;
   storageConsentGiven: boolean;
+  /** The exact wording the parent agreed to, when it wasn't the setup page's (e.g. the app's "save" box). */
+  consentText?: string;
 }): ChildProfile {
   if (!data.storageConsentGiven) throw new Error("A child profile can't be saved without the parent's consent.");
   const at = now();
@@ -101,7 +103,7 @@ export function createChild(data: {
     birthYear: data.birthYear,
     avatar: data.avatar,
     answers: data.answers ?? emptyAnswers(),
-    storageConsent: { version: CONSENT_VERSION, text: STORAGE_CONSENT_TEXT, at },
+    storageConsent: { version: CONSENT_VERSION, text: data.consentText ?? STORAGE_CONSENT_TEXT, at },
     researchConsent: null,
     researchReminder: { neverAsk: false, lastDismissedAt: null },
     sharing: {},

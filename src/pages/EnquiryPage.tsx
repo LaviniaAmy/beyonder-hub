@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link, useNavigate, Navigate } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import PageBanner from "@/components/PageBanner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,9 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Lock } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, type User } from "@/context/AuthContext";
 import { addEnquiry } from "@/data/enquiryStore";
 import { getProvider, isPublished } from "@/data/providerStore";
+import { getChildren, type ChildProfile } from "@/data/childProfileStore";
+import type { SectionId } from "@/data/childProfileOptions";
+import { buildSharedProfile, childAgeLabel, childNeeds, defaultShare, draftFromProfile, recordSharing } from "@/data/enquiryProfile";
+import EnquiryChildPicker, { SOMEONE_ELSE } from "@/components/child-profile/EnquiryChildPicker";
+import AccountSheet from "@/components/account/AccountSheet";
 
 const MIN_CHARS = 20;
 const MAX_CHARS = 800;
@@ -22,19 +27,44 @@ const EnquiryPage = () => {
   const found = getProvider(id ?? "");
   const provider = found && isPublished(found) ? found : undefined;
 
+  const isParent = isAuthenticated && user?.role === "parent";
+  const isProviderOrAdmin = isAuthenticated && (user?.role === "provider" || user?.role === "admin");
+  const kids = isParent && user ? getChildren(user.id) : [];
+
   const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState("");
   const [childAge, setChildAge] = useState("");
   const [childName, setChildName] = useState("");
   const [needs, setNeeds] = useState("");
   const [messageFocused, setMessageFocused] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [signedInNote, setSignedInNote] = useState(false);
 
-  const isParent = isAuthenticated && user?.role === "parent";
-  const isProviderOrAdmin = isAuthenticated && (user?.role === "provider" || user?.role === "admin");
+  // ── Fill the form from the child's profile ──
+  const [chosen, setChosen] = useState("");
+  const [share, setShare] = useState<SectionId[]>([]);
+  const [edited, setEdited] = useState({ message: false, needs: false });
+  const kid = kids.find((k) => k.id === chosen);
 
-  if (!isAuthenticated) {
-    return <Navigate to={`/login?redirect=${encodeURIComponent(`/enquiry/${id ?? ""}`)}`} replace />;
-  }
+  const fillFrom = (k: ChildProfile | undefined, ids: SectionId[], keepEdits = true) => {
+    if (!k) return;
+    if (!keepEdits || !edited.needs) setNeeds(childNeeds(k, ids));
+    if (!keepEdits || !edited.message) setMessage(draftFromProfile(provider?.businessName ?? "there", k, ids));
+  };
+  const choose = (id: string) => {
+    setChosen(id);
+    setEdited({ message: false, needs: false });
+    const k = kids.find((x) => x.id === id);
+    if (!k) { setChildName(""); setChildAge(""); setNeeds(""); setMessage(""); return; }
+    const ids = defaultShare(k);
+    setShare(ids);
+    setChildName(k.firstName);
+    setChildAge(childAgeLabel(k));
+    fillFrom(k, ids, false);
+  };
+  const changeShare = (ids: SectionId[]) => { setShare(ids); fillFrom(kid, ids); };
+  // First visit with a profile: pick the first child for them (they can change it).
+  if (kids.length && !chosen) choose(kids[0].id);
 
   if (!provider) {
     return (
@@ -72,14 +102,28 @@ const EnquiryPage = () => {
   const tooLong = message.length > MAX_CHARS;
   const canSubmit = !tooShort && !tooLong && childAge.trim().length > 0;
 
-  const handleSubmit = () => {
+  // Not signed in: keep what they've typed and ask for an account first.
+  const handleSend = () => {
     if (!canSubmit) return;
+    if (!isAuthenticated) { setAccountOpen(true); return; }
+    handleSubmit(user!);
+  };
+  const afterSignIn = (u: User) => {
+    setAccountOpen(false);
+    // An existing account with child profiles: let them pick the child before sending.
+    if (getChildren(u.id).length) { setSignedInNote(true); return; }
+    handleSubmit(u);
+  };
+
+  const handleSubmit = (u: User) => {
+    if (!canSubmit) return;
+    const shared = kid && share.length ? buildSharedProfile(kid, share) : undefined;
     addEnquiry({
       enquiryId: crypto.randomUUID(),
       providerId: provider.id,
       providerName: provider.businessName,
-      parentId: user?.id ?? "parent-test",
-      parentName: user?.name ?? "Guest",
+      parentId: u.id,
+      parentName: u.name,
       childAge: childAge.trim(),
       childName: childName.trim(),
       needs: needs.trim(),
@@ -89,7 +133,7 @@ const EnquiryPage = () => {
         {
           messageId: crypto.randomUUID(),
           senderId: "parent",
-          senderName: user?.name ?? "Guest",
+          senderName: u.name,
           text: message.trim(),
           sentAt: new Date().toISOString().split("T")[0],
         },
@@ -101,7 +145,9 @@ const EnquiryPage = () => {
       messageCount: 1,
       providerNotes: "",
       customAnswers: [],
+      sharedProfile: shared,
     });
+    if (kid && shared) recordSharing(u.id, kid.id, provider.id, share);
     setSubmitted(true);
   };
 
@@ -134,6 +180,21 @@ const EnquiryPage = () => {
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
+            {isParent && user && (
+              <div className="ba-root">
+                <p className="cp-sendas">Sending as <strong>{user.name}</strong> · {user.email}</p>
+                {signedInNote && <p className="ba-note" style={{ marginTop: 0, marginBottom: 10 }}>You’re signed in. Check who this is about, then press Send.</p>}
+                {kids.length > 0 ? (
+                  <EnquiryChildPicker kids={kids} chosen={chosen} onChoose={choose} share={share} onShare={changeShare} to={provider.businessName} />
+                ) : (
+                  <p className="ba-note" style={{ marginTop: 0 }}>
+                    <Link to="/dashboard/child/new" className="cp-link">Set up your child’s profile</Link> and we’ll fill this in for you next time.
+                  </p>
+                )}
+              </div>
+            )}
+            {chosen === SOMEONE_ELSE && <p className="text-xs text-muted-foreground -mt-2">Fill in the details below.</p>}
+
             {/* Child's Age — required */}
             <div>
               <Label htmlFor="childAge">Child's Age</Label>
@@ -141,7 +202,7 @@ const EnquiryPage = () => {
                 id="childAge"
                 value={childAge}
                 onChange={(e) => setChildAge(e.target.value)}
-                placeholder="e.g. 7"
+                placeholder="e.g. 7 years"
               />
             </div>
 
@@ -166,7 +227,7 @@ const EnquiryPage = () => {
               <Input
                 id="needs"
                 value={needs}
-                onChange={(e) => setNeeds(e.target.value)}
+                onChange={(e) => { setNeeds(e.target.value); setEdited((x) => ({ ...x, needs: true })); }}
                 placeholder="e.g. ASD, Mobility, Not yet diagnosed"
               />
             </div>
@@ -211,7 +272,7 @@ const EnquiryPage = () => {
               <Textarea
                 id="message"
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={(e) => { setMessage(e.target.value); setEdited((x) => ({ ...x, message: true })); }}
                 onFocus={() => setMessageFocused(true)}
                 onBlur={() => setMessageFocused(false)}
                 placeholder="Tell them about your child's needs and what you're looking for..."
@@ -225,12 +286,18 @@ const EnquiryPage = () => {
               </div>
             </div>
 
-            <Button className="w-full bg-teal-500 hover:bg-teal-400" onClick={handleSubmit} disabled={!canSubmit}>
+            <Button className="w-full bg-teal-500 hover:bg-teal-400" onClick={handleSend} disabled={!canSubmit}>
               Send Enquiry
             </Button>
+            {!isAuthenticated && (
+              <p className="text-center text-xs text-muted-foreground">
+                You’ll create a free account (or sign in) when you send, so you can see replies in your dashboard.
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
+      <AccountSheet open={accountOpen} onClose={() => setAccountOpen(false)} onSignedIn={afterSignIn} action="send your enquiry" />
     </div>
   );
 };

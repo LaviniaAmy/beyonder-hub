@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { providers } from "@/data/mockData";
 import { claimRecords, pendingClaims } from "@/data/founderStore";
+import { loadSaved, save } from "@/data/persist";
 
 export type UserRole = "parent" | "provider" | "admin";
 
@@ -15,12 +16,18 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string, forceRole?: UserRole) => void;
+  /** Returns the signed-in user straight away, so a form can carry on (e.g. send an enquiry) in the same step. */
+  login: (email: string, password: string, forceRole?: UserRole, name?: string) => User;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const STORAGE_KEY = "beyonder_user";
+
+// Names given at sign-up, so a parent is "Sarah Jones" (not their email) every time they log in.
+// TEST VERSION: per browser only — Supabase Auth replaces this (see CLAUDE.md "For Yash").
+const NAMES_KEY = "beyonder_account_names_v1";
+const accountNames: Record<string, string> = loadSaved<Record<string, string>>(NAMES_KEY) ?? {};
 
 // ── Exact email → role + stable id + provider_id map ──────
 const EMAIL_MAP: Record<string, { role: UserRole; id: string; name: string; provider_id?: string }> = {
@@ -125,17 +132,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   });
 
-  const login = (email: string, _password: string, forceRole?: UserRole) => {
+  const login = (email: string, _password: string, forceRole?: UserRole, name?: string): User => {
     const resolved = resolveUser(email);
+    const key = email.toLowerCase().trim();
+    if (name?.trim()) {
+      accountNames[key] = name.trim();
+      save(NAMES_KEY, accountNames);
+    }
     const newUser: User = {
       id: resolved.id,
-      name: resolved.name,
-      email,
+      name: accountNames[key] ?? resolved.name,
+      email: email.trim(),
       role: forceRole ?? resolved.role,
       provider_id: resolved.provider_id,
     };
     setUser(newUser);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
+    return newUser;
   };
 
   const logout = () => {

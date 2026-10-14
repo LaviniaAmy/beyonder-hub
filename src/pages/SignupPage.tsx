@@ -30,7 +30,7 @@ const SignupPage = () => {
     const role: UserRole = tab;
 
     // Pass role explicitly so provider signups aren't downgraded to parent
-    login(email, password, role);
+    login(email, password, role, name);
 
     // If provider signup with a claim intent — attempt the claim now.
     // The dashboard links the account to the listing from the claim (by email),
