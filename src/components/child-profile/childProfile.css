@@ -127,3 +127,7 @@ select.ba-field { appearance: none; -webkit-appearance: none; padding-right: 36p
 .cp-card-intro { display: flex; align-items: center; gap: 14px; background: #fff; border: 1px solid var(--ba-sand); border-radius: 20px; padding: 16px; text-decoration: none; color: var(--ba-ink); }
 .cp-card-intro b { display: block; font-size: 16px; }
 .cp-card-intro span { font-size: 14px; color: var(--ba-muted); }
+
+/* Long options wrap instead of pushing the panel sideways */
+.cp-chips .ba-chip { white-space: normal; text-align: left; max-width: 100%; line-height: 1.3; }
+.cp-sheet-body { overflow-x: hidden; }

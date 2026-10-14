@@ -70,9 +70,15 @@ export const SECTIONS: Section[] = [
   {
     id: "diagnosis",
     title: "Diagnosis",
-    hint: "Completely optional. Tick any that apply and say where you are with each one.",
+    hint: "Completely optional. You don't need a diagnosis, or to know what it might be.",
     groups: [{
-      id: "diagnoses", label: "Diagnosis", kind: "diagnosis", allowOwn: true, options: o([
+      id: "diagnosis_stage", label: "Where are things at?", kind: "single", options: o([
+        ["has_diagnosis", "We have a diagnosis"], ["waiting", "Waiting for an assessment"],
+        ["not_sure", "We think something's going on, but we're not sure what"],
+        ["no_diagnosis", "No diagnosis"], ["prefer_not", "Prefer not to say"],
+      ]),
+    }, {
+      id: "diagnoses", label: "Tick any that apply, then say where you are with each", kind: "diagnosis", allowOwn: true, options: o([
         ["autism", "Autism"], ["adhd", "ADHD"], ["dyslexia", "Dyslexia"], ["dyspraxia", "Dyspraxia (DCD)"],
         ["dyscalculia", "Dyscalculia"], ["dysgraphia", "Dysgraphia"],
         ["dld", "Developmental language disorder"], ["speech_sound", "Speech sound disorder"],
