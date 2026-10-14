@@ -47,6 +47,15 @@ The section immediately after the hero:
 
 ---
 
+## ⚠️ Every feature must link up with what already exists
+
+Before calling any feature done, check every place it touches existing parts of the site (forms, dashboards,
+enquiries, the homepage app, the admin panel, saved data) and make sure they work together — e.g. a child
+profile must fill in the enquiry forms. If something doesn't link up, fix it as part of the same work, or
+raise it with the user straight away. Never leave a new feature disconnected from the rest of the site.
+
+---
+
 ## Mobile / Desktop scope
 
 All new work applies to **both mobile and desktop** simultaneously unless the user
@@ -76,6 +85,9 @@ as a side-effect of another change.
 - "Use my location" picks South East / Southampton (prototype behaviour) — no real geolocation yet.
 - The map is England only (9 regions). `mockData.ts` `regions` has no "Yorkshire and the Humber" or
   "East of England" yet, so those regions only show online services and product sellers until providers exist.
+
+- **Do not change the app's enquiry screen** (the "Enquire" step inside `BeyonderApp`) to use the child
+  profile until the user says so. The provider-page enquiry form (`EnquiryPage.tsx`) is the one being linked.
 
 These items were agreed but not yet built. Raise them with the user at the start of
 the relevant phase so they aren't lost.
