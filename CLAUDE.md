@@ -78,16 +78,18 @@ as a side-effect of another change.
 
 ### Beyonder app (mobile homepage / `/start`) — follow-ups agreed but not built
 
-- Specialists, time slots and booking are **sample data** (`beyonder-app/data.ts`); "Request booking" only
-  shows the confirmation screen — nothing is saved yet.
+- Specialists, time slots and booking are **sample data** (`beyonder-app/data.ts`); "Request booking" is saved
+  (`bookingStore`, shown as "Your calls" on the parent dashboard) but nothing reaches a specialist yet.
 - Find results and enquiries use the **real directory** (`providerStore` / `enquiryStore`) with the same
-  region/category/search rules as `ProviderDirectory`; enquiries need a signed-in parent account.
+  region/category/search rules as `ProviderDirectory`. Enquiries and bookings need a parent account — visitors get
+  the "Create a free account to send" panel (`AccountSheet`) when they press Send.
 - "Use my location" picks South East / Southampton (prototype behaviour) — no real geolocation yet.
 - The map is England only (9 regions). `mockData.ts` `regions` has no "Yorkshire and the Humber" or
   "East of England" yet, so those regions only show online services and product sellers until providers exist.
 
-- **Do not change the app's enquiry screen** (the "Enquire" step inside `BeyonderApp`) to use the child
-  profile until the user says so. The provider-page enquiry form (`EnquiryPage.tsx`) is the one being linked.
+- The app's Enquire / Book screen was changed **with the user's approval** to link the child profile ("Sending as",
+  child picker, share tick boxes, real "Save my child's details"). The 3 rows (Age, Finding hard, Looking for) and
+  their Change buttons are unchanged — keep them.
 
 These items were agreed but not yet built. Raise them with the user at the start of
 the relevant phase so they aren't lost.
