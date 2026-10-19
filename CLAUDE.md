@@ -47,6 +47,15 @@ The section immediately after the hero:
 
 ---
 
+## ⚠️ Every feature must link up with what already exists
+
+Before calling any feature done, check every place it touches existing parts of the site (forms, dashboards,
+enquiries, the homepage app, the admin panel, saved data) and make sure they work together — e.g. a child
+profile must fill in the enquiry forms. If something doesn't link up, fix it as part of the same work, or
+raise it with the user straight away. Never leave a new feature disconnected from the rest of the site.
+
+---
+
 ## Mobile / Desktop scope
 
 All new work applies to **both mobile and desktop** simultaneously unless the user
@@ -69,13 +78,18 @@ as a side-effect of another change.
 
 ### Beyonder app (mobile homepage / `/start`) — follow-ups agreed but not built
 
-- Specialists, time slots and booking are **sample data** (`beyonder-app/data.ts`); "Request booking" only
-  shows the confirmation screen — nothing is saved yet.
+- Specialists, time slots and booking are **sample data** (`beyonder-app/data.ts`); "Request booking" is saved
+  (`bookingStore`, shown as "Your calls" on the parent dashboard) but nothing reaches a specialist yet.
 - Find results and enquiries use the **real directory** (`providerStore` / `enquiryStore`) with the same
-  region/category/search rules as `ProviderDirectory`; enquiries need a signed-in parent account.
+  region/category/search rules as `ProviderDirectory`. Enquiries and bookings need a parent account — visitors get
+  the "Create a free account to send" panel (`AccountSheet`) when they press Send.
 - "Use my location" picks South East / Southampton (prototype behaviour) — no real geolocation yet.
 - The map is England only (9 regions). `mockData.ts` `regions` has no "Yorkshire and the Humber" or
   "East of England" yet, so those regions only show online services and product sellers until providers exist.
+
+- The app's Enquire / Book screen was changed **with the user's approval** to link the child profile ("Sending as",
+  child picker, share tick boxes, real "Save my child's details"). The 3 rows (Age, Finding hard, Looking for) and
+  their Change buttons are unchanged — keep them.
 
 These items were agreed but not yet built. Raise them with the user at the start of
 the relevant phase so they aren't lost.
@@ -88,8 +102,16 @@ can integrate it. Keep this list up to date in every change.
 - **Providers, claims, invite links** — `providerStore`, `founderStore`, `inviteTokenStore` currently save to the
   browser's localStorage via `src/data/persist.ts` (per browser only; invite links only work in the browser that
   made them). Replace with Supabase tables.
-- **Enquiries and messages** — `enquiryStore` is in memory only (lost on refresh).
-- **Login** — `AuthContext` is fake (any password works). Replace with Supabase Auth; plug in the email provider
+- **Enquiries and messages** — `enquiryStore` now saves to localStorage (`beyonder_enquiries_v1`), per browser only.
+  Each enquiry can carry `sharedProfile` (a snapshot of the child-profile sections the parent ticked). On Supabase the
+  provider must only ever see that snapshot (never the live profile), and email the parent when a provider replies.
+- **Call bookings** — `src/data/bookingStore.ts` (`beyonder_bookings_v1`, localStorage) holds "Request booking" from the
+  homepage app; shown as "Your calls" on the parent dashboard. Specialists/slots are still sample data. Needs a bookings
+  table, specialist accounts to confirm/decline, payments (Stripe) and confirmation emails.
+- **Login** — `AuthContext` is fake (any password works). Names given at sign-up are kept in localStorage
+  (`beyonder_account_names_v1`). The "Create a free account to send" panel (`src/components/account/AccountSheet.tsx`,
+  used by both enquiry forms) calls `login(email, password, "parent", name)` — on Supabase it must create a real
+  account (sign-up + welcome/verification email) and then send the enquiry or booking. Replace with Supabase Auth; plug in the email provider
   (Brevo or Resend) as custom SMTP for sign-up and password-reset emails.
 - **Child's profile (Phase 1 built — test version)** — `src/data/childProfileStore.ts` saves to localStorage
   (`beyonder_children_v1`); pick lists are in `src/data/childProfileOptions.ts`. Routes `/dashboard/child/new`
@@ -105,6 +127,10 @@ can integrate it. Keep this list up to date in every change.
   - "Download my data" and "Delete this profile" must also cover server copies; deleting a parent account
     deletes their children.
   - Monthly research reminder: `researchReminder` (lastDismissedAt / neverAsk) — keep the same rules.
+- **Child profile ↔ enquiries** — both enquiry forms (`EnquiryPage.tsx`, the app's Enquire/Book screen) let a parent pick
+  a child and tick which sections to share (`src/data/enquiryProfile.ts`; Diagnosis and Safety start unticked).
+  Sending records the choice in the child's `sharing` and stores the snapshot on the enquiry/booking. The app's "Save my
+  child's details" box now creates a real child profile, storing its own consent wording (`APP_SAVE_CONSENT_TEXT`).
 - **Child's documents (Phase 3, not built)** — diagnosis letters, reports, EHCPs: private storage bucket,
   short-lived signed links, virus scanning, PDF/JPG/PNG ≤ 10MB, per-document sharing (off by default), separate
   consent at first upload, two-step login before viewing or uploading.

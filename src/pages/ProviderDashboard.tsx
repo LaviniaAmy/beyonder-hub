@@ -43,6 +43,7 @@ import {
   isAtCap,
   isProviderTurn,
 } from "@/data/enquiryStore";
+import SharedProfileBlock from "@/components/child-profile/SharedProfileBlock";
 import { getClaimForProvider } from "@/data/founderStore";
 import { getProvider, updateProvider, AvailabilityStatus } from "@/data/providerStore";
 
@@ -546,6 +547,7 @@ const ProviderDashboard = () => {
           </CardHeader>
 
           <CardContent className="space-y-3 pt-4">
+            <SharedProfileBlock shared={selectedEnquiry.sharedProfile} childName={selectedEnquiry.childName} viewer="provider" />
             {/* Thread messages */}
             {selectedEnquiry.messages.map((msg) => (
               <div
@@ -556,7 +558,7 @@ const ProviderDashboard = () => {
                 <p className="text-xs mb-1.5 font-medium" style={{ color: msg.senderId === "parent" ? undefined : "#c87060" }} >
                   {msg.senderId === "parent" ? selectedEnquiry.parentName : "You"} <span className="font-normal text-muted-foreground">· {msg.sentAt}</span>
                 </p>
-                <p className="text-sm leading-relaxed text-foreground/80">{msg.text}</p>
+                <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-line">{msg.text}</p>
               </div>
             ))}
 

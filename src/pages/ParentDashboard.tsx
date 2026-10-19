@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { mockParent } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
 import ChildCards from "@/components/child-profile/ChildCards";
+import SharedProfileBlock from "@/components/child-profile/SharedProfileBlock";
+import { getBookingsForParent } from "@/data/bookingStore";
 import {
   enquiryStore,
   getEnquiriesForParent,
@@ -47,6 +49,7 @@ const ParentDashboard = () => {
   const [, forceUpdate] = useState(0);
 
   const parentEnquiries = getParentEnquiries();
+  const bookings = getBookingsForParent(parentId);
   const selectedRecord = selectedId ? (enquiryStore.find((e) => e.enquiryId === selectedId) ?? null) : null;
 
   const handleViewThread = (enquiryId: string) => {
@@ -95,6 +98,30 @@ const ParentDashboard = () => {
           <ChildCards parentId={parentId} />
         </section>
 
+        {bookings.length > 0 && (
+          <section className="mb-10" aria-label="Your calls">
+            <h2 className="mb-3 text-xl font-bold text-foreground">Your calls</h2>
+            <div className="space-y-3">
+              {bookings.map((b) => (
+                <Card key={b.bookingId} className="border-0 shadow-card">
+                  <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-foreground">{b.specialistName}</p>
+                      <p className="text-xs text-muted-foreground">{b.specialistRole}</p>
+                      <p className="mt-1 text-sm text-foreground/80">
+                        {b.slot} · {b.format} · {b.price}{b.childName ? ` · for ${b.childName}` : ""}
+                      </p>
+                    </div>
+                    <Badge className="border-0 bg-muted text-foreground">
+                      {b.status === "requested" ? "Waiting to be confirmed" : b.status === "confirmed" ? "Confirmed" : "Cancelled"}
+                    </Badge>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
+
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-xl font-bold text-foreground">Your Enquiries</h1>
           <Badge className="bg-muted text-foreground border-0">
@@ -123,6 +150,7 @@ const ParentDashboard = () => {
             </CardHeader>
 
             <CardContent className="space-y-3">
+              <SharedProfileBlock shared={selectedRecord.sharedProfile} childName={selectedRecord.childName} viewer="parent" />
               {/* Message thread */}
               {selectedRecord.messages.map((msg) => (
                 <div
@@ -138,7 +166,7 @@ const ParentDashboard = () => {
                   >
                     {msg.senderId === "parent" ? "You" : selectedRecord.providerName} · {msg.sentAt}
                   </p>
-                  <p className="text-sm leading-relaxed break-words text-foreground">{msg.text}</p>
+                  <p className="text-sm leading-relaxed break-words text-foreground whitespace-pre-line">{msg.text}</p>
                 </div>
               ))}
 

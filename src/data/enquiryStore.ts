@@ -26,12 +26,20 @@ export interface EnquiryRecord {
   messageCount: number;
   providerNotes: string;
   customAnswers: { question: string; answer: string }[];
+  /** Parts of the child's profile the parent chose to share with this enquiry (a snapshot at sending time). */
+  sharedProfile?: SharedProfile;
+}
+
+export interface SharedProfile {
+  childId: string;
+  sections: { id: string; title: string; items: string[] }[];
 }
 
 // ── Cap: 6 total (parent 3, provider 3 — opener is message 1) ──
 export const MESSAGE_CAP = 6;
 
 import { enquiries } from "@/data/mockData";
+import { loadSaved, save } from "@/data/persist";
 
 const seeded: EnquiryRecord[] = enquiries.map((e) => {
   const messages: ThreadMessage[] = [
@@ -74,11 +82,15 @@ const seeded: EnquiryRecord[] = enquiries.map((e) => {
   };
 });
 
-export const enquiryStore: EnquiryRecord[] = [...seeded];
+// TEST VERSION: saved in this browser only (see persist.ts) until enquiries move to Supabase.
+const STORAGE_KEY = "beyonder_enquiries_v1";
+export const enquiryStore: EnquiryRecord[] = loadSaved<EnquiryRecord[]>(STORAGE_KEY) ?? [...seeded];
+const persist = () => save(STORAGE_KEY, enquiryStore);
 
 export function addEnquiry(record: EnquiryRecord) {
   record.messageCount = record.messages.length;
   enquiryStore.push(record);
+  persist();
 }
 
 export function replyToEnquiry(enquiryId: string, replyText: string, providerName: string) {
@@ -96,6 +108,7 @@ export function replyToEnquiry(enquiryId: string, replyText: string, providerNam
   record.statusForParent = "replied";
   record.statusForProvider = "replied";
   record.messageCount = record.messages.length;
+  persist();
 }
 
 export function parentReplyToEnquiry(enquiryId: string, text: string, parentName: string) {
@@ -111,16 +124,17 @@ export function parentReplyToEnquiry(enquiryId: string, text: string, parentName
   });
   record.statusForProvider = "new";
   record.messageCount = record.messages.length;
+  persist();
 }
 
 export function unlockEnquiry(enquiryId: string) {
   const record = enquiryStore.find((e) => e.enquiryId === enquiryId);
-  if (record) record.isUnlocked = true;
+  if (record) { record.isUnlocked = true; persist(); }
 }
 
 export function updateProviderNotes(enquiryId: string, notes: string) {
   const record = enquiryStore.find((e) => e.enquiryId === enquiryId);
-  if (record) record.providerNotes = notes;
+  if (record) { record.providerNotes = notes; persist(); }
 }
 
 export function getEnquiriesForParent(parentId: string): EnquiryRecord[] {

@@ -1,10 +1,17 @@
 import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import BirdCanvas from "@/components/BirdCanvas";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, type User } from "@/context/AuthContext";
 import { getActiveProviders, getProvider, type EditableProvider } from "@/data/providerStore";
 import { addEnquiry } from "@/data/enquiryStore";
+import { addBooking } from "@/data/bookingStore";
 import { getChildren } from "@/data/childProfileStore";
+import type { SectionId } from "@/data/childProfileOptions";
+import {
+  APP_SAVE_CONSENT_TEXT, buildSharedProfile, childAgeLabel, childNeeds, createChildFromApp, defaultShare, recordSharing,
+} from "@/data/enquiryProfile";
+import EnquiryChildPicker from "@/components/child-profile/EnquiryChildPicker";
+import AccountSheet from "@/components/account/AccountSheet";
 import {
   AGES, NEEDS, HELP, Q, FLOW, REGIONS, CATCARDS, SPECS, CATS, CAT_TYPE, REGION_DIRECTORY_NAME, NEED_KEYWORDS,
   type QKey, type Path, type Fmt, type Specialist,
@@ -85,6 +92,11 @@ const BeyonderApp = ({ embedded = false }: Props) => {
   const [enqKey, setEnqKey] = useState(0);
   const [enqErr, setEnqErr] = useState("");
   const [sent, setSent] = useState<{ book: boolean; title: string; body: string } | null>(null);
+  // Enquiry: which child (from the parent's profiles) and what to share; account panel for visitors.
+  const [chosen, setChosen] = useState("");
+  const [share, setShare] = useState<SectionId[]>([]);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [signedInNote, setSignedInNote] = useState(false);
 
   const qBodyRef = useRef<HTMLDivElement>(null);
   const areasScroll = useRef<HTMLDivElement>(null);
@@ -260,42 +272,77 @@ const BeyonderApp = ({ embedded = false }: Props) => {
     else if (S.needs.includes("unsure")) m += ` We’re not sure yet what’s behind the difficulties.`;
     if (S.target?.kind === "book" && S.help) m += ` I’m hoping for: ${HELP[S.help].toLowerCase()}.`;
     if (S.target?.kind === "enq") m += ` Could you tell me more about what you offer and whether you have space?`;
+    const k = chosenKid();
+    if (k && share.length) m += `\n\nI’ve shared some of ${k.firstName}’s profile with you too.`;
     return m + `\n\nThank you.`;
   }
+  const kidsOf = (u: User | null) => (u?.role === "parent" ? getChildren(u.id) : []);
+  const chosenKid = () => kidsOf(user).find((k) => k.id === chosen);
+  // Pick a child from the parent's profiles: the one named in the answers, otherwise the first.
+  function chooseKid(id: string) {
+    const k = kidsOf(user).find((x) => x.id === id);
+    setChosen(id);
+    setShare(k ? defaultShare(k) : []);
+    S.child = k ? k.firstName : ""; S.msgEdited = false; update(); renderEnquiry();
+  }
+  function autoChooseKid(u: User | null) {
+    const kids = kidsOf(u);
+    if (!kids.length) { setChosen(""); setShare([]); return; }
+    const named = kids.find((k) => k.firstName.toLowerCase() === S.child.trim().toLowerCase());
+    const k = named ?? kids[0];
+    setChosen(k.id); setShare(defaultShare(k)); S.child = k.firstName;
+  }
   function openTarget(kind: "book" | "enq", id: string) {
-    S.target = { kind, id }; S.msgEdited = false; update(); renderEnquiry(); go("enquiry");
+    S.target = { kind, id }; S.msgEdited = false;
+    setSignedInNote(false); autoChooseKid(user);
+    update(); renderEnquiry(); go("enquiry");
   }
   function send() {
     const t = target()!, book = S.target?.kind === "book";
-    // Enquiries go to the real provider, so they follow the directory's rules: parents only, signed in.
-    if (!book && !isAuthenticated) {
-      setEnqErr("Please sign in with your parent account to send this enquiry. Your answers will be kept.");
-      return;
-    }
-    if (!book && user?.role !== "parent") {
-      setEnqErr("Enquiries are for families. Provider and admin accounts can’t send enquiries.");
-      return;
-    }
     if (!shareRef.current?.checked) {
-      setEnqErr(`Tick the first box to share these details with ${t.first}, then ${book ? "request the booking" : "send"} again.`);
+      setEnqErr(`Tick the box to share these details with ${t.first}, then ${book ? "request the booking" : "send"} again.`);
       return;
     }
-    S.saved = !!saveRef.current?.checked; update();
+    // Everything a parent sends lives in their dashboard, so enquiries and bookings come from a parent account.
+    if (!isAuthenticated) { setEnqErr(""); setAccountOpen(true); return; }
+    if (user?.role !== "parent") {
+      setEnqErr(`${book ? "Bookings" : "Enquiries"} are for families. Provider and admin accounts can’t send them.`);
+      return;
+    }
+    deliver(user);
+  }
+  function afterSignIn(u: User) {
+    setAccountOpen(false);
+    // An existing account with child profiles: let them pick the child before sending.
+    if (kidsOf(u).length) { autoChooseKid(u); S.msgEdited = false; update(); renderEnquiry(); setSignedInNote(true); return; }
+    deliver(u);
+  }
+  function deliver(u: User) {
+    const t = target()!, book = S.target?.kind === "book";
+    const kid = kidsOf(u).find((k) => k.id === chosen);
+    let savedNew = "";
+    if (!kid && saveRef.current?.checked) {
+      createChildFromApp(u.id, S.child);
+      savedNew = S.child.trim() ? `${S.child.trim()}’s` : "Your child’s";
+    }
+    S.saved = !!kid || !!savedNew; update();
+    const shared = kid && share.length ? buildSharedProfile(kid, share) : undefined;
+    const today = new Date().toISOString().split("T")[0];
+    const childAge = (kid && childAgeLabel(kid)) || (S.age ? AGES[S.age] : "");
+    const needs = kid && share.length ? childNeeds(kid, share) || S.needs.map((n) => NEEDS[n]).join(", ") : S.needs.map((n) => NEEDS[n]).join(", ");
     if (!book && t.prov) {
-      const today = new Date().toISOString().split("T")[0];
-      const ageText = S.age ? AGES[S.age] : "";
       addEnquiry({
         enquiryId: crypto.randomUUID(),
         providerId: t.prov.id,
         providerName: t.prov.businessName,
-        parentId: user?.id ?? "parent-test",
-        parentName: user?.name ?? "Guest",
-        childAge: ageText,
+        parentId: u.id,
+        parentName: u.name,
+        childAge,
         childName: S.child.trim(),
-        needs: S.needs.map((n) => NEEDS[n]).join(", "),
+        needs,
         message: S.msg.trim(),
         reply: null,
-        messages: [{ messageId: crypto.randomUUID(), senderId: "parent", senderName: user?.name ?? "Guest", text: S.msg.trim(), sentAt: today }],
+        messages: [{ messageId: crypto.randomUUID(), senderId: "parent", senderName: u.name, text: S.msg.trim(), sentAt: today }],
         statusForParent: "sent",
         statusForProvider: "new",
         createdAt: today,
@@ -303,13 +350,35 @@ const BeyonderApp = ({ embedded = false }: Props) => {
         messageCount: 1,
         providerNotes: "",
         customAnswers: [],
+        sharedProfile: shared,
+      });
+      if (kid && shared) recordSharing(u.id, kid.id, t.prov.id, share);
+    }
+    if (book && t.spec) {
+      addBooking({
+        bookingId: crypto.randomUUID(),
+        parentId: u.id,
+        parentName: u.name,
+        specialistId: t.spec.id,
+        specialistName: t.spec.name,
+        specialistRole: t.spec.role,
+        slot: t.spec.slot,
+        price: t.spec.price,
+        format: S.fmt.charAt(0).toUpperCase() + S.fmt.slice(1),
+        childName: S.child.trim(),
+        childAge,
+        needs,
+        message: S.msg.trim(),
+        status: "requested",
+        createdAt: new Date().toISOString(),
+        sharedProfile: shared,
       });
     }
     const slot = t.spec?.slot ?? "";
     setSent({
       book,
       title: book ? "Booking requested" : "Enquiry sent",
-      body: `${book ? `${t.first} will confirm your ${slot.toLowerCase()} call shortly.` : `${t.name} usually replies within two working days.`} You’ll get a message in Beyonder and by email.${S.saved ? " Your child’s details are saved to your profile." : ""}`,
+      body: `${book ? `${t.first} will confirm your ${slot.toLowerCase()} call shortly.` : `${t.name} usually replies within two working days.`} You’ll see it in your dashboard, and we’ll email you when there’s news.${savedNew ? ` ${savedNew} details are saved to a profile in your dashboard.` : ""}`,
     });
     hist.current = ["home", "sent"]; syncHistory(); show("sent", 1);
   }
@@ -698,20 +767,33 @@ const BeyonderApp = ({ embedded = false }: Props) => {
                   </div>
                 ))}
               </dl></div>
-              <label className="ba-lbl" htmlFor="ba-childIn">Child’s first name <span style={{ fontWeight: 400, color: "var(--ba-muted)" }}>(optional)</span></label>
-              <input className="ba-field" id="ba-childIn" value={S.child} autoComplete="off" style={{ marginBottom: 18 }}
-                onChange={(e) => { S.child = e.target.value; update(); }} />
+              {isParent && user && (
+                <>
+                  <p className="cp-sendas">Sending as <strong>{user.name}</strong> · {user.email}</p>
+                  {signedInNote && <p className="ba-note" style={{ marginTop: -6, marginBottom: 12 }}>You’re signed in. Check who this is about, then {book ? "request the booking" : "send"}.</p>}
+                  {kids.length > 0 && (
+                    <EnquiryChildPicker kids={kids} chosen={chosen} onChoose={chooseKid} share={share} onShare={(ids) => { setShare(ids); }} to={t.first} />
+                  )}
+                </>
+              )}
+              {!chosenKid() && (
+                <>
+                  <label className="ba-lbl" htmlFor="ba-childIn">Child’s first name <span style={{ fontWeight: 400, color: "var(--ba-muted)" }}>(optional)</span></label>
+                  <input className="ba-field" id="ba-childIn" value={S.child} autoComplete="off" style={{ marginBottom: 18 }}
+                    onChange={(e) => { S.child = e.target.value; update(); }} />
+                </>
+              )}
               <label className="ba-lbl" htmlFor="ba-msgIn">Your message</label>
               <textarea className="ba-field" id="ba-msgIn" value={S.msg}
                 onChange={(e) => { S.msg = e.target.value; S.msgEdited = true; update(); }} />
               <p className="ba-note">We’ve written this from your answers. Change anything you like.</p>
               <label className="ba-consent"><input type="checkbox" ref={shareRef} /><span>Share these details with {t.first} so they can reply.</span></label>
-              <label className="ba-consent"><input type="checkbox" ref={saveRef} defaultChecked={S.saved} /><span>Save my child’s details to my Beyonder profile so I don’t have to type them again. You can delete them at any time.</span></label>
-              <p className="ba-err" role="alert">{enqErr}</p>
-              {enqErr && !isAuthenticated && (
-                <button className="ba-btn ba-btn-ghost" style={{ marginTop: 8 }} onClick={() => navigate(`/login?redirect=${encodeURIComponent(embedded ? "/start?tab=find" : "/?tab=find")}`)}>Sign in</button>
+              {!chosenKid() && (
+                <label className="ba-consent"><input type="checkbox" ref={saveRef} /><span>{APP_SAVE_CONSENT_TEXT}</span></label>
               )}
+              <p className="ba-err" role="alert">{enqErr}</p>
               <button className="ba-btn ba-btn-primary" style={{ marginTop: 8 }} onClick={send}>{book ? "Request booking" : "Send enquiry"}</button>
+              {!isAuthenticated && <p className="ba-note" style={{ textAlign: "center" }}>You’ll create a free account (or sign in) when you send, so you can see replies in your dashboard.</p>}
             </>
           )}
         </div></div>
@@ -783,6 +865,8 @@ const BeyonderApp = ({ embedded = false }: Props) => {
 
       {/* SHEETS */}
       <AboutSheet open={sheet === "about"} onClose={closeSheets} />
+      <AccountSheet open={accountOpen} onClose={() => setAccountOpen(false)} onSignedIn={afterSignIn}
+        action={S.target?.kind === "book" ? "request your booking" : "send your enquiry"} />
 
       <MenuSheet
         open={sheet === "menu"}
