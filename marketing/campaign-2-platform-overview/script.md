@@ -78,7 +78,7 @@ Times are approximate; I'll fit the animation to the final recordings. **Bold** 
 >
 > **VO 12:** They can book a live video, phone or chat consultation, often the same day.
 
-- **Visual:** zoom into the results. Scroll down through specialist cards (new names: **Dr Maya Bennett**, educational psychologist; **Tom Ellis**, speech and language therapist; **Priya Shah**, occupational therapist). Tap "Book this time" on Tom's card, then "Booking requested".
+- **Visual:** zoom into the results. Scroll down through specialist cards (new names: **Priya Shah**, occupational therapist; **Tom Ellis**, speech and language therapist; **Hannah Clarke**, SEND education advisor; **Dr Maya Bennett**, clinical psychologist). Tap "Book this time" on Tom's card, then "Booking requested".
 - **Pop-ups:** **Verified specialists** → **Book in minutes**
 
 > **VO 13:** Or they can find trusted local support (therapists, clubs, products, schools and charities) on a map of the whole UK.
