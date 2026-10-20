@@ -1,9 +1,10 @@
-// Renders animation.html to a vertical MP4 (1080 x 1920, 30fps, no audio yet).
+// Renders animation.html to a vertical MP4 (1080 x 1920, 30fps) with synthesised sound effects (sfx.mjs).
 // Usage: NODE_PATH=<global node_modules> node render.mjs [from-seconds] [to-seconds]
 // Needs Playwright (Chromium) and ffmpeg. Serves this folder over http so the page can load its screenshots.
 import { spawn, execSync } from 'node:child_process';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
+import { writeFileSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -13,8 +14,9 @@ let chromium;
 try { ({ chromium } = require('/opt/node-tools/node_modules/playwright')); } catch { ({ chromium } = require('playwright')); }
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const VERSION = 'v1';
+const VERSION = 'v2';
 const OUT = path.join(here, `beyonder-overview-${VERSION}.mp4`);
+const SILENT = path.join(here, '.render-silent.mp4');
 const FPS = 30, LOOP = 205;
 const from = +(process.argv[2] || 0), to = +(process.argv[3] || LOOP);
 
@@ -37,7 +39,7 @@ await page.evaluate(() => window.ready);
 const stage = await page.$('#stage');
 
 const enc = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-',
-  '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-preset', 'medium', '-movflags', '+faststart', OUT], { stdio: ['pipe', 'inherit', 'inherit'] });
+  '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-preset', 'medium', '-movflags', '+faststart', SILENT], { stdio: ['pipe', 'inherit', 'inherit'] });
 const done = new Promise((res, rej) => enc.on('close', (c) => (c === 0 ? res() : rej(new Error('ffmpeg exited ' + c)))));
 
 const first = Math.round(from * FPS), last = Math.round(to * FPS);
@@ -50,7 +52,15 @@ for (let i = first; i < last; i++) {
 }
 enc.stdin.end();
 await done;
+const cues = await page.evaluate(() => window.SFX);
 await browser.close();
 server.close();
+
+// Sound effects: synthesise, mix on the cue list, and add to the video.
+const tmpCues = path.join(here, '.render-cues.json'), tmpWav = path.join(here, '.render-sfx.wav');
+writeFileSync(tmpCues, JSON.stringify(cues.map(([t, n, v]) => [t - from, n, v]).filter(([t]) => t >= 0)));
+execSync(`node "${path.join(here, 'sfx.mjs')}" "${tmpCues}" "${tmpWav}" ${to - from}`, { stdio: 'inherit' });
+execSync(`ffmpeg -y -loglevel error -i "${SILENT}" -i "${tmpWav}" -map 0:v -map 1:a -c:v copy -c:a aac -b:a 160k -shortest -movflags +faststart "${OUT}"`);
+[SILENT, tmpCues, tmpWav].forEach((f) => rmSync(f, { force: true }));
 const d = parseFloat(execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${OUT}"`).toString());
 console.log(`${path.basename(OUT)}: ${d.toFixed(1)}s`);

@@ -43,6 +43,7 @@
   #shots, #overlays, #taps { position: absolute; left: 0; top: 30px; width: 306px; height: 662px; overflow: hidden; }
   #overlays, #taps { overflow: visible; pointer-events: none; }
   .shot .shade { position: absolute; inset: 0; background: #0b1020; opacity: 0; pointer-events: none; }
+  .press { position: absolute; z-index: 29; background: rgba(17,24,39,.16); box-shadow: inset 0 0 0 2px rgba(217,138,106,.9); opacity: 0; }
   .tap { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; z-index: 30;
     background: rgba(217,138,106,.35); border: 2px solid var(--terra); opacity: 0; }
 
@@ -356,16 +357,17 @@ const SEG = [
   [50.2, 'p01-home', 'none'],
   // Chapter 1 · Parents
   [62.9, 'p02-q-age', 'swipe'], [64.1, 'p03-q-age-picked', 'fade'],
-  [64.8, 'p04-q-needs', 'swipe'], [66.6, 'p05-q-needs-picked', 'fade'],
+  [64.8, 'p04-q-needs', 'swipe'], [65.75, 'p04b-q-speech', 'fade'], [66.45, 'p05-q-needs-picked', 'fade'],
   [67.6, 'p06-q-help', 'swipe'], [68.6, 'p07-q-help-picked', 'fade'],
   [69.3, 'p08-consult-results', 'swipe', [[71.4, 0], [74.2, 320], [77.2, 813], [79.4, 560]]],
   [81.1, 'p09-booking', 'swipe', [[82.4, 0], [84.0, 284]]],
-  [85.9, 'p10-booking-sent', 'up'],
+  [84.55, 'p09a-booking-share', 'fade', [[84.55, 284]]], [85.05, 'p09b-booking-ticked', 'fade', [[85.05, 284]]],
+  [86.0, 'p10-booking-sent', 'up'],
   [87.8, 'p01-home', 'fade'],
   [88.9, 'p11-find-map', 'swipe'], [90.4, 'p12-find-region', 'fade'],
   [92.4, 'p13-find-categories', 'up'],
   [94.0, 'p14-find-results', 'swipe'],
-  [96.2, 'p15-enquiry', 'swipe', [[97.4, 0], [99.0, 169]]],
+  [96.2, 'p15-enquiry', 'swipe', [[97.4, 0], [99.0, 169]]], [99.75, 'p15b-enquiry-ticked', 'fade', [[99.75, 169]]],
   [100.8, 'p16-enquiry-sent', 'up'],
   [102.6, 'p17-profile', 'swipe', [[103.6, 0], [105.0, 145]]],
   [106.0, 'p18-community', 'swipe', [[106.8, 0], [108.8, 430]]],
@@ -383,17 +385,17 @@ const SEG = [
 ];
 const TRANS = { none: 0, swipe: .55, fade: .3, up: .55 };
 
-// Taps: [time, shot, box key (from shots/meta.json) or [x, y] in screenshot px]
+// Taps: [time, shot, box key (from shots/meta.json) or [x, y, w?, h?] in screenshot px]. Sized taps also get a pressed highlight.
 const TAPS = [
-  [62.4, 'p01-home', 'live'], [63.9, 'p02-q-age', [285, 262]],
-  [65.6, 'p04-q-needs', 'speech'], [66.3, 'p04-q-needs', 'sensory'], [67.2, 'p05-q-needs-picked', [195, 799]],
+  [62.4, 'p01-home', 'live'], [63.9, 'p02-q-age', 'age'],
+  [65.6, 'p04-q-needs', 'speech'], [66.3, 'p04-q-needs', 'sensory'], [67.2, 'p04-q-needs', 'cont'],
   [68.4, 'p06-q-help', 'talk'], [80.6, 'p08-consult-results', 'tombook'],
-  [84.6, 'p09-booking', [36, 925]], [85.4, 'p09-booking', 'req'],
+  [84.4, 'p09-booking', 'box1'], [84.9, 'p09-booking', [31, 963, 22, 22]], [85.6, 'p09-booking', 'req'],
   [87.4, 'p10-booking-sent', 'home'], [88.4, 'p01-home', 'find'],
   [90.2, 'p11-find-map', 'sw'], [93.6, 'p13-find-categories', 'therapy'], [95.8, 'p14-find-results', 'enquire'],
-  [99.6, 'p15-enquiry', [36, 801]], [100.4, 'p15-enquiry', 'send'], [102.2, 'p16-enquiry-sent', 'profile'],
+  [99.6, 'p15-enquiry', 'box1'], [100.4, 'p15-enquiry', 'send'], [102.2, 'p16-enquiry-sent', 'profile'],
   [118.2, 'v02-provider-page', 'claim'], [128.6, 'v04-pro-overview', 'enq'], [133.4, 'v06-pro-listing', 'avail'],
-  [169.2, 'a03-admin-invites', 'gen'], [175.6, null, [195, 690]],
+  [169.2, 'a03-admin-invites', 'gen'], [175.6, null, [195, 516]],
 ];
 
 // Camera: [time, zoom, focus x, focus y] — focus in screenshot px of the visible screen (195, 422 = centre).
@@ -486,12 +488,17 @@ function build() {
   SEGS = SEG.map(([t, shot, tr, scroll]) => ({ t, shot, tr, scroll: scroll || null }));
   SEGS.forEach((s) => shotEl(s.shot));
   for (const [t, shot, key] of TAPS) {
-    let x, y;
-    if (Array.isArray(key)) [x, y] = key; else [x, y] = META[shot].boxes[key];
+    const [x, y, w, h] = Array.isArray(key) ? key : META[shot].boxes[key];
     const i = segAt(t);
-    const sc = shot && i >= 0 && SEGS[i].shot === shot ? scrollAt(SEGS[i], t) : 0;
+    const sc = shot && i >= 0 ? scrollAt(SEGS[i], t) : 0;      // positions are in page coords; subtract the visible scroll
     const el = document.createElement('div'); el.className = 'tap'; $('taps').appendChild(el);
-    TAPSR.push({ t, x, y: y - sc, el });
+    let press = null;
+    if (w && w < 380) {
+      press = document.createElement('div'); press.className = 'press';
+      Object.assign(press.style, { left: `${(x - w / 2) * K}px`, top: `${(y - sc - h / 2) * K}px`, width: `${w * K}px`, height: `${h * K}px`, borderRadius: `${Math.min(12, (h * K) / 2)}px` });
+      $('taps').appendChild(press);
+    }
+    TAPSR.push({ t, x, y: y - sc, el, press });
   }
   // People icons (stat 2)
   $('people').innerHTML = [0, 1, 2, 3, 4].map((i) => `<svg viewBox="0 0 40 70" style="width:58px;height:102px" id="pp${i}"><circle cx="20" cy="12" r="10" fill="rgba(255,255,255,.28)"/><path d="M4 70V38a16 16 0 0 1 32 0v32z" fill="rgba(255,255,255,.28)"/></svg>`).join('');
@@ -647,6 +654,11 @@ function renderAt(ms) {
     tp.el.style.opacity = q > 0 && q < 1 ? (q < .25 ? q / .25 : 1 - (q - .25) / .75) : 0;
     tp.el.style.left = `${tp.x * K}px`; tp.el.style.top = `${tp.y * K}px`;
     tp.el.style.transform = `scale(${(.4 + q * 1.1).toFixed(3)})`;
+    if (tp.press) {                      // the button darkens briefly and gives slightly, like a real press
+      const a = prog(t, tp.t - .08, tp.t + .02), b = prog(t, tp.t + .12, tp.t + .5);
+      tp.press.style.opacity = a > 0 && b < 1 ? Math.min(a, 1 - b) : 0;
+      tp.press.style.transform = `scale(${(1 - .03 * Math.min(a, 1 - b)).toFixed(3)})`;
+    }
   });
   // Overlays: verified badges, toasts, announcement composer
   [0, 1, 2].forEach((j) => {
@@ -708,12 +720,36 @@ function renderAt(ms) {
 }
 window.renderAt = renderAt;
 
+// Sound effects: [time, sound, volume]. render.mjs reads window.SFX and sfx.mjs synthesises and mixes them.
+function buildSFX() {
+  const S = [];
+  const add = (t, n, v = 1) => S.push([+t.toFixed(3), n, v]);
+  add(.3, 'flutter', .7); add(2.0, 'pop', .8); add(1.0, 'swish', .35);                         // opening
+  [10.3, 17.3, 24.3, 31.3].forEach((t) => add(t, 'swish', .45));                              // stat slides
+  [[10.8, 13.4], [24.9, 27.0], [31.9, 34.0]].forEach(([a, b]) => { for (let t = a; t < b - .3; t += .085) add(t, 'tick', .55); add(b, 'thud', .9); });
+  add(19.4, 'pop', .9); add(27.6, 'pop', .7); add(34.4, 'pop', .7);
+  [38.7, 40.0, 41.6, 43.2, 44.6].forEach((t, i) => add(t, 'ping', .55 + i * .08));            // the scattered search
+  add(46.5, 'flutter', 1); add(47.3, 'whoosh', .9); add(50.3, 'swish', .6); add(51.8, 'chime', .8);
+  CH.forEach(([a, b]) => { add(a, 'whoosh', .7); add(a + .9, 'flutter', .55); add(a + 1.1, 'chime', .5); add(b - .6, 'swish', .5); });
+  SEGS.forEach((g) => { if (g.tr === 'swipe' || g.tr === 'up') add(g.t, 'swish', .45); });
+  TAPS.forEach(([t]) => add(t, 'tap', 1));
+  POP.forEach(([a]) => add(a, 'pop', .55));
+  [124.0, 169.6, 176.0].forEach((t) => add(t, 'ding', .8));                                    // notifications
+  [155.0, 155.8, 156.6].forEach((t) => add(t, 'check', .8));                                   // verified badges
+  add(138.0, 'whoosh', .6); add(140.4, 'pop', .6); add(142.6, 'pop', .6);
+  for (let t = 172.0; t < 175.2; t += .11) if (Math.floor(t * 100) % 3) add(t, 'type', .5);    // typing the announcement
+  add(178.0, 'whoosh', .7); [181.8, 184.4, 187.0].forEach((t) => add(t, 'pop', .7));
+  add(195.6, 'flutter', .6); add(196.4, 'chime', 1); add(198.0, 'pop', .8); add(199.2, 'pop', .7);
+  return S.sort((a, b) => a[0] - b[0]);
+}
+
 window.ready = Promise.all([
   fetch('shots/meta.json').then((r) => r.json()).then((m) => (META = m)),
   fetch('tools/ukmap.json').then((r) => r.json()).then((u) => (UK = u)),
   document.fonts.ready,
 ]).then(() => {
   build();
+  window.SFX = buildSFX();
   return Promise.all([...document.images].map((im) => (im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; }))));
 }).then(() => {
   // Images used as strip backgrounds: preload too

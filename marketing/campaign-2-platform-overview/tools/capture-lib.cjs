@@ -52,7 +52,7 @@ async function open(outDir) {
   const save = () => fs.writeFileSync(path.join(outDir, 'meta.json'), JSON.stringify(meta, null, 2));
   const settle = (ms = 700) => page.waitForTimeout(ms);
 
-  // Where key buttons are (centre x, y in CSS px, measured in the captured image's coordinates).
+  // Where key buttons are: [centre x, centre y, width, height] in CSS px, in the captured image's coordinates.
   async function measure(boxes, scrollEl) {
     if (!boxes) return {};
     return page.evaluate(([boxes, scrollEl]) => {
@@ -63,7 +63,7 @@ async function open(outDir) {
         const el = els.find((e) => !text || e.textContent.includes(text));
         if (!el) { out[k] = null; continue; }
         const r = el.getBoundingClientRect();
-        out[k] = [Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2 + (scrollEl === 'window' ? scrollY : 0))];
+        out[k] = [Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2 + (scrollEl === 'window' ? scrollY : 0)), Math.round(r.width), Math.round(r.height)];
       }
       return out;
     }, [boxes, scrollEl]);
