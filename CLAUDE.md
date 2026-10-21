@@ -76,6 +76,36 @@ as a side-effect of another change.
 
 ## Pending work — do not forget
 
+### 🗺️ Roadmap to launch (agreed list, in order — work through ONE step at a time)
+
+Supabase and Stripe are left out of this list on purpose (see "For Yash" below). When the user confirms how a step
+should work, write the decision under that step here before building it. Tick a step only once it's built and linked up.
+
+1. [ ] **On/off switches for News and Community** — admin setting; when off, hide every link, card and page
+   (header, footer, `MenuSheet`, homepage sections, `/news`, `/community`, `/guides`?) with no gaps or broken links.
+   ⚠️ The locked ecosystem category grid has Community and News cards — needs the user's OK to hide them.
+2. [ ] **Berkshire pilot rule in the directory** — visitors/parents outside Berkshire only see online providers,
+   products and professionals; Berkshire sees everything. Needs a county/area on providers and on the parent's chosen
+   location. Apply to `ProviderDirectory` and the app's Find results.
+3. [ ] **Map: England only, South East split so Berkshire is its own area** — discussed in another chat; no notes in
+   the code, so the user must re-confirm the details. Also tidy `regions` in `mockData.ts` (has Wales/Scotland/NI,
+   missing Yorkshire and the Humber and East of England).
+4. [ ] **New sign-up page + proper provider onboarding** — redesign `/signup`; providers pick their category (→ the
+   right dashboard) and answer a few more questions that fill dashboard sections, without overwhelming them.
+   Claiming an existing page (`/claim`, claim button) keeps the simple form.
+5. [ ] **"Make live" button in the provider dashboard** — new providers start as draft; they press it when ready
+   (`draftStatus` already exists; decide if admin approval is needed and show a readiness checklist).
+6. [ ] **Live consultation setup in the provider dashboard** — how the consultation runs (chat / message with file
+   upload / video with no recording — to decide), weekly availability, price per session, and editing them.
+   Must replace the sample specialists/slots in `beyonder-app/data.ts` and feed "Your calls".
+7. [ ] **Starling birds on profiles** — which profiles to confirm (child profiles already have `StarlingAvatar`).
+8. [ ] **Pop-up starling (`StarlingTip`) must match the bird in the category-card SVG.**
+9. [ ] **Legal / GDPR complete** — privacy, terms, cookies (`legal.ts` drafts), provider agreement, data-sharing terms
+   for shared child profiles, cookie consent banner (none yet), DPIA, ICO registration.
+10. [ ] **Found in existing notes** — real articles (only if News is on at launch), decide on the pilot test logins,
+    real "Use my location", provider "Request verification" badge, Events (+ off switch) and Forums/moderation from
+    `BUILDPLAN.md` (BUILDPLAN is out of date: built items aren't ticked and its branch name is old).
+
 ### Beyonder app (mobile homepage / `/start`) — follow-ups agreed but not built
 
 - Specialists, time slots and booking are **sample data** (`beyonder-app/data.ts`); "Request booking" is saved
