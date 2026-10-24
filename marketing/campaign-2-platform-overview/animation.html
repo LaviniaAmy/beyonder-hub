@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What is Beyonder?</title>
+<!--
+  Campaign 2 — "What is Beyonder?" platform overview. Vertical video, 540 x 960 CSS px (rendered at 2x = 1080 x 1920).
+  Everything runs off one clock: renderAt(ms) sets every element for that moment, so render.mjs can step it frame by frame.
+  Phone screens are real screenshots of the site (shots/, made by tools/capture-*.cjs) with invented names.
+  Timings follow script.md; re-time the T table below once the ElevenLabs voice-over is recorded.
+  Serve this folder over http (render.mjs does) so shots/meta.json and tools/ukmap.json can load.
+-->
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+  :root {
+    --navy: #111827; --indigo: #1E1B3A; --deep: #2B4C7E; --mist-l: #E8F4FF;
+    --terra: #D98A6A; --sienna: #E8A080; --terra-d: #C4714F; --terra-l: #FBEDE6; --peach: #F4B08C;
+    --terra-grad: linear-gradient(135deg, #E8A080, #D98A6A);
+    --cream: #F6F3EE; --sand: #EAE6DF; --ink: #1B1A35; --muted: #4B5563;
+    --sky: linear-gradient(180deg, #0e152a 0%, #13244e 28%, #1b3a6d 58%, #22487c 82%, #26507f 100%);
+    --head: 'Josefin Sans', system-ui, sans-serif; --body: 'Nunito Sans', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #000; }
+  body { display: grid; place-items: center; min-height: 100vh; font-family: var(--body); color: var(--ink); -webkit-font-smoothing: antialiased; }
+  #stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: var(--cream); }
+  .abs { position: absolute; }
+  .layer { position: absolute; inset: 0; }
+  .hidden { visibility: hidden; }
+
+  /* Phone */
+  #cam { position: absolute; inset: 0; transform-origin: 0 0; z-index: 3; }
+  #phone { position: absolute; left: 108px; top: 132px; width: 324px; height: 710px; border-radius: 46px; background: var(--ink); padding: 9px;
+    box-shadow: 0 24px 50px rgba(17,24,39,.28), 0 2px 8px rgba(17,24,39,.12); }
+  #screen { position: relative; width: 306px; height: 692px; border-radius: 38px; overflow: hidden; background: var(--cream); }
+  .notch { position: absolute; top: 6px; left: 50%; width: 84px; height: 22px; margin-left: -42px; border-radius: 14px; background: var(--ink); z-index: 40; }
+  .shot { position: absolute; left: 0; top: 0; width: 306px; height: 662px; overflow: hidden; background: var(--cream); visibility: hidden; will-change: transform; }
+  .shot img.content { position: absolute; left: 0; top: 0; width: 306px; display: block; }
+  .shot .strip { position: absolute; left: 0; width: 306px; background-repeat: no-repeat; background-size: 306px auto; }
+  #status { position: absolute; left: 0; right: 0; top: 0; height: 30px; z-index: 38; display: flex; align-items: center; justify-content: space-between; padding: 2px 22px 0 26px; font-size: 12px; font-weight: 800; }
+  #status svg { height: 10px; }
+  #shots, #overlays, #taps { position: absolute; left: 0; top: 30px; width: 306px; height: 662px; overflow: hidden; }
+  #overlays, #taps { overflow: visible; pointer-events: none; }
+  .shot .shade { position: absolute; inset: 0; background: #0b1020; opacity: 0; pointer-events: none; }
+  .press { position: absolute; z-index: 29; background: rgba(17,24,39,.16); box-shadow: inset 0 0 0 2px rgba(217,138,106,.9); opacity: 0; }
+  .tap { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; z-index: 30;
+    background: rgba(217,138,106,.35); border: 2px solid var(--terra); opacity: 0; }
+
+  /* Overlays inside the phone screen */
+  .badge { position: absolute; z-index: 25; padding: 4px 9px; border-radius: 999px; background: #E7F6EE; color: #17714A; border: 1px solid #A8DCBF;
+    font-size: 10.5px; font-weight: 800; white-space: nowrap; opacity: 0; box-shadow: 0 4px 10px rgba(23,113,74,.18); }
+  .toast { position: absolute; left: 10px; right: 10px; top: 8px; z-index: 35; padding: 11px 13px; border-radius: 16px; background: #fff; display: flex; gap: 10px; align-items: center;
+    box-shadow: 0 12px 30px rgba(17,24,39,.25); opacity: 0; }
+  .toast .ic { width: 30px; height: 30px; border-radius: 9px; background: var(--indigo); display: grid; place-items: center; flex-shrink: 0; }
+  .toast .ic i { width: 8px; height: 8px; border-radius: 50%; background: var(--terra); }
+  .toast b { display: block; font-size: 12.5px; } .toast span { font-size: 11px; color: var(--muted); }
+  #compose { position: absolute; left: 0; right: 0; top: 30px; bottom: 0; z-index: 20; background: var(--cream); visibility: hidden; }
+  #compose .bar { display: flex; align-items: center; gap: 10px; padding: 14px 16px 13px; background: rgba(8,12,24,.97); color: #fff; font-family: var(--head); font-size: 16px; }
+  #compose .bar svg { width: 16px; height: 16px; }
+  #compose .pad { padding: 14px; }
+  #compose .lbl { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 10px 0 6px; }
+  #compose .field { background: #fff; border: 1px solid var(--sand); border-radius: 12px; padding: 10px 12px; font-size: 12.5px; }
+  #compose .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  #compose .chip { padding: 5px 10px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 11px; font-weight: 700; }
+  #compose .chip.off { background: #fff; color: var(--ink); border: 1px solid var(--sand); }
+  #compose .body { min-height: 150px; line-height: 1.5; white-space: pre-wrap; }
+  #compose .send { margin-top: 14px; height: 42px; border-radius: 9px; background: var(--terra-grad); color: #fff; font-weight: 800; font-size: 13.5px; display: grid; place-items: center; }
+
+  /* Sky scenes */
+  #sky { z-index: 5; background: var(--sky); }
+  .logo { position: absolute; top: 30px; left: 30px; display: flex; align-items: center; gap: 9px; font-family: var(--head); font-size: 24px; color: #fff; z-index: 6; }
+  .logo .dot { position: relative; width: 10px; height: 10px; margin-top: -4px; }
+  .logo .dot i { position: absolute; inset: 0; border-radius: 50%; background: var(--terra); }
+  .logo .dot b { position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--sienna); opacity: 0; }
+  .scene { position: absolute; inset: 0; opacity: 0; }
+  .center { text-align: center; color: #fff; }
+  .h1 { font-family: var(--head); font-weight: 300; font-size: 50px; line-height: 1.06; }
+  .h1 em { font-style: normal; color: #F5B898; }
+  .sub { font-size: 21px; line-height: 1.45; color: rgba(255,255,255,.88); }
+  .w { display: inline-block; white-space: pre; }
+  .eyebrow { font-size: 13px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--sienna); }
+
+  /* Stats */
+  .stat { position: absolute; inset: 0; opacity: 0; }
+  .stat .num { position: absolute; left: 0; right: 0; font-family: var(--head); font-weight: 600; color: #fff; text-align: center; letter-spacing: -.01em; }
+  .stat .lab { position: absolute; left: 40px; right: 40px; text-align: center; color: rgba(255,255,255,.9); font-size: 22px; line-height: 1.35; font-weight: 600; }
+  .stat .tag { position: absolute; left: 50%; transform: translateX(-50%); padding: 8px 16px; border-radius: 999px; background: rgba(232,160,128,.2); border: 1.5px solid rgba(232,160,128,.6);
+    color: #F8CDB8; font-size: 16px; font-weight: 800; white-space: nowrap; }
+  #sources { position: absolute; left: 30px; right: 30px; top: 812px; text-align: center; font-size: 11px; color: rgba(255,255,255,.55); line-height: 1.4; opacity: 0; }
+
+  /* Problem cards */
+  .mess { position: absolute; background: #fff; border-radius: 16px; box-shadow: 0 14px 34px rgba(0,0,0,.28); padding: 12px 14px; font-size: 13px; color: var(--ink); opacity: 0; transform-origin: 50% 50%; }
+  .mess .t { font-weight: 800; font-size: 11.5px; color: var(--muted); letter-spacing: .02em; margin-bottom: 7px; display: flex; align-items: center; gap: 7px; }
+  .mess .t i { width: 20px; height: 20px; border-radius: 50%; display: inline-block; }
+  .mess .bub { background: #EEF1F5; border-radius: 12px 12px 12px 4px; padding: 7px 10px; margin-top: 5px; line-height: 1.35; }
+  .mess .bub.me { background: #DCEBFF; border-radius: 12px 12px 4px 12px; margin-left: 30px; }
+  .mess .search { display: flex; align-items: center; gap: 8px; border: 1.5px solid #D5DAE1; border-radius: 999px; padding: 8px 12px; font-size: 13.5px; }
+  .mess .search svg { width: 15px; height: 15px; color: #6B7280; }
+
+  /* Chapter cards */
+  #chapter { z-index: 8; background: var(--sky); visibility: hidden; }
+  #chapter .num { position: absolute; left: 0; right: 0; top: 330px; text-align: center; font-family: var(--head); font-size: 20px; font-weight: 600; letter-spacing: .3em; color: var(--sienna); }
+  #chapter .title { position: absolute; left: 30px; right: 30px; top: 372px; text-align: center; font-family: var(--head); font-weight: 300; font-size: 56px; line-height: 1.05; color: #fff; }
+  #chapter .csub { position: absolute; left: 40px; right: 40px; top: 446px; text-align: center; font-size: 21px; color: rgba(255,255,255,.85); line-height: 1.4; }
+  #chapter .pips { position: absolute; left: 0; right: 0; top: 560px; display: flex; justify-content: center; gap: 10px; }
+  #chapter .pips span { width: 34px; height: 5px; border-radius: 4px; background: rgba(255,255,255,.22); }
+  #chapter .pips span.on { background: var(--terra); }
+  .avatar { position: absolute; border-radius: 50%; background: var(--peach); border: 2px solid #E8946C; display: grid; place-items: center; }
+  .avatar svg { overflow: visible; }
+  #chapter .avatar { left: 50%; top: 214px; width: 92px; height: 92px; margin-left: -46px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+  #chapter .avatar svg { width: 66px; height: 56px; }
+
+  /* Pop-up explanation card */
+  #popup { position: absolute; z-index: 9; left: 50%; top: 30px; display: flex; align-items: center; gap: 12px; padding: 10px 20px 10px 10px; border-radius: 999px; background: #fff;
+    box-shadow: 0 14px 34px rgba(17,24,39,.22), 0 1px 3px rgba(17,24,39,.1); opacity: 0; white-space: nowrap; transform-origin: 50% 0; }
+  #popup .avatar { position: relative; width: 44px; height: 44px; flex-shrink: 0; border-width: 1.5px; }
+  #popup .avatar svg { width: 32px; height: 27px; }
+  #popup .txt { font-family: var(--head); font-size: 22px; color: var(--ink); padding-top: 3px; }
+
+  /* Captions */
+  #caption { position: absolute; z-index: 10; left: 24px; right: 24px; bottom: 22px; display: flex; justify-content: center; pointer-events: none; }
+  #caption span { display: inline-block; max-width: 492px; padding: 9px 16px 10px; border-radius: 14px; background: rgba(13,18,34,.82); color: #fff; font-size: 18.5px; font-weight: 700;
+    line-height: 1.35; text-align: center; opacity: 0; }
+
+  /* Nationwide map */
+  #nation { z-index: 4; background: var(--cream); visibility: hidden; }
+  #nation svg.map { position: absolute; left: 70px; top: 140px; width: 400px; height: 651px; }
+  #nation .rg { fill: #DCE4EE; stroke: #fff; stroke-width: 1.2; }
+  #nation .chip { position: absolute; padding: 8px 13px; border-radius: 14px; background: #fff; box-shadow: 0 10px 26px rgba(17,24,39,.18); font-size: 13px; font-weight: 800; opacity: 0; display: flex; gap: 8px; align-items: center; white-space: nowrap; }
+  #nation .chip i { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--terra-l); }
+  #nation .chip svg { width: 15px; height: 15px; color: var(--terra-d); }
+  #nation .city { font-size: 12px; font-weight: 800; fill: var(--ink); }
+
+  /* Closing */
+  .ccard { position: absolute; left: 40px; right: 40px; height: 92px; border-radius: 22px; background: rgba(255,255,255,.96); display: flex; align-items: center; gap: 16px; padding: 0 20px; opacity: 0;
+    box-shadow: 0 16px 36px rgba(0,0,0,.22); }
+  .ccard .ic { width: 52px; height: 52px; border-radius: 16px; background: var(--terra-l); display: grid; place-items: center; flex-shrink: 0; }
+  .ccard .ic svg { width: 26px; height: 26px; color: var(--terra-d); }
+  .ccard b { display: block; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--terra-d); }
+  .ccard span { display: block; font-family: var(--head); font-size: 25px; color: var(--ink); margin-top: 3px; }
+  canvas.full { position: absolute; inset: 0; width: 540px; height: 960px; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- Nationwide map (providers chapter) -->
+  <div class="layer" id="nation">
+    <svg class="map" id="natmap" viewBox="-4 -4 308 496"></svg>
+    <div class="chip" id="chipCall" style="left:44px; top:640px"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg></i>Live video consultation</div>
+    <div class="chip" id="chipEarn" style="left:300px; top:300px"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M17 6.5A5 5 0 0 0 8.5 9v9M6 13h8M6 18h11"/></svg></i>Extra income, flexible hours</div>
+  </div>
+
+  <!-- Phone -->
+  <div id="cam">
+    <div id="phone"><div id="screen">
+      <div id="status"><span>9:41</span><svg viewBox="0 0 58 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/><path d="M29 3.5a10 10 0 0 1 7 2.8l-1.3 1.4A8 8 0 0 0 29 5.4a8 8 0 0 0-5.7 2.3L22 6.3a10 10 0 0 1 7-2.8zm0 3.6a6 6 0 0 1 4.3 1.7L29 13l-4.3-4.2A6 6 0 0 1 29 7.1z"/><rect x="40" y="1" width="16" height="10" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="42" y="3" width="11" height="6" rx="1.5"/></svg></div>
+      <div class="notch"></div>
+      <div id="shots"></div>
+      <div id="overlays"></div>
+      <div id="compose">
+        <div class="bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>New announcement</div>
+        <div class="pad">
+          <div class="lbl">Send to</div>
+          <div class="chips"><span class="chip">All providers</span><span class="chip off">All parents</span><span class="chip off">Everyone</span></div>
+          <div class="lbl">Subject</div>
+          <div class="field" id="cSubj"></div>
+          <div class="lbl">Message</div>
+          <div class="field body" id="cBody"></div>
+          <div class="send" id="cSend">Send announcement</div>
+        </div>
+      </div>
+      <div id="taps"></div>
+    </div></div>
+  </div>
+
+  <!-- Sky scenes: opening, statistics, the problem, closing -->
+  <div class="layer" id="sky">
+    <div class="logo" id="logo"><span class="dot"><b id="ripple"></b><i id="dot"></i></span>Beyonder</div>
+
+    <div class="scene" id="intro">
+      <div class="center abs" style="left:30px; right:30px; top:330px">
+        <div class="eyebrow" id="introEb">For every family navigating SEND</div>
+        <div class="h1" id="introH" style="margin-top:18px"><span class="w">Where </span><span class="w">do </span><span class="w">families </span><span class="w">turn </span><span class="w"><em>for help?</em></span></div>
+        <div class="sub" id="introS" style="margin-top:22px">Finding the right support for a child with special educational needs is hard.</div>
+      </div>
+    </div>
+
+    <div class="scene" id="stats">
+      <div class="stat" id="s1">
+        <svg id="ukmap" viewBox="-4 -4 308 496" style="position:absolute; left:155px; top:118px; width:230px; height:372px"></svg>
+        <div class="num" id="n1" style="top:505px; font-size:76px">0</div>
+        <div class="lab" style="top:600px">children and young people across the UK have special educational needs</div>
+      </div>
+      <div class="stat" id="s2">
+        <div class="num" style="top:170px; font-size:120px">1 <span style="font-weight:300; font-size:70px">in</span> 5</div>
+        <div id="people" style="position:absolute; left:50px; right:50px; top:370px; display:flex; justify-content:center; gap:14px"></div>
+        <div class="lab" style="top:560px">pupils in England has special educational needs<br><span style="font-weight:500; font-size:18px; color:rgba(255,255,255,.7)">more than 1.8 million children</span></div>
+      </div>
+      <div class="stat" id="s3">
+        <div class="num" id="n3" style="top:150px; font-size:88px">0</div>
+        <div class="lab" style="top:262px">Education, Health and Care Plans in England</div>
+        <div id="bars" style="position:absolute; left:120px; right:120px; top:350px; height:240px; display:flex; align-items:flex-end; justify-content:center; gap:46px"></div>
+        <div class="tag" id="tag3" style="top:640px">+12.5% in one year · the biggest rise since 2014</div>
+      </div>
+      <div class="stat" id="s4">
+        <svg id="ring" viewBox="0 0 200 200" style="position:absolute; left:135px; top:150px; width:270px; height:270px">
+          <circle cx="100" cy="100" r="84" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="16"/>
+          <circle id="ringArc" cx="100" cy="100" r="84" fill="none" stroke="#E8A080" stroke-width="16" stroke-linecap="round" transform="rotate(-90 100 100)" stroke-dasharray="0 528"/>
+        </svg>
+        <div class="num" id="n4" style="top:242px; font-size:76px">0%</div>
+        <div class="lab" style="top:470px">of new EHC plans are issued within the 20-week legal time limit</div>
+        <div class="tag" id="tag4" style="top:590px">Fewer than half</div>
+      </div>
+      <div id="sources">Sources: DfE, Special educational needs in England 2025/26 and Education, health and care plans 2026 · Scottish Government pupil census 2025 · Welsh Government schools census 2026 · NI Department of Education school census 2024/25</div>
+    </div>
+
+    <div class="scene" id="problem">
+      <div class="mess" id="m1" style="left:28px; top:120px; width:276px">
+        <div class="t"><i style="background:#9AD9B5"></i>SEND Parents Group · 243 members</div>
+        <div class="bub">Does anyone know a good OT near Leeds?</div>
+        <div class="bub me">Try asking on the Facebook page?</div>
+      </div>
+      <div class="mess" id="m2" style="left:250px; top:282px; width:262px">
+        <div class="t"><i style="background:#A9C1F2"></i>Local SEND Mums · Group post</div>
+        <div style="line-height:1.4">Recommendations for a speech therapist? We've been on the waiting list forever.</div>
+      </div>
+      <div class="mess" id="m3" style="left:36px; top:418px; width:300px">
+        <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>speech therapist for autistic child near me</div>
+        <div style="font-size:11.5px; color:#6B7280; margin:8px 4px 0">Thousands of results. Which ones are qualified?</div>
+      </div>
+      <div class="mess" id="m4" style="left:300px; top:520px; width:206px">
+        <div class="t"><i style="background:#F5C2A8"></i>Word of mouth</div>
+        <div class="bub">My friend's cousin saw someone… I'll find their number.</div>
+      </div>
+      <div class="mess" id="m5" style="left:60px; top:610px; width:220px">
+        <div class="t"><i style="background:#E7D59B"></i>Notes</div>
+        <div style="line-height:1.45">Who do we trust?<br>Who's available?<br>Where do we even start?</div>
+      </div>
+    </div>
+
+    <div class="scene" id="closing">
+      <div class="ccard" id="cc1" style="top:300px"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></div><div><b>Parents</b><span>Trusted help, faster</span></div></div>
+      <div class="ccard" id="cc2" style="top:412px"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div><div><b>Providers</b><span>Families nationwide</span></div></div>
+      <div class="ccard" id="cc3" style="top:524px"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 11l7.6-4M8.2 13l7.6 4"/></svg></div><div><b>Everyone</b><span>One connected place</span></div></div>
+      <div class="center abs" id="closeLine" style="left:30px; right:30px; top:380px; opacity:0">
+        <div class="h1" style="font-size:46px">2 million+ children.<br><em>One place to start.</em></div>
+      </div>
+      <div class="center abs" id="endcard" style="left:30px; right:30px; top:350px; opacity:0">
+        <div style="display:flex; justify-content:center; align-items:center; gap:14px; font-family:var(--head); font-size:62px; color:#fff">
+          <span style="position:relative; width:20px; height:20px; margin-top:-10px"><i id="dot2" style="position:absolute; inset:0; border-radius:50%; background:var(--terra)"></i></span>Beyonder</div>
+        <div class="sub" id="endTag" style="margin-top:20px; font-size:24px">Everything your family needs, together.</div>
+        <div id="endUrl" style="margin-top:34px; display:inline-block; padding:13px 26px; border-radius:999px; background:var(--terra-grad); color:#fff; font-weight:800; font-size:21px">beyonder-hub.co.uk</div>
+      </div>
+    </div>
+  </div>
+
+  <canvas class="full" id="birds" style="z-index:7"></canvas>
+
+  <!-- Chapter cards -->
+  <div class="layer" id="chapter">
+    <div class="avatar" id="chAv"></div>
+    <div class="num" id="chNum">01</div>
+    <div class="title" id="chTitle">For parents</div>
+    <div class="csub" id="chSub"></div>
+    <div class="pips"><span></span><span></span><span></span></div>
+  </div>
+
+  <div id="popup"><div class="avatar" id="popAv"></div><div class="txt" id="popTxt"></div></div>
+  <div id="caption"><span id="capTxt"></span></div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const eio = (p) => (p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+const eout = (p) => 1 - Math.pow(1 - p, 3);
+const ein = (p) => p * p * p;
+const eback = (p) => { const c = 1.6; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+const lerp = (a, b, p) => a + (b - a) * p;
+const $ = (id) => document.getElementById(id);
+const win = (t, a, b, fin = .5, fout = .5) => (t < a || t > b ? 0 : Math.min(eout(prog(t, a, a + fin)), 1 - ein(prog(t, b - fout, b))));
+function track(t, keys) {           // keys: [[t, v...]] eased between, held outside
+  if (t <= keys[0][0]) return keys[0].slice(1);
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) {
+    const p = eio(prog(t, keys[i - 1][0], keys[i][0]));
+    return keys[i].slice(1).map((v, j) => lerp(keys[i - 1][j + 1], v, p));
+  }
+  return keys[keys.length - 1].slice(1);
+}
+let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+
+// Bird from the Products category card (Shopping_Icon.svg), deep navy, with its fluttering wing.
+const BIRD_BODY = "M78.01,14.73c.02-.41.16-1.99,1.44-3.2.26-.25,1.52-1.440,3.07-1.22.89.13,1.62.68,2,.97.39.3.68.6.88.83.59.11,1.08.16,1.41.19.39.04.64.04,1.01.12.41.08.74.2.95.29-.09.03-.22.08-.39.12-.74.19-1.03.04-1.820.15-.38.05-.72.1-1.11.32-.11.06-.42.25-.72.61-.2.24-.42.52-.46.91-.03.3.05.53.17.85.14.4.32.66.37.74.45.73.31,1.81.24,2.36-.07.59-.28,1.48-1.05,2.68-1.64,2.57-4.52,4.47-5.48,5.07.03.18.04.43,0,.73-.04.25-.11.46-.17.61.95.93,1.9,1.87,2.85,2.8.35.08.71.18,1.1.29.53.16,1.02.34,1.46.53l-4.65.23c.1-.14.24-.33.46-.49.09-.06.23-.16.42-.24.15-.06.28-.1.39-.12-.94-.9-1.87-1.8-2.81-2.7-.06-.02-.45-.18-.62-.61-.16-.39-.03-.73,0-.8-.27.02-.54.04-.82.06v.75c.44.66.92,1.36,1.48,2.13.26.36.54.75,1.04.94.3.12.6.14.83.15.48.03.77.05,1.11-.05.06-.02.11-.04.13-.02.04.06-.32.56-.87.71-.56.16-1.04-.11-1.15-.17-1.21.04-2.42.08-3.62.12.09-.16.24-.37.49-.49.19-.09.32-.07.73-.1.64-.04,1.02-.07,1.11-.27.07-.15-.06-.35-.12-.44-.57-.86-1.68-2.23-1.89-2.49-.09-.04-.21-.11-.33-.24-.19-.21-.25-.43-.27-.54-.22.05-.57.13-.98.27-1.72.6-2.83,1.65-3.69,2.48-.42.41-1,1.01-1.61,1.81-.23.16-.53.16-.73,0-.22-.18-.22-.46-.22-.49.74-1.040,1.49-2.07,2.23-3.11-1.14.38-2.35.74-2.41.58-.05-.11.57-.44,1.13-.84,1.16-.83,1.8-1.81,2.6-3.11,2.14-3.51,2.31-4.31,3.44-5.92.67-.96,1.75-2.33,3.45-3.75Z";
+const BIRD_WING = "M67.03,27.33c.57-.34,1.43-.89,2.34-1.72,1.95-1.77,2.48-3.23,5.07-6.94,1.97-2.83,2.6-3.32,3.42-3.43,1.72-.23,3.36,1.34,3.44,1.42.37.36.91.9,1.060,1.68.29,1.48-.99,2.86-1.61,3.52-3.24,3.48-12.27,5.2-13.71,5.47Z";
+const avatarSVG = (id) => `<svg viewBox="62 8 30 25"><path d="${BIRD_BODY}" fill="#1B1A35"/><path id="${id}" d="${BIRD_WING}" fill="#1B1A35"/></svg>`;
+$('chAv').innerHTML = avatarSVG('chWing'); $('popAv').innerHTML = avatarSVG('popWing');
+function flutter(t, t0) {           // the Products card flutter: 0 → 30 → 18 → 25 → 0 degrees, played twice in 0.9s
+  const p = prog(t, t0, t0 + .9); if (p <= 0 || p >= 1) return 0;
+  const q = (p * 2) % 1, k = [0, 30, 18, 25, 0], s = Math.min(3, Math.floor(q * 4));
+  return lerp(k[s], k[s + 1], eio(q * 4 - s));
+}
+const setWing = (id, a) => $(id).setAttribute('transform', `rotate(${a.toFixed(2)} 80.2 16.8)`);
+
+// Starling silhouette from BirdCanvas.tsx, for flying birds.
+const STARLING = new Path2D("M26.28,117.8c25.58,8.49,56.17,16.47,91.11,21.44,58.55,8.33,109.28,5.37,147.38,0-2.98-15.96-.87-27.27,1.79-34.84,2.13-6.06,5.07-11,4.91-18.76-.17-8.16-3.67-14.79-6.7-19.2,6.4,4.61,12.8,9.23,19.2,13.84,3.87-.3,10.52-.23,17.42,3.13,8.96,4.37,13.42,11.9,16.08,16.52,6.7,11.67,4.46,18.31,12.95,31.71,1.73,2.73,3.35,4.86,4.47,6.25,33.62.14,77.36-2.93,126.84-15.18,59.24-14.68,105.75-37.33,138-56.27-.13,13.98-2.12,35.95-12.95,59.4-15.34,33.2-40.66,50.28-90.66,83.07-65.12,42.71-92.35,42.87-102.27,42.43-17.73-.79-31.99-5.81-41.09-9.83-.3,6.7-.6,13.4-.89,20.1,16.52,12.8,33.05,25.61,49.57,38.41.03,5.69-.7,13.78-4.47,22.33-14.88,33.78-61.55,39.07-68.78,39.75-53.26,5.03-91.07-38.82-95.57-44.21,14.59-15.48,29.18-30.97,43.77-46.45-1.34-8.19-2.68-16.38-4.02-24.56-2.74,3.55-7.48,8.69-14.74,12.06-14.99,6.96-30.8,1.75-39.75-1.34-52.74-18.2-79.12-27.3-97.36-39.3-49.38-32.49-78.61-73.76-94.23-100.49Z");
+const canvas = $('birds'), DPR = window.devicePixelRatio || 1;
+canvas.width = 540 * DPR; canvas.height = 960 * DPR;
+const ctx = canvas.getContext('2d');
+function drawBird(x, y, heading, size, flap, alpha, color = '#04080e') {
+  const sx = (size / 609.94) * flap, sy = size / 609.94;
+  ctx.save(); ctx.translate(x * DPR, y * DPR); ctx.rotate(heading + Math.PI / 2); ctx.globalAlpha = alpha; ctx.fillStyle = color;
+  ctx.scale(DPR, DPR); ctx.translate(-300 * sx, -180 * sy); ctx.scale(sx, sy); ctx.fill(STARLING); ctx.restore();
+}
+function bez(p0, p1, p2, p3, u) {
+  const m = 1 - u;
+  const x = m*m*m*p0[0] + 3*m*m*u*p1[0] + 3*m*u*u*p2[0] + u*u*u*p3[0], y = m*m*m*p0[1] + 3*m*m*u*p1[1] + 3*m*u*u*p2[1] + u*u*u*p3[1];
+  const dx = 3*m*m*(p1[0]-p0[0]) + 6*m*u*(p2[0]-p1[0]) + 3*u*u*(p3[0]-p2[0]), dy = 3*m*m*(p1[1]-p0[1]) + 6*m*u*(p2[1]-p1[1]) + 3*u*u*(p3[1]-p2[1]);
+  return [x, y, Math.atan2(dy, dx)];
+}
+function flyer(t, t0, t1, pts, s0, s1, color) {
+  if (t < t0 || t > t1) return;
+  const u = eio(prog(t, t0, t1)), [x, y, h] = bez(...pts, u);
+  drawBird(x, y, h, lerp(s0, s1, u), 1 - .45 * Math.abs(Math.sin(t * 11)), 1, color);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phone screens
+const SW = 306, SH = 662;          // phone screen area below the status bar
+const K = SW / 390;                // screenshot CSS px → phone screen px
+const SX = 117, SY = 171;          // that area's top-left on the stage
+const VIEW = [270, 487];           // where the camera puts its focus point
+let META = {}, UK = null;
+const TOPCOL = { compose: [12, 17, 30] };   // status bar colour per screen, sampled from each screenshot's top edge
+const shotEls = {};
+function shotEl(name) {
+  if (shotEls[name]) return shotEls[name];
+  const m = META[name], el = document.createElement('div');
+  el.className = 'shot';
+  const img = document.createElement('img'); img.className = 'content'; img.src = `shots/${name}.jpg`; el.appendChild(img);
+  if (m.kind === 'long') {
+    const view = `url(shots/${name}.view.jpg)`;
+    if (m.header) { const h = document.createElement('div'); h.className = 'strip'; Object.assign(h.style, { top: 0, height: `${m.header * K}px`, backgroundImage: view, backgroundPosition: 'top' }); el.appendChild(h); }
+    if (m.nav) { const n = document.createElement('div'); n.className = 'strip'; Object.assign(n.style, { bottom: 0, height: `${Math.ceil(m.nav * K)}px`, backgroundImage: view, backgroundPosition: 'bottom' }); el.appendChild(n); }
+  }
+  const sh = document.createElement('div'); sh.className = 'shade'; el.appendChild(sh);
+  $('shots').appendChild(el);
+  return (shotEls[name] = { el, img, shade: sh, m });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TIMELINE (seconds). Re-time these once the voice-over is recorded.
+// Screens: [time, shot, transition ('none'|'swipe'|'fade'|'up'), scroll keys [[t, y]] in screenshot px]
+const SEG = [
+  [50.2, 'p01-home', 'none'],
+  // Chapter 1 · Parents
+  [62.9, 'p02-q-age', 'swipe'], [64.1, 'p03-q-age-picked', 'fade'],
+  [64.8, 'p04-q-needs', 'swipe'], [65.75, 'p04b-q-speech', 'fade'], [66.45, 'p05-q-needs-picked', 'fade'],
+  [67.6, 'p06-q-help', 'swipe'], [68.6, 'p07-q-help-picked', 'fade'],
+  [69.3, 'p08-consult-results', 'swipe', [[71.4, 0], [74.2, 320], [77.2, 813], [79.4, 560]]],
+  [81.1, 'p09-booking', 'swipe', [[82.4, 0], [84.0, 284]]],
+  [84.55, 'p09a-booking-share', 'fade', [[84.55, 284]]], [85.05, 'p09b-booking-ticked', 'fade', [[85.05, 284]]],
+  [86.0, 'p10-booking-sent', 'up'],
+  [87.8, 'p01-home', 'fade'],
+  [88.9, 'p11-find-map', 'swipe'], [90.4, 'p12-find-region', 'fade'],
+  [92.4, 'p13-find-categories', 'up'],
+  [94.0, 'p14-find-results', 'swipe'],
+  [96.2, 'p15-enquiry', 'swipe', [[97.4, 0], [99.0, 169]]], [99.75, 'p15b-enquiry-ticked', 'fade', [[99.75, 169]]],
+  [100.8, 'p16-enquiry-sent', 'up'],
+  [102.6, 'p17-profile', 'swipe', [[103.6, 0], [105.0, 145]]],
+  [106.0, 'p18-community', 'swipe', [[106.8, 0], [108.8, 430]]],
+  [109.0, 'p19-guides', 'swipe', [[109.8, 0], [111.9, 560]]],
+  // Chapter 2 · Providers
+  [114.6, 'v02-provider-page', 'none'],
+  [118.6, 'v03-claim', 'up'],
+  [121.2, 'v04-pro-overview', 'swipe', [[122.4, 0], [125.2, 420], [127.4, 980], [128.4, 0]]],
+  [129.0, 'v05-pro-enquiries', 'fade'],
+  [130.6, 'v06-pro-listing', 'swipe'],
+  // Chapter 3 · The Beyonder team
+  [150.6, 'a01-admin-providers', 'none', [[152.0, 0], [153.6, 330]]],
+  [159.4, 'a04-admin-reviews', 'swipe', [[160.4, 0], [164.8, 700]]],
+  [165.6, 'a03-admin-invites', 'swipe', [[166.4, 0], [168.4, 520]]],
+];
+const TRANS = { none: 0, swipe: .55, fade: .3, up: .55 };
+
+// Taps: [time, shot, box key (from shots/meta.json) or [x, y, w?, h?] in screenshot px]. Sized taps also get a pressed highlight.
+const TAPS = [
+  [62.4, 'p01-home', 'live'], [63.9, 'p02-q-age', 'age'],
+  [65.6, 'p04-q-needs', 'speech'], [66.3, 'p04-q-needs', 'sensory'], [67.2, 'p04-q-needs', 'cont'],
+  [68.4, 'p06-q-help', 'talk'], [80.6, 'p08-consult-results', 'tombook'],
+  [84.4, 'p09-booking', 'box1'], [84.9, 'p09-booking', [31, 963, 22, 22]], [85.6, 'p09-booking', 'req'],
+  [87.4, 'p10-booking-sent', 'home'], [88.4, 'p01-home', 'find'],
+  [90.2, 'p11-find-map', 'sw'], [93.6, 'p13-find-categories', 'therapy'], [95.8, 'p14-find-results', 'enquire'],
+  [99.6, 'p15-enquiry', 'box1'], [100.4, 'p15-enquiry', 'send'], [102.2, 'p16-enquiry-sent', 'profile'],
+  [118.2, 'v02-provider-page', 'claim'], [128.6, 'v04-pro-overview', 'enq'], [133.4, 'v06-pro-listing', 'avail'],
+  [169.2, 'a03-admin-invites', 'gen'], [175.6, null, [195, 516]],
+];
+
+// Camera: [time, zoom, focus x, focus y] — focus in screenshot px of the visible screen (195, 422 = centre).
+const CAM = [
+  [0, 1, 195, 422],
+  [69.8, 1, 195, 422], [70.6, 1.42, 195, 470], [79.0, 1.42, 195, 470], [79.8, 1, 195, 422],
+  [89.2, 1, 195, 422], [89.9, 1.35, 190, 470], [91.8, 1.35, 190, 470], [92.4, 1, 195, 422],
+  [114.6, 1.0, 195, 422], [115.8, 1.0, 195, 422], [116.6, 1.5, 175, 470], [118.4, 1.5, 175, 470], [119.0, 1, 195, 422],
+  [131.0, 1, 195, 422], [131.6, 1.45, 195, 330], [135.0, 1.45, 195, 330], [135.6, 1, 195, 422],
+  [152.0, 1, 195, 422], [153.4, 1.4, 170, 300], [158.6, 1.4, 170, 300], [159.3, 1, 195, 422],
+  [160.4, 1, 195, 422], [161.0, 1.3, 195, 470], [164.8, 1.3, 195, 470], [165.4, 1, 195, 422],
+  [171.6, 1, 195, 422], [172.2, 1.35, 195, 480], [176.8, 1.35, 195, 480], [177.4, 1, 195, 422],
+];
+
+// Explanation pop-ups: [from, to, text]
+const POP = [
+  [52.6, 57.6, 'All SEND support. One place.'],
+  [64.4, 69.4, '3 quick questions. No diagnosis needed.'],
+  [70.8, 75.6, 'Verified specialists'],
+  [81.4, 86.8, 'Book in minutes'],
+  [89.4, 94.6, 'Local support, UK-wide'],
+  [96.6, 101.8, 'Tell your story once'],
+  [106.4, 111.6, 'Community + expert guides'],
+  [116.0, 121.0, 'Claim your listing in minutes'],
+  [122.6, 129.6, 'Every enquiry in one inbox'],
+  [130.8, 135.6, 'On their own terms'],
+  [137.2, 141.8, 'Support families nationwide'],
+  [142.4, 147.2, 'Earn extra income'],
+  [153.6, 158.8, 'Every provider verified'],
+  [160.4, 165.2, 'Quality, monitored'],
+  [166.0, 170.6, 'Invite and onboard providers'],
+  [171.4, 177.0, 'Direct messages to every user'],
+];
+
+// Captions (the voice-over lines): [from, to, text]
+const CAP = [
+  [0.6, 5.0, 'When a child has special educational needs, families need answers.'],
+  [5.2, 9.6, 'But knowing where to turn… is often the hardest part.'],
+  [10.6, 16.8, 'Across the UK, more than two million children and young people have special educational needs.'],
+  [17.6, 23.8, 'In England, that’s more than one in five pupils.'],
+  [24.6, 30.8, 'Education, Health and Care Plans rose by over 12% in a single year, to more than 700,000.'],
+  [31.6, 37.6, 'And fewer than half are issued within the twenty-week legal time limit.'],
+  [38.6, 46.0, 'So families search everywhere. WhatsApp groups. Facebook pages. Google. Word of mouth.'],
+  [46.3, 50.6, 'The help is out there, but it’s scattered, and hard to trust.'],
+  [51.0, 54.4, 'Beyonder brings it all together, in one place.'],
+  [54.6, 57.6, 'Everything your family needs, together.'],
+  [61.8, 63.8, 'Here’s how it works, starting with parents.'],
+  [64.0, 66.8, 'A parent answers three simple questions:'],
+  [67.0, 69.6, 'their child’s age, what they’re finding hard, and what would help most. No diagnosis needed.'],
+  [70.0, 75.4, 'Beyonder matches them with verified SEND specialists: speech and language therapists, occupational therapists, psychologists and education advisors.'],
+  [75.6, 81.0, 'They can book a live video, phone or chat consultation, often the same day.'],
+  [88.4, 94.8, 'Or they can find trusted local support (therapists, clubs, products, schools and charities) on a map of the whole UK.'],
+  [96.0, 102.4, 'Every enquiry goes straight to the provider, and their child’s details are saved securely, so they never have to repeat their story.'],
+  [106.2, 111.6, 'Plus a community of parents, and guides written by experts.'],
+  [115.8, 117.2, 'Next, providers.'],
+  [117.4, 122.0, 'Therapists, tutors, clubs and SEND professionals create a profile, or claim the listing that’s already waiting for them.'],
+  [122.2, 129.6, 'Their dashboard shows new enquiries, bookings, and how families are finding them.'],
+  [130.4, 135.6, 'They set their availability, their consultation options and their prices, all on their own terms.'],
+  [137.0, 142.0, 'And because consultations happen online, a specialist in Manchester can support a family in Cornwall,'],
+  [142.2, 147.4, 'reaching families nationwide and earning extra income around their existing work.'],
+  [151.8, 153.6, 'Behind it all is the Beyonder team.'],
+  [153.8, 158.6, 'Every provider is checked and verified before families see them.'],
+  [160.0, 169.6, 'The team monitors quality, invites and onboards new providers,'],
+  [171.0, 175.8, 'and stays in touch with everyone through built-in messages and announcements.'],
+  [176.0, 177.8, 'So parents can always trust what they find.'],
+  [179.0, 181.6, 'Beyonder solves real problems for everyone involved.'],
+  [181.8, 184.2, 'Parents find trusted help, faster.'],
+  [184.4, 186.8, 'Providers reach the families who need them most.'],
+  [187.0, 190.4, 'And support that was scattered becomes one connected place.'],
+  [191.0, 195.4, 'With need rising every year, there has never been a more important time.'],
+  [196.0, 199.6, 'Beyonder. Everything your family needs, together.'],
+  [200.0, 204.0, 'Find out more at beyonder-hub.co.uk'],
+];
+
+// Chapter cards: [in, out, number, title, subtitle, pip]
+const CH = [
+  [58.0, 61.6, '01', 'For parents', 'Find the right support, fast.', 0],
+  [112.0, 115.6, '02', 'For providers', 'Reach families who need you.', 1],
+  [148.0, 151.6, '03', 'Behind the scenes', 'The Beyonder team keeps it trusted.', 2],
+];
+const LOOP = 205;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Derived timeline data
+let SEGS = [];
+function scrollAt(seg, t) { return seg.scroll ? track(t, seg.scroll)[0] : 0; }
+function segAt(t) { let i = -1; SEGS.forEach((s, j) => { if (s.t <= t) i = j; }); return i; }
+const TAPSR = [];
+function build() {
+  SEGS = SEG.map(([t, shot, tr, scroll]) => ({ t, shot, tr, scroll: scroll || null }));
+  SEGS.forEach((s) => shotEl(s.shot));
+  for (const [t, shot, key] of TAPS) {
+    const [x, y, w, h] = Array.isArray(key) ? key : META[shot].boxes[key];
+    const i = segAt(t);
+    const sc = shot && i >= 0 ? scrollAt(SEGS[i], t) : 0;      // positions are in page coords; subtract the visible scroll
+    const el = document.createElement('div'); el.className = 'tap'; $('taps').appendChild(el);
+    let press = null;
+    if (w && w < 380) {
+      press = document.createElement('div'); press.className = 'press';
+      Object.assign(press.style, { left: `${(x - w / 2) * K}px`, top: `${(y - sc - h / 2) * K}px`, width: `${w * K}px`, height: `${h * K}px`, borderRadius: `${Math.min(12, (h * K) / 2)}px` });
+      $('taps').appendChild(press);
+    }
+    TAPSR.push({ t, x, y: y - sc, el, press });
+  }
+  // People icons (stat 2)
+  $('people').innerHTML = [0, 1, 2, 3, 4].map((i) => `<svg viewBox="0 0 40 70" style="width:58px;height:102px" id="pp${i}"><circle cx="20" cy="12" r="10" fill="rgba(255,255,255,.28)"/><path d="M4 70V38a16 16 0 0 1 32 0v32z" fill="rgba(255,255,255,.28)"/></svg>`).join('');
+  // Bars (stat 3)
+  $('bars').innerHTML = [['Jan 2025', 638700], ['Jan 2026', 718838]].map(([l, v], i) =>
+    `<div style="display:flex;flex-direction:column;align-items:center;gap:10px"><div id="bar${i}" style="width:96px;height:0;border-radius:14px 14px 4px 4px;background:${i ? 'var(--terra-grad)' : 'rgba(255,255,255,.25)'}"></div><div style="color:rgba(255,255,255,.8);font-size:15px;font-weight:700">${l}</div></div>`).join('');
+  // UK maps
+  const paths = Object.entries(UK.d).map(([k, d]) => `<path data-k="${k}" d="${d}"/>`).join('');
+  $('ukmap').innerHTML = paths; $('ukmap').querySelectorAll('path').forEach((p) => Object.assign(p.style, { fill: 'rgba(255,255,255,.14)', stroke: 'rgba(255,255,255,.35)', strokeWidth: 1 }));
+  $('natmap').innerHTML = `<g>${Object.entries(UK.d).map(([k, d]) => `<path class="rg" d="${d}"/>`).join('')}</g>
+    <path id="arc" d="M186 300 Q 40 360 52 462" fill="none" stroke="#D98A6A" stroke-width="3" stroke-linecap="round" stroke-dasharray="4 7"/>
+    <circle id="dotA" cx="186" cy="300" r="6" fill="#1B1A35"/><circle id="dotB" cx="52" cy="462" r="6" fill="#D98A6A"/>
+    <circle id="pulseA" cx="186" cy="300" r="6" fill="none" stroke="#1B1A35" stroke-width="2"/><circle id="pulseB" cx="52" cy="462" r="6" fill="none" stroke="#D98A6A" stroke-width="2"/>
+    <text class="city" x="196" y="296">Manchester</text><text class="city" x="62" y="478">Cornwall</text>`;
+  // Overlays inside the phone: verified badges (admin providers list), toasts
+  const ov = $('overlays');
+  const rows = META['a01-admin-providers'].boxes;
+  ['row1', 'row2', 'row3'].forEach((r, i) => {
+    const b = document.createElement('div'); b.className = 'badge'; b.id = 'vb' + i; b.textContent = '✓ Verified';
+    b.dataset.y = rows[r][1] - 330; ov.appendChild(b);
+  });
+  ov.insertAdjacentHTML('beforeend', `
+    <div class="toast" id="t1"><div class="ic"><i></i></div><div><b>New enquiry · Sarah Collins</b><span>Speech therapy for Leo, age 7</span></div></div>
+    <div class="toast" id="t2"><div class="ic"><i></i></div><div><b>Invite link sent</b><span>Ripple Inclusive Swimming · waiting to claim</span></div></div>
+    <div class="toast" id="t3"><div class="ic"><i></i></div><div><b>Announcement sent ✓</b><span>Delivered to all providers</span></div></div>`);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+function renderAt(ms) {
+  const t = (ms / 1000) % LOOP;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // ── Which big layer is showing ──
+  const chap = CH.find(([a, b]) => t >= a && t < b);
+  const skyOn = t < 58.7 || t >= 178;
+  const sky = $('sky');
+  sky.style.visibility = skyOn ? 'visible' : 'hidden';
+  const back = eout(prog(t, 178, 178.9));          // closing: sky drops back in from the top
+  sky.style.transform = t >= 178 ? `translateY(${((back - 1) * 100).toFixed(2)}%)` : 'none';
+  $('cam').style.zIndex = t >= 49 && t < 58.7 ? 6 : 3;
+
+  // Chapter card: drops in from the top, lifts away
+  const ch = $('chapter');
+  if (chap) {
+    const [a, b, num, title, sub, pip] = chap;
+    const inP = eout(prog(t, a, a + .6)), outP = ein(prog(t, b - .6, b));
+    ch.style.visibility = 'visible';
+    ch.style.transform = `translateY(${((inP - 1) * 100 - outP * 100).toFixed(2)}%)`;
+    $('chNum').textContent = num; $('chTitle').textContent = title; $('chSub').textContent = sub;
+    ch.querySelectorAll('.pips span').forEach((s, i) => s.classList.toggle('on', i === pip));
+    const av = $('chAv'); const ap = eback(prog(t, a + .4, a + .9));
+    av.style.transform = `scale(${(.3 + .7 * ap).toFixed(3)})`; av.style.opacity = Math.min(1, ap * 1.5);
+    setWing('chWing', flutter(t, a + .9));
+    [$('chNum'), $('chTitle'), $('chSub')].forEach((el, i) => { const p = eout(prog(t, a + .6 + i * .15, a + 1.2 + i * .15)); el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * 16}px)`; });
+  } else ch.style.visibility = 'hidden';
+
+  // ── Opening ──
+  const intro = win(t, 0, 10.2, .01, .6);
+  $('intro').style.opacity = intro;
+  [...$('introH').children].forEach((w, i) => { const p = eout(prog(t, 1.0 + i * .2, 1.7 + i * .2)); w.style.opacity = p; w.style.transform = `translateY(${(1 - p) * 20}px)`; w.style.filter = p < 1 ? `blur(${((1 - p) * 7).toFixed(1)}px)` : 'none'; });
+  { const p = eout(prog(t, .4, 1.1)); $('introEb').style.opacity = p; const q = eout(prog(t, 3.2, 4.0)); $('introS').style.opacity = q; $('introS').style.transform = `translateY(${(1 - q) * 14}px)`; }
+  flyer(t, .3, 2.6, [[620, 600], [400, 470], [180, 200], [-80, -60]], 120, 70);
+  const dotT = t < 100 ? 2.0 : 198.0;
+  const ds = t < dotT ? (t < 100 ? .3 : 1) : t < dotT + .3 ? lerp(t < 100 ? .3 : 1, 1.9, eout(prog(t, dotT, dotT + .3))) : lerp(1.9, 1, eback(prog(t, dotT + .3, dotT + .65)));
+  $('dot').style.transform = `scale(${ds.toFixed(3)})`;
+  const rp = prog(t, dotT + .25, dotT + 1.25);
+  $('ripple').style.opacity = rp > 0 && rp < 1 ? (1 - rp) * .9 : 0; $('ripple').style.transform = `scale(${(1 + rp * 3).toFixed(2)})`;
+  $('logo').style.opacity = t < 190 ? 1 : 1 - prog(t, 190, 190.6);
+
+  // ── Statistics ──
+  $('stats').style.opacity = win(t, 10.1, 38.2, .4, .5);
+  $('sources').style.opacity = win(t, 10.8, 38.0, .6, .5) * .9;
+  [[10.3, 17.2], [17.3, 24.2], [24.3, 31.2], [31.3, 38.1]].forEach(([a, b], i) => {
+    const el = $('s' + (i + 1)), o = win(t, a, b, .6, .45);
+    el.style.opacity = o; el.style.transform = `translateY(${((1 - eout(prog(t, a, a + .6))) * 30 - ein(prog(t, b - .45, b)) * 20).toFixed(1)}px)`;
+  });
+  { // 1: 2 million+, regions fill in
+    const p = eout(prog(t, 10.8, 13.4)); $('n1').textContent = (Math.round(2000000 * p / 1000) * 1000).toLocaleString('en-GB') + (p >= 1 ? '+' : '');
+    const order = ['sw', 'se', 'lo', 'ee', 'wa', 'wm', 'em', 'nw', 'yh', 'ne', 'ni', 'sc'];
+    $('ukmap').querySelectorAll('path').forEach((el) => { const i = order.indexOf(el.dataset.k), q = prog(t, 11 + i * .2, 11.5 + i * .2); el.style.fill = `rgba(232,160,128,${(.14 + .7 * q).toFixed(2)})`; });
+  }
+  { // 2: 1 in 5
+    for (let i = 0; i < 5; i++) {
+      const el = $('pp' + i); if (!el) continue; const q = eback(prog(t, 18 + i * .12, 18.5 + i * .12)); el.style.transform = `translateY(${((1 - q) * 30).toFixed(1)}px)`; el.style.opacity = Math.min(1, q);
+      if (i === 2) { const h = prog(t, 19.4, 19.9); el.querySelectorAll('circle,path').forEach((s) => (s.style.fill = h > 0 ? `rgba(232,160,128,${(.28 + .72 * h).toFixed(2)})` : 'rgba(255,255,255,.28)')); el.style.transform += ` scale(${(1 + .12 * Math.sin(Math.PI * h)).toFixed(3)})`; }
+    }
+  }
+  { // 3: EHC plans
+    const p = eout(prog(t, 24.9, 27.0)); $('n3').textContent = Math.round(718838 * p).toLocaleString('en-GB');
+    const b0 = eout(prog(t, 25.2, 26.4)), b1 = eout(prog(t, 25.8, 27.4));
+    if ($('bar0')) { $('bar0').style.height = `${(170 * b0).toFixed(1)}px`; $('bar1').style.height = `${(191 * b1).toFixed(1)}px`; }
+    const q = eback(prog(t, 27.6, 28.1)); $('tag3').style.opacity = Math.min(1, q); $('tag3').style.transform = `translateX(-50%) scale(${(.6 + .4 * q).toFixed(3)})`;
+  }
+  { // 4: 46%
+    const p = eout(prog(t, 31.9, 34.0)); $('n4').textContent = Math.round(46 * p) + '%';
+    $('ringArc').setAttribute('stroke-dasharray', `${(528 * .461 * p).toFixed(1)} 528`);
+    const q = eback(prog(t, 34.4, 34.9)); $('tag4').style.opacity = Math.min(1, q); $('tag4').style.transform = `translateX(-50%) scale(${(.6 + .4 * q).toFixed(3)})`;
+  }
+
+  // ── The problem: scattered help, swept together ──
+  $('problem').style.opacity = win(t, 38.2, 51.5, .3, .6);
+  const gather = eio(prog(t, 47.4, 50.2));
+  [['m1', 38.7, -4], ['m2', 40.0, 5], ['m3', 41.6, -3], ['m4', 43.2, 4], ['m5', 44.6, -5]].forEach(([id, a, rot], i) => {
+    const el = $(id), q = eback(prog(t, a, a + .45));
+    const jx = Math.sin(t * 1.3 + i) * 3, jy = Math.cos(t * 1.1 + i * 2) * 3;
+    const r = el.getBoundingClientRect ? null : null;
+    const cx = parseFloat(el.style.left) + parseFloat(el.style.width) / 2, cy = parseFloat(el.style.top) + 50;
+    const dx = (270 - cx) * gather, dy = (470 - cy) * gather;
+    el.style.opacity = Math.min(1, q * 1.4) * (1 - prog(t, 49.2, 50.2));
+    el.style.transform = `translate(${(jx + dx).toFixed(1)}px, ${(jy + dy).toFixed(1)}px) rotate(${(rot * (1 - gather)).toFixed(2)}deg) scale(${((.6 + .4 * q) * (1 - .75 * gather)).toFixed(3)})`;
+  });
+  if (t > 46.4 && t < 51.4) {                        // a flock sweeps through and carries the clutter away
+    seed = 3;
+    for (let i = 0; i < 46; i++) {
+      const off = rnd() * 1.1, yy = 120 + rnd() * 620, sz = 16 + rnd() * 22, ph = rnd() * 6;
+      const u = prog(t, 46.4 + off, 49.6 + off);
+      if (u <= 0 || u >= 1) continue;
+      const x = lerp(-60, 600, eio(u)), y = yy + Math.sin(u * 5 + ph) * 40 + (470 - yy) * Math.sin(u * Math.PI) * .5;
+      drawBird(x, y, Math.atan2(Math.cos(u * 5 + ph) * 40 * 5 / 660, 1), sz, 1 - .45 * Math.abs(Math.sin(t * 12 + ph)), .9);
+    }
+  }
+
+  // ── Phone: rises into place, screens, scroll, taps, camera ──
+  const showPhone = t >= 50.2 && t < 178.2;
+  $('cam').style.visibility = showPhone ? 'visible' : 'hidden';
+  const rise = eout(prog(t, 50.2, 51.7)), drop = ein(prog(t, 177.6, 178.2));
+  $('phone').style.transform = `translateY(${((1 - rise) * 820 + drop * 40).toFixed(1)}px)`;
+  const [s, fx, fy] = track(t, CAM);
+  const FX = SX + fx * K, FY = SY + fy * K;
+  $('cam').style.transform = `translate(${(VIEW[0] - FX * s).toFixed(2)}px, ${(VIEW[1] - FY * s).toFixed(2)}px) scale(${s.toFixed(4)})`;
+
+  Object.values(shotEls).forEach((o) => (o.el.style.visibility = 'hidden'));
+  const i = segAt(t);
+  if (i >= 0) {
+    const sc = TOPCOL[(t > 170.9 && t < 178.2) ? 'compose' : SEGS[i].shot] || [246, 243, 238];
+    $('status').style.background = `rgb(${sc.join(',')})`;
+    $('status').style.color = sc[0] * .3 + sc[1] * .59 + sc[2] * .11 < 140 ? '#fff' : '#1B1A35';
+    const cur = SEGS[i], prev = SEGS[i - 1], d = TRANS[cur.tr], p = d ? eio(prog(t, cur.t, cur.t + d)) : 1;
+    const place = (seg, tx, ty, shade, op) => {
+      const o = shotEl(seg.shot); o.el.style.visibility = 'visible';
+      o.el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px)`; o.el.style.opacity = op;
+      o.shade.style.opacity = shade; o.img.style.transform = `translateY(${(-scrollAt(seg, t) * K).toFixed(2)}px)`;
+      o.el.style.zIndex = seg === cur ? 2 : 1;
+    };
+    if (prev && p < 1 && prev.shot !== cur.shot) {
+      if (cur.tr === 'swipe') { place(prev, -SW * .3 * p, 0, .35 * p, 1); place(cur, SW * (1 - p), 0, 0, 1); }
+      else if (cur.tr === 'up') { place(prev, 0, 0, .3 * p, 1); place(cur, 0, SH * (1 - p), 0, 1); }
+      else { place(prev, 0, 0, 0, 1); place(cur, 0, 0, 0, p); }
+    } else place(cur, 0, 0, 0, 1);
+  }
+  TAPSR.forEach((tp) => {
+    const q = prog(t, tp.t - .15, tp.t + .45);
+    tp.el.style.opacity = q > 0 && q < 1 ? (q < .25 ? q / .25 : 1 - (q - .25) / .75) : 0;
+    tp.el.style.left = `${tp.x * K}px`; tp.el.style.top = `${tp.y * K}px`;
+    tp.el.style.transform = `scale(${(.4 + q * 1.1).toFixed(3)})`;
+    if (tp.press) {                      // the button darkens briefly and gives slightly, like a real press
+      const a = prog(t, tp.t - .08, tp.t + .02), b = prog(t, tp.t + .12, tp.t + .5);
+      tp.press.style.opacity = a > 0 && b < 1 ? Math.min(a, 1 - b) : 0;
+      tp.press.style.transform = `scale(${(1 - .03 * Math.min(a, 1 - b)).toFixed(3)})`;
+    }
+  });
+  // Overlays: verified badges, toasts, announcement composer
+  [0, 1, 2].forEach((j) => {
+    const b = $('vb' + j), a = 155.0 + j * .8, q = eback(prog(t, a, a + .4));
+    b.style.opacity = t >= a && t < 159.4 ? Math.min(1, q * 1.4) : 0;
+    b.style.left = `${200 * K}px`; b.style.top = `${(+b.dataset.y - 12) * K}px`; b.style.transform = `scale(${(.5 + .5 * q).toFixed(3)})`;
+  });
+  [['t1', 124.0, 127.6], ['t2', 169.6, 171.0], ['t3', 176.0, 177.6]].forEach(([id, a, b]) => {
+    const el = $(id), q = win(t, a, b, .45, .35); el.style.opacity = q; el.style.transform = `translateY(${((1 - eout(prog(t, a, a + .45))) * -60).toFixed(1)}px)`;
+  });
+  const comp = $('compose'), cp = eio(prog(t, 171.0, 171.55));
+  comp.style.visibility = t >= 171.0 && t < 178.2 ? 'visible' : 'hidden';
+  comp.style.transform = `translateX(${(SW * (1 - cp)).toFixed(1)}px)`;
+  const subj = 'Welcome to Beyonder', body = 'Hi everyone,\nYour profiles are now live for families across the UK. Reply here any time if you need help.\n\nThe Beyonder team';
+  $('cSubj').textContent = subj.slice(0, Math.round(subj.length * prog(t, 172.0, 172.8)));
+  $('cBody').textContent = body.slice(0, Math.round(body.length * prog(t, 172.9, 175.2)));
+  const sp = prog(t, 175.5, 175.9); $('cSend').style.transform = `scale(${(1 - .06 * Math.sin(Math.PI * sp)).toFixed(3)})`;
+
+  // ── Nationwide map (providers) ──
+  const nat = $('nation'), no = win(t, 135.6, 148.2, .6, .5);
+  nat.style.visibility = no > 0 ? 'visible' : 'hidden'; nat.style.opacity = no; nat.style.zIndex = 4;
+  $('cam').style.opacity = t > 135.6 && t < 148.4 ? 1 - no : 1;
+  if (no > 0) {
+    const arcP = eio(prog(t, 138.0, 140.2)); const arc = $('arc'); const L = arc.getTotalLength();
+    arc.style.strokeDasharray = `${(L * arcP).toFixed(1)} ${L}`;
+    ['A', 'B'].forEach((k, j) => { const ph = ((t - 137 - j * .7) % 1.6) / 1.6; const pl = $('pulse' + k); pl.setAttribute('r', (6 + ph * 18).toFixed(1)); pl.style.opacity = t > 137 ? (1 - ph) * .8 : 0; });
+    [['chipCall', 140.4], ['chipEarn', 142.6]].forEach(([id, a]) => { const q = eback(prog(t, a, a + .45)); $(id).style.opacity = Math.min(1, q * 1.4); $(id).style.transform = `scale(${(.6 + .4 * q).toFixed(3)})`; });
+    $('natmap').style.transform = `scale(${(1 + .04 * prog(t, 135.6, 148)).toFixed(4)})`;
+  }
+
+  // ── Closing ──
+  $('closing').style.opacity = t >= 178 ? 1 : 0;
+  [['cc1', 181.8], ['cc2', 184.4], ['cc3', 187.0]].forEach(([id, a]) => {
+    const q = eout(prog(t, a, a + .6)), o = 1 - ein(prog(t, 190.2, 190.8));
+    $(id).style.opacity = Math.min(1, q) * o; $(id).style.transform = `translateY(${((1 - q) * 40 - (1 - o) * 30).toFixed(1)}px)`;
+  });
+  { const o = win(t, 191.0, 195.6, .7, .5); $('closeLine').style.opacity = o; $('closeLine').style.transform = `translateY(${((1 - eout(prog(t, 191, 191.7))) * 20).toFixed(1)}px)`; }
+  { const o = eout(prog(t, 196.4, 197.2)); const e = $('endcard'); e.style.opacity = o; e.style.transform = `scale(${(.94 + .06 * o).toFixed(3)})`;
+    $('endTag').style.opacity = eout(prog(t, 197.6, 198.3)); const u = eback(prog(t, 199.2, 199.7)); $('endUrl').style.opacity = Math.min(1, u * 1.4); $('endUrl').style.transform = `scale(${(.6 + .4 * u).toFixed(3)})`;
+    const dp = t < 198 ? 0 : t < 198.3 ? lerp(0, 1.8, eout(prog(t, 198, 198.3))) : lerp(1.8, 1, eback(prog(t, 198.3, 198.7))); $('dot2').style.transform = `scale(${dp.toFixed(3)})`; }
+  flyer(t, 195.4, 197.9, [[-90, 720], [160, 580], [300, 440], [282, 392]], 130, 26);
+
+  // ── Pop-up explanation card ──
+  const pop = POP.find(([a, b]) => t >= a - .05 && t < b);
+  const pe = $('popup');
+  if (pop) {
+    const [a, b, text] = pop, q = eback(prog(t, a, a + .45)), out = ein(prog(t, b - .35, b));
+    $('popTxt').textContent = text;
+    pe.style.opacity = Math.min(1, q * 1.5) * (1 - out);
+    pe.style.transform = `translateX(-50%) translateY(${(-out * 14).toFixed(1)}px) scale(${(.6 + .4 * q).toFixed(3)})`;
+    setWing('popWing', flutter(t, a + .1));
+  } else pe.style.opacity = 0;
+
+  // ── Captions ──
+  const cap = CAP.find(([a, b]) => t >= a && t < b);
+  const ce = $('capTxt');
+  if (cap) { ce.textContent = cap[2]; ce.style.opacity = Math.min(eout(prog(t, cap[0], cap[0] + .2)), 1 - prog(t, cap[1] - .15, cap[1])); }
+  else ce.style.opacity = 0;
+}
+window.renderAt = renderAt;
+
+// Sound effects: [time, sound, volume]. render.mjs reads window.SFX and sfx.mjs synthesises and mixes them.
+function buildSFX() {
+  const S = [];
+  const add = (t, n, v = 1) => S.push([+t.toFixed(3), n, v]);
+  add(.3, 'flutter', .7); add(2.0, 'pop', .8); add(1.0, 'swish', .35);                         // opening
+  [10.3, 17.3, 24.3, 31.3].forEach((t) => add(t, 'swish', .45));                              // stat slides
+  [[10.8, 13.4], [24.9, 27.0], [31.9, 34.0]].forEach(([a, b]) => { for (let t = a; t < b - .3; t += .085) add(t, 'tick', .55); add(b, 'thud', .9); });
+  add(19.4, 'pop', .9); add(27.6, 'pop', .7); add(34.4, 'pop', .7);
+  [38.7, 40.0, 41.6, 43.2, 44.6].forEach((t, i) => add(t, 'ping', .55 + i * .08));            // the scattered search
+  add(46.5, 'flutter', 1); add(47.3, 'whoosh', .9); add(50.3, 'swish', .6); add(51.8, 'chime', .8);
+  CH.forEach(([a, b]) => { add(a, 'whoosh', .7); add(a + .9, 'flutter', .55); add(a + 1.1, 'chime', .5); add(b - .6, 'swish', .5); });
+  SEGS.forEach((g) => { if (g.tr === 'swipe' || g.tr === 'up') add(g.t, 'swish', .45); });
+  TAPS.forEach(([t]) => add(t, 'tap', 1));
+  POP.forEach(([a]) => add(a, 'pop', .55));
+  [124.0, 169.6, 176.0].forEach((t) => add(t, 'ding', .8));                                    // notifications
+  [155.0, 155.8, 156.6].forEach((t) => add(t, 'check', .8));                                   // verified badges
+  add(138.0, 'whoosh', .6); add(140.4, 'pop', .6); add(142.6, 'pop', .6);
+  for (let t = 172.0; t < 175.2; t += .11) if (Math.floor(t * 100) % 3) add(t, 'type', .5);    // typing the announcement
+  add(178.0, 'whoosh', .7); [181.8, 184.4, 187.0].forEach((t) => add(t, 'pop', .7));
+  add(195.6, 'flutter', .6); add(196.4, 'chime', 1); add(198.0, 'pop', .8); add(199.2, 'pop', .7);
+  return S.sort((a, b) => a[0] - b[0]);
+}
+
+window.ready = Promise.all([
+  fetch('shots/meta.json').then((r) => r.json()).then((m) => (META = m)),
+  fetch('tools/ukmap.json').then((r) => r.json()).then((u) => (UK = u)),
+  document.fonts.ready,
+]).then(() => {
+  build();
+  window.SFX = buildSFX();
+  return Promise.all([...document.images].map((im) => (im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; }))));
+}).then(() => {
+  // Images used as strip backgrounds: preload too
+  return Promise.all(Object.keys(META).filter((k) => META[k].kind === 'long').map((k) => new Promise((r) => { const im = new Image(); im.onload = im.onerror = r; im.src = `shots/${k}.view.jpg`; })));
+}).then(() => Promise.all(Object.keys(META).map((k) => new Promise((res) => {
+  const im = new Image(); im.onload = () => { const c = document.createElement('canvas'); c.width = 4; c.height = 4; const g = c.getContext('2d');
+    g.drawImage(im, 300, 3, 4, 4, 0, 0, 4, 4); TOPCOL[k] = [...g.getImageData(1, 1, 1, 1).data.slice(0, 3)]; res(); };
+  im.onerror = res; im.src = `shots/${k}${META[k].kind === 'long' ? '.view' : ''}.jpg`;
+})))).then(() => {
+  if (location.search.includes('render')) { renderAt(0); return; }
+  const start = performance.now(), from = +(new URLSearchParams(location.search).get('t') || 0) * 1000;
+  const tick = (now) => { renderAt(from + now - start); requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+});
+</script>
+</body>
+</html>
